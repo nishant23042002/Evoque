@@ -1,10 +1,10 @@
 // iconMap.ts
-import { VscAccount } from "react-icons/vsc";
-import { BsCart2 } from "react-icons/bs";
-import { IoNotificationsOutline } from "react-icons/io5";
+import { RiAccountCircleFill } from "react-icons/ri";
+import { MdShoppingCart } from "react-icons/md";
+import { GoHeartFill } from "react-icons/go";
 
 export const ICON_MAP = {
-  account: VscAccount,
-  notify: IoNotificationsOutline,
-  cart: BsCart2,
+  account: RiAccountCircleFill,
+  wishlist: GoHeartFill,
+  cart: MdShoppingCart,
 } as const;

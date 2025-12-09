@@ -1,9 +1,9 @@
 const NotifyPage = () => {
-    return (
+    return(
         <div>
-            Notifications
+            Notification
         </div>
     )
 }
 
-export default NotifyPage;
+export default NotifyPage

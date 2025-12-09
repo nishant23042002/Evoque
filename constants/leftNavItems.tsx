@@ -1,6 +1,14 @@
 import { LEFT_NAV_ITEMS } from "./leftNavIcons";
+import { IconType } from "react-icons";
 
-export const leftNav = [
+export interface LeftNavItem {
+    title: string;
+    href: string;
+    icon: IconType;
+    mobileOnly?: boolean; // <-- add this
+}
+
+export const leftNav: LeftNavItem[] = [
     {
         title: "Home",
         href: "/",
@@ -10,6 +18,12 @@ export const leftNav = [
         title: "Notify",
         href: "/notify",
         icon: LEFT_NAV_ITEMS.notify,
+    },
+    {
+        title: "Account",
+        href: "/account",
+        icon: LEFT_NAV_ITEMS.account,
+        mobileOnly: true,
     },
     {
         title: "Settings",

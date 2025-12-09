@@ -6,18 +6,23 @@ import { usePathname } from "next/navigation";
 const MenuItems = () => {
     const pathName = usePathname();
     return (
-        <div className="max-sm:gap-3 max-md:gap-8 md:gap-12 font-bold capitalize flex justify-center items-center">
+        <div className="max-sm:gap-8 max-md:gap-8 md:gap-12 font-bold capitalize flex justify-center items-center">
             {headerData?.map((item) => {
                 const Icon = item.icon;
+                const visibilityClass = item.mobileOnly
+                    ? "block max-md:hidden"   // only account icon
+                    : "block";            // all other icons visible everywhere
+
+
                 return (
-                    <Link className={`hover:text-brand-red p-1 hoverEffect relative group ${pathName === item?.href && "text-brand-red"}`} key={item?.title} href={item.href}>
+                    <Link className={`hover:text-brand-red p-1 hoverEffect relative group ${visibilityClass} ${pathName === item?.href && "text-brand-red"}`} key={item?.title} href={item.href}>
 
                         <Icon
                             className={`
     min-[450px]:text-2xl font-extrabold 
     text-inherit 
     group-hover:text-brand-red 
-    ${pathName === item?.href ? "text-brand-red" : "text-neutral-800"}
+    ${pathName === item?.href ? "text-brand-red" : "text-slate-700"}
   `}
                         />
 
