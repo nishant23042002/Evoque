@@ -2,7 +2,7 @@ import { cn } from "@/lib/utils";
 
 const Container = ({ children, className }: { children: React.ReactNode; className?: string }) => {
     return (
-        <div className={cn("max-w-screen mx-auto p-2", className)}>
+        <div className={cn("", className)}>
             {children}
         </div>
     )

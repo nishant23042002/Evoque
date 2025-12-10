@@ -29,17 +29,17 @@ const LeftMenu = () => {
 
     return (
         <div
-            className={`
-                border-r border-black/10 bg-red-100 
+            className={`h-full
+                border-r border-black/10 bg-red-100
                 transition-all duration-300 relative
-                ${isOpen ? "w-80 p-4" : "w-20 p-4"}
+                ${isOpen ? "w-60 p-4" : "w-20 p-4"}
             `}
         >
             {/* Toggle button - disabled / hidden on mobile */}
             {!isMobile && (
                 <button
                     onClick={() => setIsSidebarOpen(!isSidebarOpen)}
-                    className="absolute right-0 top-6 translate-x-1/2 bg-red-100 shadow p-0.5 rounded-full border cursor-pointer"
+                    className="absolute right-0 top-6 z-50 translate-x-1/2 bg-red-100 shadow p-0.5 rounded-full border cursor-pointer"
                 >
                     {isOpen ? <HiChevronLeft size={20} /> : <HiChevronRight size={20} />}
                 </button>

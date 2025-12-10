@@ -18,8 +18,10 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className="font-poppins antialiased">
-        <div className="flex h-screen">
-          <LeftMenu />
+        <div className="flex">
+          <div className="fixed top-0 z-99 h-full">
+            <LeftMenu />
+          </div>
           <div className="w-full">
             <Header />
             {children}
