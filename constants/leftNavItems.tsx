@@ -5,7 +5,6 @@ export interface LeftNavItem {
     title: string;
     href: string;
     icon: IconType;
-    mobileOnly?: boolean; // <-- add this
 }
 
 export const leftNav: LeftNavItem[] = [
@@ -22,8 +21,7 @@ export const leftNav: LeftNavItem[] = [
     {
         title: "Account",
         href: "/account",
-        icon: LEFT_NAV_ITEMS.account,
-        mobileOnly: true,
+        icon: LEFT_NAV_ITEMS.account
     },
     {
         title: "Settings",

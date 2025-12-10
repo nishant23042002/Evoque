@@ -1,65 +1,133 @@
-"use client"
+"use client";
+
 import Image from "next/image";
 import { leftNav } from "@/constants/leftNavItems";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { useState, useEffect } from "react";
+import { HiChevronRight, HiChevronLeft } from "react-icons/hi";
 
 const LeftMenu = () => {
-    const pathName = usePathname();
+    const pathname = usePathname();
+
+    const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+    const [isMobile, setIsMobile] = useState(false);
+
+    // Detect screen size once + on resize
+    useEffect(() => {
+        const handleResize = () => {
+            setIsMobile(window.innerWidth < 490);
+        };
+        handleResize();
+
+        window.addEventListener("resize", handleResize);
+        return () => window.removeEventListener("resize", handleResize);
+    }, []);
+
+    // Derived state: sidebar open only when not mobile
+    const isOpen = isMobile ? false : isSidebarOpen;
+
     return (
-        <div className="p-4 w-20 border-r border-black/10 bg-red-100">
-            <div className="p-1 my-2">
-                <Image alt="evoque-logo" src="/Evoque1.png" width={100} height={100} />
+        <div
+            className={`
+                border-r border-black/10 bg-red-100 
+                transition-all duration-300 relative
+                ${isOpen ? "w-80 p-4" : "w-20 p-4"}
+            `}
+        >
+            {/* Toggle button - disabled / hidden on mobile */}
+            {!isMobile && (
+                <button
+                    onClick={() => setIsSidebarOpen(!isSidebarOpen)}
+                    className="absolute right-0 top-6 translate-x-1/2 bg-red-100 shadow p-0.5 rounded-full border cursor-pointer"
+                >
+                    {isOpen ? <HiChevronLeft size={20} /> : <HiChevronRight size={20} />}
+                </button>
+            )}
+
+            {/* Logo row */}
+            <div className="p-1 flex items-center gap-2">
+                <div className="w-[35px] h-[35px] shrink-0">
+                    <Image src="/Evoque1.png" alt="logo" width={35} height={35} />
+                </div>
+
+                {/* Text only when expanded + not mobile */}
+                {!isMobile && (
+                    <div
+                        className={`
+                            overflow-hidden transition-all duration-300
+                            ${isOpen ? "w-32 opacity-100" : "w-0 opacity-0"}
+                        `}
+                    >
+                        <span className="font-light text-slate-700 text-md whitespace-nowrap">
+                            The Evoque Store
+                        </span>
+                    </div>
+                )}
             </div>
-            <div className="my-18 p-2 flex flex-col justify-around gap-14 items-center">
+
+            {/* Menu items */}
+            <div className="mt-8 flex flex-col gap-8 items-start">
                 {leftNav.map((item) => {
-                    const Icon = item.icon; // instantiate icon component
-                    const visibilityClass = item.mobileOnly
-                        ? "block md:hidden"   // only account icon
-                        : "block";            // all other icons visible everywhere
+                    const Icon = item.icon;
+                    const active = pathname === item.href;
 
                     return (
                         <Link
                             key={item.title}
                             href={item.href}
-                            className={`relative group p-2 ${visibilityClass}
-    ${pathName === item.href ? "text-brand-red" : "text-neutral-800"}
-  `}
+                            className={`relative group flex items-center gap-3 p-2
+                                ${active ? "text-brand-red" : "text-neutral-800"}`}
                         >
-                            {/* ICON with active + hover color */}
                             <Icon
                                 size={22}
-                                className={`
-            text-inherit 
-            group-hover:text-brand-red 
-            ${pathName === item.href ? "text-brand-red" : "text-slate-700"}
-        `}
+                                className={`group-hover:text-brand-red ${
+                                    active ? "text-brand-red" : "text-slate-800"
+                                }`}
                             />
 
-                            {/* LEFT half underline */}
-                            <span
-                                className={`
-        bg-brand-red absolute -bottom-1 left-1/2 -translate-x-full 
-        h-0.5 w-0 group-hover:w-1/3 transition-all duration-300
-        ${pathName === item.href && "w-1/3"}
-      `}
-                            />
+                            {/* Text only when open */}
+                            {isOpen && (
+                                <span className="text-sm transition-opacity duration-300">
+                                    {item.title}
+                                </span>
+                            )}
 
-                            {/* RIGHT half underline */}
-                            <span
-                                className={`
-        bg-brand-red absolute -bottom-1 left-1/2 translate-x-0 
-        h-0.5 w-0 group-hover:w-1/3 transition-all duration-300
-        ${pathName === item.href && "w-1/3"}
-      `}
-                            />
+                            {/* Underline only when collapsed */}
+                            {!isOpen && (
+                                <>
+                                    <span
+                                        className={`
+                                            bg-brand-red absolute -bottom-1 left-1/2 -translate-x-full
+                                            h-0.5 w-0 group-hover:w-1/3 transition-all duration-300
+                                            ${active && "w-1/3"}
+                                        `}
+                                    />
+                                    <span
+                                        className={`
+                                            bg-brand-red absolute -bottom-1 left-1/2 translate-x-0
+                                            h-0.5 w-0 group-hover:w-1/3 transition-all duration-300
+                                            ${active && "w-1/3"}
+                                        `}
+                                    />
+                                </>
+                            )}
                         </Link>
-
                     );
                 })}
             </div>
-        </div>
-    )
-}
 
-export default LeftMenu
+            {/* Extras (desktop only + expanded) */}
+            {!isMobile && isOpen && (
+                <div className="mt-10 p-2 text-sm space-y-4">
+                    <div className="font-medium text-gray-700">Extras</div>
+                    <div className="text-gray-600 hover:text-brand-red cursor-pointer">Filters</div>
+                    <div className="text-gray-600 hover:text-brand-red cursor-pointer">Notifications</div>
+                    <div className="text-gray-600 hover:text-brand-red cursor-pointer">Settings</div>
+                </div>
+            )}
+        </div>
+    );
+};
+
+export default LeftMenu;

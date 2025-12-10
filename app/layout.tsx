@@ -1,8 +1,8 @@
 import type { Metadata } from "next";
 import "./globals.css";
-import Header from "@/components/header";
-import Footer from "@/components/footer";
-import LeftMenu from "@/components/leftMenu";
+import Header from "@/components/Header";
+import Footer from "@/components/Footer";
+import LeftMenu from "@/components/LeftMenu";
 
 
 export const metadata: Metadata = {
@@ -19,7 +19,7 @@ export default function RootLayout({
     <html lang="en">
       <body className="font-poppins antialiased">
         <div className="flex h-screen">
-          <LeftMenu /> 
+          <LeftMenu />
           <div className="w-full">
             <Header />
             {children}

@@ -1,5 +1,5 @@
 import { cn } from "@/lib/utils";
-import Container from "./container";
+import Container from "./Container";
 
 const Footer = ({ className }: { className?: string }) => {
     return (
