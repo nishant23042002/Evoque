@@ -11,6 +11,8 @@ const nextConfig: NextConfig = {
       "source.unsplash.com",
     ],
   },
+  
 };
+
 
 export default nextConfig;

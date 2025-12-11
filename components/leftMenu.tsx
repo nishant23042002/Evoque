@@ -30,7 +30,7 @@ const LeftMenu = () => {
     return (
         <div
             className={`h-full
-                border-r border-black/10 bg-red-100
+                border-r border-gray-400/20 bg-brand
                 transition-all duration-300 relative
                 ${isOpen ? "w-60 p-4" : "w-20 p-4"}
             `}

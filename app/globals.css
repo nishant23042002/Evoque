@@ -13,6 +13,7 @@
   --color-brand-red: #E60023;
   /* Pinterest primary red */
   --color-brand-red-dark: #C0001C;
+  --color-brand: #f2f2f2;
   /* Hover/active state */
   --color-brand-red-light: #FFEDF0;
   /* Soft tint for backgrounds */
@@ -261,4 +262,9 @@
   .hoverEffect{
     @apply transition-all duration-200 ease-in-out;
   }
+  @keyframes pulse {
+  0%, 100% { transform: scaleX(1); }
+  50% { transform: scaleX(1.1); }
+}
+
 }
