@@ -63,8 +63,8 @@
   --bg-navbar-hover: var(--color-neutral-100);
 
   /* Text Colors */
-  --text-primary: var(--color-neutral-900);
-  --text-secondary: var(--color-neutral-600);
+  --text-first: #1f1f1f;
+  --text-sec: #b8a4b8;
   --text-muted: var(--color-neutral-500);
   --text-inverse: var(--color-white);
   --text-brand: var(--color-brand-red);
@@ -262,9 +262,14 @@
   .hoverEffect{
     @apply transition-all duration-200 ease-in-out;
   }
-  @keyframes pulse {
-  0%, 100% { transform: scaleX(1); }
-  50% { transform: scaleX(1.1); }
 }
 
+/* Hide scrollbar for all browsers */
+.scrollbar-hide {
+  -ms-overflow-style: none; /* IE and Edge */
+  scrollbar-width: none; /* Firefox */
+}
+
+.scrollbar-hide::-webkit-scrollbar {
+  display: none; /* Chrome, Safari, Opera */
 }
