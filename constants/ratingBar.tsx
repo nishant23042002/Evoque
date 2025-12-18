@@ -12,7 +12,7 @@ export default function AnimatedRatingProgressBar({
   average = 4.2,
   max = 5,
   threshold = 3.5,
-  height = "h-2.5",
+  height = "h-1.5",
   showLabel = true,
 }: AnimatedRatingProgressBarProps) {
   const [animatedPercent, setAnimatedPercent] = useState(0);

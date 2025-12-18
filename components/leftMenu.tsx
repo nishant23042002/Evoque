@@ -16,7 +16,7 @@ const LeftMenu = () => {
     // Detect screen size once + on resize
     useEffect(() => {
         const handleResize = () => {
-            setIsMobile(window.innerWidth < 490);
+            setIsMobile(window.innerWidth <= 491);
         };
         handleResize();
 
@@ -30,24 +30,24 @@ const LeftMenu = () => {
     return (
         <div
             className={`h-full
-                border-r border-gray-400/20 bg-brand
+                border-r border-gray-400/30 bg-white
                 transition-all duration-300 relative
-                ${isOpen ? "w-60 p-4" : "w-20 p-4"}
+                ${isOpen ? "w-60 p-4" : "w-15 min-[490px]:w-18 p-4"}
             `}
         >
             {/* Toggle button - disabled / hidden on mobile */}
             {!isMobile && (
                 <button
                     onClick={() => setIsSidebarOpen(!isSidebarOpen)}
-                    className="absolute right-0 top-6 z-50 translate-x-1/2 bg-red-100 shadow p-0.5 rounded-full border cursor-pointer"
+                    className="absolute bg-white right-0 top-6 z-50 translate-x-1/2 shadow p-0.5 rounded-full border cursor-pointer"
                 >
                     {isOpen ? <HiChevronLeft size={20} /> : <HiChevronRight size={20} />}
                 </button>
             )}
 
             {/* Logo row */}
-            <div className="p-1 flex items-center gap-2">
-                <div className="w-[35px] h-[35px] shrink-0">
+            <div className="p-1 flex items-center justify-center gap-2">
+                <div className="w-[30px] h-[30px] shrink-0">
                     <Image src="/Evoque1.png" alt="logo" width={35} height={35} />
                 </div>
 
@@ -67,7 +67,7 @@ const LeftMenu = () => {
             </div>
 
             {/* Menu items */}
-            <div className="mt-8 flex flex-col gap-8 items-start">
+            <div className="mt-8 flex flex-col gap-8 justify-center items-center">
                 {leftNav.map((item) => {
                     const Icon = item.icon;
                     const active = pathname === item.href;

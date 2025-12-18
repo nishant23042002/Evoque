@@ -13,7 +13,7 @@ const Cart = () => {
             className={`relative group p-2 ${active ? "text-brand-red" : "text-neutral-800"
                 }`}
         >
-            <span className="absolute top-0 text-slate-700 right-0 font-bold">0</span>
+            <span className="hidden absolute top-0 text-slate-700 right-0 font-bold">0</span>
             <ShoppingBag
                 size={20}
                 className={`text-inherit group-hover:text-brand-red ${active ? "text-brand-red" : "text-slate-800"

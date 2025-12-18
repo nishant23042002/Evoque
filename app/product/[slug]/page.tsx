@@ -26,7 +26,7 @@ export default async function ProductPage({ params }: ProductPageProps) {
     return (
         <Container>
             <div className="flex flex-col">
-                <div className="md:flex gap-2 justify-evenly  ml-20 mt-8">
+                <div className="md:flex gap-2 justify-evenly ml-15 mt-2">
                     {/*Left Side */}
                     <div className="w-full flex gap-2">
                         {/* Small Images Left side */}
@@ -103,13 +103,13 @@ export default async function ProductPage({ params }: ProductPageProps) {
                         </div>
                     </div>
                     {/*Right Side */}
-                    <div className="lg:w-3xl w-full flex flex-col sticky top-20">
-                        <div className="border border-b-gray-300 py-4 flex justify-between items-center">
+                    <div className="lg:w-3xl w-full flex flex-col sticky top-20 mr-2">
+                        <div className="py-4 flex justify-around items-center">
                             <h1 className="text-sm md:text-xl font-bold text-slate-900">{product.title}</h1>
                             <p className="text-sm md:text-xl font-semibold text-slate-900">{product.price} <span className="text-gray-700 text-[11px]">MRP</span></p>
                         </div>
                         {/*COLORS*/}
-                        <div className="border border-b-gray-300 py-4 flex flex-col">
+                        <div className="py-4 flex flex-col">
                             <h1 className="text-center font-extrabold mb-2 text-slate-900">Colors</h1>
                             <div className="w-full flex flex-wrap justify-center items-center md:flex-nowrap gap-2 md:overflow-x-auto scrollbar-hide">
                                 <Image
@@ -140,7 +140,7 @@ export default async function ProductPage({ params }: ProductPageProps) {
                             </div>
                         </div>
                         {/*SIZES*/}
-                        <div className="border border-b-gray-300 py-4 flex flex-col justify-center items-center">
+                        <div className="py-4 flex flex-col justify-center items-center">
                             <h1 className="text-center font-extrabold mb-2 text-slate-900">Sizes</h1>
                             <div className="max-w-140 flex flex-wrap gap-3">
                                 <span className="border border-black p-2 hover:bg-black hover:text-white hoverEffect">XS</span>
@@ -155,10 +155,10 @@ export default async function ProductPage({ params }: ProductPageProps) {
                             <button className="bg-black w-full text-white font-bold p-5">ADD TO BAG</button>
                         </div>
                         {/* Accordion */}
-                        <div className="px-6 max-h-70 overflow-y-auto scrollbar-hide">
-                            <Accordion className="border border-b-gray-300" type="single" collapsible>
+                        <div className="px-6 max-h-75 overflow-y-auto scrollbar-hide">
+                            <Accordion type="single" collapsible>
                                 <AccordionItem value="item-1">
-                                    <AccordionTrigger className="font-semibold">DETAILS</AccordionTrigger>
+                                    <AccordionTrigger className="font-semibold cursor-pointer">DETAILS</AccordionTrigger>
                                     <AccordionContent>
                                         <div className="product-accordion-content">
                                             <section className="mb-4">
@@ -208,9 +208,9 @@ export default async function ProductPage({ params }: ProductPageProps) {
                                     </AccordionContent>
                                 </AccordionItem>
                             </Accordion>
-                            <Accordion className="border border-b-gray-300" type="single" collapsible>
+                            <Accordion type="single" collapsible>
                                 <AccordionItem value="item-1">
-                                    <AccordionTrigger className="font-semibold">DELIVERY</AccordionTrigger>
+                                    <AccordionTrigger className="font-semibold cursor-pointer">DELIVERY</AccordionTrigger>
                                     <AccordionContent>
 
                                     </AccordionContent>
@@ -218,7 +218,7 @@ export default async function ProductPage({ params }: ProductPageProps) {
                             </Accordion>
                             <Accordion type="single" collapsible>
                                 <AccordionItem value="item-1">
-                                    <AccordionTrigger className="font-semibold">RETURNS</AccordionTrigger>
+                                    <AccordionTrigger className="font-semibold cursor-pointer">RETURNS</AccordionTrigger>
                                     <AccordionContent>
                                         <ul className="leading-5 sm:leading-7">
                                             <li>
@@ -257,7 +257,7 @@ export default async function ProductPage({ params }: ProductPageProps) {
                     <div>
                        <h1 className="p-4 text-center font-bold text-xl">You may also like</h1>
                     </div>
-                    <div className="ml-20 px-2">
+                    <div className="max-[490px]:ml-16 ml-19 mr-1">
                         <MasonryGrid items={clothingItems} />
                     </div>
                 </div>

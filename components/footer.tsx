@@ -10,8 +10,8 @@ import { PiWhatsappLogoLight } from "react-icons/pi";
 
 export default function Footer() {
     return (
-        <footer className="ml-20 text-[#111] mt-45">
-            <div className="bg-[#f7efe7] max-w-[1400px] mx-auto px-8 py-14">
+        <footer className="ml-18 max-[490px]:ml-15 text-[#111] mt-30">
+            <div className="bg-accent-sand max-w-[1400px] mx-auto px-8 py-14">
 
                 {/* Title */}
                 <h2 className="text-[18px] font-extrabold mb-8">
@@ -137,10 +137,10 @@ export default function Footer() {
                 {/* SOCIAL + APP */}
                 <div className="mt-16 flex flex-col items-center gap-8">
                     <div className="flex gap-6 text-[20px]">
-                        <span className="text-red-600 cursor-pointer"><CiFacebook /></span>
-                        <span className="text-red-600 cursor-pointer"><CiInstagram /></span>
-                        <span className="text-red-600 cursor-pointer"><CiLinkedin /></span>
-                        <span className="text-red-600 cursor-pointer"><PiWhatsappLogoLight /></span>
+                        <span className="text-brand-red cursor-pointer"><CiFacebook /></span>
+                        <span className="text-brand-red cursor-pointer"><CiInstagram /></span>
+                        <span className="text-brand-red cursor-pointer"><CiLinkedin /></span>
+                        <span className="text-brand-red cursor-pointer"><PiWhatsappLogoLight /></span>
                     </div>
 
                     <div className="text-center">
@@ -164,7 +164,7 @@ function Column({ items }: { items: string[] }) {
     return (
         <div className="space-y-[2px]">
             {items.map(item => (
-                <p key={item}>{item}</p>
+                <p className="cursor-pointer hover:underline decoration-brand-red hover:text-brand-red" key={item}>{item}</p>
             ))}
         </div>
     );

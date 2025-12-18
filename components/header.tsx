@@ -15,10 +15,10 @@ const Header = () => {
 
                 {/* Cart and Account */}
                 <div className="w-auto md:w-full flex gap-4 items-center">
-                    <div className="w-full max-md:hidden">
+                    <div className="w-full max-sm:hidden">
                         <SearchBar />
                     </div>
-                    <div className="flex items-center justify-center gap-8">
+                    <div className="flex items-center justify-center gap-2">
                         <WishList />
                         <Cart />
                         <Login />
