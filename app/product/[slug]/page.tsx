@@ -26,7 +26,7 @@ export default async function ProductPage({ params }: ProductPageProps) {
     return (
         <Container>
             <div className="flex flex-col">
-                <div className="md:flex gap-2 justify-evenly mx-3 ml-20 mt-8">
+                <div className="md:flex gap-2 justify-evenly  ml-20 mt-8">
                     {/*Left Side */}
                     <div className="w-full flex gap-2">
                         {/* Small Images Left side */}
