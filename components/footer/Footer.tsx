@@ -2,11 +2,6 @@ import { CiLinkedin, CiFacebook, CiInstagram } from "react-icons/ci";
 import { PiWhatsappLogoLight } from "react-icons/pi";
 
 
-
-
-
-
-
 export default function Footer() {
     return (
         <footer className="ml-18 max-[490px]:ml-15 text-[#111] mt-30">
