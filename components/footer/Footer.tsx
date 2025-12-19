@@ -1,4 +1,3 @@
-import Image from "next/image";
 import { CiLinkedin, CiFacebook, CiInstagram } from "react-icons/ci";
 import { PiWhatsappLogoLight } from "react-icons/pi";
 
