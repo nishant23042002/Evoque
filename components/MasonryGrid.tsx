@@ -49,7 +49,7 @@ export default function MasonryGrid({ items }: MasonryProps) {
             </h2>
             <Masonry
                 breakpointCols={breakpoints}
-                className="flex gap-4 w-full"
+                className="flex gap-4 w-full mb-18"
                 columnClassName="masonry-column"
             >
                 {items.map((item, index) => (
