@@ -4,7 +4,7 @@ import Image from "next/image";
 import { leftNav } from "@/constants/leftNavItems";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { HiChevronRight, HiChevronLeft } from "react-icons/hi";
 
 const LeftMenu = () => {
@@ -12,6 +12,27 @@ const LeftMenu = () => {
 
     const [isSidebarOpen, setIsSidebarOpen] = useState(false);
     const [isMobile, setIsMobile] = useState(false);
+    const sidebarRef = useRef<HTMLDivElement | null>(null);
+
+
+    useEffect(() => {
+        if (!isSidebarOpen) return;
+
+        const handleClickOutside = (event: MouseEvent) => {
+            if (
+                sidebarRef.current &&
+                !sidebarRef.current.contains(event.target as Node)
+            ) {
+                setIsSidebarOpen(false);
+            }
+        };
+
+        document.addEventListener("mousedown", handleClickOutside);
+
+        return () => {
+            document.removeEventListener("mousedown", handleClickOutside);
+        };
+    }, [isSidebarOpen]);
 
     // Detect screen size once + on resize
     useEffect(() => {
@@ -29,6 +50,7 @@ const LeftMenu = () => {
 
     return (
         <div
+            ref={sidebarRef}
             className={`h-full
                 border-r border-gray-400/30 bg-white
                 transition-all duration-300 relative
@@ -41,14 +63,14 @@ const LeftMenu = () => {
                     onClick={() => setIsSidebarOpen(!isSidebarOpen)}
                     className="absolute bg-white right-0 top-6 z-50 translate-x-1/2 shadow p-0.5 rounded-full border cursor-pointer"
                 >
-                    {isOpen ? <HiChevronLeft size={20} /> : <HiChevronRight size={20} />}
+                    {isOpen ? <HiChevronLeft size={16} /> : <HiChevronRight size={16} />}
                 </button>
             )}
 
             {/* Logo row */}
-            <div className="p-1 flex items-center justify-center gap-2">
+            <div className="p-1 flex items-center justify-start gap-2">
                 <div className="w-[30px] h-[30px] shrink-0">
-                    <Image src="/Evoque1.png" alt="logo" width={35} height={35} />
+                    <Image src="/Evoque1.png" alt="logo" width={30} height={30} />
                 </div>
 
                 {/* Text only when expanded + not mobile */}
@@ -81,9 +103,8 @@ const LeftMenu = () => {
                         >
                             <Icon
                                 size={22}
-                                className={`group-hover:text-brand-red ${
-                                    active ? "text-brand-red" : "text-slate-800"
-                                }`}
+                                className={`group-hover:text-brand-red ${active ? "text-brand-red" : "text-slate-800"
+                                    }`}
                             />
 
                             {/* Text only when open */}
