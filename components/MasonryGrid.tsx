@@ -29,13 +29,13 @@ interface MasonryProps {
 
 export default function MasonryGrid({ items }: MasonryProps) {
     const breakpoints = {
-        default: 7,
+        default: 6,
         1600: 6,
         1400: 5,
-        1200: 4,
-        900: 3,
-        700: 2,
-        550: 1,
+        1300: 4,
+        1000: 3,
+        800: 2,
+        600: 1,
     };
 
     const [heights] = useState<number[]>(() =>
@@ -44,12 +44,24 @@ export default function MasonryGrid({ items }: MasonryProps) {
 
     return (
         <div>
-            <h2 className="text-center text-sm tracking-widest font-semibold text-neutral-700 my-10">
-                New And Popular
-            </h2>
+            <div>
+                <h2 className="text-center text-sm tracking-widest font-semibold text-neutral-700 my-5">
+                    New And Popular
+                </h2>
+                <div className="mb-5">
+                    <ul className="flex flex-wrap justify-center text-[11px] p-2 gap-2">
+                        <li className="border border-black p-1 sm:px-3 cursor-pointer hover:bg-black hover:text-white hoverEffect">ALL</li>
+                        <li className="border border-black p-1 sm:px-3 cursor-pointer hover:bg-black hover:text-white hoverEffect">SHIRTS</li>
+                        <li className="border border-black p-1 sm:px-3 cursor-pointer hover:bg-black hover:text-white hoverEffect">TROUSERS</li>
+                        <li className="border border-black p-1 sm:px-3 cursor-pointer hover:bg-black hover:text-white hoverEffect">T-SHIRTS</li>
+                        <li className="border border-black p-1 sm:px-3 cursor-pointer hover:bg-black hover:text-white hoverEffect">JEANS</li>
+                        <li className="border border-black p-1 sm:px-3 cursor-pointer hover:bg-black hover:text-white hoverEffect">SWEATERS</li>
+                    </ul>
+                </div>
+            </div>
             <Masonry
                 breakpointCols={breakpoints}
-                className="flex gap-4 w-full"
+                className="flex gap-4 md:w-[90%] mx-auto"
                 columnClassName="masonry-column"
             >
                 {items.map((item, index) => (
