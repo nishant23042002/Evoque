@@ -1,9 +1,9 @@
 import type { Metadata } from "next";
 import "./globals.css";
 import Header from "@/components/Header";
-import Footer from "@/components/footer/footer";
+import Footer from "@/components/footer/Footer";
 import LeftMenu from "@/components/LeftMenu";
-
+import CleanFooter from "@/components/footer/cleanFooter";
 
 export const metadata: Metadata = {
   title: "The Evoque Store",
@@ -25,7 +25,7 @@ export default function RootLayout({
           <div className="w-full">
             <Header />
             {children}
-            <Footer />
+            <CleanFooter />
           </div>
         </div>
       </body>
