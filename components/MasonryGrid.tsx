@@ -29,9 +29,7 @@ interface MasonryProps {
 
 export default function MasonryGrid({ items }: MasonryProps) {
     const breakpoints = {
-        default: 6,
-        1600: 6,
-        1400: 5,
+        default: 5,
         1300: 4,
         1000: 3,
         800: 2,

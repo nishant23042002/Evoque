@@ -7,12 +7,17 @@ import { usePathname } from "next/navigation";
 import { useState, useEffect, useRef } from "react";
 import { HiChevronRight, HiChevronLeft } from "react-icons/hi";
 
+
+
+
+
 const LeftMenu = () => {
     const pathname = usePathname();
 
     const [isSidebarOpen, setIsSidebarOpen] = useState(false);
     const [isMobile, setIsMobile] = useState(false);
     const sidebarRef = useRef<HTMLDivElement | null>(null);
+
 
 
     useEffect(() => {
@@ -54,7 +59,7 @@ const LeftMenu = () => {
             className={`h-full
                 border-r border-gray-400/30 bg-white
                 transition-all duration-300 relative
-                ${isOpen ? "w-60 p-4" : "w-15 min-[490px]:w-18 p-4"}
+                ${isOpen ? "w-60 p-1" : "w-15 min-[490px]:w-18 p-1"}
             `}
         >
             {/* Toggle button - disabled / hidden on mobile */}
@@ -68,7 +73,7 @@ const LeftMenu = () => {
             )}
 
             {/* Logo row */}
-            <div className="p-1 flex items-center justify-start gap-2">
+            <div className="p-4 flex items-center justify-start gap-2">
                 <div className="w-[30px] h-[30px] shrink-0">
                     <Image src="/Evoque1.png" alt="logo" width={30} height={30} />
                 </div>
@@ -89,64 +94,60 @@ const LeftMenu = () => {
             </div>
 
             {/* Menu items */}
-            <div className="mt-8 flex flex-col gap-8 justify-center items-center">
-                {leftNav.map((item) => {
-                    const Icon = item.icon;
-                    const active = pathname === item.href;
+            <div className={`${isSidebarOpen ? "flex flex-col items-start gap-6" : "my-8 flex flex-col items-center gap-6"}`}>
+                {leftNav.map((group) => (
+                    <div key={group.section} className="w-full">
+                        {/* Section title (only when expanded) */}
+                        {isOpen && (
+                            <p className="text-xs uppercase tracking-widest text-slate-700 font-semibold mb-1 px-3">
+                                {group.section}
+                            </p>
+                        )}
 
-                    return (
-                        <Link
-                            key={item.title}
-                            href={item.href}
-                            className={`relative group flex items-center gap-3 p-2
-                                ${active ? "text-brand-red" : "text-neutral-800"}`}
-                        >
-                            <Icon
-                                size={22}
-                                className={`group-hover:text-brand-red ${active ? "text-brand-red" : "text-slate-800"
-                                    }`}
-                            />
+                        <div className={`${isOpen ? "flex flex-col gap-1.5 md:items-center items-start" : "flex flex-col gap-1 md:items-center items-start mb-6"}`}>
+                            {group.items.map((item) => {
 
-                            {/* Text only when open */}
-                            {isOpen && (
-                                <span className="text-sm transition-opacity duration-300">
-                                    {item.title}
-                                </span>
-                            )}
+                                const active = pathname === item.href;
 
-                            {/* Underline only when collapsed */}
-                            {!isOpen && (
-                                <>
-                                    <span
-                                        className={`
-                                            bg-brand-red absolute -bottom-1 left-1/2 -translate-x-full
-                                            h-0.5 w-0 group-hover:w-1/3 transition-all duration-300
-                                            ${active && "w-1/3"}
-                                        `}
-                                    />
-                                    <span
-                                        className={`
-                                            bg-brand-red absolute -bottom-1 left-1/2 translate-x-0
-                                            h-0.5 w-0 group-hover:w-1/3 transition-all duration-300
-                                            ${active && "w-1/3"}
-                                        `}
-                                    />
-                                </>
-                            )}
-                        </Link>
-                    );
-                })}
+                                return (
+                                    <Link
+                                        key={item.title}
+                                        href={item.href}
+                                        className={`${isSidebarOpen ? "py-1 group flex gap-2 w-full items-center px-3 hover:text-brand-red" : "mb-5 group flex gap-2 justify-center w-full"}
+                                                                ${active ? "text-brand-red" : "text-slate-800"}
+                                                                `}
+                                    >
+                                        {isOpen && item.image ? (
+                                            <div className="w-12 h-12 relative shrink-0 rounded-lg overflow-hidden">
+                                                <Image
+                                                    src={item.image}
+                                                    alt={item.title}
+                                                    fill
+                                                    className="object-cover"
+                                                />
+                                            </div>
+                                        ) : (
+                                            <item.icon
+                                                size={22}
+                                                className={`transition
+                                                    group-hover:text-brand-red
+                                                    ${active ? "text-brand-red" : "text-slate-800"}
+                                                    `}
+                                            />
+                                        )}
+
+                                        {isOpen && (
+                                            <span className="text-[12px] whitespace-nowrap">
+                                                {item.title}
+                                            </span>
+                                        )}
+                                    </Link>
+                                );
+                            })}
+                        </div>
+                    </div>
+                ))}
             </div>
-
-            {/* Extras (desktop only + expanded) */}
-            {!isMobile && isOpen && (
-                <div className="mt-10 p-2 text-sm space-y-4">
-                    <div className="font-medium text-gray-700">Extras</div>
-                    <div className="text-gray-600 hover:text-brand-red cursor-pointer">Filters</div>
-                    <div className="text-gray-600 hover:text-brand-red cursor-pointer">Notifications</div>
-                    <div className="text-gray-600 hover:text-brand-red cursor-pointer">Settings</div>
-                </div>
-            )}
         </div>
     );
 };

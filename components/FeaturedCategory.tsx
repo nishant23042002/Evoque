@@ -60,8 +60,8 @@ const FeaturedCategories = () => {
     const breakpoints = {
         default: 4,
         1200: 4,
-        900: 3,
-        700: 2,
+        1000: 3,
+        750: 2,
         550: 1,
     };
     return (
@@ -73,7 +73,7 @@ const FeaturedCategories = () => {
 
             {/* Pinterest Grid */}
             <Masonry breakpointCols={breakpoints}
-                className="mx-auto flex gap-4 w-[90%]"
+                className="mx-auto flex gap-4 w-full md:w-[90%]"
                 columnClassName="masonry-column"
             >
                 {categories.map((item, index) => (
@@ -82,29 +82,28 @@ const FeaturedCategories = () => {
                         key={index}
                         className="mb-4 block break-inside-avoid"
                     >
-                        <div className="group h-75 relative overflow-hidden rounded-xl bg-neutral-100">
+                        <div className="group h-80 relative overflow-hidden rounded-xl bg-neutral-100">
                             {/* Image */}
                             <Image
                                 src={item.image}
                                 alt={item.title}
-                                width={600}
-                                height={400}
+                                fill
                                 className="
-                  w-full object-cover
-                  transition-transform duration-500
-                  group-hover:scale-105
-                "
+                                            w-full object-fill
+                                            transition-transform duration-500
+                                            group-hover:scale-105
+                                            "
                             />
 
                             {/* Dark overlay */}
                             <div
                                 className="
-                  absolute inset-0
-                  bg-black/15
-                  opacity-0
-                  group-hover:opacity-100
-                  transition-opacity duration-300
-                "
+                                        absolute inset-0
+                                        bg-black/15
+                                        opacity-0
+                                        group-hover:opacity-100
+                                        transition-opacity duration-300
+                                        "
                             />
 
                             {/* Tag */}
@@ -117,10 +116,10 @@ const FeaturedCategories = () => {
                             {/* Title */}
                             <div
                                 className="
-                  absolute bottom-4 left-4 right-4
-                  text-white
-                  opacity-100
-                "
+                                        absolute top-4 left-4 right-4
+                                        text-white
+                                        opacity-100
+                                        "
                             >
                                 <h3 className="text-sm font-semibold tracking-wide">
                                     {item.title}
