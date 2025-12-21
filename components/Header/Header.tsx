@@ -1,5 +1,5 @@
 import Cart from "./Cart";
-import Container from "./Container";
+import Container from "../Container";
 import Login from "./Login";
 import Logo from "./Logo";
 import SearchBar from "./SearchBar";

@@ -4,11 +4,11 @@ import Image from "next/image";
 import { useEffect, useRef, useState } from "react";
 
 const banners = [
-    "/banner.webp",
-    "/banner2.jpg",
-    "/banner3.jpg",
-    "/banner3.jpg",
-    "/banner3.jpg",
+    "/images/banner.webp",
+    "/images/banner2.jpg",
+    "/images/banner3.jpg",
+    "/images/banner3.jpg",
+    "/images/banner3.jpg",
 ];
 
 const BannerSlider = () => {

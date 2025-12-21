@@ -142,8 +142,8 @@ export default function Footer() {
                             DOWNLOAD APP
                         </p>
                         <div className="flex justify-center items-center">
-                            <img alt="appstore" className="h-15 sm:h-20" src="/appstore.png" />
-                            <img alt="playstore" className="h-25 sm:h-30" src="/playstore.png" />
+                            <img alt="appstore" className="h-15 sm:h-20" src="/images/appstore.png" />
+                            <img alt="playstore" className="h-25 sm:h-30" src="/images/playstore.png" />
                         </div>
                     </div>
                 </div>

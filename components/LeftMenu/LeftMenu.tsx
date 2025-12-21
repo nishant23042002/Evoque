@@ -75,7 +75,7 @@ const LeftMenu = () => {
             {/* Logo row */}
             <div className="p-4 flex items-center justify-start gap-2">
                 <div className="w-[30px] h-[30px] shrink-0">
-                    <Image src="/Evoque1.png" alt="logo" width={30} height={30} />
+                    <Image src="/images/Evoque1.png" alt="logo" width={30} height={30} />
                 </div>
 
                 {/* Text only when expanded + not mobile */}
@@ -127,17 +127,37 @@ const LeftMenu = () => {
                                                 />
                                             </div>
                                         ) : (
-                                            <item.icon
-                                                size={22}
-                                                className={`transition
-                                                    group-hover:text-brand-red
-                                                    ${active ? "text-brand-red" : "text-slate-800"}
-                                                    `}
-                                            />
+                                            <div className="relative group">
+                                                <item.icon
+                                                    size={22}
+                                                    className={`transition
+                                                                group-hover:text-brand-red
+                                                                ${active ? "text-brand-red" : "text-slate-800"}
+                                                                `}
+                                                />
+
+                                                {/* Tooltip – ONLY when sidebar is closed */}
+                                                {!isOpen && !isMobile && (
+                                                    <span
+                                                        className="
+                                                                    absolute left-7 top-1/2 -translate-y-1/2
+                                                                    bg-black text-white text-[11px]
+                                                                    px-2 py-1 rounded-sm
+                                                                    opacity-0 pointer-events-none
+                                                                    transition-opacity duration-200
+                                                                    group-hover:opacity-100
+                                                                    whitespace-nowrap z-50
+                                                                "
+                                                    >
+                                                        {item.title}
+                                                    </span>
+                                                )}
+                                            </div>
+
                                         )}
 
                                         {isOpen && (
-                                            <span className="text-[12px] whitespace-nowrap">
+                                            <span className="text-sm whitespace-nowrap">
                                                 {item.title}
                                             </span>
                                         )}

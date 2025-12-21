@@ -8,7 +8,7 @@ import Link from "next/link";
 
 const Masonry = dynamic(() => import("react-masonry-css"), { ssr: false });
 
-export default function WishlistPinterest() {
+export default function Wishlist() {
   const [activeItem, setActiveItem] = useState(clothingItems[0]);
 
   const breakpoints = {
@@ -28,12 +28,12 @@ export default function WishlistPinterest() {
         {/* LEFT — BIG ITEM */}
         <div className="hidden lg:block lg:w-[45%]">
           <div className="sticky top-20">
-            <div className="relative aspect-4/3 rounded-xl overflow-hidden bg-white border border-black/10">
+            <div className="relative w-full h-150 rounded-xl overflow-hidden bg-white border border-black/10">
               <Image
                 src={activeItem.image}
                 alt={activeItem.title}
                 fill
-                className="object-fill"
+                className="object-cover"
               />
             </div>
 
@@ -57,7 +57,7 @@ export default function WishlistPinterest() {
             className="flex gap-4"
             columnClassName="space-y-4"
           >
-            {clothingItems.map((item, index) => (
+            {clothingItems.slice(0, 4).map((item, index) => (
               <Link
                 key={index}
                 href={`/product/${item.slug}`}

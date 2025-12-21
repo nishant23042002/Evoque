@@ -15,44 +15,43 @@ interface Category {
 const categories: Category[] = [
     {
         title: "Late Checkout",
-        image: "/last-checkout.webp",
-        href: "/last-checkout.webp",
+        image: "/images/last-checkout.webp",
+        href: "/",
     },
     {
         title: "Shirts",
-        image: "/shirts.webp",
-        href: "/shirts.webp",
+        image: "/images/shirts.webp",
+        href: "/product-category/shirts",
     },
     {
         title: "Trousers",
-        image: "/trousers.webp",
-        href: "/trousers",
+        image: "/images/trousers.webp",
+        href: "/product-category/trousers",
     },
     {
         title: "Jeans",
-        image: "/jeans.webp",
-        href: "/jeans",
+        image: "/images/jeans.webp",
+        href: "/product-category/jeans",
     },
     {
         title: "Polos",
-        image: "/polos.webp",
-        href: "/polos",
+        image: "/images/polos.webp",
+        href: "/product-category/t-shirts",
     },
     {
         title: "Winterwear",
-        image: "/winterwear.webp",
-        href: "/winterwear",
+        image: "/images/winterwear.webp",
+        href: "/product-category/winterwear",
     },
     {
         title: "Essentials",
-        image: "/essentials.webp",
+        image: "/images/essentials.webp",
         href: "/essentials",
     },
     {
-        title: "Price Drop",
-        image: "/price-drop.webp",
-        href: "/sale",
-        tag: "SALE",
+        title: "Limited Drop",
+        image: "/images/collections-limited-drops.png",
+        href: "/product-category/limited-drops",
     },
 ];
 

@@ -2,7 +2,7 @@ import Container from "@/components/Container";
 import Image from "next/image";
 import { clothingItems } from "@/data/clothingItems";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
-import MasonryGrid from "@/components/MasonryGrid";
+import MasonryGrid from "@/components/Main/MasonryGrid";
 
 interface ProductPageParams {
     slug: string;

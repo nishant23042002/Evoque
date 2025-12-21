@@ -1,14 +1,15 @@
 import {
   HiOutlineHome,
-  HiOutlineSparkles,
   HiOutlineFire,
   HiOutlineCollection,
   HiOutlineUser,
   HiOutlineHeart,
 } from "react-icons/hi";
+import { MdFiberNew } from "react-icons/md";
 import { IconType } from "react-icons";
 import { PiShirtFolded, PiTShirt, PiPantsDuotone } from "react-icons/pi";
 import { GiArmoredPants } from "react-icons/gi";
+import { Flame } from 'lucide-react';
 
 export interface LeftNavItem {
   title: string;
@@ -34,19 +35,14 @@ export const leftNav: LeftNavSection[] = [
       },
       {
         title: "New Arrivals",
-        href: "/latest",
-        icon: HiOutlineSparkles,
+        href: "/new-arrivals",
+        icon: MdFiberNew,
       },
       {
         title: "Best Sellers",
         href: "/best-sellers",
-        icon: HiOutlineFire,
-      },
-      {
-        title: "Shop All",
-        href: "/shop",
-        icon: HiOutlineCollection,
-      },
+        icon: Flame,
+      }
     ],
   },
 
@@ -55,27 +51,27 @@ export const leftNav: LeftNavSection[] = [
     items: [
       {
         title: "Shirts",
-        href: "/category/shirts",
+        href: "/product-category/shirts",
         icon: PiShirtFolded,
-        image: "/category-shirt.webp",
+        image: "/images/category-shirt.webp",
       },
       {
         title: "T-Shirts",
-        href: "/category/tshirts",
+        href: "/product-category/t-shirts",
         icon: PiTShirt,
-        image: "/category-tshirt.webp"
+        image: "/images/category-tshirt.webp"
       },
       {
         title: "Jeans",
-        href: "/category/jeans",
+        href: "/product-category/jeans",
         icon: GiArmoredPants,
-        image: "/category-bottom.webp"
+        image: "/images/category-bottom.webp"
       },
       {
         title: "Trousers",
-        href: "/category/trousers",
+        href: "/product-category/trousers",
         icon: PiPantsDuotone,
-        image: "/category-bottom.webp"
+        image: "/images/category-bottom.webp"
       }
     ],
   },
@@ -85,15 +81,15 @@ export const leftNav: LeftNavSection[] = [
     items: [
       {
         title: "Essentials",
-        href: "/collections/essentials",
+        href: "/product-category/essentials",
         icon: HiOutlineCollection,
-        image: "/collections-essential.webp"
+        image: "/images/collections-essential.webp"
       },
       {
         title: "Limited Drop",
-        href: "/collections/limited",
+        href: "/product-category/limited-drops",
         icon: HiOutlineFire,
-        image: "/collections-limited-drops.png"
+        image: "/images/collections-limited-drops.png"
       },
     ],
   },
