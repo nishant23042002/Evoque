@@ -1,160 +1,149 @@
 "use client";
+
 import Image from "next/image";
 import { clothingItems } from "@/data/clothingItems";
-
-const cartItems = [
-    {
-        id: 1,
-        name: "Happy Socks",
-        subtitle: "Heart socks",
-        price: 890,
-        quantity: 3,
-        image: "/products/socks.jpg",
-        size: "38–40",
-    },
-    {
-        id: 2,
-        name: "Twilltip Parka",
-        subtitle: "Blue Denim",
-        price: 6990,
-        quantity: 1,
-        image: "/products/jacket.jpg",
-        size: "M",
-    },
-];
-
-const recommendations = [
-    {
-        id: 1,
-        name: "Mint&Berry Boots",
-        price: 5990,
-        image: "/products/boots.jpg",
-    },
-    {
-        id: 2,
-        name: "Even&Odd Crossbody",
-        price: 1590,
-        image: "/products/bag.jpg",
-    },
-];
+import Link from "next/link";
+import Masonry from "react-masonry-css";
+import { MdDeleteOutline } from "react-icons/md";
 
 export default function CartPage() {
+    const breakpoints = {
+        default: 4,
+        1280: 3,
+        768: 2,
+        470: 1,
+    };
+
     return (
-        <div className="ml-18 max-[490px]:ml-15 px-4 py-12 mx-auto">
-            <h1 className="text-2xl font-semibold mb-10">My Bag (4 items)</h1>
+        <div className="ml-18 max-[490px]:ml-15 px-2 sm:px-4 py-4 mx-auto">
+            <h1 className="text-lg sm:text-xl font-semibold text-slate-700 mb-4">
+                My Bag (4 items)
+            </h1>
 
-            <div className="grid grid-cols-1 lg:grid-cols-[1fr_380px] gap-10">
-                {/* LEFT — CART ITEMS */}
-                <div className="space-y-6">
-                    <div
-                        key={clothingItems[0].image}
-                        className="border border-black/20 flex gap-6 bg-white rounded-xl p-4 shadow-sm hover:shadow-md transition"
+            {/* Layout */}
+            <div className="flex flex-col lg:flex-row gap-6">
+
+                {/* LEFT – CART ITEMS */}
+                <div className="w-full lg:w-[65%]">
+                    <Masonry
+                        breakpointCols={breakpoints}
+                        className="flex gap-4 w-full"
+                        columnClassName="masonry-column"
                     >
-                        <div className="relative w-28 h-36 rounded-lg overflow-hidden">
-                            <Image
-                                src={clothingItems[0].image}
-                                alt={clothingItems[0].title}
-                                fill
-                                className="object-cover"
-                            />
-                        </div>
+                        {clothingItems.slice(0,4).map((item) => (
+                            <Link
+                                href={`/product/${item.slug}`}
+                                key={item.id}
+                                className="mb-4 block break-inside-avoid"
+                            >
+                                <div className="group h-80 relative overflow-hidden rounded-xl bg-neutral-100">
 
-                        <div className="flex-1">
-                            <h3 className="font-medium">{clothingItems[0].title}</h3>
-                            <p className="text-sm text-gray-500">{clothingItems[0].brand}</p>
-                            {/* <p className="text-sm mt-1">Size: {item.size}</p> */}
+                                    <Image
+                                        src={item.image}
+                                        alt={item.title}
+                                        fill
+                                        className="object-cover transition-transform duration-500"
+                                    />
 
-                            <div className="flex items-center gap-4 mt-4">
-                                <div className="flex items-center border rounded-md">
-                                    <button className="px-3 py-1 text-lg">−</button>
-                                    {/* <span className="px-3">{item.quantity}</span> */}
-                                    <button className="px-3 py-1 text-lg">+</button>
-                                </div>
+                                    <div className="absolute inset-0 bg-black/15 opacity-0 group-hover:opacity-100 transition" />
 
-                                <button className="text-sm text-gray-500 hover:text-black">
-                                    Remove
-                                </button>
-                            </div>
-                        </div>
-
-                        <div className="text-right font-medium">
-                            {/* ₹{clothingItems[0].price * clothingItems[0].quantity} */}
-                        </div>
-                    </div>
-
-
-                    {/* WEAR IT WITH */}
-                    <div>
-                        <h2 className="text-lg font-semibold mt-14 mb-6">
-                            Wear it with
-                        </h2>
-
-                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
-                            {recommendations.map(item => (
-                                <div
-                                    key={item.id}
-                                    className="border border-black/20 bg-white rounded-xl p-4 shadow-sm hover:shadow-md transition"
-                                >
-                                    <div className="relative w-full h-48 rounded-lg overflow-hidden">
-                                        <Image
-                                            src={item.image}
-                                            alt={item.name}
-                                            fill
-                                            className="object-cover"
-                                        />
+                                    {/* Header */}
+                                    <div className="absolute flex justify-between top-2 left-2 right-2">
+                                        <h3 className="text-[11px] text-slate-800 font-semibold">
+                                            {item.brand}
+                                        </h3>
+                                        <MdDeleteOutline className="text-slate-600 hover:text-red-500 cursor-pointer" />
                                     </div>
 
-                                    <div className="mt-4">
-                                        <h3 className="text-sm font-medium">{item.name}</h3>
-                                        <p className="text-sm text-gray-500">₹{item.price}</p>
+                                    {/* Footer */}
+                                    <div className="absolute bottom-0 w-full bg-black/75 p-2 rounded-b-xl text-white">
+                                        <p className="text-[11px] mb-1">{item.title}</p>
 
-                                        <button className="mt-3 w-full border border-black/20 rounded-lg py-2 text-sm hover:bg-black hover:text-white transition">
-                                            Add to bag
+                                        <div className="flex justify-between text-[11px]">
+                                            <span>Price: {item.price}</span>
+                                            <span className="line-through text-gray-300">
+                                                {item.originalPrice}
+                                            </span>
+                                        </div>
+
+                                        <div className="flex justify-between text-[11px] mt-1">
+                                            <span>Size: {item.size}</span>
+                                            <span>Qty: {item.qty}</span>
+                                        </div>
+
+                                        <button className="cursor-pointer mt-2 w-full border border-white/30 text-[11px] py-1.5 rounded hover:bg-brand-red transition">
+                                            Move to wishlist
                                         </button>
                                     </div>
                                 </div>
-                            ))}
-                        </div>
-                    </div>
+                            </Link>
+                        ))}
+                    </Masonry>
                 </div>
 
-                {/* RIGHT — SUMMARY */}
-                <div className="border border-black/20 sticky top-24 h-fit bg-white rounded-xl p-6 shadow-sm">
-                    <h2 className="font-semibold mb-6">Summary</h2>
+                {/* RIGHT – SUMMARY */}
+                <div className="w-full lg:w-[35%]">
+                    <div className="lg:sticky lg:top-20 border border-black/10 rounded-lg p-3 space-y-4">
 
-                    <div className="space-y-3 text-sm">
-                        <div className="flex justify-between">
-                            <span>Subtotal</span>
-                            <span>₹9,660</span>
-                        </div>
-                        <div className="flex justify-between text-green-600">
-                            <span>Discount</span>
-                            <span>− ₹1,500</span>
-                        </div>
-                        <div className="flex justify-between">
-                            <span>Shipping</span>
-                            <span>₹90</span>
+                        {/* Address */}
+                        <div className="flex justify-between gap-3">
+                            <div className="flex gap-3">
+                                <span className="text-orange-500 text-xl">🚚</span>
+                                <div className="text-sm mb-5">
+                                    <p className="font-semibold">
+                                        Delivering to Nishant Sapkal
+                                    </p>
+                                    <p className="text-xs text-gray-500">
+                                        402116 · Raigad
+                                    </p>
+                                </div>
+                            </div>
+                            <button className="text-xs font-semibold text-orange-600">
+                                CHANGE
+                            </button>
                         </div>
 
-                        <div className="border-t pt-4 flex justify-between font-semibold text-base">
-                            <span>Total</span>
-                            <span>₹8,050</span>
+                        {/* Coupon */}
+                        <div className="flex justify-between items-center text-sm">
+                            <p>
+                                Only <b>₹2700</b> away from <b>SHOP10</b>
+                            </p>
+                            <button className="text-xs text-orange-600 font-semibold">
+                                View
+                            </button>
                         </div>
 
-                        <p className="text-xs text-gray-500">
-                            Including all taxes
-                        </p>
+                        {/* Price */}
+                        <div>
+                            <h3 className="text-sm text-center font-semibold mb-2 uppercase">
+                                Price Details
+                            </h3>
+
+                            <div className="space-y-2 text-sm">
+                                <div className="flex justify-between">
+                                    <span>Bag Total</span>
+                                    <span>₹2348</span>
+                                </div>
+
+                                <div className="flex justify-between text-green-600">
+                                    <span>Discount</span>
+                                    <span>-₹705</span>
+                                </div>
+
+                                <hr />
+
+                                <div className="flex justify-between font-semibold mb-6">
+                                    <span>Grand Total</span>
+                                    <span>₹1643</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        {/* Pay */}
+                        <button className="w-full bg-black text-white py-3 rounded-md font-semibold hover:bg-gray-900 transition">
+                            PAY ₹1643
+                        </button>
                     </div>
-
-                    <textarea
-                        placeholder="Leave a comment"
-                        className="mt-6 w-full border rounded-lg p-3 text-sm resize-none focus:outline-none"
-                        rows={3}
-                    />
-
-                    <button className="mt-6 w-full bg-black text-white py-3 rounded-lg hover:opacity-90 transition">
-                        Proceed to Checkout
-                    </button>
                 </div>
             </div>
         </div>
