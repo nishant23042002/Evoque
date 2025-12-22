@@ -57,8 +57,8 @@ const LeftMenu = () => {
         <div
             ref={sidebarRef}
             className={`h-full
-                border-r border-gray-400/30 bg-white
-                transition-all duration-300 relative
+                border-r border-gray-400/20 bg-white
+                transition-all duration-300 relative 
                 ${isOpen ? "w-60 p-1" : "w-15 min-[490px]:w-18 p-1"}
             `}
         >

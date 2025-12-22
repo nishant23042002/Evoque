@@ -256,20 +256,75 @@
   * {
     @apply border-border outline-ring/50;
   }
+
   body {
     @apply bg-background text-foreground;
   }
-  .hoverEffect{
+
+  .hoverEffect {
     @apply transition-all duration-200 ease-in-out;
   }
 }
 
+.evoque-letter {
+  font-size: 20px;
+  font-weight: 700;
+  display: inline-block;
+  opacity: 0;
+  animation: evoqueSlide 0.5s ease-out forwards;
+}
+
+/* LEFT side letters */
+.evoque-0 {
+  animation-delay: 0.05s;
+  transform: translateX(-24px);
+}
+
+.evoque-1 {
+  animation-delay: 0.1s;
+  transform: translateX(-18px);
+}
+
+/* CENTER */
+.evoque-2 {
+  animation-delay: 0.15s;
+  transform: translateX(0);
+}
+
+/* RIGHT side letters */
+.evoque-3 {
+  animation-delay: 0.2s;
+  transform: translateX(18px);
+}
+
+.evoque-4 {
+  animation-delay: 0.25s;
+  transform: translateX(24px);
+}
+
+.evoque-5 {
+  animation-delay: 0.3s;
+  transform: translateX(30px);
+}
+
+@keyframes evoqueSlide {
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+
+
 /* Hide scrollbar for all browsers */
 .scrollbar-hide {
-  -ms-overflow-style: none; /* IE and Edge */
-  scrollbar-width: none; /* Firefox */
+  -ms-overflow-style: none;
+  /* IE and Edge */
+  scrollbar-width: none;
+  /* Firefox */
 }
 
 .scrollbar-hide::-webkit-scrollbar {
-  display: none; /* Chrome, Safari, Opera */
+  display: none;
+  /* Chrome, Safari, Opera */
 }

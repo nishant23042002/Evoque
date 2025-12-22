@@ -1,3 +1,4 @@
+
 export const clothingItems = [
   {
     id: "ci-1",

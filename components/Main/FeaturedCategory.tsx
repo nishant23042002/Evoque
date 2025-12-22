@@ -46,7 +46,7 @@ const categories: Category[] = [
     {
         title: "Essentials",
         image: "/images/essentials.webp",
-        href: "/essentials",
+        href: "/product-category/essentials",
     },
     {
         title: "Limited Drop",

@@ -30,7 +30,7 @@ export default function CartPage() {
                         className="flex gap-4 w-full"
                         columnClassName="masonry-column"
                     >
-                        {clothingItems.slice(0,4).map((item) => (
+                        {clothingItems.slice(0, 4).map((item) => (
                             <Link
                                 href={`/product/${item.slug}`}
                                 key={item.id}
@@ -56,7 +56,7 @@ export default function CartPage() {
                                     </div>
 
                                     {/* Footer */}
-                                    <div className="absolute bottom-0 w-full bg-black/75 p-2 rounded-b-xl text-white">
+                                    <div className="absolute bottom-0 w-full bg-black/55 p-2 rounded-b-xl text-white">
                                         <p className="text-[11px] mb-1">{item.title}</p>
 
                                         <div className="flex justify-between text-[11px]">
