@@ -3,6 +3,7 @@ import Link from "next/link";
 import { ShoppingBag } from "lucide-react";
 import { usePathname } from "next/navigation";
 
+
 const Cart = () => {
     const pathname = usePathname();
     const active = pathname === "/cart";
@@ -13,12 +14,13 @@ const Cart = () => {
             className={`relative group p-2 ${active ? "text-brand-red" : "text-neutral-800"
                 }`}
         >
-            <span className="hidden absolute top-0 text-slate-700 right-0 font-bold">0</span>
+            <span className="absolute top-0 text-slate-700 right-0 font-bold"><span className="relative text-brand-red right-0.5 -top-1">0</span></span>
             <ShoppingBag
                 size={20}
                 className={`text-inherit group-hover:text-brand-red ${active ? "text-brand-red" : "text-slate-800"
                     }`}
             />
+            
 
             {/* Underline */}
             <span

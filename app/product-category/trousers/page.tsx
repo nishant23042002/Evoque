@@ -31,7 +31,7 @@ const Trousers = () => {
                 title="ALL TROUSERS"
                 categories={trousersCategories}
             />
-            <div className="border border-black">
+            <div>
                 <Masonry
                     breakpointCols={breakpoints}
                     className="flex gap-4 md:w-[90%] mx-auto"
@@ -40,7 +40,7 @@ const Trousers = () => {
                     {clothingItems.map((item, index) => (
                         <Link key={index} href={`/product/${item.slug}`} className="block">
                             <div
-                                className="relative w-full mb-4 rounded-xl overflow-hidden group"
+                                className="relative w-full my-4 rounded-xl overflow-hidden group"
                                 style={{ height: heights[index] }}
                             >
                                 {/* IMAGE */}
@@ -53,7 +53,7 @@ const Trousers = () => {
 
                                 {/* COLORS — NOT LINKS ANYMORE */}
                                 <div className="absolute w-full flex justify-between items-center top-2 right-0 px-2">
-                                    <div className="flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                                    <div className="flex gap-1 opacity-100 transition-opacity duration-300">
                                         {item.colors?.map((color) => (
                                             <div
                                                 key={color.slug}
@@ -71,13 +71,14 @@ const Trousers = () => {
                                 </div>
 
                                 {/* HOVER DETAILS */}
-                                <div className="absolute inset-0 bg-black/10 cursor-pointer opacity-0 group-hover:opacity-100 transition-all duration-300 flex flex-col justify-end p-3 text-white">
-                                    <p className="text-sm font-semibold">{item.brand}</p>
-                                    <p className="text-sm leading-tight tracking-tight my-1">{item.title}</p>
-                                    <p className="text-md font-bold">{item.price}</p>
-
-                                    {/* RATING BAR */}
-                                    <AnimatedRatingProgressBar average={item.rating} />
+                                <div className="absolute inset-0 cursor-pointer opacity-100 md:opacity-0 md:group-hover:opacity-100 transition-all duration-300 flex flex-col justify-end text-white">
+                                    <div className="bg-black/10 sm:bg-black/20 w-full p-2">
+                                        <p className="text-sm font-semibold">{item.brand}</p>
+                                        <p className="text-sm leading-tight tracking-tight my-1">{item.title}</p>
+                                        <p className="text-md font-bold">{item.price}</p>
+                                        {/* RATING BAR */}
+                                        <AnimatedRatingProgressBar average={item.rating} />
+                                    </div>
                                 </div>
                             </div>
                         </Link>

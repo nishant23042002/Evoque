@@ -87,7 +87,7 @@ const LoginOtpModal = () => {
                     onClick={() => setOpen(false)}
                 >
                     <div
-                        className="relative mx-2 w-[250px] min-[540px]:w-[360px] bg-white px-8 py-10 text-center"
+                        className="relative mx-2 w-[250px] min-[540px]:w-[360px] bg-accent-rose px-8 py-10 text-center"
                         onClick={(e) => e.stopPropagation()}
                     >
                         {/* Close */}
@@ -99,7 +99,7 @@ const LoginOtpModal = () => {
                         </button>
 
                         {/* EVOQUE Animated Logo */}
-                        <div className="flex justify-center gap-2 overflow-hidden">
+                        <div className="flex justify-center font-bold gap-2 overflow-hidden">
                             {["E", "V", "O", "Q", "U", "E"].map((l, i) => (
                                 <span key={i} className={`text-brand-red evoque-letter evoque-${i}`}>
                                     {l}
@@ -107,7 +107,7 @@ const LoginOtpModal = () => {
                             ))}
                         </div>
 
-                        <p className="text-[10px] tracking-widest text-gray-500 mb-4">
+                        <p className="text-[10px] tracking-widest text-gray-500 mb-2">
                             DESIGNED TO EVOLVE
                         </p>
 
@@ -118,7 +118,7 @@ const LoginOtpModal = () => {
                                     Let&apos;s Evoque
                                 </h2>
 
-                                <p className="mt-4 text-sm font-medium underline underline-offset-4">
+                                <p className="mt-2 text-sm font-medium underline underline-offset-4">
                                     Enter Mobile Number
                                 </p>
 

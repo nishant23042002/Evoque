@@ -14,6 +14,7 @@ export default function CartPage() {
         470: 1,
     };
 
+
     return (
         <div className="ml-18 max-[490px]:ml-15 px-2 sm:px-4 py-4 mx-auto">
             <h1 className="text-lg sm:text-xl font-semibold text-slate-700 mb-4">
@@ -30,13 +31,13 @@ export default function CartPage() {
                         className="flex gap-4 w-full"
                         columnClassName="masonry-column"
                     >
-                        {clothingItems.slice(0, 4).map((item) => (
+                        {clothingItems.slice(0, 4).map((item, index) => (
                             <Link
                                 href={`/product/${item.slug}`}
                                 key={item.id}
                                 className="mb-4 block break-inside-avoid"
                             >
-                                <div className="group h-80 relative overflow-hidden rounded-xl bg-neutral-100">
+                                <div className="group h-80 relative overflow-hidden rounded-xl bg-gray-100">
 
                                     <Image
                                         src={item.image}
@@ -52,11 +53,11 @@ export default function CartPage() {
                                         <h3 className="text-[11px] text-slate-800 font-semibold">
                                             {item.brand}
                                         </h3>
-                                        <MdDeleteOutline className="text-slate-600 hover:text-red-500 cursor-pointer" />
+                                        <MdDeleteOutline className="text-slate-600 hover:text-red-500 cursor-pointer duration-250" />
                                     </div>
 
                                     {/* Footer */}
-                                    <div className="absolute bottom-0 w-full bg-black/55 p-2 rounded-b-xl text-white">
+                                    <div className="absolute bottom-0 w-full bg-black/20 p-2 rounded-b-xl text-white">
                                         <p className="text-[11px] mb-1">{item.title}</p>
 
                                         <div className="flex justify-between text-[11px]">
@@ -140,7 +141,7 @@ export default function CartPage() {
                         </div>
 
                         {/* Pay */}
-                        <button className="w-full bg-black text-white py-3 rounded-md font-semibold hover:bg-gray-900 transition">
+                        <button className="cursor-pointer w-full bg-black text-white py-3 rounded-md font-semibold hover:bg-gray-900 transition">
                             PAY ₹1643
                         </button>
                     </div>

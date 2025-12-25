@@ -57,7 +57,7 @@ const LeftMenu = () => {
         <div
             ref={sidebarRef}
             className={`h-full
-                border-r border-gray-400/20 bg-white
+                border-r border-gray-400/20 bg-accent-rose
                 transition-all duration-300 relative 
                 ${isOpen ? "w-60 p-1" : "w-15 min-[490px]:w-18 p-1"}
             `}
@@ -66,14 +66,14 @@ const LeftMenu = () => {
             {!isMobile && (
                 <button
                     onClick={() => setIsSidebarOpen(!isSidebarOpen)}
-                    className="absolute bg-white right-0 top-6 z-50 translate-x-1/2 shadow p-0.5 rounded-full border cursor-pointer"
+                    className="absolute bg-accent-rose right-0 top-6 z-50 translate-x-1/2 shadow p-0.5 rounded-full border cursor-pointer"
                 >
                     {isOpen ? <HiChevronLeft size={16} /> : <HiChevronRight size={16} />}
                 </button>
             )}
 
             {/* Logo row */}
-            <div className="p-4 flex items-center justify-start gap-2">
+            <div className="p-4 flex items-center justify-center gap-2">
                 <div className="w-[30px] h-[30px] shrink-0">
                     <Image src="/images/Evoque1.png" alt="logo" width={30} height={30} />
                 </div>

@@ -14,27 +14,35 @@ export default function Wishlist() {
 
   const breakpoints = {
     default: 4,
-    1400: 3,
+    1500: 3,
     1200: 2,
     768: 2,
     500: 1,
   };
 
-  const [heights] = useState<number[]>(() => clothingItems.map(() => 250 + Math.floor(Math.random() * 250)));
+  const MIN_HEIGHT = 320;
+  const MAX_HEIGHT = 500;
+
+  const [heights] = useState<number[]>(() =>
+    clothingItems.map(() =>
+      Math.floor(Math.random() * (MAX_HEIGHT - MIN_HEIGHT + 1)) + MIN_HEIGHT
+    )
+  );
+
 
   return (
-    <div className="ml-18 max-[490px]:ml-15 px-2 py-6">
-      <div className="flex flex-col lg:flex-row gap-6">
+    <div className="ml-18 max-[490px]:ml-15 px-2 py-3">
+      <div className="flex flex-col lg:flex-row gap-6 justify-center">
 
         {/* LEFT — BIG ITEM */}
-        <div className="hidden lg:block lg:w-[45%]">
+        <div className="hidden lg:block lg:w-[40%] border-r-2 p-2">
           <div className="sticky top-20">
-            <div className="relative w-full h-150 rounded-xl overflow-hidden bg-white border border-black/10">
+            <div className="relative w-full h-150 overflow-hidden">
               <Image
                 src={activeItem.image}
                 alt={activeItem.title}
                 fill
-                className="object-cover"
+                className="object-contain"
               />
             </div>
 
@@ -66,7 +74,7 @@ export default function Wishlist() {
                 className="block cursor-pointer"
               >
                 <div
-                  className="relative w-full rounded-xl overflow-hidden bg-gray-100"
+                  className="group relative w-full rounded-xl overflow-hidden bg-gray-100"
                   style={{ height: heights[index] }}
                 >
                   <Image
@@ -75,6 +83,9 @@ export default function Wishlist() {
                     fill
                     className="object-cover transition-transform duration-300"
                   />
+                  {/* Hover Overlay */}
+                  <div className="pointer-events-none absolute inset-0 bg-black/20 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+
 
                   <div className="absolute flex justify-between top-2 left-2 right-2">
                     <h3 className="text-[11px] text-slate-800 font-semibold">
@@ -82,7 +93,7 @@ export default function Wishlist() {
                     </h3>
                     <MdDeleteOutline className="text-slate-600 hover:text-red-500 cursor-pointer" />
                   </div>
-                  <div className="absolute bottom-0 w-full bg-black/55 p-1.5 rounded-b-xl text-white">
+                  <div className="absolute bottom-0 w-full bg-black/20 p-1.5 rounded-b-xl text-white">
                     <p className="text-[11px] mb-1">{item.title}</p>
 
                     <div className="flex justify-between text-[11px]">
@@ -97,8 +108,8 @@ export default function Wishlist() {
                       <span>Qty: {item.qty}</span>
                     </div>
 
-                    <button className="cursor-pointer mt-2 w-full border border-white/30 text-[11px] py-1.5 rounded hover:bg-brand-red transition">
-                      Move to wishlist
+                    <button className="cursor-pointer mt-2 w-full border border-white/30 text-[11px] py-1.5 rounded hover:bg-brand-red transition duration-250">
+                      Move to Bag
                     </button>
                   </div>
                 </div>

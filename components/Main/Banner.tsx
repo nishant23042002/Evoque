@@ -63,7 +63,7 @@ const BannerSlider = () => {
 
     return (
         <div
-            className="relative w-full overflow-hidden mb-5 rounded-xl"
+            className="relative w-full overflow-hidden my-2 rounded-xl"
             onMouseEnter={() => setIsHovering(true)}
             onMouseLeave={() => setIsHovering(false)}
         >
