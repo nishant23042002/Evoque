@@ -26,7 +26,7 @@ const Trousers = () => {
     );
 
     return (
-        <div className="max-[490px]:ml-16 ml-19 mr-1">
+        <div className="max-[768px]:ml-17 ml-19 mr-2">
             <CategoryCircles
                 title="ALL TROUSERS"
                 categories={trousersCategories}

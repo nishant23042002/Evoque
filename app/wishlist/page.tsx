@@ -31,7 +31,7 @@ export default function Wishlist() {
 
 
   return (
-    <div className="ml-18 max-[490px]:ml-15 px-2 py-3">
+    <div className="ml-18 max-[768px]:ml-15 px-2 py-3">
       <div className="flex flex-col lg:flex-row gap-6 justify-center">
 
         {/* LEFT — BIG ITEM */}

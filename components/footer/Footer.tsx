@@ -4,7 +4,7 @@ import { PiWhatsappLogoLight } from "react-icons/pi";
 
 export default function Footer() {
     return (
-        <footer className="ml-18 max-[490px]:ml-15 text-[#111] mt-30">
+        <footer className="ml-18 max-[768px]:ml-15 text-[#111] mt-30">
             <div className="bg-accent-sand md:max-w-[90%] mx-2 md:mx-auto px-8 py-14">
 
                 {/* Title */}

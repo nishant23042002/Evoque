@@ -59,7 +59,7 @@ const LeftMenu = () => {
             className={`h-full
                 border-r border-gray-400/20 bg-accent-rose
                 transition-all duration-300 relative 
-                ${isOpen ? "w-60 p-1" : "w-15 min-[490px]:w-18 p-1"}
+                ${isOpen ? "w-60 p-1" : "w-15 min-[768px]:w-18 p-1"}
             `}
         >
             {/* Toggle button - disabled / hidden on mobile */}

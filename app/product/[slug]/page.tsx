@@ -26,7 +26,7 @@ export default async function ProductPage({ params }: ProductPageProps) {
     return (
         <Container>
             <div className="flex flex-col">
-                <div className="md:flex gap-2 justify-evenly ml-15 mt-2">
+                <div className="md:flex gap-2 justify-evenly my-2 min-[768px]:ml-19 ml-16 mr-1">
                     {/*Left Side */}
                     <div className="w-full flex gap-2">
                         {/* Small Images Left side */}
@@ -255,9 +255,9 @@ export default async function ProductPage({ params }: ProductPageProps) {
                 </div>
                 <div className="mt-20">
                     <div>
-                       <h1 className="p-4 text-center font-bold text-xl">You may also like</h1>
+                       <h1 className="ml-19 p-3 text-center font-bold text-xl">You may also like</h1>
                     </div>
-                    <div className="max-[490px]:ml-16 ml-19 mr-1">
+                    <div className="max-[768px]:ml-17 ml-19 mr-2">
                         <MasonryGrid items={clothingItems} />
                     </div>
                 </div>

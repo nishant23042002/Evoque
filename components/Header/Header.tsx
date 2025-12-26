@@ -8,7 +8,7 @@ import WishList from "./WishList";
 
 const Header = () => {
     return (
-        <header className="sticky top-0 w-full z-40 bg-white py-1">
+        <header className="sticky top-0 w-full z-40 bg-white py-1 border-accent-rose border">
             <Container className="flex justify-between items-center mx-4">
                 {/* Logo */}
                 <Logo />

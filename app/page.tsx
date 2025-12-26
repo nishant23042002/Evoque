@@ -7,7 +7,7 @@ import BannerSlider from "@/components/Main/Banner";
 const Home = () => {
   return (
     <Container className="bg-white">
-      <div className="max-[490px]:ml-15 ml-18 gap-5 px-2">
+      <div className="max-[768px]:ml-15 ml-18 gap-5 px-2">
         {/* Banner */}
         <BannerSlider />
 
