@@ -1,138 +1,123 @@
+"use client"
 import Container from "@/components/Container";
 import Image from "next/image";
-import { clothingItems } from "@/data/clothingItems";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 import MasonryGrid from "@/components/Main/MasonryGrid";
+import { useEffect, useState } from "react";
 
-interface ProductPageParams {
+interface ColorVariant {
     slug: string;
+    hex: string;
+}
+
+interface Product {
+    _id: string;
+    productName: string;
+    slug: string;
+    images: string[];
+    price: number;
+    originalPrice: number;
+    brand: string;
+    rating: number;
+    colors?: ColorVariant[];
+    sizes?: string[];
+    description?: string;
 }
 
 interface ProductPageProps {
-    params: Promise<ProductPageParams>;
+    params: {
+        slug: string;
+    };
 }
+export default function ProductPage({ params }: ProductPageProps) {
+    const { slug } = params;
 
-export default async function ProductPage({ params }: ProductPageProps) {
-    const { slug } = await params;
+    const [product, setProduct] = useState<Product | null>(null);
+    const [relatedProducts, setRelatedProducts] = useState<Product[]>([]);
+    const [loading, setLoading] = useState(true);
 
-    const product = clothingItems.find(
-        (item) => item.slug === slug
-    );
+    useEffect(() => {
+        const fetchData = async () => {
+            try {
+                // 1️⃣ Fetch single product
+                const res = await fetch(`/api/products/${slug}`);
+                if (!res.ok) throw new Error("Product not found");
+                const productData = await res.json();
+                setProduct(productData);
 
-    if (!product) {
-        return <div className="ml-20">Product not found</div>;
-    }
+                // 2️⃣ Fetch related products
+                const allRes = await fetch("/api/products");
+                const allProducts = await allRes.json();
+                setRelatedProducts(
+                    allProducts.filter((p: Product) => p.slug !== slug)
+                );
+            } catch (err) {
+                console.error(err);
+            } finally {
+                setLoading(false);
+            }
+        };
 
+        fetchData();
+    }, [slug]);
+
+    if (loading) return <p className="text-center my-10">Loading...</p>;
+    if (!product) return <p className="ml-20">Product not found</p>;
+    
+    const images = Array(5).fill(product.images);
     return (
         <Container>
             <div className="flex flex-col">
-                <div className="md:flex gap-2 justify-evenly my-2 min-[768px]:ml-19 ml-16 mr-1">
+                <div className="md:flex gap-2 justify-evenly my-2 min-[768px]:ml-16 ml-13 mr-1">
                     {/*Left Side */}
                     <div className="w-full flex gap-2">
                         {/* Small Images Left side */}
                         <div className="absolute opacity-0 sm:opacity-90 z-30 flex flex-col gap-2">
-                            <div className="relative w-30 h-30">
-                                <Image
-                                    src={product.image}
-                                    alt={`Product Image ${product.title + 1}`}
-                                    fill
-                                    className="object-cover"
-                                />
-                            </div>
-                            <div className="relative w-30 h-30">
-                                <Image
-                                    src={product.image}
-                                    alt={`Product Image ${product.title + 1}`}
-                                    fill
-                                    className="object-cover"
-                                />
-                            </div>
-                            <div className="relative w-30 h-30">
-                                <Image
-                                    src={product.image}
-                                    alt={`Product Image ${product.title + 1}`}
-                                    fill
-                                    className="object-cover"
-                                />
-                            </div>
-                            <div className="relative w-30 h-30">
-                                <Image
-                                    src={product.image}
-                                    alt={`Product Image ${product.title + 1}`}
-                                    fill
-                                    className="object-cover"
-                                />
-                            </div>
-                            <div className="relative w-30 h-30">
-                                <Image
-                                    src={product.image}
-                                    alt={`Product Image ${product.title + 1}`}
-                                    fill
-                                    className="object-cover"
-                                />
-                            </div>
-
-
+                            {images.map((img, i) => (
+                                <div key={i} className="relative w-30 h-30">
+                                    <Image src={product.images[0]} alt="" fill className="object-cover" />
+                                </div>
+                            ))}
                         </div>
                         {/* Big Images Left side */}
                         <div className="relative w-full flex flex-col md:items-center gap-4 overflow-y-auto max-h-[90vh] scrollbar-hide">
-                            <Image
-                                src={product.image}
-                                alt={`Product Image ${product.title + 1}`}
-                                width={600}
-                                height={600}
-                            />
-                            <Image
-                                src={product.image}
-                                alt={`Product Image ${product.title + 1}`}
-                                width={600}
-                                height={600}
-                            />
-                            <Image
-                                src={product.image}
-                                alt={`Product Image ${product.title + 1}`}
-                                width={600}
-                                height={600}
-                            />
-                            <Image
-                                src={product.image}
-                                alt={`Product Image ${product.title + 1}`}
-                                width={600}
-                                height={600}
-                            />
+                            {images.map((img, i) => (
+                                <Image key={i} src={product.images[0]} alt={product.productName} width={600} height={600} />
+                            ))}
                         </div>
                     </div>
+
                     {/*Right Side */}
                     <div className="lg:w-3xl w-full flex flex-col sticky top-20 mr-2">
                         <div className="py-4 flex justify-around items-center">
-                            <h1 className="text-sm md:text-xl font-bold text-slate-900">{product.title}</h1>
-                            <p className="text-sm md:text-xl font-semibold text-slate-900">{product.price} <span className="text-gray-700 text-[11px]">MRP</span></p>
+                            <h1 className="text-sm md:text-xl font-bold text-slate-900">{product.productName}</h1>
+                            <p className="text-sm md:text-xl font-semibold text-slate-900">{product.price} <span className="text-gray-700 text-[11px] line-through decoration-red-500">{product.originalPrice}</span></p>
                         </div>
                         {/*COLORS*/}
                         <div className="py-4 flex flex-col">
                             <h1 className="text-center font-extrabold mb-2 text-slate-900">Colors</h1>
                             <div className="w-full flex flex-wrap justify-center items-center md:flex-nowrap gap-2 md:overflow-x-auto scrollbar-hide">
                                 <Image
-                                    src={product.image}
-                                    alt={`Product Image ${product.title + 1}`}
+                                    src={product.images[0]}
+                                    alt={`Product Image ${product.productName + 1}`}
                                     width={70}
                                     height={70}
                                 />
                                 <Image
-                                    src={product.image}
-                                    alt={`Product Image ${product.title + 1}`}
+                                    src={product.images[0]}
+                                    alt={`Product Image ${product.productName + 1}`}
                                     width={70}
                                     height={70}
                                 />
                                 <Image
-                                    src={product.image}
-                                    alt={`Product Image ${product.title + 1}`}
+                                    src={product.images[0]}
+                                    alt={`Product Image ${product.productName + 1}`}
                                     width={70}
                                     height={70}
                                 />
                                 <Image
-                                    src={product.image}
-                                    alt={`Product Image ${product.title + 1}`}
+                                    src={product.images[0]}
+                                    alt={`Product Image ${product.productName + 1}`}
                                     width={70}
                                     height={70}
                                 />
@@ -140,17 +125,22 @@ export default async function ProductPage({ params }: ProductPageProps) {
                             </div>
                         </div>
                         {/*SIZES*/}
-                        <div className="py-4 flex flex-col justify-center items-center">
-                            <h1 className="text-center font-extrabold mb-2 text-slate-900">Sizes</h1>
-                            <div className="max-w-140 flex flex-wrap gap-3">
-                                <span className="border border-black p-2 hover:bg-black hover:text-white hoverEffect">XS</span>
-                                <span className="border border-black p-2 hover:bg-black hover:text-white hoverEffect">S</span>
-                                <span className="border border-black p-2 hover:bg-black hover:text-white hoverEffect">M</span>
-                                <span className="border border-black p-2 hover:bg-black hover:text-white hoverEffect">L</span>
-                                <span className="border border-black p-2 hover:bg-black hover:text-white hoverEffect">XL</span>
+
+
+                        {product.sizes && (
+                            <div className="py-4 flex flex-col justify-center items-center">
+                                <h1 className="font-extrabold mb-2">Sizes</h1>
+                                <div className="max-w-140 flex flex-wrap gap-3">
+                                    {product.sizes.map(s => (
+                                        <span key={s} className="cursor-pointer border border-black p-2 hover:bg-black hover:text-white hoverEffect">
+                                            {s}
+                                        </span>
+                                    ))}
+                                </div>
+                                <p className="text-[11px] sm:text-sm my-2">FREE 1-2 day delivery on 5k+ pincodes</p>
                             </div>
-                            <p className="text-[11px] sm:text-sm my-2">FREE 1-2 day delivery on 5k+ pincodes</p>
-                        </div>
+                        )}
+
                         <div className="w-full my-4 px-6">
                             <button className="bg-black w-full text-white font-bold p-5">ADD TO BAG</button>
                         </div>
@@ -255,10 +245,10 @@ export default async function ProductPage({ params }: ProductPageProps) {
                 </div>
                 <div className="mt-20">
                     <div>
-                       <h1 className="ml-19 p-3 text-center font-bold text-xl">You may also like</h1>
+                        <h1 className="ml-19 p-3 text-center font-bold text-xl">You may also like</h1>
                     </div>
-                    <div className="max-[768px]:ml-17 ml-19 mr-2">
-                        <MasonryGrid items={clothingItems} />
+                    <div className="max-[768px]:ml-14 ml-19 mr-2">
+                        <MasonryGrid />
                     </div>
                 </div>
 

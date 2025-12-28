@@ -31,28 +31,28 @@ export default function Wishlist() {
 
 
   return (
-    <div className="ml-18 max-[768px]:ml-15 px-2 py-3">
+    <div className="ml-15 max-[768px]:ml-12 px-2 py-3">
       <div className="flex flex-col lg:flex-row gap-6 justify-center">
 
         {/* LEFT — BIG ITEM */}
-        <div className="hidden lg:block lg:w-[40%] border-r-2 p-2">
+        <div className="hidden lg:block lg:w-[40%]">
           <div className="sticky top-20">
-            <div className="relative w-full h-150 overflow-hidden">
+            <div className="relative rounded-xl w-full h-150 overflow-hidden">
               <Image
                 src={activeItem.image}
                 alt={activeItem.title}
                 fill
-                className="object-contain"
+                className="object-fill"
               />
             </div>
 
-            <div className="mt-4 p-3">
+            <div className="mt-2 py-3">
               <h2 className="text-lg font-medium">{activeItem.title}</h2>
               <p className="text-xl font-semibold mt-1">
                 Rs.{activeItem.price}
               </p>
 
-              <button className="mt-4 w-full bg-brand-red text-white py-3 rounded-xl hover:bg-red-700 transition">
+              <button className="mt-4 w-full bg-brand-red text-white py-3 rounded-md hover:bg-red-700 transition">
                 MOVE TO BAG
               </button>
             </div>

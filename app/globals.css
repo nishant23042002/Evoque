@@ -326,3 +326,8 @@
   display: none;
   /* Chrome, Safari, Opera */
 }
+
+
+.loading-backdrop {
+  backdrop-filter: blur(6px);
+}

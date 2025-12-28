@@ -1,10 +1,11 @@
+import Image from "next/image";
 import { CiLinkedin, CiFacebook, CiInstagram } from "react-icons/ci";
 import { PiWhatsappLogoLight } from "react-icons/pi";
 
 
 export default function Footer() {
     return (
-        <footer className="ml-18 max-[768px]:ml-15 text-[#111] mt-30">
+        <footer className="ml-15 max-[768px]:ml-12 text-[#111] mt-30">
             <div className="bg-accent-sand md:max-w-[90%] mx-2 md:mx-auto px-8 py-14">
 
                 {/* Title */}
@@ -156,7 +157,7 @@ export default function Footer() {
 /* Column helper */
 function Column({ items }: { items: string[] }) {
     return (
-        <div className="space-y-[2px]">
+        <div className="space-y-0.5">
             {items.map(item => (
                 <p className="cursor-pointer hover:underline decoration-brand-red hover:text-brand-red" key={item}>{item}</p>
             ))}

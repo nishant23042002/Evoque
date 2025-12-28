@@ -4,7 +4,7 @@ import { Heart } from "lucide-react";
 import dynamic from "next/dynamic";
 import Image from "next/image";
 import Link from "next/link";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 const Masonry = dynamic(() => import("react-masonry-css"), { ssr: false });
 
@@ -13,32 +13,49 @@ interface ColorVariant {
     hex: string;
 }
 
-interface ClothingItem {
-    image: string;
+interface Products {
+    images: string;
     brand: string;
-    title: string;
+    productName: string;
     price: string;
+    originalPrice: string;
     slug: string;
     colors?: ColorVariant[];
     rating: number;
 }
 
-interface MasonryProps {
-    items: ClothingItem[];
-}
 
-export default function MasonryGrid({ items }: MasonryProps) {
+
+export default function MasonryGrid() {
+    const [items, setItems] = useState<Products[]>([]);
+    const [heights, setHeights] = useState<number[]>([]);
+
     const breakpoints = {
         default: 5,
         1300: 4,
         1000: 3,
         800: 2,
-        600: 1,
+        410: 1,
     };
+    useEffect(() => {
+        // Fetch products from backend API
+        const fetchProducts = async () => {
+            try {
+                const res = await fetch("/api/products");
+                const data = await res.json();
+                setItems(data);
 
-    const [heights] = useState<number[]>(() =>
-        items.map(() => 250 + Math.floor(Math.random() * 250))
-    );
+                // Random heights for Masonry layout
+                setHeights(data.map(() => 250 + Math.floor(Math.random() * 250)));
+            } catch (error) {
+                console.error("Failed to fetch products:", error);
+            }
+        };
+
+        fetchProducts();
+    }, []);
+
+    if (!items.length) return <p className="text-center my-10">Loading products...</p>;
 
     return (
         <div>
@@ -70,7 +87,7 @@ export default function MasonryGrid({ items }: MasonryProps) {
                         >
                             {/* IMAGE */}
                             <Image
-                                src={item.image}
+                                src={item.images[0]}
                                 alt="product"
                                 fill
                                 className="object-cover transition-all duration-300 group-hover:scale-105"
@@ -97,10 +114,10 @@ export default function MasonryGrid({ items }: MasonryProps) {
 
                             {/* HOVER DETAILS */}
                             <div className="absolute inset-0 cursor-pointer opacity-100 md:opacity-0 md:group-hover:opacity-100 transition-all duration-300 flex flex-col justify-end text-white">
-                                <div className="bg-black/10 sm:bg-black/20 w-full p-2">
-                                    <p className="text-sm font-semibold">{item.brand}</p>
-                                    <p className="text-sm leading-tight tracking-tight my-1">{item.title}</p>
-                                    <p className="text-md font-bold">{item.price}</p>
+                                <div className="text-[12px] bg-black/20 sm:bg-black/20 w-full p-2">
+                                    <p className="font-semibold">{item.brand}</p>
+                                    <p className="leading-tight tracking-tight my-1">{item.productName}</p>
+                                    <p className="font-bold">{item.price}  <span className="decoration-red-500 ml-2 line-through">{item.originalPrice}</span></p>
                                     {/* RATING BAR */}
                                     <AnimatedRatingProgressBar average={item.rating} />
                                 </div>

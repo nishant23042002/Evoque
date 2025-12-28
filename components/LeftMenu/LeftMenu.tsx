@@ -56,24 +56,23 @@ const LeftMenu = () => {
     return (
         <div
             ref={sidebarRef}
-            className={`h-full
-                border-r border-gray-400/20 bg-accent-rose
+            className={`h-screen border-r border-gray-400/20 bg-accent-rose
                 transition-all duration-300 relative 
-                ${isOpen ? "w-60 p-1" : "w-15 min-[768px]:w-18 p-1"}
+                ${isOpen ? "w-60 p-1" : "w-12 min-[768px]:w-15 p-1"}
             `}
         >
             {/* Toggle button - disabled / hidden on mobile */}
             {!isMobile && (
                 <button
                     onClick={() => setIsSidebarOpen(!isSidebarOpen)}
-                    className="absolute bg-accent-rose right-0 top-6 z-50 translate-x-1/2 shadow p-0.5 rounded-full border cursor-pointer"
+                    className={`${isSidebarOpen ? "absolute bg-brand-red text-white right-0 top-6 z-50 translate-x-1/2 shadow p-0.5 cursor-pointer rounded-l-sm" : "absolute bg-brand-red text-white right-0 top-6 z-50 translate-x-1/2 shadow p-0.5 cursor-pointer rounded-r-sm"}`}
                 >
-                    {isOpen ? <HiChevronLeft size={16} /> : <HiChevronRight size={16} />}
+                    {isOpen ? <HiChevronLeft size={12} /> : <HiChevronRight size={12} />}
                 </button>
             )}
 
             {/* Logo row */}
-            <div className="p-4 flex items-center justify-center gap-2">
+            <div className="py-2 flex items-center justify-center gap-2">
                 <div className="w-[30px] h-[30px] shrink-0">
                     <Image src="/images/Evoque1.png" alt="logo" width={30} height={30} />
                 </div>
@@ -94,9 +93,9 @@ const LeftMenu = () => {
             </div>
 
             {/* Menu items */}
-            <div className={`${isSidebarOpen ? "flex flex-col items-start gap-6" : "my-8 flex flex-col items-center gap-6"}`}>
+            <div className={`h-full ${isSidebarOpen ? "flex flex-col items-center gap-2 mt-2" : "my-6 flex flex-col items-center gap-2"}`}>
                 {leftNav.map((group) => (
-                    <div key={group.section} className="w-full">
+                    <div key={group.section} className="w-full mb-3">
                         {/* Section title (only when expanded) */}
                         {isOpen && (
                             <p className="text-xs uppercase tracking-widest text-slate-700 font-semibold mb-1 px-3">
@@ -104,7 +103,7 @@ const LeftMenu = () => {
                             </p>
                         )}
 
-                        <div className={`${isOpen ? "flex flex-col gap-1.5 md:items-center items-start" : "flex flex-col gap-1 md:items-center items-start mb-6"}`}>
+                        <div className={`${isOpen ? "flex flex-col gap-1 md:items-center justify-center items-center" : "flex flex-col gap-3 md:items-center justify-center items-start mb-4"}`}>
                             {group.items.map((item) => {
 
                                 const active = pathname === item.href;
@@ -113,7 +112,7 @@ const LeftMenu = () => {
                                     <Link
                                         key={item.title}
                                         href={item.href}
-                                        className={`${isSidebarOpen ? "py-1 group flex gap-2 w-full items-center px-3 hover:text-brand-red" : "mb-5 group flex gap-2 justify-center w-full"}
+                                        className={`${isSidebarOpen ? "py-1 group flex gap-2 w-full items-center px-3 hover:text-brand-red" : "mb-2 group flex gap-2 justify-center w-full"}
                                                                 ${active ? "text-brand-red" : "text-slate-800"}
                                                                 `}
                                     >

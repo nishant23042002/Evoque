@@ -16,7 +16,7 @@ export default function CartPage() {
 
 
     return (
-        <div className="ml-18 max-[768px]:ml-15 px-2 sm:px-4 py-4 mx-auto">
+        <div className="ml-15 max-[768px]:ml-12 px-2 sm:px-4 py-4 mx-auto">
             <h1 className="text-lg sm:text-xl font-semibold text-slate-700 mb-4">
                 My Bag (4 items)
             </h1>
