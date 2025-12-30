@@ -5,6 +5,7 @@ import dynamic from "next/dynamic";
 import Image from "next/image";
 import Link from "next/link";
 import { useEffect, useState } from "react";
+import CometLogoLoader from "../CometLoader";
 
 const Masonry = dynamic(() => import("react-masonry-css"), { ssr: false });
 
@@ -29,6 +30,7 @@ interface Products {
 export default function MasonryGrid() {
     const [items, setItems] = useState<Products[]>([]);
     const [heights, setHeights] = useState<number[]>([]);
+    const [loading, setLoading] = useState(true);
 
     const breakpoints = {
         default: 5,
@@ -49,11 +51,21 @@ export default function MasonryGrid() {
                 setHeights(data.map(() => 250 + Math.floor(Math.random() * 250)));
             } catch (error) {
                 console.error("Failed to fetch products:", error);
+            } finally {
+                setTimeout(() => setLoading(false), 800);
             }
         };
 
         fetchProducts();
     }, []);
+
+    if (loading) {
+        return (
+            <div className="flex items-center justify-center h-[70vh]">
+                <CometLogoLoader  />
+            </div>
+        );
+    }
 
     if (!items.length) return <p className="text-center my-10">Loading products...</p>;
 

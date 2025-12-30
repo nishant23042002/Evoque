@@ -53,25 +53,25 @@ export const leftNav: LeftNavSection[] = [
         title: "Shirts",
         href: "/product-category/shirts",
         icon: PiShirtFolded,
-        image: "/images/category-shirt.webp",
+        image: "/images/category-shirt.jpg",
       },
       {
         title: "T-Shirts",
         href: "/product-category/t-shirts",
         icon: PiTShirt,
-        image: "/images/category-tshirt.webp"
+        image: "/images/category-tshirt.jpg"
       },
       {
         title: "Jeans",
         href: "/product-category/jeans",
         icon: GiArmoredPants,
-        image: "/images/category-bottom.webp"
+        image: "/images/category-jeans.jpeg"
       },
       {
         title: "Trousers",
         href: "/product-category/trousers",
         icon: PiPantsDuotone,
-        image: "/images/category-bottom.webp"
+        image: "/images/category-trousers.jpg"
       }
     ],
   },
@@ -83,7 +83,7 @@ export const leftNav: LeftNavSection[] = [
         title: "Essentials",
         href: "/product-category/essentials",
         icon: HiOutlineCollection,
-        image: "/images/collections-essential.webp"
+        image: "/images/collections-essentials.jpg"
       },
       {
         title: "Limited Drop",

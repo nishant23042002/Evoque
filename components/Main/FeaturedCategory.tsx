@@ -14,43 +14,43 @@ interface Category {
 
 const categories: Category[] = [
     {
-        title: "Late Checkout",
-        image: "/images/last-checkout.webp",
-        href: "/",
-    },
-    {
         title: "Shirts",
-        image: "/images/shirts.webp",
+        image: "/images/shirts.jpg",
         href: "/product-category/shirts",
     },
     {
+        title: "Jackets",
+        image: "/images/jackets.jpg",
+        href: "/product-category/jackets",
+    },
+    {
+        title: "T-Shirts",
+        image: "/images/t-shirt.jpg",
+        href: "/product-category/t-shirts",
+    },
+    {
+        title: "Hoodies",
+        image: "/images/hoodies.jpg",
+        href: "/product-category/hoodies",
+    },
+    {
         title: "Trousers",
-        image: "/images/trousers.webp",
+        image: "/images/trousers.jpg",
         href: "/product-category/trousers",
     },
     {
         title: "Jeans",
-        image: "/images/jeans.webp",
+        image: "/images/jeans.jpg",
         href: "/product-category/jeans",
     },
     {
-        title: "Polos",
-        image: "/images/polos.webp",
-        href: "/product-category/t-shirts",
-    },
-    {
-        title: "Winterwear",
-        image: "/images/winterwear.webp",
-        href: "/product-category/winterwear",
-    },
-    {
         title: "Essentials",
-        image: "/images/essentials.webp",
+        image: "/images/essentials.jpg",
         href: "/product-category/essentials",
     },
     {
         title: "Limited Drop",
-        image: "/images/collections-limited-drops.png",
+        image: "/images/limited-drops.png",
         href: "/product-category/limited-drops",
     },
 ];
@@ -88,7 +88,7 @@ const FeaturedCategories = () => {
                                 alt={item.title}
                                 fill
                                 className="
-                                            w-full object-fill
+                                            w-full object-cover
                                             transition-transform duration-500
                                             group-hover:scale-105
                                             "

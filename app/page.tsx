@@ -13,7 +13,7 @@ const Home = () => {
 
         <FeaturedCategories />
 
-        <MasonryGrid items={clothingItems} />
+        <MasonryGrid />
 
       </div>
     </Container>

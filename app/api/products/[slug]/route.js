@@ -10,7 +10,7 @@ export async function GET(req, { params }) {
     const product = await Product.findOne({
         slug,
         isActive: true,
-    }).lean();
+    }).populate("category");
 
     if (!product) {
         return NextResponse.json(

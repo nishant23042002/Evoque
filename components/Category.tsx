@@ -45,7 +45,7 @@ const CategoryCircles = ({ title, categories }: Props) => {
                                     alt={item.label}
                                     width={80}
                                     height={80}
-                                    className="object-fill w-full h-full"
+                                    className="object-cover w-full h-full"
                                 />
                             </div>
 

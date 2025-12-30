@@ -4,11 +4,19 @@ import Image from "next/image";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 import MasonryGrid from "@/components/Main/MasonryGrid";
 import { useEffect, useState } from "react";
+import CometLogoLoader from "@/components/CometLoader";
 
 interface ColorVariant {
     slug: string;
     hex: string;
 }
+
+interface Category {
+    _id: string;
+    name: string;
+    slug: string;
+}
+
 
 interface Product {
     _id: string;
@@ -19,6 +27,7 @@ interface Product {
     originalPrice: number;
     brand: string;
     rating: number;
+    category: Category;
     colors?: ColorVariant[];
     sizes?: string[];
     description?: string;
@@ -37,6 +46,7 @@ export default function ProductPage({ params }: ProductPageProps) {
     const [loading, setLoading] = useState(true);
 
     useEffect(() => {
+        let timer: NodeJS.Timeout;
         const fetchData = async () => {
             try {
                 // 1️⃣ Fetch single product
@@ -47,24 +57,55 @@ export default function ProductPage({ params }: ProductPageProps) {
 
                 // 2️⃣ Fetch related products
                 const allRes = await fetch("/api/products");
-                const allProducts = await allRes.json();
-                setRelatedProducts(
-                    allProducts.filter((p: Product) => p.slug !== slug)
+                const allProducts: Product[] = await allRes.json();
+
+                const related = allProducts.filter(
+                    (p) =>
+                        p._id !== productData._id &&
+                        p.category._id === productData.category._id
                 );
+
+                setRelatedProducts(related);
             } catch (err) {
                 console.error(err);
             } finally {
-                setLoading(false);
+                // ⏳ force minimum 2s loader
+                timer = setTimeout(() => {
+                    setLoading(false);
+                }, 800);
             }
         };
 
         fetchData();
+
+        return () => clearTimeout(timer);
     }, [slug]);
 
-    if (loading) return <p className="text-center my-10">Loading...</p>;
+    const SIZE_GROUPS = {
+        topwear: ["XS", "S", "M", "L", "XL", "XXL"],
+        bottomwear: ["28", "30", "32", "34", "36", "38", "40"],
+    };
+    const categorySlug = product?.category?.slug?.toLowerCase() ?? "";
+
+    const isBottomWear = ["jeans", "trousers", "pants"].includes(categorySlug);
+
+    const ALL_SIZES = isBottomWear
+        ? SIZE_GROUPS.bottomwear
+        : SIZE_GROUPS.topwear;
+
+    const availableSizes = product?.sizes ?? [];
+
+    if (loading) {
+        return (
+            <div className="flex items-center justify-center h-[70vh]">
+                <CometLogoLoader />
+            </div>
+        );
+    }
+
     if (!product) return <p className="ml-20">Product not found</p>;
-    
-    const images = Array(5).fill(product.images);
+
+    const images = Array(4).fill(product.images);
     return (
         <Container>
             <div className="flex flex-col">
@@ -87,59 +128,67 @@ export default function ProductPage({ params }: ProductPageProps) {
                         </div>
                     </div>
 
+
                     {/*Right Side */}
                     <div className="lg:w-3xl w-full flex flex-col sticky top-20 mr-2">
                         <div className="py-4 flex justify-around items-center">
                             <h1 className="text-sm md:text-xl font-bold text-slate-900">{product.productName}</h1>
                             <p className="text-sm md:text-xl font-semibold text-slate-900">{product.price} <span className="text-gray-700 text-[11px] line-through decoration-red-500">{product.originalPrice}</span></p>
                         </div>
+
+
                         {/*COLORS*/}
                         <div className="py-4 flex flex-col">
                             <h1 className="text-center font-extrabold mb-2 text-slate-900">Colors</h1>
-                            <div className="w-full flex flex-wrap justify-center items-center md:flex-nowrap gap-2 md:overflow-x-auto scrollbar-hide">
-                                <Image
-                                    src={product.images[0]}
-                                    alt={`Product Image ${product.productName + 1}`}
-                                    width={70}
-                                    height={70}
-                                />
-                                <Image
-                                    src={product.images[0]}
-                                    alt={`Product Image ${product.productName + 1}`}
-                                    width={70}
-                                    height={70}
-                                />
-                                <Image
-                                    src={product.images[0]}
-                                    alt={`Product Image ${product.productName + 1}`}
-                                    width={70}
-                                    height={70}
-                                />
-                                <Image
-                                    src={product.images[0]}
-                                    alt={`Product Image ${product.productName + 1}`}
-                                    width={70}
-                                    height={70}
-                                />
+                            <div className="w-full flex flex-wrap justify-center items-center gap-2">
+                                {images.map((img, i) => (
+                                    <Image
+                                        key={i}
+                                        src={product.images[0]}
+                                        alt={product.productName}
+                                        width={70}
+                                        height={70}
+                                    />
+                                ))}
 
                             </div>
                         </div>
-                        {/*SIZES*/}
 
+
+                        {/*SIZES*/}
 
                         {product.sizes && (
                             <div className="py-4 flex flex-col justify-center items-center">
                                 <h1 className="font-extrabold mb-2">Sizes</h1>
+
                                 <div className="max-w-140 flex flex-wrap gap-3">
-                                    {product.sizes.map(s => (
-                                        <span key={s} className="cursor-pointer border border-black p-2 hover:bg-black hover:text-white hoverEffect">
-                                            {s}
-                                        </span>
-                                    ))}
+                                    {ALL_SIZES?.map((size) => {
+                                        const isAvailable = availableSizes.includes(size);
+
+                                        return (
+                                            <span
+                                                key={size}
+                                                className={`
+                                                            border p-2 select-none
+                                                            ${isAvailable
+                                                        ? "cursor-pointer border-black hover:bg-black hover:text-white hoverEffect"
+                                                        : "cursor-not-allowed border-gray-300 text-gray-400 line-through opacity-60"
+                                                    }
+                                                            `}
+                                            >
+
+                                                {size}
+                                            </span>
+                                        );
+                                    })}
                                 </div>
-                                <p className="text-[11px] sm:text-sm my-2">FREE 1-2 day delivery on 5k+ pincodes</p>
+
+                                <p className="text-[11px] sm:text-sm my-2">
+                                    FREE 1-2 day delivery on 5k+ pincodes
+                                </p>
                             </div>
                         )}
+
 
                         <div className="w-full my-4 px-6">
                             <button className="bg-black w-full text-white font-bold p-5">ADD TO BAG</button>
@@ -243,15 +292,15 @@ export default function ProductPage({ params }: ProductPageProps) {
                         </div>
                     </div>
                 </div>
+
                 <div className="mt-20">
-                    <div>
-                        <h1 className="ml-19 p-3 text-center font-bold text-xl">You may also like</h1>
-                    </div>
+                    <h1 className="p-3 text-center font-bold text-xl">
+                        You may also like
+                    </h1>
                     <div className="max-[768px]:ml-14 ml-19 mr-2">
                         <MasonryGrid />
                     </div>
                 </div>
-
 
             </div>
         </Container>

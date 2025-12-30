@@ -5,8 +5,8 @@ import { leftNav } from "@/constants/leftNavItems";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useState, useEffect, useRef } from "react";
-import { HiChevronRight, HiChevronLeft } from "react-icons/hi";
-
+import { MdCancelPresentation } from "react-icons/md";
+import { GiHamburgerMenu } from "react-icons/gi";
 
 
 
@@ -65,15 +65,15 @@ const LeftMenu = () => {
             {!isMobile && (
                 <button
                     onClick={() => setIsSidebarOpen(!isSidebarOpen)}
-                    className={`${isSidebarOpen ? "absolute bg-brand-red text-white right-0 top-6 z-50 translate-x-1/2 shadow p-0.5 cursor-pointer rounded-l-sm" : "absolute bg-brand-red text-white right-0 top-6 z-50 translate-x-1/2 shadow p-0.5 cursor-pointer rounded-r-sm"}`}
+                    className={`${isSidebarOpen ? "absolute rounded-xs bg-brand-red text-white right-0 top-6 z-50 py-1 px-0.5 translate-x-1/2 shadow cursor-pointer" : "absolute rounded-xs bg-brand-red py-1 px-0.5 text-white right-0 top-6 z-50 translate-x-1/2 shadow cursor-pointer"}`}
                 >
-                    {isOpen ? <HiChevronLeft size={12} /> : <HiChevronRight size={12} />}
+                    {isOpen ? <MdCancelPresentation size={16} /> : <GiHamburgerMenu size={14} />}
                 </button>
             )}
 
             {/* Logo row */}
             <div className="py-2 flex items-center justify-center gap-2">
-                <div className="w-[30px] h-[30px] shrink-0">
+                <div className="w-7.5 h-7.5 shrink-0">
                     <Image src="/images/Evoque1.png" alt="logo" width={30} height={30} />
                 </div>
 
@@ -117,12 +117,12 @@ const LeftMenu = () => {
                                                                 `}
                                     >
                                         {isOpen && item.image ? (
-                                            <div className="w-12 h-12 relative shrink-0 rounded-lg overflow-hidden">
+                                            <div className="w-11 h-10 relative shrink-0 rounded-lg overflow-hidden">
                                                 <Image
                                                     src={item.image}
                                                     alt={item.title}
                                                     fill
-                                                    className="object-cover"
+                                                    className="object-fill"
                                                 />
                                             </div>
                                         ) : (

@@ -8,8 +8,8 @@ export interface CategoryCircle {
 export const shirtsCategories: CategoryCircle[] = [
   {
     id: "all",
-    label: "All",
-    image: "/images/category-shirt.webp",
+    label: "View All",
+    image: "/images/all-shirts.webp",
     href: "/shirts",
   },
   {
@@ -47,26 +47,32 @@ export const shirtsCategories: CategoryCircle[] = [
 export const jeansCategories = [
   {
     id: "all",
-    label: "All",
-    image: "/images/relaxed.webp",
+    label: "View All",
+    image: "/images/all-bottoms.webp",
     href: "/jeans",
   },
   {
     id: "slim",
     label: "Slim",
-    image: "/images/slim.webp",
+    image: "/images/slim-fit-jeans.jpg",
     href: "/jeans/slim",
   },
   {
     id: "regular-fit",
     label: "Regular-Fit",
-    image: "/images/regular-fit.webp",
+    image: "/images/regular-fit-jeans.webp",
     href: "/jeans/regular-fit",
+  },
+  {
+    id: "baggy-fit",
+    label: "Baggy-Fit",
+    image: "/images/baggy-fit-jeans.jpg",
+    href: "/jeans/baggy-fit",
   },
   {
     id: "straight",
     label: "Straight",
-    image: "/images/straight.webp",
+    image: "/images/straight-fit-jeans.jpg",
     href: "/jeans/straight",
   },
 ];
@@ -74,7 +80,7 @@ export const jeansCategories = [
 export const trousersCategories = [
   {
     id: "all",
-    label: "All",
+    label: "View All",
     image: "/images/all-bottoms.webp",
     href: "/trousers",
   },
@@ -107,7 +113,7 @@ export const trousersCategories = [
 export const tshirtsCategories = [
   {
     id: "all",
-    label: "All",
+    label: "View All",
     image: "/images/all-tshirts.webp",
     href: "/tshirts",
   },
