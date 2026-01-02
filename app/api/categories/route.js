@@ -45,3 +45,15 @@ export async function POST(req) {
         );
     }
 }
+
+
+export async function GET() {
+  await connectDB();
+
+  const categories = await Category.find({
+    isActive: true,
+    isFeatured: true,
+  }).select("name slug image");
+
+  return NextResponse.json(categories);
+}

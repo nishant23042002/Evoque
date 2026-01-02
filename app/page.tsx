@@ -1,6 +1,5 @@
 import Container from "@/components/Container";
 import MasonryGrid from "@/components/Main/MasonryGrid";
-import { clothingItems } from "@/data/clothingItems";
 import FeaturedCategories from "@/components/Main/FeaturedCategory";
 import BannerSlider from "@/components/Main/Banner";
 

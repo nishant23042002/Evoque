@@ -36,7 +36,7 @@
     "**/*.jsx",
     ".next/types/**/*.ts",
     "**/*.mts"
-  ],
+, "scripts/cloudinaryUpload.cjs"  ],
   "exclude": [
     "node_modules"
   ]

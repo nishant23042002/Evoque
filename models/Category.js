@@ -17,11 +17,8 @@ const categorySchema = new mongoose.Schema(
             index: true,
         },
 
-        description: {
-            type: String,
-            default: "",
-        },
-
+        image: { type: String },
+        isFeatured: { type: Boolean, default: true },
         isActive: {
             type: Boolean,
             default: true,
@@ -44,4 +41,4 @@ categorySchema.set("toObject", { virtuals: true });
 
 
 export default mongoose.models.Category ||
-  mongoose.model("Category", categorySchema);
+    mongoose.model("Category", categorySchema);
