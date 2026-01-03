@@ -116,7 +116,7 @@ export default function ProductPage({ params }: ProductPageProps) {
                         <div className="absolute opacity-0 sm:opacity-90 z-30 flex flex-col gap-2">
                             {images.map((img, i) => (
                                 <div key={i} className="relative w-30 h-30">
-                                    <Image src={product.images[0]} alt="" fill className="object-cover" />
+                                    <Image src={product.images[1]} alt="" fill className="object-cover" />
                                 </div>
                             ))}
                         </div>

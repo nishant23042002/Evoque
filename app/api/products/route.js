@@ -2,28 +2,143 @@ import { NextResponse } from "next/server";
 import connectDB from "@/lib/db";
 import Category from "@/models/Category";
 import Product from "@/models/Product";
+import cloudinary from "@/lib/cloudinary";
+
+
+function generateSKU({ brand, category, slug }) {
+    const safeBrand = typeof brand === "string" ? brand.slice(0, 2) : "XX";
+    const safeCategory = category?.slug
+        ? category.slug.slice(0, 2)
+        : "XX";
+
+    return `${safeBrand}-${safeCategory}-${slug}`.toUpperCase();
+}
+
+
+
+
+async function uploadImage(url, folder) {
+    if (!url) return null; // skip null
+    const res = await cloudinary.uploader.upload(url, {
+        folder,
+        public_id: publicId,
+        overwrite: true,
+        resource_type: "image",
+    });
+
+    return {
+        url: res.secure_url,
+        public_id: res.public_id,
+    }
+}
+
 
 /**
  * POST → Add Product
- */
+*/
 export async function POST(req) {
     try {
         await connectDB();
 
         const body = await req.json();
 
-        const category = await Category.findOne({ slug: body.category });
-        if (!category) {
-            return NextResponse.json(
-                { message: "Category not found" },
-                { status: 400 }
-            );
+        const {
+            productName,
+            slug,
+            brand,
+            category: categorySlug,
+            fit,
+            images,
+            offers,
+            pricing,
+            rating,
+            reviews,
+            variants,
+            description,
+            details,
+            seo,
+            shipping,
+            tags,
+            isFeatured,
+            isBestSeller,
+            isNewArrival,
+            launchDate,
+        } = body;
+
+        if (!pricing?.price) {
+            return NextResponse.json({ message: "pricing.price is required" }, { status: 400 });
         }
 
-        const product = await Product.create({
-            ...body,
-            category: category._id,
+        const category = await Category.findOne({ slug: categorySlug });
+        if (!category) {
+            return NextResponse.json({ message: "Category not found" }, { status: 400 });
+        }
+
+        // Upload images → category-based folders + store public_id
+        let uploadedImages = [];
+
+        if (images?.length) {
+            for (let i = 0; i < images.length; i++) {
+                const img = images[i];
+
+                const publicId = `${slug}-${i + 1}`;
+
+                const uploaded = await uploadImage(
+                    img,
+                    `evoque/categories/${category.slug}/${slug}`,
+                    publicId
+                );
+
+                if (uploaded) {
+                    uploadedImages.push(uploaded);
+                }
+            }
+        }
+
+
+        console.log("SKU INPUT:", {
+            brand,
+            category,
+            slug,
+            brandType: typeof brand,
+            categoryType: typeof category,
         });
+
+        const sku = generateSKU({ brand, category, slug });
+
+
+        // 3️⃣ Calculate total stock from variants
+        const totalStock = variants?.reduce(
+            (sum, v) => sum + (v.stock || 0),
+            0
+        );
+
+        // 4️⃣ Create product
+        const product = await Product.create({
+            productName,
+            slug,
+            sku,
+            brand,
+            category: category._id,
+            fit,
+            images: uploadedImages,
+            offers,
+            pricing,
+            rating,
+            reviews,
+            variants,
+            totalStock,
+            description,
+            details,
+            seo,
+            shipping,
+            tags,
+            isFeatured,
+            isBestSeller,
+            isNewArrival,
+            launchDate,
+        });
+
 
         return NextResponse.json(product, { status: 201 });
     } catch (error) {

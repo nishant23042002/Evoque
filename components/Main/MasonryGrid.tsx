@@ -14,15 +14,31 @@ interface ColorVariant {
     hex: string;
 }
 
+interface Variant {
+    size: string;
+    color: ColorVariant;
+    stock: number;
+}
+
+interface Pricing {
+    price: number;
+    originalPrice: number;
+    discountPercentage: number;
+    currency: string;
+}
+
 interface Products {
-    images: string;
-    brand: string;
     productName: string;
-    price: string;
-    originalPrice: string;
     slug: string;
-    colors?: ColorVariant[];
+    brand: string;
+    category: string;
+    fit: string;
+
+    images: string[];
+
+    pricing: Pricing;
     rating: number;
+    variants: Variant[];
 }
 
 
@@ -59,10 +75,12 @@ export default function MasonryGrid() {
         fetchProducts();
     }, []);
 
+
+
     if (loading) {
         return (
             <div className="flex flex-nowrap items-center justify-center h-[70vh]">
-                <CometLogoLoader  />
+                <CometLogoLoader />
             </div>
         );
     }
@@ -91,52 +109,53 @@ export default function MasonryGrid() {
                 className="flex gap-4 md:w-[90%] mx-auto"
                 columnClassName="masonry-column"
             >
-                {items.map((item, index) => (
-                    <Link key={index} href={`/product/${item.slug}`} className="block">
-                        <div
-                            className="relative w-full mb-4 rounded-xl overflow-hidden group"
-                            style={{ height: heights[index] }}
-                        >
-                            {/* IMAGE */}
-                            <Image
-                                src={item.images[0]}
-                                alt="product"
-                                fill
-                                className="object-cover transition-all duration-300 group-hover:scale-105"
-                            />
+                {items.map((item, index) => {
+                    const colors = Array.from(
+                        new Map(item.variants.map(v => [v.color.slug, v.color])).values()
+                    );
 
-                            {/* COLORS — NOT LINKS ANYMORE */}
-                            <div className="absolute w-full flex justify-between items-center top-2 right-0 px-2">
-                                <div className="flex gap-1">
-                                    {item.colors?.map((color) => (
-                                        <div
-                                            key={color.slug}
-                                            onClick={(e) => {
-                                                e.preventDefault();
-                                                e.stopPropagation();
-                                                window.location.href = `/product/${color.slug}`;
-                                            }}
-                                            className="w-5 h-5 rounded-full border-2 border-gray-300 hover:border-black cursor-pointer"
-                                            style={{ backgroundColor: color.hex }}
-                                        />
-                                    ))}
-                                </div>
-                                <Heart className="text-brand-red" strokeWidth={0.9} />
-                            </div>
+                    return (
+                        <Link key={index} href={`/product/${item.slug}`} className="block">
+                            <div
+                                className="relative w-full mb-4 rounded-xl overflow-hidden group"
+                                style={{ height: heights[index] }}
+                            >
+                                {/* IMAGE */}
+                                <Image
+                                    src={item.images[0]}
+                                    alt="product"
+                                    fill
+                                    className="object-cover transition-all duration-300 group-hover:scale-105"
+                                />
 
-                            {/* HOVER DETAILS */}
-                            <div className="absolute inset-0 cursor-pointer opacity-100 md:opacity-0 md:group-hover:opacity-100 transition-all duration-300 flex flex-col justify-end text-white">
-                                <div className="text-[12px] bg-black/20 sm:bg-black/20 w-full p-2">
-                                    <p className="font-semibold">{item.brand}</p>
-                                    <p className="leading-tight tracking-tight my-1">{item.productName}</p>
-                                    <p className="font-bold">{item.price}  <span className="decoration-red-500 ml-2 line-through">{item.originalPrice}</span></p>
-                                    {/* RATING BAR */}
-                                    <AnimatedRatingProgressBar average={item.rating} />
+                                {/* COLORS — NOT LINKS ANYMORE */}
+                                <div className="absolute w-full flex justify-between items-center top-2 right-0 px-2">
+                                    <div className="flex gap-1">
+                                        {colors.map(color => (
+                                            <div
+                                                key={color.slug}
+                                                className="w-5 h-5 rounded-full border"
+                                                style={{ backgroundColor: color.hex }}
+                                            />
+                                        ))}
+                                    </div>
+                                    <Heart className="text-brand-red" strokeWidth={0.9} />
+                                </div>
+
+                                {/* HOVER DETAILS */}
+                                <div className="absolute inset-0 cursor-pointer opacity-100 md:opacity-0 md:group-hover:opacity-100 transition-all duration-300 flex flex-col justify-end text-white">
+                                    <div className="text-[12px] bg-black/20 sm:bg-black/20 w-full p-2">
+                                        <p className="font-semibold">{item.brand}</p>
+                                        <p className="leading-tight tracking-tight my-1">{item.productName}</p>
+                                        <p className="font-bold">{item.pricing.price}  <span className="decoration-red-500 ml-2 line-through">{item.pricing.originalPrice}</span></p>
+                                        {/* RATING BAR */}
+                                        <AnimatedRatingProgressBar average={item.rating} />
+                                    </div>
                                 </div>
                             </div>
-                        </div>
-                    </Link>
-                ))}
+                        </Link>
+                    )
+                })}
             </Masonry>
         </div>
     );

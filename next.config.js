@@ -5,7 +5,8 @@ const nextConfig = {
     domains: [
       'cdn.shopify.com',
       'images.pexels.com',
-      'pixabay.com'
+      'pixabay.com',
+      "res.cloudinary.com"
     ],
   },
 };

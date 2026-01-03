@@ -2,67 +2,57 @@
 
 import Image from "next/image";
 import Link from "next/link";
+import { useEffect, useState } from "react";
 import Masonry from "react-masonry-css";
+import CometLogoLoader from "../CometLoader";
 
 interface Category {
-    title: string;
+    name: string;
     image: string;
-    href: string;
-    tag?: string;
+    slug: string;
+    _id: string;
 }
 
 
-const categories: Category[] = [
-    {
-        title: "Shirts",
-        image: "/images/shirts.jpg",
-        href: "/product-category/shirts",
-    },
-    {
-        title: "Jackets",
-        image: "/images/jackets.jpg",
-        href: "/product-category/jackets",
-    },
-    {
-        title: "T-Shirts",
-        image: "/images/t-shirt.jpg",
-        href: "/product-category/t-shirts",
-    },
-    {
-        title: "Hoodies",
-        image: "/images/hoodies.jpg",
-        href: "/product-category/hoodies",
-    },
-    {
-        title: "Trousers",
-        image: "/images/trousers.jpg",
-        href: "/product-category/trousers",
-    },
-    {
-        title: "Jeans",
-        image: "/images/jeans.jpg",
-        href: "/product-category/jeans",
-    },
-    {
-        title: "Essentials",
-        image: "/images/essentials.jpg",
-        href: "/product-category/essentials",
-    },
-    {
-        title: "Limited Drop",
-        image: "/images/limited-drops.png",
-        href: "/product-category/limited-drops",
-    },
-];
 
 const FeaturedCategories = () => {
+    const [categories, setCategories] = useState<Category[]>([]);
+    const [loading, setLoading] = useState(true);
+
+
     const breakpoints = {
-        default: 4,
+        default: 5,
         1200: 4,
         1000: 3,
         750: 2,
         550: 1,
     };
+
+    useEffect(() => {
+        async function fetchCategories() {
+            try {
+                const res = await fetch("/api/categories");
+                const data = await res.json();
+                setCategories(data);
+            } catch (err) {
+                console.error("Failed to fetch categories", err);
+            } finally {
+                setLoading(false);
+            }
+        }
+
+        fetchCategories();
+    }, []);
+
+    if (loading) {
+        return (
+            <div className="flex flex-nowrap items-center justify-center h-[70vh]">
+                <CometLogoLoader />
+            </div>
+        );
+    }
+
+
     return (
         <section className="w-full flex flex-col justify-center py-10">
             {/* Heading */}
@@ -77,7 +67,7 @@ const FeaturedCategories = () => {
             >
                 {categories.map((item, index) => (
                     <Link
-                        href={item.href}
+                        href={`/product-category/${item.slug}`}
                         key={index}
                         className="mb-4 block break-inside-avoid"
                     >
@@ -85,7 +75,7 @@ const FeaturedCategories = () => {
                             {/* Image */}
                             <Image
                                 src={item.image}
-                                alt={item.title}
+                                alt={item.name}
                                 fill
                                 className="
                                             w-full object-cover
@@ -106,24 +96,12 @@ const FeaturedCategories = () => {
                             />
 
                             {/* Tag */}
-                            {item.tag && (
-                                <div className="absolute top-3 left-3 bg-white/90 text-xs font-semibold px-3 py-1 rounded-full">
-                                    {item.tag}
+                            {item.name && (
+                                <div className="absolute top-3 left-3 bg-black/50 text-white text-xs font-semibold px-3 py-1 rounded-sm">
+                                    {item.name}
                                 </div>
                             )}
-
-                            {/* Title */}
-                            <div
-                                className="
-                                        absolute top-4 left-4 right-4
-                                        text-white
-                                        opacity-100
-                                        "
-                            >
-                                <h3 className="text-sm font-semibold tracking-wide">
-                                    {item.title}
-                                </h3>
-                            </div>
+                            
                         </div>
                     </Link>
                 ))}

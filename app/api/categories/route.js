@@ -5,21 +5,21 @@ import slugify from "slugify";
 
 /**
  * POST → Create Category
- */
+*/
 export async function POST(req) {
     try {
         await connectDB();
 
-        const { name, description } = await req.json();
+        const body = await req.json();
 
-        if (!name) {
+        if (!body.name) {
             return NextResponse.json(
                 { message: "Category name is required" },
                 { status: 400 }
             );
         }
 
-        const slug = slugify(name, { lower: true });
+        const slug = slugify(body.name, { lower: true });
 
         const exists = await Category.findOne({ slug });
         if (exists) {
@@ -30,9 +30,11 @@ export async function POST(req) {
         }
 
         const category = await Category.create({
-            name,
-            slug,
-            description,
+            name: body.name,
+            slug: body.slug,
+            image: body.image,
+            isFeatured: body.isFeatured ?? true,
+            isActive: body.isActive ?? true,
         });
 
         return NextResponse.json(category, { status: 201 });
@@ -48,12 +50,9 @@ export async function POST(req) {
 
 
 export async function GET() {
-  await connectDB();
+    await connectDB();
 
-  const categories = await Category.find({
-    isActive: true,
-    isFeatured: true,
-  }).select("name slug image");
+    const categories = await Category.find();
 
-  return NextResponse.json(categories);
+    return NextResponse.json(categories);
 }
