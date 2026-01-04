@@ -5,7 +5,7 @@ import { useEffect, useRef, useState } from "react";
 
 const banners = [
     "/images/banner.webp",
-    "/images/banner2.jpg",
+    "/images/banner.webp",
     "/images/banner3.jpg",
     "/images/banner3.jpg",
     "/images/banner3.jpg",

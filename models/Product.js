@@ -46,6 +46,7 @@ const productSchema = new mongoose.Schema(
         // 🖼 Media
         images: [{ type: String }],
 
+
         // 🏷 Offers
         offers: [
             {

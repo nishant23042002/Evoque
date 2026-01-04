@@ -101,7 +101,7 @@ const FeaturedCategories = () => {
                                     {item.name}
                                 </div>
                             )}
-                            
+
                         </div>
                     </Link>
                 ))}

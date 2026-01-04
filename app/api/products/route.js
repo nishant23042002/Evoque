@@ -17,8 +17,9 @@ function generateSKU({ brand, category, slug }) {
 
 
 
-async function uploadImage(url, folder) {
-    if (!url) return null; // skip null
+async function uploadImage(url, folder, publicId) {
+    if (!url) return null;
+
     const res = await cloudinary.uploader.upload(url, {
         folder,
         public_id: publicId,
@@ -29,7 +30,7 @@ async function uploadImage(url, folder) {
     return {
         url: res.secure_url,
         public_id: res.public_id,
-    }
+    };
 }
 
 
@@ -85,12 +86,12 @@ export async function POST(req) {
 
                 const uploaded = await uploadImage(
                     img,
-                    `evoque/categories/${category.slug}/${slug}`,
+                    `evoque/products/${category.slug}/${slug}`,
                     publicId
                 );
 
                 if (uploaded) {
-                    uploadedImages.push(uploaded);
+                    uploadedImages.push(uploaded.url);
                 }
             }
         }

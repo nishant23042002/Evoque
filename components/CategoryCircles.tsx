@@ -9,9 +9,10 @@ import { CategoryCircle } from "@/constants/categoryItems";
 interface Props {
     title?: string;
     categories: CategoryCircle[];
+    categorySlug: string;
 }
 
-const CategoryCircles = ({ title, categories }: Props) => {
+const CategoryCircles = ({ title, categories, categorySlug }: Props) => {
     const pathname = usePathname();
 
     return (
@@ -22,14 +23,18 @@ const CategoryCircles = ({ title, categories }: Props) => {
                 </h2>
             )}
 
-            <div className="flex flex-wrap items-center justify-center gap-6 overflow-x-auto px-4 scrollbar-hide">
+            <div className="flex flex-wrap items-center justify-center gap-6 px-4">
                 {categories.map((item) => {
-                    const isActive = pathname === item.href;
+                    const href = item.slug
+                        ? `/product-category/${categorySlug}/${item.slug}`
+                        : `/product-category/${categorySlug}`;
+
+                    const isActive = pathname === href;
 
                     return (
                         <Link
                             key={item.id}
-                            href={item.href}
+                            href={href}
                             className="flex flex-col items-center min-w-20"
                         >
                             <div
