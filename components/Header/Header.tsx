@@ -1,32 +1,47 @@
 import Cart from "./Cart";
-import Container from "../Container";
-import Login from "./Login";
+import dynamic from "next/dynamic";
+
+const LoginOtpModal = dynamic(() => import("./LoginOtpModal"), {
+  ssr: false,
+});
 import Logo from "./Logo";
 import SearchBar from "./SearchBar";
 import WishList from "./WishList";
 
-
 const Header = () => {
     return (
-        <header className="sticky top-0 w-full z-40 bg-white py-1 border-accent-rose border">
-            <Container className="flex justify-between items-center mx-4">
-                {/* Logo */}
-                <Logo />
+        <header className="
+            sticky top-0 z-40 w-full
+            bg-white/90 backdrop-blur-md
+            border-b border-accent-rose
+        ">
+            <div className="flex items-center justify-between px-4 h-16">
 
-                {/* Cart and Account */}
-                <div className="w-auto md:w-full flex gap-4 items-center">
-                    <div className="w-full max-sm:hidden">
-                        <SearchBar />
-                    </div>
-                    <div className="flex items-center justify-center gap-2">
-                        <WishList />
-                        <Cart />
-                        <Login />
-                    </div>
+                {/* LEFT — Logo */}
+                <div className="ml-14 flex items-center gap-2">
+                    <Logo />
                 </div>
-            </Container>
+
+                {/* CENTER — Search */}
+                <div className="
+                    hidden md:flex
+                    flex-1 max-w-xl mx-6
+                ">
+                    <SearchBar />
+                </div>
+
+                {/* RIGHT — Actions */}
+                <div className="flex items-center gap-3">
+                    <WishList />
+                    <Cart />
+                    <LoginOtpModal />
+                </div>
+            </div>
+
+
+
         </header>
-    )
-}
+    );
+};
 
 export default Header;

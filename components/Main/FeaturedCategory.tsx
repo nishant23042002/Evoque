@@ -71,7 +71,7 @@ const FeaturedCategories = () => {
                         key={index}
                         className="mb-4 block break-inside-avoid"
                     >
-                        <div className="group h-80 relative overflow-hidden rounded-xl bg-neutral-100">
+                        <div className="group h-80 relative overflow-hidden rounded-md bg-neutral-100">
                             {/* Image */}
                             <Image
                                 src={item.image}

@@ -3,10 +3,21 @@ import Link from "next/link";
 
 const Logo = ({ className }: { className?: string }) => {
     return (
-        <Link className="max-[490px]:ml-12 ml-19" href={"/"}>
-            <h2 className={cn("max-[490px]:text-sm uppercase text-brand-red hover:text-red-400 font-semibold hoverEffect", className)}>Evoqu<span className="text-red-400 hover:text-brand-red">e</span></h2>
+        <Link href="/" className="flex items-center">
+            <h1
+                className={cn(
+                    `
+                    text-lg tracking-widest font-semibold
+                    text-brand-red uppercase
+                    hover:opacity-80 transition
+                    `,
+                    className
+                )}
+            >
+                EVOQU<span className="text-red-400">E</span>
+            </h1>
         </Link>
-    )
-}
+    );
+};
 
 export default Logo;

@@ -42,7 +42,7 @@ const CategoryCircles = ({ title, categories, categorySlug }: Props) => {
                                     "w-20 h-20 rounded-full overflow-hidden border transition-all duration-300",
                                     isActive
                                         ? "border-orange-500 ring-2 ring-orange-400"
-                                        : "border-gray-300 hover:border-black/60"
+                                        : "border-2 border-gray-300 hover:border-orange-400"
                                 )}
                             >
                                 <Image

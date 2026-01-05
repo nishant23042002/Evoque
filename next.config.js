@@ -6,7 +6,8 @@ const nextConfig = {
       'cdn.shopify.com',
       'images.pexels.com',
       'pixabay.com',
-      "res.cloudinary.com"
+      "res.cloudinary.com",
+      "bananaclub.co.in"
     ],
   },
 };

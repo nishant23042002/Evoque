@@ -37,7 +37,6 @@ const productSchema = new mongoose.Schema(
         sku: { type: String, unique: true },
 
         // 🏷 Classification
-        // 🏷 Classification
         brand: { type: String, index: true },
         category: { type: mongoose.Schema.Types.ObjectId, ref: "Category", index: true },
 

@@ -312,6 +312,48 @@
   }
 }
 
+@keyframes glowPulse {
+  0% {
+    box-shadow: 0 0 0px rgba(239, 68, 68, 0.2);
+  }
+
+  50% {
+    box-shadow: 0 0 12px rgba(239, 68, 68, 0.45);
+  }
+
+  100% {
+    box-shadow: 0 0 0px rgba(239, 68, 68, 0.2);
+  }
+}
+
+.active-glow {
+  animation: glowPulse 2.2s ease-in-out infinite;
+}
+
+
+.hoverEffect {
+  transition: all 0.2s ease;
+}
+
+.iconHover:hover {
+  transform: translateY(-1px);
+}
+
+@keyframes scaleIn {
+  from {
+    opacity: 0;
+    transform: scale(0.95);
+  }
+
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+.animate-scaleIn {
+  animation: scaleIn 0.25s ease-out;
+}
 
 
 /* Hide scrollbar for all browsers */

@@ -24,10 +24,14 @@ export default function RootLayout({
           </div>
           <div className="w-full">
             <Header />
+
             {children}
             <Footer />
           </div>
         </div>
+
+        {/* Modal root */}
+        <div id="modal-root"></div>
       </body>
     </html>
   );

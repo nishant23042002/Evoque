@@ -5,10 +5,6 @@ import { leftNav } from "@/constants/leftNavItems";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useState, useEffect, useRef } from "react";
-import { MdCancelPresentation } from "react-icons/md";
-import { GiHamburgerMenu } from "react-icons/gi";
-
-
 
 
 const LeftMenu = () => {
@@ -17,8 +13,6 @@ const LeftMenu = () => {
     const [isSidebarOpen, setIsSidebarOpen] = useState(false);
     const [isMobile, setIsMobile] = useState(false);
     const sidebarRef = useRef<HTMLDivElement | null>(null);
-
-
 
     useEffect(() => {
         if (!isSidebarOpen) return;
@@ -33,132 +27,157 @@ const LeftMenu = () => {
         };
 
         document.addEventListener("mousedown", handleClickOutside);
-
-        return () => {
-            document.removeEventListener("mousedown", handleClickOutside);
-        };
+        return () => document.removeEventListener("mousedown", handleClickOutside);
     }, [isSidebarOpen]);
 
-    // Detect screen size once + on resize
     useEffect(() => {
         const handleResize = () => {
             setIsMobile(window.innerWidth <= 491);
         };
         handleResize();
-
         window.addEventListener("resize", handleResize);
         return () => window.removeEventListener("resize", handleResize);
     }, []);
 
-    // Derived state: sidebar open only when not mobile
     const isOpen = isMobile ? false : isSidebarOpen;
 
     return (
-        <div
+        <aside
             ref={sidebarRef}
-            className={`h-screen border-r border-gray-400/20 bg-accent-rose
-                transition-all duration-300 relative 
-                ${isOpen ? "w-60 p-1" : "w-12 min-[768px]:w-15 p-1"}
+            className={`
+                h-screen fixed left-0 top-0 z-40
+                backdrop-blur-xl bg-white/90
+                border-r border-accent-rose
+                transition-all duration-300 ease-in-out
+                ${isOpen ? "w-90 px-2" : "w-12 min-[768px]:w-15 p-1"}
             `}
         >
-            {/* Toggle button - disabled / hidden on mobile */}
+            {/* Toggle Button */}
             {!isMobile && (
                 <button
                     onClick={() => setIsSidebarOpen(!isSidebarOpen)}
-                    className={`${isSidebarOpen ? "absolute rounded-xs bg-brand-red text-white right-0 top-6 z-50 py-1 px-0.5 translate-x-1/2 shadow cursor-pointer" : "absolute rounded-xs bg-brand-red py-1 px-0.5 text-white right-0 top-6 z-50 translate-x-1/2 shadow cursor-pointer"}`}
+                    className="
+                        absolute right-4 top-5
+                        
+                        p-1.5
+                        
+                        cursor-pointer
+                    "
                 >
-                    {isOpen ? <MdCancelPresentation size={16} /> : <GiHamburgerMenu size={14} />}
+                    {isOpen ? (
+                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.25" stroke-linecap="round" stroke-linejoin="round" className="lucide lucide-x-icon lucide-x"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>
+                    ) : (
+                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.25" stroke-linecap="round" stroke-linejoin="round" className="lucide lucide-menu-icon lucide-menu"><path d="M4 5h16" /><path d="M4 12h16" /><path d="M4 19h16" /></svg>
+                    )}
                 </button>
             )}
 
-            {/* Logo row */}
-            <div className="py-2 flex items-center justify-center gap-2">
-                <div className="w-7.5 h-7.5 shrink-0">
-                    <Image src="/images/Evoque1.png" alt="logo" width={30} height={30} />
-                </div>
-
-                {/* Text only when expanded + not mobile */}
-                {!isMobile && (
-                    <div
-                        className={`
-                            overflow-hidden transition-all duration-300
-                            ${isOpen ? "w-32 opacity-100" : "w-0 opacity-0"}
-                        `}
-                    >
-                        <span className="font-light text-slate-700 text-md whitespace-nowrap">
-                            The Evoque Store
-                        </span>
-                    </div>
+            {/* Logo */}
+            <div className="h-12 flex items-center justify-center">
+                {!isMobile && isOpen && (
+                    <Image alt="text-logo" src="/images/text_logo.svg" width={80} height={80} priority />
                 )}
             </div>
 
-            {/* Menu items */}
-            <div className={`h-full ${isSidebarOpen ? "flex flex-col items-center gap-2 mt-2" : "my-6 flex flex-col items-center gap-2"}`}>
+            {/* Navigation */}
+            <nav className="mt-4 space-y-5">
                 {leftNav.map((group) => (
-                    <div key={group.section} className="w-full mb-3">
-                        {/* Section title (only when expanded) */}
+                    <div key={group.section}>
                         {isOpen && (
-                            <p className="text-xs uppercase tracking-widest text-slate-700 font-semibold mb-1 px-3">
+                            <h4 className="px-3 mb-2 text-[10px] text-nowrap font-semibold text-slate-500 uppercase">
                                 {group.section}
-                            </p>
+                            </h4>
                         )}
 
-                        <div className={`${isOpen ? "flex flex-col gap-1 md:items-center justify-center items-center" : "flex flex-col gap-3 md:items-center justify-center items-start mb-4"}`}>
+                        <div className="space-y-1">
                             {group.items.map((item) => {
-
                                 const active = pathname === item.href;
 
                                 return (
                                     <Link
                                         key={item.title}
                                         href={item.href}
-                                        className={`${isSidebarOpen ? "py-1 group flex gap-2 w-full items-center px-3 hover:text-brand-red" : "mb-2 group flex gap-2 justify-center w-full"}
-                                                                ${active ? "text-brand-red" : "text-slate-800"}
-                                                                `}
+                                        className={`
+                                            relative flex items-center gap-3
+                                            rounded-lg p-2.5
+                                            transition-all
+                                            hover:bg-black/5
+                                            ${active ? "bg-black/5" : ""}
+                                        `}
                                     >
+                                        {/* Active Indicator */}
+                                        {active && (
+                                            <>
+                                                {/* Glow bar */}
+                                                <span className="
+                                                                absolute left-0 top-1/2 -translate-y-1/2
+                                                                h-7 w-1 rounded-r-full
+                                                              bg-brand-red
+                                                                active-glow
+                                                                " />
+
+                                                {/* Soft background glow */}
+                                                <span className="
+                                                                absolute inset-0 rounded-lg
+                                                                bg-linear-to-r from-brand-red/10 via-transparent to-transparent
+                                                                pointer-events-none
+                                                            " />
+                                            </>
+                                        )}
+
+
+                                        {/* Image OR Icon */}
                                         {isOpen && item.image ? (
-                                            <div className="w-11 h-10 relative shrink-0 rounded-lg overflow-hidden">
+                                            <div className="w-10 h-10 rounded-md overflow-hidden shrink-0">
                                                 <Image
                                                     src={item.image}
                                                     alt={item.title}
                                                     fill
-                                                    className="object-fill"
+                                                    className={`object-cover border duration-150 hover:border-brand-red ${active ? "border-2 border-brand-red" : ""}`}
                                                 />
                                             </div>
                                         ) : (
-                                            <div className="relative group">
+                                            <div className="relative group flex justify-start w-full">
                                                 <item.icon
-                                                    size={22}
-                                                    className={`transition
-                                                                group-hover:text-brand-red
-                                                                ${active ? "text-brand-red" : "text-slate-800"}
-                                                                `}
+                                                    size={20}
+                                                    className={`
+                                                            transition
+                                                            ${active
+                                                            ? "text-brand-red drop-shadow-[0_0_6px_rgba(239,68,68,0.6)]"
+                                                            : "text-slate-700"
+                                                        }
+                                                   `}
                                                 />
 
-                                                {/* Tooltip – ONLY when sidebar is closed */}
+
                                                 {!isOpen && !isMobile && (
                                                     <span
                                                         className="
-                                                                    absolute left-7 top-1/2 -translate-y-1/2
-                                                                    bg-black text-white text-[11px]
-                                                                    px-2 py-1 rounded-sm
-                                                                    opacity-0 pointer-events-none
-                                                                    transition-opacity duration-200
-                                                                    group-hover:opacity-100
-                                                                    whitespace-nowrap z-50
-                                                                "
+                                                            absolute left-7 top-1/2 -translate-y-1/2
+                                                            bg-black/70 text-white
+                                                            text-[11px] px-2.5 py-1
+                                                            rounded-sm
+                                                            opacity-0 group-hover:opacity-100
+                                                            transition
+                                                            whitespace-nowrap z-50
+                                                        "
                                                     >
                                                         {item.title}
                                                     </span>
                                                 )}
                                             </div>
-
                                         )}
 
+                                        {/* Title */}
                                         {isOpen && (
-                                            <span className="text-sm whitespace-nowrap">
+                                            <h1
+                                                className={`text-sm text-nowrap w-full hover:text-brand-red ${active
+                                                    ? "text-brand-red"
+                                                    : "text-slate-800"
+                                                    }`}
+                                            >
                                                 {item.title}
-                                            </span>
+                                            </h1>
                                         )}
                                     </Link>
                                 );
@@ -166,8 +185,8 @@ const LeftMenu = () => {
                         </div>
                     </div>
                 ))}
-            </div>
-        </div>
+            </nav>
+        </aside>
     );
 };
 

@@ -1,7 +1,9 @@
 import { NextResponse } from "next/server";
 import connectDB from "@/lib/db";
 import Category from "@/models/Category";
-import slugify from "slugify";
+import cloudinary from "@/lib/cloudinary";
+
+
 
 /**
  * POST → Create Category
@@ -12,14 +14,14 @@ export async function POST(req) {
 
         const body = await req.json();
 
-        if (!body.name) {
+        const { name, slug, image, isActive, isFeatured } = body;
+
+        if (!name || !slug || !image) {
             return NextResponse.json(
-                { message: "Category name is required" },
+                { message: "Name, slug and image are required" },
                 { status: 400 }
             );
         }
-
-        const slug = slugify(body.name, { lower: true });
 
         const exists = await Category.findOne({ slug });
         if (exists) {
@@ -29,12 +31,16 @@ export async function POST(req) {
             );
         }
 
+        const upload = await cloudinary.uploader.upload(image, {
+            folder: `evoque/categories/${slug}`,
+        });
+
         const category = await Category.create({
-            name: body.name,
-            slug: body.slug,
-            image: body.image,
-            isFeatured: body.isFeatured ?? true,
-            isActive: body.isActive ?? true,
+            name: name,
+            slug: slug,
+            image: upload.secure_url,
+            isFeatured: isFeatured ?? true,
+            isActive: isActive ?? true,
         });
 
         return NextResponse.json(category, { status: 201 });

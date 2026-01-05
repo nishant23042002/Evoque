@@ -8,11 +8,11 @@ export interface CategoryCircle {
 /* SHIRTS */
 export const shirtsCategories: CategoryCircle[] = [
   { id: "all", label: "View All", image: "/images/all-shirts.webp", slug: "" },
-  { id: "plain", label: "Plain", image: "/images/plain.webp", slug: "plain" },
-  { id: "designer", label: "Designer", image: "/images/designer.webp", slug: "designer" },
-  { id: "linen", label: "Linen", image: "/images/linen.webp", slug: "linen" },
-  { id: "printed", label: "Printed", image: "/images/printed.webp", slug: "printed" },
-  { id: "checks", label: "Checks", image: "/images/checks.webp", slug: "checks" },
+  { id: "plain", label: "Plain", image: "/images/plain.png", slug: "plain" },
+  { id: "designer", label: "Designer", image: "/images/designer.png", slug: "designer" },
+  { id: "linen", label: "Linen", image: "/images/linen.png", slug: "linen" },
+  { id: "checks", label: "Checks", image: "/images/checks.png", slug: "checks" },
+  { id: "half-sleeves", label: "Half-Sleeves", image: "/images/half-sleeves.png", slug: "half-sleeves" },
 ];
 
 /* JEANS */
@@ -36,10 +36,10 @@ export const trousersCategories: CategoryCircle[] = [
 /* T-SHIRTS */
 export const tshirtsCategories: CategoryCircle[] = [
   { id: "all", label: "View All", image: "/images/all-tshirts.webp", slug: "" },
-  { id: "plain", label: "Plain", image: "/images/plain-tshirt.webp", slug: "plain" },
-  { id: "oversized", label: "Oversized", image: "/images/oversized.webp", slug: "oversized" },
-  { id: "polo", label: "Polo", image: "/images/polo.webp", slug: "polo" },
-  { id: "half-sleeve", label: "Half Sleeve", image: "/images/half-sleeves.webp", slug: "half-sleeve" },
+  { id: "solid", label: "Solid", image: "/images/solid.png", slug: "solid" },
+  { id: "oversized", label: "Oversized", image: "/images/oversized.png", slug: "oversized" },
+  { id: "polo", label: "Polo", image: "/images/polo.png", slug: "polo" },
+  { id: "sleeveless", label: "Sleeveless", image: "/images/sleeveless.png", slug: "sleeveless" },
 ];
 export const hoodies: CategoryCircle[] = [
   { id: "all", label: "View All", image: "/images/all-tshirts.webp", slug: "" },
@@ -98,5 +98,6 @@ export const categoryMap: Record<
   "essentials": { title: "ALL T-SHIRTS", items: tshirtsCategories },
   "jackets": { title: "ALL T-SHIRTS", items: tshirtsCategories },
   "new-arrivals": { title: "ALL T-SHIRTS", items: tshirtsCategories },
-  "limited-drops": { title: "ALL T-SHIRTS", items: tshirtsCategories }
+  "limited-drops": { title: "ALL T-SHIRTS", items: tshirtsCategories },
+  "footwear": { title: "ALL T-SHIRTS", items: tshirtsCategories }
 };
