@@ -7,7 +7,8 @@ const nextConfig = {
       'images.pexels.com',
       'pixabay.com',
       "res.cloudinary.com",
-      "bananaclub.co.in"
+      "bananaclub.co.in",
+      "images.remotePatterns"
     ],
   },
 };

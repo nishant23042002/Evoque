@@ -113,15 +113,6 @@ export async function POST(req) {
             });
         }
 
-
-        console.log("SKU INPUT:", {
-            brand,
-            category,
-            slug,
-            brandType: typeof brand,
-            categoryType: typeof category,
-        });
-
         const sku = generateSKU({ brand, category, slug });
 
         // 3️⃣ Calculate total stock from variants
@@ -157,8 +148,6 @@ export async function POST(req) {
 
         return NextResponse.json(product, { status: 201 });
     } catch (error) {
-        console.error(error);
-
         return NextResponse.json(
             { message: error?.message || "Internal Server Error" },
             { status: 500 }
@@ -206,8 +195,6 @@ export async function GET(req) {
 
         return NextResponse.json(products);
     } catch (error) {
-        console.error(error);
-
         return NextResponse.json(
             { message: error?.message || "Internal Server Error" },
             { status: 500 }

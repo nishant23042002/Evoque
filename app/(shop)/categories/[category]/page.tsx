@@ -1,22 +1,26 @@
 import CategoryCircles from "@/components/CategoryCircles";
 import { categoryMap } from "@/constants/categoryItems";
 import { notFound } from "next/navigation";
+import React from "react";
 
 const ProductCategoryPage = ({
     params,
 }: {
-    params: { category: string };
+    params: Promise<{ category: string }>;
 }) => {
-    const categoryData = categoryMap[params.category];
+    // ✅ unwrap async params
+    const { category } = React.use(params);
+
+    const categoryData = categoryMap[category];
 
     if (!categoryData) return notFound();
 
     return (
-        <div className="max-[490px]:ml-14 ml-17 mr-1">
+        <div>
             <CategoryCircles
                 title={categoryData.title}
                 categories={categoryData.items}
-                categorySlug={params.category}
+                categorySlug={category}
             />
         </div>
     );

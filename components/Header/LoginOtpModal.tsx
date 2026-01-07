@@ -4,7 +4,7 @@ import { useState, useRef } from "react";
 import { IoClose } from "react-icons/io5";
 import { useRouter } from "next/navigation";
 import Modal from "../Modal";
-
+import { HiOutlineUser } from "react-icons/hi"
 
 type Step = "phone" | "otp";
 const OTP_LENGTH = 6;
@@ -22,9 +22,9 @@ export default function LoginOtpModal() {
             {/* Trigger */}
             <button
                 onClick={() => setOpen(true)}
-                className="font-semibold text-slate-700 hover:text-brand-red"
+                className="max-[550px]:hidden p-2 font-semibold text-slate-700 hover:text-brand-red"
             >
-                Login
+                <HiOutlineUser size={22} />
             </button>
 
             <Modal open={open} onClose={() => setOpen(false)}>

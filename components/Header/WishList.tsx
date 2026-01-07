@@ -11,7 +11,7 @@ const WishList = () => {
     return (
         <Link
             href="/wishlist"
-            className={`relative hidden md:block group p-2 ${active ? "text-brand-red" : "text-neutral-800"
+            className={`relative group p-2 max-[550px]:hidden ${active ? "text-brand-red" : "text-neutral-800"
                 }`}
         >
             <span className="hidden absolute top-0 right-0 text-slate-700 font-bold">0</span>

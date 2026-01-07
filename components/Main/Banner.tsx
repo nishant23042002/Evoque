@@ -65,14 +65,14 @@ const BannerSlider = ({ banners }: BannerSliderProps) => {
 
     return (
         <div
-            className="relative w-full overflow-hidden my-2 rounded-xl"
+            className="relative w-full overflow-hidden"
         >
             {/* Slides */}
             <div ref={sliderRef} className="flex">
                 {banners.map((src, i) => (
                     <div
                         key={i}
-                        className="relative w-full h-195 aspect-5/1"
+                        className="relative w-full h-200 aspect-5/1"
                     >
                         <Image
                             src={src}

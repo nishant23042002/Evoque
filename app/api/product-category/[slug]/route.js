@@ -17,8 +17,6 @@ export async function GET(req, { params }) {
             return NextResponse.json([], { status: 200 });
         }
 
-        console.log(category);
-
         const products = await Product.find({
             category: category._id,
             isActive: true,

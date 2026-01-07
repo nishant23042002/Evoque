@@ -2,24 +2,30 @@ import { NextResponse } from "next/server";
 import connectDB from "@/lib/db";
 import Category from "@/models/Category";
 
-export async function GET(request, { params }) {
+export async function GET(
+    request: Request,
+    { params }: { params: Promise<{ slug: string }> }
+) {
     try {
+        // ✅ unwrap params
+        const { slug } = await params;
+
         // 1️⃣ Validate slug
-        if (!params?.slug) {
+        if (!slug) {
             return NextResponse.json(
                 { message: "Slug missing in URL" },
                 { status: 400 }
             );
         }
 
-        const slug = decodeURIComponent(params.slug);
+        const decodedSlug = decodeURIComponent(slug);
 
         // 2️⃣ Connect DB
         await connectDB();
 
         // 3️⃣ Find category
         const category = await Category.findOne({
-            slug,
+            slug: decodedSlug,
             isActive: true,
         }).populate({
             path: "products",
@@ -37,10 +43,8 @@ export async function GET(request, { params }) {
         // 5️⃣ Success
         return NextResponse.json(category, { status: 200 });
     } catch (error) {
-        console.error("GET CATEGORY BY SLUG ERROR:", error);
-
         return NextResponse.json(
-            { message: error.message || "Internal Server Error" },
+            { message: error || "Internal Server Error" },
             { status: 500 }
         );
     }

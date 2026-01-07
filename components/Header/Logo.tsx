@@ -3,7 +3,7 @@ import { cn } from "@/lib/utils";
 
 const Logo = ({ className }: { className?: string }) => {
     return (
-        <Link href="/" className="group relative select-none">
+        <Link href="/" className="group relative select-none ml-8">
             <h1
                 className={cn(
                     `
@@ -15,11 +15,11 @@ const Logo = ({ className }: { className?: string }) => {
                     className
                 )}
             >
-                <span className="relative">
+                <span className="relative px-2">
                     EVOQUE
                     <span
                         className="
-                        absolute -bottom-0.5 left-0 h-0.5 w-[70%]
+                        absolute -bottom-1 left-2 h-0.5 w-[50%]
                         bg-brand-red
                         scale-x-0 origin-left
                         transition-transform duration-300

@@ -25,7 +25,7 @@ const FeaturedCategories = () => {
         1200: 4,
         1000: 3,
         750: 2,
-        550: 1,
+        550: 2,
     };
 
     useEffect(() => {
@@ -54,24 +54,24 @@ const FeaturedCategories = () => {
 
 
     return (
-        <section className="w-full flex flex-col justify-center py-12">
+        <section className="px-2 w-full flex flex-col justify-center mb-12 py-16">
             {/* Heading */}
-            <h2 className="text-center text-sm tracking-widest font-semibold text-neutral-700 mb-10">
+            <h2 className="text-center text-sm tracking-widest font-semibold text-neutral-700 mb-3">
                 FEATURED CATEGORIES
             </h2>
 
             {/* Pinterest Grid */}
             <Masonry breakpointCols={breakpoints}
-                className="mx-auto flex gap-4 w-full md:w-[90%]"
+                className="flex gap-2 w-full"
                 columnClassName="masonry-column"
             >
                 {categories.map((item, index) => (
                     <Link
                         href={`/categories/${item.slug}`}
                         key={index}
-                        className="mb-4 block break-inside-avoid"
+                        className="mb-2 block break-inside-avoid"
                     >
-                        <div className="group h-80 relative overflow-hidden rounded-md bg-neutral-100">
+                        <div className="group h-80 relative rounded-sm overflow-hidden bg-neutral-100">
                             {/* Image */}
                             <Image
                                 src={item.image}
@@ -97,8 +97,9 @@ const FeaturedCategories = () => {
 
                             {/* Tag */}
                             {item.name && (
-                                <div className="absolute top-3 left-3 bg-black/50 text-white text-xs font-semibold px-3 py-1 rounded-sm">
-                                    {item.name}
+                                <div className="absolute bottom-3 left-1/2 -translate-x-1/2     
+        z-10 text-white text-sm bg-black/50 font-extrabold px-3 py-1 rounded-sm">
+                                    <span>{item.name}</span>
                                 </div>
                             )}
 

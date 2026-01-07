@@ -5,8 +5,8 @@ import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/
 import MasonryGrid from "@/components/Main/MasonryGrid";
 import { useEffect, useMemo, useState } from "react";
 import EvoqueLogoLoader from "@/components/FlashLogo/EvoqueLoader";
-import AnimatedRatingProgressBar from "@/constants/ratingBar";
 import { Heart } from "lucide-react";
+import { useParams } from "next/navigation";
 
 interface VariantImage {
     url: string;
@@ -81,13 +81,10 @@ const DETAILS_LABELS: Record<keyof Product["details"], string> = {
 };
 
 
-interface ProductPageProps {
-    params: {
-        slug: string;
-    };
-}
-export default function ProductPage({ params }: ProductPageProps) {
-    const { slug } = params;
+
+export default function ProductPage() {
+    const params = useParams<{ slug: string }>();
+    const slug = params.slug;
 
     const [product, setProduct] = useState<Product | null>(null);
     const [loading, setLoading] = useState(true);
@@ -162,14 +159,14 @@ export default function ProductPage({ params }: ProductPageProps) {
 
     return (
         <Container>
-            <div className="flex flex-col">
-                <div className="md:flex gap-2 justify-evenly my-2 min-[768px]:ml-16 ml-13 mr-1">
+            <div className="flex justify-around items-center flex-col">
+                <div className="md:flex gap-2 justify-around my-1 px-1">
                     {/*Left Side */}
-                    <div className="w-full flex gap-2">
+                    <div className="w-full flex gap-2 mt-1">
                         {/* Small Images Left side */}
-                        <div className="absolute opacity-0 sm:opacity-90 z-30 flex flex-col gap-2">
+                        <div className="absolute z-30 flex flex-col gap-2">
                             {images.map((img, i) => (
-                                <div key={i} className="relative w-30 h-30">
+                                <div key={i} className="relative border border-slate-300 w-25 h-25">
                                     <Image src={img} alt={product.productName} fill className="object-cover" />
                                 </div>
                             ))}
@@ -177,16 +174,16 @@ export default function ProductPage({ params }: ProductPageProps) {
                         {/* Big Images Left side */}
                         <div className="relative w-full flex flex-col md:items-center gap-4 overflow-y-auto max-h-[90vh] scrollbar-hide">
                             {images.map((img, i) => (
-                                <Image key={i} src={img} alt={product.productName} width={600} height={600} />
+                                <Image key={i} src={img} alt={product.productName} width={700} height={600} />
                             ))}
                         </div>
                     </div>
 
 
                     {/*Right Side */}
-                    <div className="lg:w-3xl w-full flex flex-col sticky top-20 mr-2">
+                    <div className="lg:w-3xl w-full flex flex-col sticky top-20 px-1">
                         <div className="pb-4 max-md:pt-4 flex justify-between items-center">
-                            <h1 className="text-sm md:text-2xl font-bold text-slate-700">{product.productName.toUpperCase()}</h1>
+                            <h1 className="text-sm md:text-lg font-bold text-slate-700">{product.productName.toUpperCase()}</h1>
                             <Heart className="hover:bg-brand-red rounded-full cursor-pointer duration-200 border p-1 hover:text-white" />
                         </div>
                         <div className="flex gap-3 items-center justify-between">
@@ -219,8 +216,8 @@ export default function ProductPage({ params }: ProductPageProps) {
                                         <Image
                                             src={color.image}
                                             alt={color.name}
-                                            width={60}
-                                            height={60}
+                                            width={70}
+                                            height={70}
                                             className="rounded-sm"
                                         />
                                         <span className="text-[10px]">{color.name}</span>
@@ -243,7 +240,7 @@ export default function ProductPage({ params }: ProductPageProps) {
                                             key={size.variantSku}
                                             disabled={isDisabled}
                                             className={`
-                        relative px-4 py-2 border text-sm font-medium
+                        relative px-3 py-1 border text-sm font-medium
                         transition
                         ${isDisabled
                                                     ? "border-slate-300 text-slate-400 cursor-not-allowed"
@@ -349,15 +346,12 @@ export default function ProductPage({ params }: ProductPageProps) {
                     </div>
                 </div>
 
-                <div className="mt-15">
-                    <div className="max-[768px]:ml-14 ml-19 mr-2">
-                        <h1 className="p-3 text-center text-slate-700 font-bold text-xl">
-                            You may also like
-                        </h1>
-                        <MasonryGrid  />
-                    </div>
-                </div>
 
+            </div>
+            <div className="mt-15">
+                <div>
+                    <MasonryGrid />
+                </div>
             </div>
         </Container>
     );

@@ -16,7 +16,7 @@ const bottomBanners = [
 const Home = () => {
   return (
     <Container className="bg-white">
-      <div className="max-[768px]:ml-12 ml-15 gap-5 px-2">
+      <div className="gap-5">
         {/* Banner */}
         <BannerSlider banners={topBanners} />
 

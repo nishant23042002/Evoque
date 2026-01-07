@@ -6,187 +6,210 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useState, useEffect, useRef } from "react";
 
+const MOBILE_BREAKPOINT = 550;
 
 const LeftMenu = () => {
     const pathname = usePathname();
-
-    const [isSidebarOpen, setIsSidebarOpen] = useState(false);
-    const [isMobile, setIsMobile] = useState(false);
     const sidebarRef = useRef<HTMLDivElement | null>(null);
 
-    useEffect(() => {
-        if (!isSidebarOpen) return;
+    const [isOpen, setIsOpen] = useState(false);
+    const [isMobile, setIsMobile] = useState(false);
 
-        const handleClickOutside = (event: MouseEvent) => {
-            if (
-                sidebarRef.current &&
-                !sidebarRef.current.contains(event.target as Node)
-            ) {
-                setIsSidebarOpen(false);
-            }
-        };
-
-        document.addEventListener("mousedown", handleClickOutside);
-        return () => document.removeEventListener("mousedown", handleClickOutside);
-    }, [isSidebarOpen]);
-
+    /* ---------- SCREEN SIZE ---------- */
     useEffect(() => {
         const handleResize = () => {
-            setIsMobile(window.innerWidth <= 491);
+            setIsMobile(window.innerWidth < MOBILE_BREAKPOINT);
         };
+
         handleResize();
         window.addEventListener("resize", handleResize);
         return () => window.removeEventListener("resize", handleResize);
     }, []);
 
-    const isOpen = isMobile ? false : isSidebarOpen;
+    /* ---------- CLICK OUTSIDE ---------- */
+    useEffect(() => {
+        if (!isOpen) return;
+
+        const handleClickOutside = (e: MouseEvent) => {
+            if (
+                sidebarRef.current &&
+                !sidebarRef.current.contains(e.target as Node)
+            ) {
+                setIsOpen(false);
+            }
+        };
+
+        document.addEventListener("click", handleClickOutside);
+        return () => document.removeEventListener("click", handleClickOutside);
+    }, [isOpen]);
+
+
+
+    /* ---------- WIDTH LOGIC ---------- */
+    const sidebarWidth = !isOpen
+        ? "w-0"
+        : isMobile
+            ? "w-12"
+            : "w-90";
 
     return (
-        <aside
-            ref={sidebarRef}
-            className={`
-                h-screen fixed left-0 top-0 z-40
-                backdrop-blur-xl bg-white/90
-                border-r border-accent-rose
-                transition-all duration-300 ease-in-out
-                ${isOpen ? "w-90 px-2" : "w-12 min-[768px]:w-15 p-1"}
-            `}
-        >
-            {/* Toggle Button */}
-            {!isMobile && (
-                <button
-                    onClick={() => setIsSidebarOpen(!isSidebarOpen)}
-                    className="
-                        absolute right-4 top-5
-                        
-                        p-1.5
-                        
-                        cursor-pointer
-                    "
-                >
-                    {isOpen ? (
-                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.25" strokeLinecap="round" strokeLinejoin="round" className="lucide lucide-x-icon lucide-x"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>
-                    ) : (
-                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.25" strokeLinecap="round" strokeLinejoin="round" className="lucide lucide-menu-icon lucide-menu"><path d="M4 5h16" /><path d="M4 12h16" /><path d="M4 19h16" /></svg>
-                    )}
-                </button>
-            )}
-
-            {/* Logo */}
-            <div className="h-12 flex items-center justify-center">
-                {!isMobile && isOpen && (
-                    <Image alt="text-logo" src="/images/text_logo.svg" width={80} height={80} priority />
+        <>
+            {/* MENU BUTTON (VISIBLE ON ALL SCREENS) */}
+            <button data-menu-btn
+                onClick={() => setIsOpen(!isOpen)}
+                className="
+                    fixed left-1 top-3 z-50
+                    p-2
+                "
+            >
+                {isOpen ? (
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.25">
+                        <path d="M18 6 6 18" />
+                        <path d="m6 6 12 12" />
+                    </svg>
+                ) : (
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.25">
+                        <path d="M4 5h16" />
+                        <path d="M4 12h16" />
+                        <path d="M4 19h16" />
+                    </svg>
                 )}
-            </div>
+            </button>
 
-            {/* Navigation */}
-            <nav className="mt-4 space-y-5">
-                {leftNav.map((group) => (
-                    <div key={group.section}>
-                        {isOpen && (
-                            <h4 className="px-3 mb-2 text-[10px] text-nowrap font-semibold text-slate-500 uppercase">
-                                {group.section}
-                            </h4>
-                        )}
+            {/* SIDEBAR */}
+            <aside
+                ref={sidebarRef}
+                className={`
+                    fixed left-0 top-15 z-40 h-screen bg-white
+                    overflow-hidden
+                    transition-all duration-300 ease-in-out
+                    ${sidebarWidth}
+                `}
+            >
+                <nav className="space-y-6">
+                    {leftNav.map((group) => (
+                        <div key={group.section}>
+                            {/* SECTION TITLE (DESKTOP ONLY & OPEN) */}
+                            {!isMobile && isOpen && (
+                                <h4 className="px-4 mb-2 text-[10px] font-extrabold text-slate-700 uppercase">
+                                    {group.section}
+                                </h4>
+                            )}
 
-                        <div className="space-y-1">
-                            {group.items.map((item) => {
-                                const active = pathname === item.href;
+                            <div className="space-y-1 ">
+                                {group.items.map((item) => {
+                                    const active = pathname === item.href;
 
-                                return (
-                                    <Link
-                                        key={item.title}
-                                        href={item.href}
-                                        className={`
-                                            relative flex items-center gap-3
-                                            rounded-lg p-2.5
-                                            transition-all
-                                            hover:bg-black/5
-                                            ${active ? "bg-black/5" : ""}
-                                        `}
-                                    >
-                                        {/* Active Indicator */}
-                                        {active && (
-                                            <>
-                                                {/* Glow bar */}
-                                                <span className="
-                                                                absolute left-0 top-1/2 -translate-y-1/2
-                                                                h-7 w-1 rounded-r-full
-                                                              bg-brand-red
-                                                                active-glow
-                                                                " />
+                                    return (
+                                        <Link
+                                            key={item.title}
+                                            href={item.href}
+                                            className={`active:scale-[0.98] transition-transform
+                                                        relative flex items-center
+                                                        rounded-sm
+                                                        hover:bg-black/5
+                                                        ${active ? "bg-black/5" : ""}
+                                                    `}
+                                        >
+                                            {/* ACTIVE BAR */}
+                                            {active && (
+                                                <span className="absolute left-0 top-1/2 -translate-y-1/2 h-6 w-1 bg-brand-red" />
+                                            )}
 
-                                                {/* Soft background glow */}
-                                                <span className="
-                                                                absolute inset-0 rounded-lg
-                                                                bg-linear-to-r from-brand-red/10 via-transparent to-transparent
-                                                                pointer-events-none
-                                                            " />
-                                            </>
-                                        )}
-
-
-                                        {/* Image OR Icon */}
-                                        {isOpen && item.image ? (
-                                            <div className="w-10 h-10 rounded-md overflow-hidden shrink-0">
-                                                <Image
-                                                    src={item.image}
-                                                    alt={item.title}
-                                                    fill
-                                                    className={`object-cover border duration-150 hover:border-brand-red ${active ? "border-2 border-brand-red" : ""}`}
-                                                />
-                                            </div>
-                                        ) : (
-                                            <div className="relative group flex justify-start w-full">
+                                            {/* MOBILE → ICON ONLY */}
+                                            {isMobile && (
                                                 <item.icon
                                                     size={20}
-                                                    className={`
-                                                            transition
-                                                            ${active
-                                                            ? "text-brand-red drop-shadow-[0_0_6px_rgba(239,68,68,0.6)]"
-                                                            : "text-slate-700"
-                                                        }
-                                                   `}
+                                                    className={`m-3 ${active ? "text-brand-red" : "text-slate-700"}`}
                                                 />
+                                            )}
 
+                                            {/* DESKTOP → IMAGE OR ICON */}
+                                            {!isMobile && (
+                                                <>
+                                                    {item.image ? (
+                                                        <div
+                                                            className={`
+        relative mx-1 w-full h-14 overflow-hidden rounded-md group
+        transition-all duration-300
+        ${active ? "ring-1 ring-brand-red/40" : ""}
+    `}
+                                                        >
+                                                            <Image
+                                                                src={item.image}
+                                                                alt={item.title}
+                                                                fill
+                                                                className={`
+            object-cover transition-transform duration-300
+            ${active ? "scale-105" : "group-hover:scale-105"}
+        `}
+                                                                sizes="(min-width: 640px) 100vw"
+                                                            />
 
-                                                {!isOpen && !isMobile && (
-                                                    <span
-                                                        className="
-                                                            absolute left-7 top-1/2 -translate-y-1/2
-                                                            bg-black/70 text-white
-                                                            text-[11px] px-2.5 py-1
-                                                            rounded-sm
-                                                            opacity-0 group-hover:opacity-100
-                                                            transition
-                                                            whitespace-nowrap z-50
-                                                        "
-                                                    >
-                                                        {item.title}
-                                                    </span>
-                                                )}
-                                            </div>
-                                        )}
+                                                            {/* OVERLAY */}
+                                                            <div
+                                                                className={`
+                                                                                absolute inset-0 transition-all duration-300
+                                                                                ${active ? "bg-black/45" : "bg-black/30 group-hover:bg-black/40"}
+                                                                            `}
+                                                            />
 
-                                        {/* Title */}
-                                        {isOpen && (
-                                            <h1
-                                                className={`text-sm text-nowrap w-full hover:text-brand-red ${active
-                                                    ? "text-brand-red"
-                                                    : "text-slate-800"
-                                                    }`}
-                                            >
-                                                {item.title}
-                                            </h1>
-                                        )}
-                                    </Link>
-                                );
-                            })}
+                                                            {/* ACTIVE ACCENT */}
+                                                            {active && (
+                                                                <span className="absolute left-0 top-0 h-full w-[3px] bg-brand-red" />
+                                                            )}
+
+                                                            {/* TITLE */}
+                                                            <span
+                                                                className={`
+                                                                            absolute left-3 bottom-2
+                                                                            text-sm font-medium tracking-wide drop-shadow-md
+                                                                            transition-colors duration-200
+                                                                            ${active ? "text-white" : "text-white/90"}
+                                                                        `}
+                                                            >
+                                                                {item.title}
+                                                            </span>
+                                                        </div>
+
+                                                    ) : (
+                                                        <div
+                                                            className={`
+                                                                    flex items-center gap-6 mx-1 px-3 py-2 w-full
+                                                                    transition-all duration-200
+                                                                    ${active ? "bg-brand-red/5" : ""}
+                                                                `}
+                                                        >
+                                                            <item.icon
+                                                                size={20}
+                                                                className={`
+                                                                    transition-all duration-200
+                                                                    ${active ? "text-brand-red scale-105" : "text-slate-700"}
+                                                                `}
+                                                            />
+
+                                                            <span
+                                                                className={`
+                                                                    text-sm whitespace-nowrap transition-colors duration-200
+                                                                    ${active ? "text-brand-red font-medium" : "text-slate-800"}
+                                                                `}
+                                                            >
+                                                                {item.title}
+                                                            </span>
+                                                        </div>
+
+                                                    )}
+                                                </>
+                                            )}
+                                        </Link>
+                                    );
+                                })}
+                            </div>
                         </div>
-                    </div>
-                ))}
-            </nav>
-        </aside>
+                    ))}
+                </nav>
+            </aside>
+        </>
     );
 };
 

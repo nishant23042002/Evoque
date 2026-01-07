@@ -35,7 +35,7 @@ export const leftNav: LeftNavSection[] = [
       },
       {
         title: "New Arrivals",
-        href: "/product-category/new-arrivals",
+        href: "/categories/new-arrivals",
         icon: MdFiberNew,
       },
       {
@@ -51,25 +51,25 @@ export const leftNav: LeftNavSection[] = [
     items: [
       {
         title: "Shirts",
-        href: "/product-category/shirts",
+        href: "/categories/shirts",
         icon: PiShirtFolded,
         image: "/images/category-shirt.jpg",
       },
       {
         title: "T-Shirts",
-        href: "/product-category/t-shirts",
+        href: "/categories/t-shirts",
         icon: PiTShirt,
         image: "/images/category-tshirt.jpg"
       },
       {
         title: "Jeans",
-        href: "/product-category/jeans",
+        href: "/categories/jeans",
         icon: GiArmoredPants,
         image: "/images/category-jeans.jpeg"
       },
       {
         title: "Trousers",
-        href: "/product-category/trousers",
+        href: "/categories/trousers",
         icon: PiPantsDuotone,
         image: "/images/category-trousers.jpg"
       }
@@ -81,13 +81,13 @@ export const leftNav: LeftNavSection[] = [
     items: [
       {
         title: "Essentials",
-        href: "/product-category/essentials",
+        href: "/categories/essentials",
         icon: HiOutlineCollection,
         image: "/images/collections-essentials.jpg"
       },
       {
         title: "Limited Drop",
-        href: "/product-category/limited-drops",
+        href: "/categories/limited-drops",
         icon: HiOutlineFire,
         image: "/images/collections-limited-drops.png"
       },

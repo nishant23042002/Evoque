@@ -2,15 +2,18 @@ import { NextResponse } from "next/server";
 import Product from "@/models/Product";
 import connectDB from "@/lib/db";
 
-export async function GET(req, { params }) {
+export async function GET(
+    req: Request,
+    { params }: { params: Promise<{ slug: string }> }
+) {
     await connectDB();
 
-    const { slug } = params;
+    const { slug } = await params;
 
     const product = await Product.findOne({
         slug,
         isActive: true,
-    }).populate("category");
+    });
 
     if (!product) {
         return NextResponse.json(

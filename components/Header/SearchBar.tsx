@@ -12,7 +12,7 @@ const SearchBar = () => {
                 type="search"
                 placeholder="Search shirts, jeans, jackets..."
                 className="
-                    w-full h-10 pl-10 pr-4
+                    w-full h-10 pl-10
                     rounded-sm
                     bg-accent-rose/60
                     text-sm text-gray-700
