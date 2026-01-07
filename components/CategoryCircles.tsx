@@ -26,7 +26,7 @@ const CategoryCircles = ({ title, categories, categorySlug }: Props) => {
             <div className="flex flex-wrap items-center justify-center gap-6 px-4">
                 {categories.map((item) => {
                     const href = item.slug
-                        ? `/product-category/${categorySlug}/${item.slug}`
+                        ? `/categories/${item.slug}`
                         : `/product-category/${categorySlug}`;
 
                     const isActive = pathname === href;

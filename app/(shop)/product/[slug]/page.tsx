@@ -3,12 +3,39 @@ import Container from "@/components/Container";
 import Image from "next/image";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 import MasonryGrid from "@/components/Main/MasonryGrid";
-import { useEffect, useState } from "react";
-import CometLogoLoader from "@/components/CometLoader";
+import { useEffect, useMemo, useState } from "react";
+import EvoqueLogoLoader from "@/components/FlashLogo/EvoqueLoader";
+import AnimatedRatingProgressBar from "@/constants/ratingBar";
+import { Heart } from "lucide-react";
+
+interface VariantImage {
+    url: string;
+    isPrimary?: boolean;
+}
+
+interface SizeVariant {
+    size: string;
+    variantSku: string;
+    stock: number;
+    isAvailable: boolean;
+}
 
 interface ColorVariant {
+    name: string;
     slug: string;
-    hex: string;
+    hex?: string;
+    images: VariantImage[];
+}
+
+interface Variant {
+    color: ColorVariant;
+    sizes: SizeVariant[];
+    pricing?: {
+        price?: number;
+        originalPrice?: number;
+        discountPercentage?: number;
+    };
+    totalStock: number;
 }
 
 interface Category {
@@ -17,21 +44,42 @@ interface Category {
     slug: string;
 }
 
-
 interface Product {
     _id: string;
     productName: string;
     slug: string;
-    images: string[];
-    price: number;
-    originalPrice: number;
     brand: string;
     rating: number;
     category: Category;
-    colors?: ColorVariant[];
-    sizes?: string[];
+    pricing: {
+        price: number;
+        originalPrice?: number;
+        discountPercentage?: number;
+    };
+    variants: Variant[];
+    details: {
+        material: string,
+        fabricWeight: string,
+        stretch: string,
+        washCare: [string],
+        fitType: string,
+        rise: string,
+        closure: string,
+    },
+    sku: string;
+    reviews: [string]
     description?: string;
 }
+const DETAILS_LABELS: Record<keyof Product["details"], string> = {
+    material: "Material",
+    fabricWeight: "Fabric Weight",
+    stretch: "Stretch",
+    washCare: "Wash Care",
+    fitType: "Fit Type",
+    rise: "Rise",
+    closure: "Closure",
+};
+
 
 interface ProductPageProps {
     params: {
@@ -42,9 +90,11 @@ export default function ProductPage({ params }: ProductPageProps) {
     const { slug } = params;
 
     const [product, setProduct] = useState<Product | null>(null);
-    const [relatedProducts, setRelatedProducts] = useState<Product[]>([]);
     const [loading, setLoading] = useState(true);
+    const [selectedColor, setSelectedColor] = useState<string | null>(null);
 
+    console.log(product);
+    /* ---------------- FETCH PRODUCT ---------------- */
     useEffect(() => {
         let timer: NodeJS.Timeout;
         const fetchData = async () => {
@@ -54,18 +104,6 @@ export default function ProductPage({ params }: ProductPageProps) {
                 if (!res.ok) throw new Error("Product not found");
                 const productData = await res.json();
                 setProduct(productData);
-
-                // 2️⃣ Fetch related products
-                const allRes = await fetch("/api/products");
-                const allProducts: Product[] = await allRes.json();
-
-                const related = allProducts.filter(
-                    (p) =>
-                        p._id !== productData._id &&
-                        p.category._id === productData.category._id
-                );
-
-                setRelatedProducts(related);
             } catch (err) {
                 console.error(err);
             } finally {
@@ -81,31 +119,47 @@ export default function ProductPage({ params }: ProductPageProps) {
         return () => clearTimeout(timer);
     }, [slug]);
 
-    const SIZE_GROUPS = {
-        topwear: ["XS", "S", "M", "L", "XL", "XXL"],
-        bottomwear: ["28", "30", "32", "34", "36", "38", "40"],
-    };
-    const categorySlug = product?.category?.slug?.toLowerCase() ?? "";
 
-    const isBottomWear = ["jeans", "trousers", "pants"].includes(categorySlug);
+    /* ---------------- DERIVED DATA ---------------- */
 
-    const ALL_SIZES = isBottomWear
-        ? SIZE_GROUPS.bottomwear
-        : SIZE_GROUPS.topwear;
+    const colorVariants = useMemo(() => {
+        return (
+            product?.variants.map(v => ({
+                slug: v.color.slug,
+                name: v.color.name,
+                image:
+                    v.color.images.find(img => img.isPrimary)?.url ||
+                    v.color.images[0]?.url,
+            })) ?? []
+        );
+    }, [product]);
 
-    const availableSizes = product?.sizes ?? [];
+    const activeVariant = useMemo(() => {
+        return (
+            product?.variants.find(v => v.color.slug === selectedColor) ??
+            product?.variants[0]
+        );
+    }, [product, selectedColor]);
+
+    const images = activeVariant?.color.images.map(img => img.url) ?? [];
+
+    const sizes =
+        activeVariant?.sizes.filter(s => s.stock > 0) ?? [];
+
+
+
+
 
     if (loading) {
         return (
             <div className="flex items-center justify-center h-[70vh]">
-                <CometLogoLoader />
+                <EvoqueLogoLoader />
             </div>
         );
     }
 
     if (!product) return <p className="ml-20">Product not found</p>;
 
-    const images = Array(4).fill(product.images);
     return (
         <Container>
             <div className="flex flex-col">
@@ -116,14 +170,14 @@ export default function ProductPage({ params }: ProductPageProps) {
                         <div className="absolute opacity-0 sm:opacity-90 z-30 flex flex-col gap-2">
                             {images.map((img, i) => (
                                 <div key={i} className="relative w-30 h-30">
-                                    <Image src={product.images[1]} alt="" fill className="object-cover" />
+                                    <Image src={img} alt={product.productName} fill className="object-cover" />
                                 </div>
                             ))}
                         </div>
                         {/* Big Images Left side */}
                         <div className="relative w-full flex flex-col md:items-center gap-4 overflow-y-auto max-h-[90vh] scrollbar-hide">
                             {images.map((img, i) => (
-                                <Image key={i} src={product.images[0]} alt={product.productName} width={600} height={600} />
+                                <Image key={i} src={img} alt={product.productName} width={600} height={600} />
                             ))}
                         </div>
                     </div>
@@ -131,174 +185,176 @@ export default function ProductPage({ params }: ProductPageProps) {
 
                     {/*Right Side */}
                     <div className="lg:w-3xl w-full flex flex-col sticky top-20 mr-2">
-                        <div className="py-4 flex justify-around items-center">
-                            <h1 className="text-sm md:text-xl font-bold text-slate-900">{product.productName}</h1>
-                            <p className="text-sm md:text-xl font-semibold text-slate-900">{product.price} <span className="text-gray-700 text-[11px] line-through decoration-red-500">{product.originalPrice}</span></p>
+                        <div className="pb-4 max-md:pt-4 flex justify-between items-center">
+                            <h1 className="text-sm md:text-2xl font-bold text-slate-700">{product.productName.toUpperCase()}</h1>
+                            <Heart className="hover:bg-brand-red rounded-full cursor-pointer duration-200 border p-1 hover:text-white" />
+                        </div>
+                        <div className="flex gap-3 items-center justify-between">
+                            <div className="flex justify-center items-center gap-3">
+                                <span className="text-brand-red text-xl font-semibold">₹ {product.pricing.price}</span>
+                                <span className="font-semibold text-sm text-slate-700 line-through decoration-red-500">{product.pricing.originalPrice}</span>
+                            </div>
+                            <div>
+                                <span className="text-white bg-brand-red p-1 font-semibold rounded-sm">- {product.pricing.discountPercentage}%</span>
+                            </div>
+                        </div>
+                        <div>
+                            <span className="text-[10px] font-semibold text-slate-700">SKU: {product.sku}</span>
                         </div>
 
 
                         {/*COLORS*/}
                         <div className="py-4 flex flex-col">
-                            <h1 className="text-center font-extrabold mb-2 text-slate-900">Colors</h1>
-                            <div className="w-full flex flex-wrap justify-center items-center gap-2">
-                                {images.map((img, i) => (
-                                    <Image
-                                        key={i}
-                                        src={product.images[0]}
-                                        alt={product.productName}
-                                        width={70}
-                                        height={70}
-                                    />
+                            <h1 className="font-extrabold mb-2 text-slate-700">Colors</h1>
+                            <div className="w-full flex flex-wrap items-center gap-2">
+                                {colorVariants.map(color => (
+                                    <button
+                                        key={color.slug}
+                                        onClick={() => setSelectedColor(color.slug)}
+                                        className={`border-2 cursor-pointer p-0.5 rounded-md hover:border-accent-peach ${selectedColor === color.slug
+                                            ? "border-2 border-accent-peach"
+                                            : ""
+                                            }`}
+                                    >
+                                        <Image
+                                            src={color.image}
+                                            alt={color.name}
+                                            width={60}
+                                            height={60}
+                                            className="rounded-sm"
+                                        />
+                                        <span className="text-[10px]">{color.name}</span>
+                                    </button>
                                 ))}
-
                             </div>
                         </div>
 
 
-                        {/*SIZES*/}
+                        {/* SIZES */}
+                        <div className="mt-4">
+                            <h3 className="font-bold mb-2 text-slate-700">Sizes</h3>
 
-                        {product.sizes && (
-                            <div className="py-4 flex flex-col justify-center items-center">
-                                <h1 className="font-extrabold mb-2">Sizes</h1>
+                            <div className="flex flex-wrap items-center gap-2">
+                                {sizes.map(size => {
+                                    const isDisabled = !size.isAvailable || size.stock <= 0;
 
-                                <div className="max-w-140 flex flex-wrap gap-3">
-                                    {ALL_SIZES?.map((size) => {
-                                        const isAvailable = availableSizes.includes(size);
+                                    return (
+                                        <button
+                                            key={size.variantSku}
+                                            disabled={isDisabled}
+                                            className={`
+                        relative px-4 py-2 border text-sm font-medium
+                        transition
+                        ${isDisabled
+                                                    ? "border-slate-300 text-slate-400 cursor-not-allowed"
+                                                    : "border-black hover:bg-black hover:text-white cursor-pointer"}
+                    `}
+                                        >
+                                            {size.size}
 
-                                        return (
-                                            <span
-                                                key={size}
-                                                className={`
-                                                            border p-2 select-none
-                                                            ${isAvailable
-                                                        ? "cursor-pointer border-black hover:bg-black hover:text-white hoverEffect"
-                                                        : "cursor-not-allowed border-gray-300 text-gray-400 line-through opacity-60"
-                                                    }
-                                                            `}
-                                            >
-
-                                                {size}
-                                            </span>
-                                        );
-                                    })}
-                                </div>
-
-                                <p className="text-[11px] sm:text-sm my-2">
-                                    FREE 1-2 day delivery on 5k+ pincodes
-                                </p>
+                                            {/* Cross mark for unavailable sizes */}
+                                            {isDisabled && (
+                                                <>
+                                                    <span className="absolute inset-0 flex items-center justify-center">
+                                                        <span className="w-full h-[1px] bg-slate-400 rotate-45 absolute" />
+                                                        <span className="w-full h-[1px] bg-slate-400 -rotate-45 absolute" />
+                                                    </span>
+                                                </>
+                                            )}
+                                        </button>
+                                    );
+                                })}
                             </div>
-                        )}
+                        </div>
 
-
-                        <div className="w-full my-4 px-6">
-                            <button className="bg-black w-full text-white font-bold p-5">ADD TO BAG</button>
+                        <div className="flex justify-between gap-3 w-full my-4">
+                            <button className="cursor-pointer w-full rounded-[5px] bg-black  text-white font-bold p-5">ADD TO BAG</button>
+                            <button className="cursor-pointer w-full rounded-[5px] bg-brand-red-dark  text-white font-bold p-5">BUY NOW</button>
                         </div>
                         {/* Accordion */}
-                        <div className="px-6 max-h-75 overflow-y-auto scrollbar-hide">
-                            <Accordion type="single" collapsible>
-                                <AccordionItem value="item-1">
-                                    <AccordionTrigger className="font-semibold cursor-pointer">DETAILS</AccordionTrigger>
+                        <div className="max-h-75 overflow-y-auto scrollbar-hide">
+                            <Accordion type="single" collapsible className="mt-8 border border-slate-200 p-2">
+
+                                {/* DESCRIPTION */}
+                                {product.description && (
+                                    <AccordionItem value="description">
+                                        <AccordionTrigger>Description</AccordionTrigger>
+                                        <AccordionContent>
+                                            <p className="text-sm text-gray-700 leading-relaxed">
+                                                {product.description}
+                                            </p>
+                                        </AccordionContent>
+                                    </AccordionItem>
+                                )}
+
+                                {/* PRODUCT DETAILS */}
+                                <AccordionItem value="details">
+                                    <AccordionTrigger>Product Details</AccordionTrigger>
                                     <AccordionContent>
-                                        <div className="product-accordion-content">
-                                            <section className="mb-4">
-                                                <p className="text-sm leading-tight text-gray-700">
-                                                    Tan suede-like jacket with a relaxed fit, featuring a notch lapel and snap button closure.
-                                                    Crafted from a durable polyester blend with spandex for flexibility, it offers a stylish
-                                                    yet comfortable look. Perfect for layering during cooler days, this jacket combines
-                                                    functionality with modern design.
-                                                </p>
-                                            </section>
+                                        <ul className="text-sm text-gray-700 space-y-2">
+                                            {Object.entries(product.details).map(([key, value]) => (
+                                                <li key={key} className="flex gap-2">
+                                                    <span className="font-semibold min-w-30">
+                                                        {DETAILS_LABELS[key as keyof Product["details"]]}
+                                                    </span>
 
-
-                                            <section className="mb-4">
-                                                <h3 className="text-sm font-semibold text-slate-900 mb-1">Size &amp; Fit</h3>
-                                                <ul className="text-sm text-gray-700 list-disc leading-tight pl-5 space-y-1">
-                                                    <li><strong>Fit:</strong> Relaxed Fit</li>
-                                                    <li><strong>Size:</strong> Model is wearing size M</li>
-                                                </ul>
-                                            </section>
-
-                                            <section className="mb-4">
-                                                <h3 className="text-sm leading-tight font-semibold text-slate-900 mb-1">Wash Care</h3>
-                                                <p className="text-sm leading-tight text-gray-700">Machine Wash</p>
-                                            </section>
-
-
-                                            <section className="mb-4">
-                                                <h3 className="text-sm font-semibold text-slate-900 mb-1">Specifications</h3>
-                                                <ul className="text-sm text-gray-700 leading-tight list-disc pl-5 space-y-1">
-                                                    <li>Casual Wear</li>
-                                                    <li>Plain</li>
-                                                    <li>Classic</li>
-                                                    <li>Poly Blend</li>
-                                                    <li>Full Sleeve</li>
-                                                </ul>
-                                            </section>
-
-
-                                            <section>
-                                                <p className="text-xs text-gray-500">
-                                                    <strong>SKU:</strong> 4MSK8779-01
-                                                </p>
-                                            </section>
-
-                                        </div>
-
-                                    </AccordionContent>
-                                </AccordionItem>
-                            </Accordion>
-                            <Accordion type="single" collapsible>
-                                <AccordionItem value="item-1">
-                                    <AccordionTrigger className="font-semibold cursor-pointer">DELIVERY</AccordionTrigger>
-                                    <AccordionContent>
-
-                                    </AccordionContent>
-                                </AccordionItem>
-                            </Accordion>
-                            <Accordion type="single" collapsible>
-                                <AccordionItem value="item-1">
-                                    <AccordionTrigger className="font-semibold cursor-pointer">RETURNS</AccordionTrigger>
-                                    <AccordionContent>
-                                        <ul className="leading-5 sm:leading-7">
-                                            <li>
-
-                                                1.
-                                                Hassle-free returns within 7 days under specific product and promotion conditions.
-                                            </li>
-                                            <li>
-                                                2.
-                                                Refunds for prepaid orders revert to the original payment method, while COD orders receive a wallet refund.
-                                            </li>
-                                            <li>
-                                                3.
-                                                Report defective, incorrect, or damaged items within 24 hours of delivery.
-                                            </li>
-                                            <li>
-                                                4.
-                                                Products bought during special promotions like BOGO are not eligible for returns.
-                                            </li>
-                                            <li>
-                                                5.
-                                                For excessive returns, reverse shipment fee upto Rs 100 can be charged, which will be deducted from the refund
-                                            </li>
-                                            <li>
-                                                6.
-                                                Non-returnable items include accessories, sunglasses, perfumes, masks, and innerwear due to hygiene concerns.
-                                            </li>
+                                                    <span>
+                                                        {Array.isArray(value) ? value.join(", ") : value}
+                                                    </span>
+                                                </li>
+                                            ))}
                                         </ul>
                                     </AccordionContent>
                                 </AccordionItem>
+                                <AccordionItem value="details">
+                                    <AccordionTrigger>Returns and Exchange</AccordionTrigger>
+                                    <AccordionContent>
+                                        <ul className="text-sm text-gray-700 space-y-2">
+                                            {Object.entries(product.details).map(([key, value]) => (
+                                                <li key={key} className="flex gap-2">
+                                                    <span className="font-semibold min-w-30">
+                                                        {DETAILS_LABELS[key as keyof Product["details"]]}
+                                                    </span>
+
+                                                    <span>
+                                                        {Array.isArray(value) ? value.join(", ") : value}
+                                                    </span>
+                                                </li>
+                                            ))}
+                                        </ul>
+                                    </AccordionContent>
+                                </AccordionItem>
+                                <AccordionItem value="details">
+                                    <AccordionTrigger>Exclusive Offers</AccordionTrigger>
+                                    <AccordionContent>
+                                        <ul className="text-sm text-gray-700 space-y-2">
+                                            {Object.entries(product.details).map(([key, value]) => (
+                                                <li key={key} className="flex gap-2">
+                                                    <span className="font-semibold min-w-30">
+                                                        {DETAILS_LABELS[key as keyof Product["details"]]}
+                                                    </span>
+
+                                                    <span>
+                                                        {Array.isArray(value) ? value.join(", ") : value}
+                                                    </span>
+                                                </li>
+                                            ))}
+                                        </ul>
+                                    </AccordionContent>
+                                </AccordionItem>
+
                             </Accordion>
+
                         </div>
                     </div>
                 </div>
 
-                <div className="mt-20">
-                    <h1 className="p-3 text-center font-bold text-xl">
-                        You may also like
-                    </h1>
+                <div className="mt-15">
                     <div className="max-[768px]:ml-14 ml-19 mr-2">
-                        <MasonryGrid />
+                        <h1 className="p-3 text-center text-slate-700 font-bold text-xl">
+                            You may also like
+                        </h1>
+                        <MasonryGrid  />
                     </div>
                 </div>
 

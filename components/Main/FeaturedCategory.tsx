@@ -4,7 +4,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { useEffect, useState } from "react";
 import Masonry from "react-masonry-css";
-import CometLogoLoader from "../CometLoader";
+import CometLogoLoader from "../FlashLogo/EvoqueLoader";
 
 interface Category {
     name: string;
@@ -54,7 +54,7 @@ const FeaturedCategories = () => {
 
 
     return (
-        <section className="w-full flex flex-col justify-center py-10">
+        <section className="w-full flex flex-col justify-center py-12">
             {/* Heading */}
             <h2 className="text-center text-sm tracking-widest font-semibold text-neutral-700 mb-10">
                 FEATURED CATEGORIES
@@ -67,7 +67,7 @@ const FeaturedCategories = () => {
             >
                 {categories.map((item, index) => (
                     <Link
-                        href={`/product-category/${item.slug}`}
+                        href={`/categories/${item.slug}`}
                         key={index}
                         className="mb-4 block break-inside-avoid"
                     >

@@ -1,20 +1,32 @@
-import { cn } from "@/lib/utils";
 import Link from "next/link";
+import { cn } from "@/lib/utils";
 
 const Logo = ({ className }: { className?: string }) => {
     return (
-        <Link href="/" className="flex items-center">
+        <Link href="/" className="group relative select-none">
             <h1
                 className={cn(
                     `
-                    text-lg tracking-widest font-semibold
-                    text-brand-red uppercase
-                    hover:opacity-80 transition
+                    relative z-10
+                    text-[18px] max-lg:text-[12px]
+                    font-medium tracking-[0.45em]
+                    uppercase text-neutral-900
                     `,
                     className
                 )}
             >
-                EVOQU<span className="text-red-400">E</span>
+                <span className="relative">
+                    EVOQUE
+                    <span
+                        className="
+                        absolute -bottom-0.5 left-0 h-0.5 w-[70%]
+                        bg-brand-red
+                        scale-x-0 origin-left
+                        transition-transform duration-300
+                        group-hover:scale-x-100
+                    "
+                    />
+                </span>
             </h1>
         </Link>
     );

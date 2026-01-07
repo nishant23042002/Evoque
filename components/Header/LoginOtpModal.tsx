@@ -5,6 +5,7 @@ import { IoClose } from "react-icons/io5";
 import { useRouter } from "next/navigation";
 import Modal from "../Modal";
 
+
 type Step = "phone" | "otp";
 const OTP_LENGTH = 6;
 

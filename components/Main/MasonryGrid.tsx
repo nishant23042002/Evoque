@@ -5,20 +5,40 @@ import dynamic from "next/dynamic";
 import Image from "next/image";
 import Link from "next/link";
 import { useEffect, useState } from "react";
-import CometLogoLoader from "../CometLoader";
+import EvoqueLogoLoader from "../FlashLogo/EvoqueLoader";
 
 const Masonry = dynamic(() => import("react-masonry-css"), { ssr: false });
 
-interface ColorVariant {
+interface VariantImage {
+    url: string;
+    isPrimary?: boolean;
+}
+
+interface VariantColor {
+    name: string;
     slug: string;
-    hex: string;
+    hex?: string;
+    images: VariantImage[];
+}
+
+interface SizeVariant {
+    size: string;
+    stock: number;
+    isAvailable?: boolean;
 }
 
 interface Variant {
-    size: string;
-    color: ColorVariant;
-    stock: number;
+    color: VariantColor;
+    sizes: SizeVariant[];
+    pricing?: {
+        price?: number;
+        originalPrice?: number;
+        discountPercentage?: number;
+    };
+    totalStock?: number;
 }
+
+
 
 interface Pricing {
     price: number;
@@ -33,14 +53,10 @@ interface Products {
     brand: string;
     category: string;
     fit: string;
-
-    images: string[];
-
     pricing: Pricing;
     rating: number;
     variants: Variant[];
 }
-
 
 
 export default function MasonryGrid() {
@@ -55,6 +71,18 @@ export default function MasonryGrid() {
         800: 2,
         410: 1,
     };
+
+    const getPrimaryImage = (variants: Variant[]) => {
+        const images = variants?.[0]?.color?.images;
+
+        if (!images || images.length === 0) return "/placeholder.png";
+
+        return images.find(img => img.isPrimary)?.url || images[0].url;
+    };
+
+
+    console.log(items);
+
     useEffect(() => {
         // Fetch products from backend API
         const fetchProducts = async () => {
@@ -75,12 +103,15 @@ export default function MasonryGrid() {
         fetchProducts();
     }, []);
 
+    useEffect(() => {
+        document.body.style.overflow = loading ? "hidden" : "auto";
+    }, [loading]);
 
 
     if (loading) {
         return (
             <div className="flex flex-nowrap items-center justify-center h-[70vh]">
-                <CometLogoLoader />
+                <EvoqueLogoLoader />
             </div>
         );
     }
@@ -88,8 +119,8 @@ export default function MasonryGrid() {
     if (!items.length) return <p className="text-center my-10">Loading products...</p>;
 
     return (
-        <div>
-            <div>
+        <div className="mt-12">
+            <div className="hidden">
                 <h2 className="text-center text-sm tracking-widest font-semibold text-neutral-700 my-5">
                     New And Popular
                 </h2>
@@ -110,9 +141,7 @@ export default function MasonryGrid() {
                 columnClassName="masonry-column"
             >
                 {items.map((item, index) => {
-                    const colors = Array.from(
-                        new Map(item.variants.map(v => [v.color.slug, v.color])).values()
-                    );
+                    const colors = item.variants.map(v => v.color);
 
                     return (
                         <Link key={index} href={`/product/${item.slug}`} className="block">
@@ -122,8 +151,8 @@ export default function MasonryGrid() {
                             >
                                 {/* IMAGE */}
                                 <Image
-                                    src={item.images[0]}
-                                    alt="product"
+                                    src={getPrimaryImage(item.variants)}
+                                    alt={item.productName}
                                     fill
                                     className="object-cover transition-all duration-300 group-hover:scale-105"
                                 />
@@ -157,6 +186,6 @@ export default function MasonryGrid() {
                     )
                 })}
             </Masonry>
-        </div>
+        </div >
     );
 }

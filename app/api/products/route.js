@@ -49,12 +49,11 @@ export async function POST(req) {
             brand,
             category: categorySlug,
             fit,
-            images,
             offers,
             pricing,
             rating,
             reviews,
-            variants,
+            variants = [],
             description,
             details,
             seo,
@@ -76,24 +75,42 @@ export async function POST(req) {
         }
 
         // Upload images → category-based folders + store public_id
-        let uploadedImages = [];
+        const uploadedVariants = [];
 
-        if (images?.length) {
-            for (let i = 0; i < images.length; i++) {
-                const img = images[i];
+        for (const variant of variants) {
+            const { color, sizes = [], pricing: variantPricing } = variant;
 
-                const publicId = `${slug}-${i + 1}`;
+            const uploadedImages = [];
 
+            for (let i = 0; i < (color.images || []).length; i++) {
                 const uploaded = await uploadImage(
-                    img,
-                    `evoque/products/${category.slug}/${slug}`,
-                    publicId
+                    color.images[i].url,
+                    `evoque/products/${category.slug}/${slug}/${color.slug}`,
+                    `${slug}-${color.slug}-${i + 1}`
                 );
-
                 if (uploaded) {
-                    uploadedImages.push(uploaded.url);
+                    uploadedImages.push({
+                        url: uploaded.url,
+                        publicId: uploaded.publicId,
+                        isPrimary: color.images[i].isPrimary || false,
+                    });
                 }
             }
+
+            const totalStock = sizes.reduce(
+                (sum, s) => sum + (s.stock || 0),
+                0
+            );
+
+            uploadedVariants.push({
+                color: {
+                    ...color,
+                    images: uploadedImages,
+                },
+                sizes,
+                pricing: variantPricing,
+                totalStock,
+            });
         }
 
 
@@ -107,12 +124,10 @@ export async function POST(req) {
 
         const sku = generateSKU({ brand, category, slug });
 
-
         // 3️⃣ Calculate total stock from variants
-        const totalStock = variants?.reduce(
-            (sum, v) => sum + (v.stock || 0),
-            0
-        );
+        const totalStock = uploadedVariants.reduce((sum, v) => sum + (v.totalStock || 0), 0);
+
+
 
         // 4️⃣ Create product
         const product = await Product.create({
@@ -122,12 +137,11 @@ export async function POST(req) {
             brand,
             category: category._id,
             fit,
-            images: uploadedImages,
             offers,
             pricing,
             rating,
             reviews,
-            variants,
+            variants: uploadedVariants,
             totalStock,
             description,
             details,

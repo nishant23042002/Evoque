@@ -1,5 +1,4 @@
 import mongoose from "mongoose";
-import { type } from "os";
 
 /* -------------------- SUB SCHEMAS -------------------- */
 
@@ -15,17 +14,41 @@ const reviewSchema = new mongoose.Schema(
 );
 
 // 🎨 Variant schema
-const variantSchema = new mongoose.Schema(
+const sizeVariantSchema = new mongoose.Schema(
     {
-        size: String,
-        color: {
-            slug: String,
-            hex: String,
-        },
+        size: { type: String, required: true },
+        variantSku: { type: String, required: true },
         stock: { type: Number, default: 0 },
+        isAvailable: { type: Boolean, default: true },
     },
     { _id: false }
 );
+
+const colorVariantSchema = new mongoose.Schema(
+    {
+        color: {
+            name: { type: String, required: true },
+            slug: { type: String, required: true },
+            hex: { type: String },
+            images: [
+                {
+                    url: { type: String, required: true },
+                    publicId: String,
+                    isPrimary: { type: Boolean, default: false },
+                },
+            ],
+        },
+        sizes: [sizeVariantSchema],
+        pricing: {
+            price: Number,
+            originalPrice: Number,
+            discountPercentage: Number,
+        },
+        totalStock: { type: Number, default: 0 },
+    },
+    { _id: false }
+);
+
 
 /* -------------------- MAIN PRODUCT SCHEMA -------------------- */
 
@@ -43,7 +66,7 @@ const productSchema = new mongoose.Schema(
         fit: String,
 
         // 🖼 Media
-        images: [{ type: String }],
+        variants: [colorVariantSchema],
 
 
         // 🏷 Offers
@@ -69,8 +92,7 @@ const productSchema = new mongoose.Schema(
         rating: { type: Number, default: 0 },
         reviews: [reviewSchema],
 
-        // 🎨 Variants & Stock
-        variants: [variantSchema],
+        // 🎨 Stock
         totalStock: { type: Number, default: 0 },
 
         // 📄 Product Info

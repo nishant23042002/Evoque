@@ -18,10 +18,10 @@ export const shirtsCategories: CategoryCircle[] = [
 /* JEANS */
 export const jeansCategories: CategoryCircle[] = [
   { id: "all", label: "View All", image: "/images/all-bottoms.webp", slug: "" },
-  { id: "slim", label: "Slim", image: "/images/slim-fit-jeans.jpg", slug: "slim" },
-  { id: "regular-fit", label: "Regular Fit", image: "/images/regular-fit-jeans.webp", slug: "regular-fit" },
-  { id: "baggy-fit", label: "Baggy Fit", image: "/images/baggy-fit-jeans.jpg", slug: "baggy-fit" },
-  { id: "straight", label: "Straight", image: "/images/straight-fit-jeans.jpg", slug: "straight" },
+  { id: "slim", label: "Slim", image: "/images/slim-fit-jeans.png", slug: "slim" },
+  { id: "regular-fit", label: "Regular Fit", image: "/images/regular-fit-jeans.png", slug: "regular-fit" },
+  { id: "baggy-fit", label: "Baggy Fit", image: "/images/baggy-jeans.png", slug: "baggy-fit" },
+  { id: "straight", label: "Straight", image: "/images/straight-fit-jeans.png", slug: "straight" },
 ];
 
 /* TROUSERS */
@@ -83,6 +83,13 @@ export const limitedDrops: CategoryCircle[] = [
   { id: "polo", label: "Polo", image: "/images/polo.webp", slug: "polo" },
   { id: "half-sleeve", label: "Half Sleeve", image: "/images/half-sleeves.webp", slug: "half-sleeve" },
 ];
+export const sweatshirts: CategoryCircle[] = [
+  { id: "all", label: "View All", image: "/images/all-tshirts.webp", slug: "" },
+  { id: "plain", label: "Plain", image: "/images/plain-tshirt.webp", slug: "plain" },
+  { id: "oversized", label: "Oversized", image: "/images/oversized.webp", slug: "oversized" },
+  { id: "polo", label: "Polo", image: "/images/polo.webp", slug: "polo" },
+  { id: "half-sleeve", label: "Half Sleeve", image: "/images/half-sleeves.webp", slug: "half-sleeve" },
+];
 
 /* CATEGORY MAP */
 export const categoryMap: Record<
@@ -99,5 +106,5 @@ export const categoryMap: Record<
   "jackets": { title: "ALL T-SHIRTS", items: tshirtsCategories },
   "new-arrivals": { title: "ALL T-SHIRTS", items: tshirtsCategories },
   "limited-drops": { title: "ALL T-SHIRTS", items: tshirtsCategories },
-  "footwear": { title: "ALL T-SHIRTS", items: tshirtsCategories }
+  "sweatshirts": { title: "ALL Sweatshirts", items: tshirtsCategories }
 };

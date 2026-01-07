@@ -1,24 +1,64 @@
 import mongoose from "mongoose";
 
+/* ---------------- SUB CATEGORY ---------------- */
+
+const subCategorySchema = new mongoose.Schema(
+    {
+        name: {
+            type: String,
+            required: true, // Plain, Slim, Baggy Fit
+            trim: true,
+        },
+        slug: {
+            type: String,
+            required: true, // plain, slim, baggy-fit
+            lowercase: true,
+        },
+        image: {
+            type: String, // circle image
+            required: true,
+        },
+        isActive: {
+            type: Boolean,
+            default: true,
+        },
+    },
+    { _id: false }
+);
+
+/* ---------------- MAIN CATEGORY ---------------- */
+
 const categorySchema = new mongoose.Schema(
     {
         name: {
             type: String,
-            required: true,
+            required: true, // Shirts, Jeans
             trim: true,
             unique: true,
         },
 
         slug: {
             type: String,
-            required: true,
+            required: true, // shirts, jeans
             lowercase: true,
             unique: true,
             index: true,
         },
 
-        image: { type: String },
-        isFeatured: { type: Boolean, default: true },
+        image: {
+            type: String, // banner / hero image
+        },
+
+        subCategories: {
+            type: [subCategorySchema],
+            default: [],
+        },
+
+        isFeatured: {
+            type: Boolean,
+            default: true,
+        },
+
         isActive: {
             type: Boolean,
             default: true,
@@ -26,19 +66,8 @@ const categorySchema = new mongoose.Schema(
     },
     {
         timestamps: true,
-        toJSON: { virtuals: true },
-        toObject: { virtuals: true },
     }
 );
-
-categorySchema.virtual("products", {
-    ref: "Product",
-    localField: "_id",
-    foreignField: "category",
-});
-categorySchema.set("toJSON", { virtuals: true });
-categorySchema.set("toObject", { virtuals: true });
-
 
 export default mongoose.models.Category ||
     mongoose.model("Category", categorySchema);

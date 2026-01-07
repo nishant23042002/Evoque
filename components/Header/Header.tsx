@@ -18,14 +18,14 @@ const Header = () => {
             <div className="flex items-center justify-between px-4 h-16">
 
                 {/* LEFT — Logo */}
-                <div className="ml-14 flex items-center gap-2">
+                <div className="max-md:ml-10 ml-14 flex items-center gap-2">
                     <Logo />
                 </div>
 
                 {/* CENTER — Search */}
                 <div className="
-                    hidden md:flex
-                    flex-1 max-w-xl mx-6
+                    md:flex
+                    flex-1 max-w-xl mx-2
                 ">
                     <SearchBar />
                 </div>
