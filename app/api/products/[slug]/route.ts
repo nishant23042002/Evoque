@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
-import Product from "@/models/Product";
 import connectDB from "@/lib/db";
+import Product from "@/models/Product";
 
 export async function GET(
     req: Request,
@@ -10,10 +10,20 @@ export async function GET(
 
     const { slug } = await params;
 
+    const decodedSlug = decodeURIComponent(slug);
+
+    if (!slug) {
+        return NextResponse.json(
+            { message: "Slug param missing" },
+            { status: 400 }
+        );
+    }
+
     const product = await Product.findOne({
-        slug,
+        slug: decodedSlug,
         isActive: true,
-    });
+    }).populate("category", "name slug")
+        .lean();
 
     if (!product) {
         return NextResponse.json(

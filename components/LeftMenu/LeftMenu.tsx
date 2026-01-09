@@ -57,8 +57,8 @@ const LeftMenu = () => {
             {/* MENU BUTTON (VISIBLE ON ALL SCREENS) */}
             <button data-menu-btn
                 onClick={() => setIsOpen(!isOpen)}
-                className="
-                    fixed left-1 top-3 z-50
+                className="cursor-pointer
+                    fixed left-1 top-4 z-50
                     p-2
                 "
             >
@@ -80,7 +80,7 @@ const LeftMenu = () => {
             <aside
                 ref={sidebarRef}
                 className={`
-                    fixed left-0 top-15 z-40 h-screen bg-white
+                    fixed left-0 top-16.25 py-1 z-40 h-screen bg-white
                     overflow-hidden
                     transition-all duration-300 ease-in-out
                     ${sidebarWidth}
@@ -156,7 +156,7 @@ const LeftMenu = () => {
 
                                                             {/* ACTIVE ACCENT */}
                                                             {active && (
-                                                                <span className="absolute left-0 top-0 h-full w-[3px] bg-brand-red" />
+                                                                <span className="absolute left-0 top-0 h-full w-0.75 bg-brand-red" />
                                                             )}
 
                                                             {/* TITLE */}

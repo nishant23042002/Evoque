@@ -35,6 +35,8 @@ const colorVariantSchema = new mongoose.Schema(
                     url: { type: String, required: true },
                     publicId: String,
                     isPrimary: { type: Boolean, default: false },
+                    isHover: { type: Boolean, default: false },
+                    order: { type: Number, default: 0 },
                 },
             ],
         },
@@ -54,6 +56,15 @@ const colorVariantSchema = new mongoose.Schema(
 
 const productSchema = new mongoose.Schema(
     {
+        attributes: {
+            sleeve: { type: String, index: true },       // full, half
+            pattern: { type: String, index: true },      // solid, printed
+            occasion: [{ type: String, index: true }],   // casual, party
+            fabric: { type: String, index: true },       // cotton, linen
+            fitType: { type: String, index: true },      // slim, regular
+            season: [{ type: String, index: true }],     // summer, winter
+        },
+
         // 🔑 Identity
         productName: { type: String, required: true },
         slug: { type: String, required: true, unique: true },
@@ -62,6 +73,15 @@ const productSchema = new mongoose.Schema(
         // 🏷 Classification
         brand: { type: String, index: true },
         category: { type: mongoose.Schema.Types.ObjectId, ref: "Category", index: true },
+        subCategory: {
+            name: String,
+            image: String,
+            slug: {
+                type: String,
+                lowercase: true,
+                index: true
+            }
+        },
 
         fit: String,
 
@@ -107,6 +127,20 @@ const productSchema = new mongoose.Schema(
             closure: String,
         },
 
+        sizeChart: {
+            image: String,
+            measurements: [
+                {
+                    size: String,
+                    chest: String,
+                    length: String,
+                    shoulder: String,
+                    sleeve: String,
+                },
+            ],
+        },
+
+
         // 🔍 SEO
         seo: {
             title: String,
@@ -124,6 +158,34 @@ const productSchema = new mongoose.Schema(
 
         // 🏷 Tags
         tags: [String],
+        badges: {
+            type: [
+                {
+                    type: { type: String },
+                    label: { type: String },
+                },
+            ],
+            default: [],
+        },
+
+
+        merchandising: {
+            priority: { type: Number, default: 0 },
+            collection: String,        // summer-drop, party-edit
+            displayOrder: Number,
+        },
+
+        search: {
+            keywords: [String],
+            synonyms: [String],
+            popularityScore: { type: Number, default: 0 },
+        },
+
+        analytics: {
+            views: { type: Number, default: 0 },
+            cartAdds: { type: Number, default: 0 },
+            purchases: { type: Number, default: 0 },
+        },
 
         // ⚙ Admin Controls
         isActive: { type: Boolean, default: true },
@@ -134,6 +196,20 @@ const productSchema = new mongoose.Schema(
     },
     { timestamps: true }
 );
+
+productSchema.index({
+    category: 1,
+    "attributes.pattern": 1,
+    "attributes.fabric": 1,
+    "pricing.price": 1,
+});
+
+productSchema.index({
+    isActive: 1,
+    isFeatured: 1,
+    "merchandising.priority": -1,
+});
+
 
 export default mongoose.models.Product ||
     mongoose.model("Product", productSchema);

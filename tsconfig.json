@@ -38,7 +38,7 @@
     "**/*.mts",
     "scripts/cloudinaryUpload.mjs",
     ".next/dev/types/**/*.ts"
-  ],
+, "tailwind.config.mjs"  ],
   "exclude": [
     "node_modules"
   ]

@@ -2,7 +2,6 @@
 import Container from "@/components/Container";
 import Image from "next/image";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
-import MasonryGrid from "@/components/Main/MasonryGrid";
 import { useEffect, useMemo, useState } from "react";
 import EvoqueLogoLoader from "@/components/FlashLogo/EvoqueLoader";
 import { Heart } from "lucide-react";
@@ -90,7 +89,6 @@ export default function ProductPage() {
     const [loading, setLoading] = useState(true);
     const [selectedColor, setSelectedColor] = useState<string | null>(null);
 
-    console.log(product);
     /* ---------------- FETCH PRODUCT ---------------- */
     useEffect(() => {
         let timer: NodeJS.Timeout;
@@ -253,8 +251,8 @@ export default function ProductPage() {
                                             {isDisabled && (
                                                 <>
                                                     <span className="absolute inset-0 flex items-center justify-center">
-                                                        <span className="w-full h-[1px] bg-slate-400 rotate-45 absolute" />
-                                                        <span className="w-full h-[1px] bg-slate-400 -rotate-45 absolute" />
+                                                        <span className="w-full h-px bg-slate-400 rotate-45 absolute" />
+                                                        <span className="w-full h-px bg-slate-400 -rotate-45 absolute" />
                                                     </span>
                                                 </>
                                             )}
@@ -344,13 +342,6 @@ export default function ProductPage() {
 
                         </div>
                     </div>
-                </div>
-
-
-            </div>
-            <div className="mt-15">
-                <div>
-                    <MasonryGrid />
                 </div>
             </div>
         </Container>

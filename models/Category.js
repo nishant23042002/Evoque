@@ -22,6 +22,30 @@ const subCategorySchema = new mongoose.Schema(
             type: Boolean,
             default: true,
         },
+        badge: {
+            type: String, // "New", "Trending", "Best Seller"
+        },
+
+        description: {
+            type: String, // short marketing copy
+        },
+
+        attributes: {
+            pattern: String,   // plain / printed
+            fit: String,       // slim / regular
+            fabric: String,    // cotton / linen
+            sleeve: String,    // full / half
+        },
+
+        priority: {
+            type: Number,
+            default: 0, // UI ordering
+        },
+
+        isFeatured: {
+            type: Boolean,
+            default: false,
+        },
     },
     { _id: false }
 );
@@ -54,9 +78,29 @@ const categorySchema = new mongoose.Schema(
             default: [],
         },
 
+        description: {
+            type: String,
+        },
+
+        merchandising: {
+            priority: { type: Number, default: 0 },
+            collection: String, // "summer-edit"
+        },
+
+        seo: {
+            title: String,
+            description: String,
+            keywords: [String],
+        },
+
         isFeatured: {
             type: Boolean,
             default: true,
+        },
+
+        isTrending: {
+            type: Boolean,
+            default: false,
         },
 
         isActive: {

@@ -1,14 +1,34 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   reactStrictMode: true,
+
   images: {
-    domains: [
-      'cdn.shopify.com',
-      'images.pexels.com',
-      'pixabay.com',
-      "res.cloudinary.com",
-      "bananaclub.co.in",
-      "images.remotePatterns"
+    remotePatterns: [
+      {
+        protocol: "https",
+        hostname: "res.cloudinary.com",
+        pathname: "/**",
+      },
+      {
+        protocol: "https",
+        hostname: "cdn.shopify.com",
+        pathname: "/**",
+      },
+      {
+        protocol: "https",
+        hostname: "images.pexels.com",
+        pathname: "/**",
+      },
+      {
+        protocol: "https",
+        hostname: "pixabay.com",
+        pathname: "/**",
+      },
+      {
+        protocol: "https",
+        hostname: "bananaclub.co.in",
+        pathname: "/**",
+      },
     ],
   },
 };

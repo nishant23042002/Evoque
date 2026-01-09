@@ -8,12 +8,7 @@ interface BannerSliderProps {
     banners: string[];
 }
 
-const banners = [
-    "/images/banner.png",
-    "/images/banner2.png",
-    "/images/banner4.png",
-    "/images/banner3.png"
-];
+
 
 const BannerSlider = ({ banners }: BannerSliderProps) => {
     const sliderRef = useRef<HTMLDivElement>(null);
@@ -72,7 +67,7 @@ const BannerSlider = ({ banners }: BannerSliderProps) => {
                 {banners.map((src, i) => (
                     <div
                         key={i}
-                        className="relative w-full h-200 aspect-5/1"
+                        className="relative w-full h-100 sm:h-200 aspect-5/1"
                     >
                         <Image
                             src={src}
