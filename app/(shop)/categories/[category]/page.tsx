@@ -1,13 +1,12 @@
 "use client";
 
 import EvoqueLogoLoader from "@/components/FlashLogo/EvoqueLoader";
-import BannerSlider from "@/components/Main/Banner";
 import ProductMasonryGrid from "@/components/Main/ProductMasonryGrid";
 import clsx from "clsx";
 import Image from "next/image";
 import Link from "next/link";
 import { usePathname, useSearchParams } from "next/navigation";
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useState } from "react";
 
 /* ---------------- TYPES ---------------- */
 
@@ -72,6 +71,7 @@ export interface Product {
 const ProductCategoryPage = () => {
     const [subCategories, setSubCategories] = useState<SubCategory[]>([]);
     const [products, setProducts] = useState<Product[]>([]);
+    const [bannerImage, setBannerImage] = useState<string>("");
     const [loading, setLoading] = useState(true);
 
 
@@ -83,35 +83,38 @@ const ProductCategoryPage = () => {
 
     //Sub-Category 
     useEffect(() => {
-        async function fetchCategory() {
+        async function fetchCategoryAndProducts() {
+            setLoading(true);
             try {
-                const res = await fetch(`/api/categories/${categorySlug}`);
+                const url = activeSub
+                    ? `/api/categories/${categorySlug}?sub=${activeSub}`
+                    : `/api/categories/${categorySlug}`;
+
+                const res = await fetch(url, { cache: "no-store" });
                 const data = await res.json();
-                console.log(data);
+                const bannerImage = data.category?.categoryPageBanner;
+
+                setBannerImage(
+                    bannerImage || "/images/default-category-banner.png"
+                );
+
 
                 setSubCategories(
-                    (data.category.subCategories || []).filter(
+                    (data.category?.subCategories || []).filter(
                         (s: SubCategory) => s.isActive
                     )
                 );
+
                 setProducts(data.products || []);
             } catch (err) {
-                console.error("Failed to fetch subCategories", err);
+                console.error("Failed to fetch category/products", err);
             } finally {
                 setLoading(false);
             }
         }
 
-        if (categorySlug) fetchCategory();
-    }, [categorySlug]);
-
-    const filteredProducts = useMemo(() => {
-        if (!activeSub) return products;
-
-        return products.filter(
-            (p) => p.subCategory?.slug === activeSub
-        );
-    }, [products, activeSub]);
+        if (categorySlug) fetchCategoryAndProducts();
+    }, [categorySlug, activeSub]);
 
     if (loading) {
         return (
@@ -124,9 +127,18 @@ const ProductCategoryPage = () => {
     return (
         <section>
             <div className="mx-auto">
-                <Image className="w-full h-90 md:h-140 sm:object-cover" alt="" src={'/images/banner-shirt.png'} width={800} height={600} />
+                {bannerImage && (
+                    <Image
+                        src={bannerImage}
+                        alt={`${categorySlug} banner`}
+                        width={1600}
+                        height={600}
+                        priority
+                        className="w-full h-90 md:h-140 sm:object-cover"
+                    />
+                )}
             </div>
-            
+
             <div className="md:w-[50%] mx-auto mt-4">
                 <div className="mx-2 px-0.5 flex flex-nowrap overflow-auto items-center sm:justify-center gap-2 py-1 scrollbar-hide">
                     {/* ALL */}
@@ -205,7 +217,13 @@ const ProductCategoryPage = () => {
             </div>
 
             <div>
-                <ProductMasonryGrid products={filteredProducts} />
+                {products.length === 0 ? (
+                    <div className="flex items-center justify-center h-[40vh] text-sm text-gray-500">
+                        No products found
+                    </div>
+                ) : (
+                    <ProductMasonryGrid products={products} />
+                )}
             </div>
         </section>
     );

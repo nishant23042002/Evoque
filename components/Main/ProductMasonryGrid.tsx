@@ -1,11 +1,13 @@
 "use client";
 
-import AnimatedRatingProgressBar from "@/constants/ratingBar";
 import { Heart } from "lucide-react";
 import dynamic from "next/dynamic";
 import Image from "next/image";
+import { TbMenu } from "react-icons/tb";
+import { FaAnglesDown } from "react-icons/fa6";
+import { useMemo, useState } from "react";
+import RatingBar from "@/constants/ratingBar";
 import Link from "next/link";
-import { useMemo } from "react";
 
 const Masonry = dynamic(() => import("react-masonry-css"), { ssr: false });
 
@@ -73,7 +75,7 @@ interface ProductMasonryGridProps {
 export default function ProductMasonryGrid({
     products = [],
 }: ProductMasonryGridProps) {
-
+    const [activeIndex, setActiveIndex] = useState<number | null>(null);
 
     const breakpoints = {
         default: 5,
@@ -85,35 +87,19 @@ export default function ProductMasonryGrid({
 
     const heights = useMemo(() => {
         if (!Array.isArray(products) || products.length === 0) return [];
-
         const buckets = [250, 280, 300, 350, 380, 400, 450, 480, 500];
 
         return products.map((product) => {
-            const id = product?._id || "";
-
-            // stable seed from id
             let seed = 0;
+            const id = product?._id || "";
             for (let i = 0; i < id.length; i++) {
                 seed = (seed << 5) - seed + id.charCodeAt(i);
             }
-
             const index = Math.abs(seed) % buckets.length;
-
-            // small jitter so cards don't align too neatly
             const jitter = (Math.abs(seed) % 40) - 20;
-
             return buckets[index] + jitter;
         });
     }, [products]);
-
-
-
-
-    const getPrimaryImage = (variants: Variant[]) => {
-        const images = variants?.[0]?.color?.images;
-        if (!images || images.length === 0) return "/images/placeholder.webp";
-        return images.find(img => img.isPrimary)?.url || images[0].url;
-    };
 
     if (!products.length) {
         return <p className="text-center my-10">No products found</p>;
@@ -127,66 +113,91 @@ export default function ProductMasonryGrid({
                 columnClassName="masonry-column"
             >
                 {products.map((item, index) => {
-                    const colors = item.variants.map(v => v.color);
+                    const isOpen = activeIndex === index;
+                    const variant = item.variants[0]; // default variant
 
                     return (
-                        <Link
-                            key={item._id}
-                            href={`/products/${item.slug}`}
-                            className="block"
-                        >
-                            <div
-                                className="relative mb-2 w-full rounded-sm overflow-hidden group"
-                                style={{ height: heights[index] }}
-                            >
-                                {/* IMAGE */}
-                                <Image
-                                    src={getPrimaryImage(item.variants)}
-                                    alt={item.productName}
-                                    fill
-                                    className="object-cover transition-all duration-300 group-hover:scale-105"
-                                />
-
-                                {/* COLOR DOTS */}
-                                <div className="absolute w-full flex justify-between items-center top-2 right-0 px-2">
-                                    <div className="flex gap-1">
-                                        {colors.map(color => (
-                                            <div
-                                                key={color.slug}
-                                                className="w-5 h-5 rounded-full border"
-                                                style={{ backgroundColor: color.hex }}
-                                            />
-                                        ))}
-                                    </div>
-                                    <Heart
-                                        className="text-brand-red"
-                                        strokeWidth={0.9}
+                        <div key={item._id} className="block">
+                            <Link href={`/products/${item.slug}`}>
+                                <div
+                                    className="relative mb-2 w-full rounded-sm overflow-hidden group cursor-pointer"
+                                    style={{ height: heights[index] }}
+                                >
+                                    {/* IMAGE */}
+                                    <Image
+                                        src={
+                                            variant.color.images.find((i) => i.isPrimary)?.url ??
+                                            variant.color.images[0]?.url
+                                        }
+                                        alt={item.productName}
+                                        fill
+                                        className="object-cover transition-all duration-300 group-hover:scale-105"
                                     />
-                                </div>
 
-                                {/* HOVER DETAILS */}
-                                <div className="absolute inset-0 cursor-pointer opacity-100 min-[550px]:opacity-0 md:group-hover:opacity-100 transition-all duration-300 flex flex-col justify-end text-white">
-                                    <div className="text-[12px] bg-black/75 sm:bg-black/40 w-full px-2 py-3">
-                                        <p className="font-semibold">
-                                            {item.brand}
-                                        </p>
-                                        <p className="leading-tight tracking-tight my-1">
-                                            {item.productName}
-                                        </p>
-                                        <p className="font-bold">
-                                            ₹{item.pricing.price}
-                                            <span className="ml-2 line-through opacity-70">
-                                                ₹{item.pricing.originalPrice}
-                                            </span>
-                                        </p>
+                                    {/* COLOR */}
+                                    <div className="absolute w-full flex justify-between items-center top-2 right-0 px-2">
+                                        <div className="flex gap-1">
+                                            {item.variants.map((v) => {
+                                                const isSelected = v.color.slug === variant.color.slug; // check if this is the current variant
 
-                                        <AnimatedRatingProgressBar
-                                            average={item.rating}
-                                        />
+                                                return (
+                                                    <span
+                                                        key={v.color.slug}
+                                                        className={`w-5 h-5 rounded-[2px] ${isSelected ? "ring ring-brand-red border-red-400" : "border-gray-400"
+                                                            }`}
+                                                        style={{ backgroundColor: v.color.hex }}
+                                                    />
+                                                );
+                                            })}
+
+                                        </div>
+                                        <Heart className="text-brand-red" strokeWidth={0.9} />
+                                    </div>
+
+
+                                    {/* MOBILE TOGGLE */}
+                                    <button
+                                        onClick={(e) => {
+                                            e.preventDefault(); // <-- prevent Link navigation
+                                            e.stopPropagation(); // <-- stop event from reaching the Link
+                                            setActiveIndex(activeIndex === index ? null : index);
+                                        }}
+                                        className="md:hidden absolute bottom-0 w-full right-0 z-20 bg-black/75 p-1 flex items-center justify-center"
+                                    >
+                                        {!isOpen ? (
+                                            <TbMenu className="w-4 h-4 text-white" />
+                                        ) : (
+                                            <FaAnglesDown className="w-4 h-4 text-white" />
+                                        )}
+                                    </button>
+
+
+                                    {/* DETAILS */}
+                                    <div
+                                        className={`absolute inset-0 max-md:bottom-6 cursor-pointer transition-all duration-300 flex flex-col justify-end text-white
+                      md:opacity-0 md:group-hover:opacity-100
+                      ${activeIndex === index ? "opacity-100" : "opacity-0"}
+                      md:pointer-events-auto
+                    `}
+                                    >
+                                        <div className="text-[12px] bg-black/75 sm:bg-black/75 w-full px-2 py-3">
+                                            <p className="font-semibold">{item.brand}</p>
+                                            <p className="leading-tight tracking-tight my-1">
+                                                {item.productName}
+                                            </p>
+                                            <p className="font-bold">
+                                                ₹{variant.pricing?.price}
+                                                <span className="line-through ml-2">
+                                                    ₹{variant.pricing?.originalPrice}
+                                                </span>
+                                            </p>
+
+                                            <RatingBar value={item.rating} />
+                                        </div>
                                     </div>
                                 </div>
-                            </div>
-                        </Link>
+                            </Link>
+                        </div>
                     );
                 })}
             </Masonry>

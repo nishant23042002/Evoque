@@ -1,4 +1,5 @@
 import mongoose from "mongoose";
+import { type } from "os";
 
 /* ---------------- SUB CATEGORY ---------------- */
 
@@ -14,6 +15,7 @@ const subCategorySchema = new mongoose.Schema(
             required: true, // plain, slim, baggy-fit
             lowercase: true,
         },
+
         image: {
             type: String, // circle image
             required: true,
@@ -71,6 +73,10 @@ const categorySchema = new mongoose.Schema(
 
         image: {
             type: String, // banner / hero image
+        },
+
+        categoryPageBanner: {
+            type: String
         },
 
         subCategories: {

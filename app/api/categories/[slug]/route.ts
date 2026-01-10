@@ -2,28 +2,35 @@ import { NextResponse } from "next/server";
 import connectDB from "@/lib/db";
 import Category from "@/models/Category";
 import Product from "@/models/Product";
+import mongoose from "mongoose";
+
+
 
 export async function GET(
     request: Request,
     { params }: { params: Promise<{ slug: string }> }
 ) {
     try {
+        // ✅ MUST await params
         const { slug } = await params;
 
-        // 1️⃣ Validate slug
+        const { searchParams } = new URL(request.url);
+        const sub = searchParams.get("sub");
+
         if (!slug) {
             return NextResponse.json(
-                { message: "Slug missing in URL" },
+                { message: "Category slug missing" },
                 { status: 400 }
             );
         }
 
         await connectDB();
 
+        // 1️⃣ Fetch category
         const category = await Category.findOne({
             slug,
             isActive: true,
-        });
+        }).lean();
 
         if (!category) {
             return NextResponse.json(
@@ -32,13 +39,23 @@ export async function GET(
             );
         }
 
-        // 2️⃣ Get products under this category
-        const products = await Product.find({
-            category: category._id,
+        // 2️⃣ Product query
+        const productQuery: {
+            category: mongoose.Types.ObjectId;
+            isActive: boolean;
+            "subCategory.slug"?: string;
+        } = {
+            category: category._id as mongoose.Types.ObjectId,
             isActive: true,
-        }).sort({ createdAt: -1 });
+        };
+        if (sub) {
+            productQuery["subCategory.slug"] = sub;
+        }
 
-        // 3️⃣ Return combined response
+        const products = await Product.find(productQuery)
+            .sort({ createdAt: -1 })
+            .lean();
+
         return NextResponse.json(
             {
                 category,
@@ -48,8 +65,9 @@ export async function GET(
             { status: 200 }
         );
     } catch (error) {
+        console.error(error);
         return NextResponse.json(
-            { message: error || "Internal Server Error" },
+            { message: "Internal Server Error" },
             { status: 500 }
         );
     }

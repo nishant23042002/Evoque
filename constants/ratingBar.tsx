@@ -1,83 +1,53 @@
-import React, { useEffect, useState } from "react";
+"use client";
 
-interface AnimatedRatingProgressBarProps {
-  average?: number;
-  max?: number;
-  threshold?: number;
-  height?: string;
-  showLabel?: boolean;
+import { useEffect, useState } from "react";
+import { Star } from "lucide-react";
+
+interface RatingBarProps {
+  value?: number;
+  max?: number
 }
 
-export default function AnimatedRatingProgressBar({
-  average = 4.2,
+export default function RatingBar({
+  value = 4.2,
   max = 5,
-  threshold = 3.5,
-  height = "h-1.5",
-  showLabel = true,
-}: AnimatedRatingProgressBarProps) {
-  const [animatedPercent, setAnimatedPercent] = useState(0);
-  const percent = Math.max(0, Math.min(100, (average / max) * 100));
+}: RatingBarProps) {
+  const [progress, setProgress] = useState(0);
+
+  const percent = Math.min(100, Math.max(0, (value / max) * 100));
 
   useEffect(() => {
-    const t = setTimeout(() => setAnimatedPercent(percent), 100);
+    const t = setTimeout(() => setProgress(percent), 120);
     return () => clearTimeout(t);
   }, [percent]);
 
-  const band =
-    average >= threshold + 0.5
-      ? "good"
-      : average >= threshold
-      ? "borderline"
-      : "bad";
+  const tone =
+    value >= 4.3 ? "good" : value >= 3.6 ? "mid" : "low";
 
-  const barColorClass =
-    band === "good"
-      ? "from-emerald-400 via-emerald-500 to-emerald-600"
-      : band === "borderline"
-      ? "from-yellow-300 via-yellow-400 to-yellow-500"
-      : "from-rose-400 via-rose-500 to-rose-600";
+  const gradient =
+    tone === "good"
+      ? "from-emerald-400 to-emerald-500"
+      : tone === "mid"
+        ? "from-amber-300 to-amber-400"
+        : "from-rose-400 to-rose-500";
 
   return (
-    <div className="w-full group relative">
-      {/* Header */}
-      <div className="flex items-center justify-between mb-1">
-        {showLabel && (
-          <span
-            className={`text-xs font-bold tracking-wide ${
-              band === "good"
-                ? "text-emerald-600"
-                : band === "borderline"
-                ? "text-yellow-600"
-                : "text-rose-600"
-            }`}
-          >
-            {band === "good"
-              ? "Excellent"
-              : band === "borderline"
-              ? "Average"
-              : "Low rated"}
-          </span>
-        )}
-
-        <span className="text-xs font-bold text-white">
-          {average.toFixed(1)} / 5
-        </span>
+    <div className="mt-2 space-y-1">
+      {/* Top row */}
+      <div className="flex items-center gap-1 text-[11px] text-white/90">
+        <Star size={16} className="fill-yellow-400 stroke-yellow-400" />
+        <span className="font-medium pt-1">{value.toFixed(1)}</span>
+        <span className="opacity-60 pt-1">/ {max}</span>
       </div>
 
       {/* Bar */}
-      <div
-        className={`relative bg-gray-200/70 rounded-full overflow-hidden ${height}
-          transition-transform duration-300 group-hover:scale-[1.02]`}
-      >
-        {/* Fill */}
+      <div className="relative h-1 w-full rounded-full bg-white/20 overflow-hidden">
         <div
-          className={`absolute left-0 top-0 h-full bg-linear-to-r ${barColorClass}
-            transition-all duration-1000 ease-out`}
-          style={{ width: `${animatedPercent}%` }}
-        >
-          {/* Shimmer */}
-          <div className="absolute inset-0 bg-linear-to-r from-white/10 via-white/30 to-white/10" />
-        </div>
+          className={`absolute left-0 top-0 h-full rounded-full
+          bg-linear-to-r ${gradient}
+          transition-[width] duration-700 ease-out`}
+          style={{ width: `${progress}%` }}
+        />
       </div>
     </div>
   );

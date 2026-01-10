@@ -6,7 +6,8 @@ import Product from "@/models/Product";
 import cloudinary from "@/lib/cloudinary";
 import mongoose, { ObjectId } from "mongoose";
 import ProductType from "@/types/ProductTypes"; // Your Product interface
-
+import { extractHexFromBuffer } from "@/data/extractColorFromImage";
+import axios from "axios"
 
 interface VariantImage {
     url: string;
@@ -193,7 +194,7 @@ async function uploadImage(
     url?: string,
     folder?: string,
     publicId?: string
-): Promise<{ url: string; publicId: string } | null> {
+): Promise<{ url: string; publicId: string; buffer: Buffer } | null> {
     if (!url) return null;
 
     const res = await cloudinary.uploader.upload(url, {
@@ -202,10 +203,14 @@ async function uploadImage(
         overwrite: true,
         resource_type: "image",
     });
+    const imageRes = await axios.get(res.secure_url, {
+        responseType: "arraybuffer",
+    });
 
     return {
         url: res.secure_url,
         publicId: res.public_id,
+        buffer: Buffer.from(imageRes.data)
     };
 }
 
@@ -287,6 +292,7 @@ export async function POST(req: Request) {
             const { color, sizes = [], pricing: variantPricing } = variant;
             const uploadedImages: UploadedImage[] = [];
 
+            let colorHex: string | undefined;
             for (let i = 0; i < (color.images || []).length; i++) {
                 const uploaded = await uploadImage(
                     color.images[i].url,
@@ -301,7 +307,22 @@ export async function POST(req: Request) {
                         isHover: color.images[i].isHover || false,
                         order: color.images[i].order || 0,
                     });
+                    // 🔥 Extract color only once (primary image preferred)
+                    if (!colorHex && color.images[i].isPrimary) {
+                        colorHex = await extractHexFromBuffer(uploaded.buffer);
+                    }
                 }
+            }
+
+            // Fallback: first image
+            if (!colorHex && uploadedImages.length) {
+                colorHex = await extractHexFromBuffer(
+                    Buffer.from(
+                        await (
+                            await fetch(uploadedImages[0].url)
+                        ).arrayBuffer()
+                    )
+                );
             }
 
             const updatedSizes: SizeVariant[] = sizes.map((s: SizeVariant) => ({
@@ -317,7 +338,7 @@ export async function POST(req: Request) {
             const totalStock = updatedSizes.reduce((sum, s) => sum + (s.stock || 0), 0);
 
             uploadedVariants.push({
-                color: { ...color, images: uploadedImages },
+                color: { ...color, hex: colorHex, images: uploadedImages },
                 sizes: updatedSizes,
                 pricing: variantPricing,
                 totalStock,

@@ -5,7 +5,9 @@ import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/
 import { useEffect, useMemo, useState } from "react";
 import EvoqueLogoLoader from "@/components/FlashLogo/EvoqueLoader";
 import { Heart } from "lucide-react";
-import { useParams } from "next/navigation";
+import { useParams, useSearchParams } from "next/navigation";
+import { useRouter } from "next/navigation";
+
 
 interface VariantImage {
     url: string;
@@ -85,9 +87,30 @@ export default function ProductPage() {
     const params = useParams<{ slug: string }>();
     const slug = params.slug;
 
+
     const [product, setProduct] = useState<Product | null>(null);
     const [loading, setLoading] = useState(true);
     const [selectedColor, setSelectedColor] = useState<string | null>(null);
+    const [selectedSize, setSelectedSize] = useState<SizeVariant | null>(null);
+
+    const searchParams = useSearchParams();
+    const colorFromUrl = searchParams.get("color");
+    const router = useRouter();
+
+    useEffect(() => {
+        if (!product) return;
+
+        const validColor = product.variants.find(
+            v => v.color.slug === colorFromUrl
+        );
+
+        if (validColor) {
+            setSelectedColor(validColor.color.slug);
+        } else {
+            setSelectedColor(product.variants[0].color.slug);
+        }
+    }, [product, colorFromUrl]);
+
 
     /* ---------------- FETCH PRODUCT ---------------- */
     useEffect(() => {
@@ -113,6 +136,13 @@ export default function ProductPage() {
 
         return () => clearTimeout(timer);
     }, [slug]);
+
+
+    useEffect(() => {
+        setSelectedSize(null);
+    }, [selectedColor]);
+
+
 
 
     /* ---------------- DERIVED DATA ---------------- */
@@ -186,8 +216,8 @@ export default function ProductPage() {
                         </div>
                         <div className="flex gap-3 items-center justify-between">
                             <div className="flex justify-center items-center gap-3">
-                                <span className="text-brand-red text-xl font-semibold">₹ {product.pricing.price}</span>
-                                <span className="font-semibold text-sm text-slate-700 line-through decoration-red-500">{product.pricing.originalPrice}</span>
+                                <span className="text-brand-red text-xl font-semibold">₹ {activeVariant?.pricing?.price}</span>
+                                <span className="font-semibold text-sm text-slate-700 line-through decoration-red-500">{activeVariant?.pricing?.originalPrice}</span>
                             </div>
                             <div>
                                 <span className="text-white bg-brand-red p-1 font-semibold rounded-sm">- {product.pricing.discountPercentage}%</span>
@@ -205,7 +235,14 @@ export default function ProductPage() {
                                 {colorVariants.map(color => (
                                     <button
                                         key={color.slug}
-                                        onClick={() => setSelectedColor(color.slug)}
+                                        onClick={() => {
+                                            setSelectedColor(color.slug);
+
+                                            router.replace(
+                                                `/products/${product.slug}?color=${color.slug}`,
+                                                { scroll: false }
+                                            );
+                                        }}
                                         className={`border-2 cursor-pointer p-0.5 rounded-md hover:border-accent-peach ${selectedColor === color.slug
                                             ? "border-2 border-accent-peach"
                                             : ""
@@ -231,32 +268,21 @@ export default function ProductPage() {
 
                             <div className="flex flex-wrap items-center gap-2">
                                 {sizes.map(size => {
-                                    const isDisabled = !size.isAvailable || size.stock <= 0;
-
                                     return (
                                         <button
                                             key={size.variantSku}
-                                            disabled={isDisabled}
+                                            onClick={() => setSelectedSize(size)}
+                                            disabled={!size.isAvailable}
                                             className={`
-                        relative px-3 py-1 border text-sm font-medium
-                        transition
-                        ${isDisabled
-                                                    ? "border-slate-300 text-slate-400 cursor-not-allowed"
-                                                    : "border-black hover:bg-black hover:text-white cursor-pointer"}
-                    `}
+                                                    px-3 py-1 border
+                                                    ${selectedSize?.variantSku === size.variantSku
+                                                    ? "bg-black text-white"
+                                                    : "border-black"}
+                                                `}
                                         >
                                             {size.size}
-
-                                            {/* Cross mark for unavailable sizes */}
-                                            {isDisabled && (
-                                                <>
-                                                    <span className="absolute inset-0 flex items-center justify-center">
-                                                        <span className="w-full h-px bg-slate-400 rotate-45 absolute" />
-                                                        <span className="w-full h-px bg-slate-400 -rotate-45 absolute" />
-                                                    </span>
-                                                </>
-                                            )}
                                         </button>
+
                                     );
                                 })}
                             </div>
