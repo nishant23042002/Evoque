@@ -88,7 +88,7 @@ export default function Home() {
 
 
   return (
-    <Container className="bg-white">
+    <Container className="bg-[#f2efe9]">
       <div className="gap-5">
         {/* Banner */}
         <BannerSlider banners={topBanners} />

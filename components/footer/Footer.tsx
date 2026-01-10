@@ -1,4 +1,3 @@
-import Image from "next/image";
 import { CiLinkedin, CiFacebook, CiInstagram } from "react-icons/ci";
 import { PiWhatsappLogoLight } from "react-icons/pi";
 
@@ -6,7 +5,7 @@ import { PiWhatsappLogoLight } from "react-icons/pi";
 export default function Footer() {
     return (
         <footer className="mt-30">
-            <div className="text-slate-800 bg-accent-sand md:max-w-[90%] mx-2 md:mx-auto px-2 sm:px-8 py-14">
+            <div className="text-slate-800 bg-[#ECEBE6] md:max-w-[90%] mx-2 md:mx-auto px-2 sm:px-8 py-14">
 
                 {/* Title */}
                 <h2 className="text-[18px] font-extrabold mb-8">

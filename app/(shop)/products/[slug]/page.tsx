@@ -7,7 +7,7 @@ import EvoqueLogoLoader from "@/components/FlashLogo/EvoqueLoader";
 import { Heart } from "lucide-react";
 import { useParams, useSearchParams } from "next/navigation";
 import { useRouter } from "next/navigation";
-
+import { FaArrowLeftLong, FaArrowRightLong } from "react-icons/fa6";
 
 interface VariantImage {
     url: string;
@@ -87,11 +87,21 @@ export default function ProductPage() {
     const params = useParams<{ slug: string }>();
     const slug = params.slug;
 
-
+    const [cursor, setCursor] = useState<{
+        x: number;
+        y: number;
+        direction: "left" | "right" | null;
+    }>({
+        x: 0,
+        y: 0,
+        direction: null,
+    });
     const [product, setProduct] = useState<Product | null>(null);
     const [loading, setLoading] = useState(true);
     const [selectedColor, setSelectedColor] = useState<string | null>(null);
     const [selectedSize, setSelectedSize] = useState<SizeVariant | null>(null);
+    const [activeImageIndex, setActiveImageIndex] = useState(0);
+
 
     const searchParams = useSearchParams();
     const colorFromUrl = searchParams.get("color");
@@ -137,6 +147,9 @@ export default function ProductPage() {
         return () => clearTimeout(timer);
     }, [slug]);
 
+    useEffect(() => {
+        setActiveImageIndex(0);
+    }, [selectedColor]);
 
     useEffect(() => {
         setSelectedSize(null);
@@ -168,11 +181,46 @@ export default function ProductPage() {
 
     const images = activeVariant?.color.images.map(img => img.url) ?? [];
 
+
     const sizes =
         activeVariant?.sizes.filter(s => s.stock > 0) ?? [];
 
+    const handlePrevImage = () => {
+        setActiveImageIndex(prev =>
+            prev === 0 ? images.length - 1 : prev - 1
+        );
+    };
 
+    const handleNextImage = () => {
+        setActiveImageIndex(prev =>
+            prev === images.length - 1 ? 0 : prev + 1
+        );
+    };
 
+    const handleMouseMove = (
+        e: React.MouseEvent<HTMLDivElement>
+    ) => {
+        const rect = e.currentTarget.getBoundingClientRect();
+        const isLeft = e.clientX < rect.left + rect.width / 2;
+
+        setCursor({
+            x: e.clientX,
+            y: e.clientY,
+            direction: isLeft ? "left" : "right",
+        });
+    };
+
+    const handleMouseLeave = () => {
+        setCursor(prev => ({ ...prev, direction: null }));
+    };
+
+    const handleClick = () => {
+        if (cursor.direction === "left") {
+            handlePrevImage();
+        } else {
+            handleNextImage();
+        }
+    };
 
 
     if (loading) {
@@ -193,18 +241,104 @@ export default function ProductPage() {
                     <div className="w-full flex gap-2 mt-1">
                         {/* Small Images Left side */}
                         <div className="absolute z-30 flex flex-col gap-2">
-                            {images.map((img, i) => (
-                                <div key={i} className="relative border border-slate-300 w-25 h-25">
-                                    <Image src={img} alt={product.productName} fill className="object-cover" />
-                                </div>
-                            ))}
+                            {images.map((img, i) => {
+                                const isActive = activeImageIndex === i;
+
+                                return (
+                                    <button
+                                        key={i}
+                                        onClick={() => setActiveImageIndex(i)}
+                                        className={`
+                relative w-25 h-25 border transition-all duration-200
+                ${isActive
+                                                ? ""
+                                                : "border-slate-300 hover:border-slate-500"}
+            `}
+                                        style={
+                                            isActive
+                                                ? {
+                                                    borderColor:
+                                                        activeVariant?.color?.hex || "#000000",
+                                                    borderWidth: "2px",
+                                                }
+                                                : undefined
+                                        }
+                                    >
+                                        <Image
+                                            src={img}
+                                            alt={product.productName}
+                                            fill
+                                            className="object-cover"
+                                        />
+                                    </button>
+                                );
+                            })}
+
+
                         </div>
+
                         {/* Big Images Left side */}
                         <div className="relative w-full flex flex-col md:items-center gap-4 overflow-y-auto max-h-[90vh] scrollbar-hide">
-                            {images.map((img, i) => (
-                                <Image key={i} src={img} alt={product.productName} width={700} height={600} />
-                            ))}
+
+                            <div
+                                className="relative w-full h-150 md:h-175 flex items-center justify-center group">
+                                <Image
+                                    onMouseMove={handleMouseMove}
+                                    onMouseLeave={handleMouseLeave}
+                                    onClick={handleClick}
+                                    src={images[activeImageIndex]}
+                                    alt={product.productName}
+                                    width={700}
+                                    height={600}
+                                    className="cursor-none object-contain transition-all duration-300"
+                                />
+                                {cursor.direction && (
+                                    <div
+                                        className="fixed z-999 pointer-events-none"
+                                        style={{
+                                            left: cursor.x,
+                                            top: cursor.y,
+                                            transform: "translate(-50%, -50%)",
+                                        }}
+                                    >
+                                        <div
+                                            className="
+                                                w-9 h-9
+                                                rounded-sm
+                                                backdrop-blur-md
+                                                bg-white/55
+                                                flex items-center justify-center
+                                                transition-all duration-200
+                                            "
+                                        >
+
+                                            {cursor.direction === "left" ? (
+                                                <FaArrowLeftLong
+                                                    className="text-xl"
+                                                    style={{
+                                                        color: activeVariant?.color?.hex || "#000000",
+
+                                                    }}
+                                                />
+                                            ) : (
+                                                <FaArrowRightLong
+                                                    className="text-xl"
+                                                    style={{
+                                                        color: activeVariant?.color?.hex || "#000000",
+
+                                                    }}
+                                                />
+                                            )}
+
+                                        </div>
+                                    </div>
+                                )}
+
+
+                            </div>
+
                         </div>
+
                     </div>
 
 
@@ -232,32 +366,50 @@ export default function ProductPage() {
                         <div className="py-4 flex flex-col">
                             <h1 className="font-extrabold mb-2 text-slate-700">Colors</h1>
                             <div className="w-full flex flex-wrap items-center gap-2">
-                                {colorVariants.map(color => (
-                                    <button
-                                        key={color.slug}
-                                        onClick={() => {
-                                            setSelectedColor(color.slug);
+                                {colorVariants.map(color => {
+                                    const isActive = selectedColor === color.slug;
 
-                                            router.replace(
-                                                `/products/${product.slug}?color=${color.slug}`,
-                                                { scroll: false }
-                                            );
-                                        }}
-                                        className={`border-2 cursor-pointer p-0.5 rounded-md hover:border-accent-peach ${selectedColor === color.slug
-                                            ? "border-2 border-accent-peach"
-                                            : ""
-                                            }`}
-                                    >
-                                        <Image
-                                            src={color.image}
-                                            alt={color.name}
-                                            width={70}
-                                            height={70}
-                                            className="rounded-sm"
-                                        />
-                                        <span className="text-[10px]">{color.name}</span>
-                                    </button>
-                                ))}
+                                    return (
+                                        <button
+                                            key={color.slug}
+                                            onClick={() => {
+                                                setSelectedColor(color.slug);
+                                                router.replace(
+                                                    `/products/${product.slug}?color=${color.slug}`,
+                                                    { scroll: false }
+                                                );
+                                            }}
+                                            className={`cursor-pointer
+                                                         border
+                                                        ${isActive
+                                                    ? ""
+                                                    : "border-slate-300 hover:border-slate-500"}
+                                                   `}
+                                            style={
+                                                isActive
+                                                    ? {
+                                                        borderColor:
+                                                            product.variants.find(
+                                                                v => v.color.slug === color.slug
+                                                            )?.color.hex || "#000000",
+                                                        borderWidth: "2px",
+                                                    }
+                                                    : undefined
+                                            }
+                                        >
+                                            <Image
+                                                src={color.image}
+                                                alt={color.name}
+                                                width={70}
+                                                height={70}
+                                            />
+                                            <span className="text-[10px] block text-center py-0.5">
+                                                {color.name}
+                                            </span>
+                                        </button>
+                                    );
+                                })}
+
                             </div>
                         </div>
 
@@ -268,24 +420,38 @@ export default function ProductPage() {
 
                             <div className="flex flex-wrap items-center gap-2">
                                 {sizes.map(size => {
+                                    const isActive =
+                                        selectedSize?.variantSku === size.variantSku;
+
                                     return (
                                         <button
                                             key={size.variantSku}
                                             onClick={() => setSelectedSize(size)}
                                             disabled={!size.isAvailable}
-                                            className={`
-                                                    px-3 py-1 border
-                                                    ${selectedSize?.variantSku === size.variantSku
-                                                    ? "bg-black text-white"
-                                                    : "border-black"}
-                                                `}
+                                            className={`border border-slate-400
+                    px-3 py-1 rounded-sm text-sm font-bold text-slate-700                 
+                    ${!size.isAvailable
+                                                    ? "opacity-40 cursor-not-allowed"
+                                                    : ""}
+                `}
+                                            style={
+                                                isActive
+                                                    ? {
+                                                        backgroundColor:
+                                                            activeVariant?.color?.hex || "#334155",
+                                                        color: "#fff",
+                                                    }
+                                                    : {
+                                                        color: "#334155",
+                                                    }
+                                            }
                                         >
                                             {size.size}
                                         </button>
-
                                     );
                                 })}
                             </div>
+
                         </div>
 
                         <div className="flex justify-between gap-3 w-full my-4">

@@ -125,7 +125,7 @@ const ProductCategoryPage = () => {
     }
 
     return (
-        <section>
+        <section className="">
             <div className="mx-auto">
                 {bannerImage && (
                     <Image
@@ -134,12 +134,12 @@ const ProductCategoryPage = () => {
                         width={1600}
                         height={600}
                         priority
-                        className="w-full h-90 md:h-140 sm:object-cover"
+                        className="w-full h-90 md:h-140 sm:object-cover mix-blend-multiply"
                     />
                 )}
             </div>
 
-            <div className="md:w-[50%] mx-auto mt-4">
+            <div className="md:w-full mx-auto sticky top-15 py-2 z-30 bg-[#f2efe9] mt-4">
                 <div className="mx-2 px-0.5 flex flex-nowrap overflow-auto items-center sm:justify-center gap-2 py-1 scrollbar-hide">
                     {/* ALL */}
                     <Link

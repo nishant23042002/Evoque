@@ -80,7 +80,7 @@ const LeftMenu = () => {
             <aside
                 ref={sidebarRef}
                 className={`
-                    fixed left-0 top-16.25 py-1 z-40 h-screen bg-white
+                    fixed left-0 top-16.25 py-1 z-40 h-screen bg-[#ECEBE6]
                     overflow-hidden
                     transition-all duration-300 ease-in-out
                     ${sidebarWidth}
