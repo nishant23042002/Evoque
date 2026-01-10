@@ -3,14 +3,14 @@ import { cn } from "@/lib/utils";
 
 const Logo = ({ className }: { className?: string }) => {
     return (
-        <Link href="/" className="group relative select-none ml-8">
+        <Link href="/" className="group relative select-none ml-6">
             <h1
                 className={cn(
                     `
                     relative z-10
-                    text-[18px] max-lg:text-[12px]
-                    font-medium tracking-[0.45em]
-                    uppercase text-neutral-900
+                    text-[18px] max-lg:text-[12px] max-sm:[10px]
+                    font-medium tracking-[0.30em]
+                    uppercase text-brand-red
                     `,
                     className
                 )}

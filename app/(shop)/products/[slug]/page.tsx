@@ -231,11 +231,11 @@ export default function ProductPage() {
         );
     }
 
-    if (!product) return <p className="ml-20">Product not found</p>;
+    if (!product) return <p className="ml-20 text-center font-poppins text-sm tracking-widest font-semibold text-slate-700">Fresh styles coming your way</p>;
 
     return (
         <Container>
-            <div className="flex justify-around items-center flex-col">
+            <div className="flex justify-around md:items-center flex-col">
                 <div className="md:flex gap-2 justify-around my-1 px-1">
                     {/*Left Side */}
                     <div className="w-full flex gap-2 mt-1">
@@ -268,7 +268,10 @@ export default function ProductPage() {
                                             src={img}
                                             alt={product.productName}
                                             fill
-                                            className="object-cover"
+                                            sizes="(max-width: 640px) 100vw,
+         (max-width: 1024px) 50vw,
+         33vw"
+                                            className="object-cover w-auto h-auto"
                                         />
                                     </button>
                                 );
@@ -281,16 +284,16 @@ export default function ProductPage() {
                         <div className="relative w-full flex flex-col md:items-center gap-4 overflow-y-auto max-h-[90vh] scrollbar-hide">
 
                             <div
-                                className="relative w-full h-150 md:h-175 flex items-center justify-center group">
+                                className="relative w-full h-150 md:h-195 flex  justify-center group">
                                 <Image
                                     onMouseMove={handleMouseMove}
                                     onMouseLeave={handleMouseLeave}
                                     onClick={handleClick}
                                     src={images[activeImageIndex]}
                                     alt={product.productName}
-                                    width={700}
+                                    width={600}
                                     height={600}
-                                    className="cursor-none object-contain transition-all duration-300"
+                                    className="cursor-none object-cover transition-all duration-300"
                                 />
                                 {cursor.direction && (
                                     <div
@@ -333,17 +336,13 @@ export default function ProductPage() {
                                         </div>
                                     </div>
                                 )}
-
-
                             </div>
-
                         </div>
-
                     </div>
 
 
                     {/*Right Side */}
-                    <div className="lg:w-3xl w-full flex flex-col sticky top-20 px-1">
+                    <div className="lg:w-2xl w-full flex flex-col sticky top-20 px-1">
                         <div className="pb-4 max-md:pt-4 flex justify-between items-center">
                             <h1 className="text-sm md:text-lg font-bold text-slate-700">{product.productName.toUpperCase()}</h1>
                             <Heart className="hover:bg-brand-red rounded-full cursor-pointer duration-200 border p-1 hover:text-white" />

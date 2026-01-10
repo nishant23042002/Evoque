@@ -35,7 +35,7 @@ export const leftNav: LeftNavSection[] = [
       },
       {
         title: "New Arrivals",
-        href: "/categories/new-arrivals",
+        href: "/new-arrivals",
         icon: MdFiberNew,
       },
       {

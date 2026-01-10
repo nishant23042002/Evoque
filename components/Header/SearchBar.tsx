@@ -13,11 +13,11 @@ const SearchBar = () => {
                 placeholder="Search shirts, jeans, jackets..."
                 className="
                     w-full h-10 pl-8
-                    rounded-sm
-                    bg-accent-rose/20
+                    rounded-sm border
+                    border-black/10
                     text-sm text-gray-700
                     outline-none
-                    focus:bg-accent-rose/50
+                    focus:bg-[#f5f6fc]
                     transition
                 "
             />

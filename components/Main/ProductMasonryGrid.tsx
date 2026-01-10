@@ -142,8 +142,8 @@ export default function ProductMasonryGrid({
                                                 <span
                                                     key={v.color.slug}
                                                     className={`w-5 h-5 rounded-[2px] border ${isSelected
-                                                            ? "ring ring-brand-red border-red-400"
-                                                            : "border-gray-400"
+                                                        ? "ring ring-brand-red border-red-400"
+                                                        : "border-gray-400"
                                                         }`}
                                                     style={{ backgroundColor: v.color.hex }}
                                                     onMouseEnter={() =>

@@ -13,7 +13,7 @@ const Header = () => {
     return (
         <header className="
             sticky top-0 z-40 w-full
-            bg-[#ECEBE6] border border-b-slate-300           
+            bg-[#E8E6DF]           
         ">
             <div className="flex items-center justify-between px-2 h-16">
 

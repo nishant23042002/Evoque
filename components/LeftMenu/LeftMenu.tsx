@@ -58,7 +58,7 @@ const LeftMenu = () => {
             <button data-menu-btn
                 onClick={() => setIsOpen(!isOpen)}
                 className="cursor-pointer
-                    fixed left-1 top-4 z-50
+                    fixed left-0 top-3.5 z-50
                     p-2
                 "
             >
@@ -80,7 +80,7 @@ const LeftMenu = () => {
             <aside
                 ref={sidebarRef}
                 className={`
-                    fixed left-0 top-16.25 py-1 z-40 h-screen bg-[#ECEBE6]
+                    fixed left-0 top-16 py-1 z-40 h-screen bg-[#E8E6DF]
                     overflow-hidden
                     transition-all duration-300 ease-in-out
                     ${sidebarWidth}
@@ -88,7 +88,7 @@ const LeftMenu = () => {
             >
                 <nav className="space-y-6">
                     {leftNav.map((group) => (
-                        <div key={group.section}>
+                        <div className="min-[550px]:mx-2" key={group.section}>
                             {/* SECTION TITLE (DESKTOP ONLY & OPEN) */}
                             {!isMobile && isOpen && (
                                 <h4 className="px-4 mb-2 text-[10px] font-extrabold text-slate-700 uppercase">

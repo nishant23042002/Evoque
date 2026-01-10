@@ -160,7 +160,7 @@ const ProductCategoryPage = () => {
                                 alt="All"
                                 width={80}
                                 height={80}
-                                className="object-contain w-full h-full"
+                                className="object-center w-full h-full"
                             />
                         </div>
                         <span
