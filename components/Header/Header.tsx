@@ -1,15 +1,17 @@
 "use client"
-import Cart from "./Cart";
-import dynamic from "next/dynamic";
 
-const LoginOtpModal = dynamic(() => import("./LoginOtpModal"), {
-    ssr: false,
-});
+import Cart from "./Cart"
 import Logo from "./Logo";
 import SearchBar from "./SearchBar";
 import WishList from "./WishList";
+import LoginModalUI from "./LoginModal";
+import { useState } from "react";
+import Image from "next/image";
 
 const Header = () => {
+    const [loginOpen, setLoginOpen] = useState(false);
+
+
     return (
         <header className="
             sticky top-0 z-40 w-full
@@ -34,12 +36,18 @@ const Header = () => {
                 <div className="flex items-center">
                     <WishList />
                     <Cart />
-                    <LoginOtpModal />
+                    <button
+                        onClick={() => setLoginOpen(true)}
+                        className="cursor-pointer p-2 text-slate-700 hover:text-black"
+                    >
+                        <Image className="text-slate-800" src="/images/login-icon.png" width={22} height={22} alt="login-icon" />
+                    </button>
+                    <LoginModalUI
+                        open={loginOpen}
+                        onClose={() => setLoginOpen(false)}
+                    />
                 </div>
             </div>
-
-
-
         </header>
     );
 };

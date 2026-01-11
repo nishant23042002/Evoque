@@ -107,6 +107,9 @@ export default function ProductMasonryGrid({
 
     return (
         <div className="my-8 md:w-[90%] mx-auto">
+            <h2 className="text-center text-sm tracking-widest font-semibold font-poppins text-neutral-700 mb-1.5">
+                Everything You Need
+            </h2>
             <Masonry
                 breakpointCols={breakpoints}
                 className="flex gap-2 mx-2"
@@ -141,7 +144,7 @@ export default function ProductMasonryGrid({
                                             return (
                                                 <span
                                                     key={v.color.slug}
-                                                    className={`w-5 h-5 rounded-[2px] border ${isSelected
+                                                    className={`w-4 h-4 rounded-[2px] border ${isSelected
                                                         ? "ring ring-brand-red border-red-400"
                                                         : "border-gray-400"
                                                         }`}

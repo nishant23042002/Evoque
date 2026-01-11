@@ -56,8 +56,8 @@ const FeaturedCategories = () => {
     return (
         <section className="px-2 w-full flex flex-col justify-center my-8 ">
             {/* Heading */}
-            <h2 className="text-center text-sm tracking-widest font-semibold text-neutral-700 mb-3">
-                FEATURED CATEGORIES
+            <h2 className="text-center text-sm tracking-widest font-semibold font-poppins text-neutral-700 mb-1.5">
+                Your Wardrobe Starts Here
             </h2>
 
             {/* Pinterest Grid */}

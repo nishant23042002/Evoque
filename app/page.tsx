@@ -9,12 +9,12 @@ import { useEffect, useState } from "react";
 
 
 const topBanners = [
-  "/images/banner.png",
-  "/images/banner2.png",
+  "/images/hero-banner1.jpg",
+  "/images/hero-banner3.png",
 ];
 
 const bottomBanners = [
-  "/images/banner3.png",
+  "/images/hero-banner2.png",
   "/images/banner4.png",
 ];
 

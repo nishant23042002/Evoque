@@ -235,12 +235,12 @@ export default function ProductPage() {
 
     return (
         <Container>
-            <div className="flex justify-around md:items-center flex-col">
-                <div className="md:flex gap-2 justify-around my-1 px-1">
+            <div className="flex  flex-col">
+                <div className="md:w-[90%] w-full mx-auto lg:flex gap-2 justify-between">
                     {/*Left Side */}
-                    <div className="w-full flex gap-2 mt-1">
+                    <div className="w-full flex gap-2">
                         {/* Small Images Left side */}
-                        <div className="absolute z-30 flex flex-col gap-2">
+                        <div className="absolute left-0 z-30 flex flex-col gap-2">
                             {images.map((img, i) => {
                                 const isActive = activeImageIndex === i;
 
@@ -281,19 +281,19 @@ export default function ProductPage() {
                         </div>
 
                         {/* Big Images Left side */}
-                        <div className="relative w-full flex flex-col md:items-center gap-4 overflow-y-auto max-h-[90vh] scrollbar-hide">
+                        <div className="relative w-full flex flex-col gap-4 overflow-y-auto max-h-[90vh] scrollbar-hide">
 
                             <div
-                                className="relative w-full h-150 md:h-195 flex  justify-center group">
+                                className="relative w-full h-160 md:h-195 flex justify-center group">
                                 <Image
                                     onMouseMove={handleMouseMove}
                                     onMouseLeave={handleMouseLeave}
                                     onClick={handleClick}
                                     src={images[activeImageIndex]}
                                     alt={product.productName}
-                                    width={600}
-                                    height={600}
-                                    className="cursor-none object-cover transition-all duration-300"
+                                    width={800}
+                                    height={800}
+                                    className="cursor-none transition-all duration-300"
                                 />
                                 {cursor.direction && (
                                     <div
@@ -342,28 +342,28 @@ export default function ProductPage() {
 
 
                     {/*Right Side */}
-                    <div className="lg:w-2xl w-full flex flex-col sticky top-20 px-1">
-                        <div className="pb-4 max-md:pt-4 flex justify-between items-center">
+                    <div className="lg:w-4xl w-full flex flex-col p-3  lg:p-7">
+                        <div className="flex justify-between items-center">
                             <h1 className="text-sm md:text-lg font-bold text-slate-700">{product.productName.toUpperCase()}</h1>
-                            <Heart className="hover:bg-brand-red rounded-full cursor-pointer duration-200 border p-1 hover:text-white" />
+                            <Heart className="hover:bg-brand-red rounded-full cursor-pointer duration-200 border border-black/15 p-1 hover:text-white" />
                         </div>
                         <div className="flex gap-3 items-center justify-between">
-                            <div className="flex justify-center items-center gap-3">
-                                <span className="text-brand-red text-xl font-semibold">₹ {activeVariant?.pricing?.price}</span>
-                                <span className="font-semibold text-sm text-slate-700 line-through decoration-red-500">{activeVariant?.pricing?.originalPrice}</span>
+                            <div className="flex justify-center items-center gap-3 my-1.5">
+                                <span className="text-brand-red text-lg font-semibold">₹ {activeVariant?.pricing?.price}</span>
+                                <span className="font-semibold text-[12px] text-[#838383] line-through decoration-red-500">{activeVariant?.pricing?.originalPrice}</span>
                             </div>
                             <div>
-                                <span className="text-white bg-brand-red p-1 font-semibold rounded-sm">- {product.pricing.discountPercentage}%</span>
+                                <span className="text-white text-[10px] bg-brand-red p-1 font-semibold rounded-sm">- {product.pricing.discountPercentage}%</span>
                             </div>
                         </div>
                         <div>
-                            <span className="text-[10px] font-semibold text-slate-700">SKU: {product.sku}</span>
+                            <span className="text-[10px] font-semibold text-[#838383]">SKU: {product.sku}</span>
                         </div>
 
 
                         {/*COLORS*/}
-                        <div className="py-4 flex flex-col">
-                            <h1 className="font-extrabold mb-2 text-slate-700">Colors</h1>
+                        <div className="py-2 flex flex-col">
+                            <h1 className="font-extrabold mb-1 text-slate-700">Colors</h1>
                             <div className="w-full flex flex-wrap items-center gap-2">
                                 {colorVariants.map(color => {
                                     const isActive = selectedColor === color.slug;
@@ -414,8 +414,8 @@ export default function ProductPage() {
 
 
                         {/* SIZES */}
-                        <div className="mt-4">
-                            <h3 className="font-bold mb-2 text-slate-700">Sizes</h3>
+                        <div className="py-2">
+                            <h3 className="font-bold mb-1 text-slate-700">Sizes</h3>
 
                             <div className="flex flex-wrap items-center gap-2">
                                 {sizes.map(size => {
@@ -427,8 +427,8 @@ export default function ProductPage() {
                                             key={size.variantSku}
                                             onClick={() => setSelectedSize(size)}
                                             disabled={!size.isAvailable}
-                                            className={`border border-slate-400
-                    px-3 py-1 rounded-sm text-sm font-bold text-slate-700                 
+                                            className={`border border-black/15
+                    px-3 py-1 rounded-sm text-sm font-bold text-[#838383]                 
                     ${!size.isAvailable
                                                     ? "opacity-40 cursor-not-allowed"
                                                     : ""}
@@ -437,11 +437,11 @@ export default function ProductPage() {
                                                 isActive
                                                     ? {
                                                         backgroundColor:
-                                                            activeVariant?.color?.hex || "#334155",
-                                                        color: "#fff",
+                                                            activeVariant?.color?.hex || "#838383",
+                                                        color: "#AFAFAF",
                                                     }
                                                     : {
-                                                        color: "#334155",
+                                                        color: "#838383",
                                                     }
                                             }
                                         >
@@ -453,18 +453,18 @@ export default function ProductPage() {
 
                         </div>
 
-                        <div className="flex justify-between gap-3 w-full my-4">
-                            <button className="cursor-pointer w-full rounded-[5px] bg-black  text-white font-bold p-5">ADD TO BAG</button>
-                            <button className="cursor-pointer w-full rounded-[5px] bg-brand-red-dark  text-white font-bold p-5">BUY NOW</button>
+                        <div className="flex justify-between gap-2 text-sm w-full my-4">
+                            <button className="cursor-pointer w-full rounded-[5px] bg-black/80  text-white font-bold p-3">ADD TO BAG</button>
+                            <button className="cursor-pointer w-full rounded-[5px] bg-brand-red  text-white font-bold p-3">BUY NOW</button>
                         </div>
                         {/* Accordion */}
-                        <div className="max-h-75 overflow-y-auto scrollbar-hide">
-                            <Accordion type="single" collapsible className="mt-8 border border-slate-200 p-2">
+                        <div className="max-h-75 overflow-y-auto scrollbar-hide my-4">
+                            <Accordion type="single" collapsible className="border border-black/15 p-2">
 
                                 {/* DESCRIPTION */}
                                 {product.description && (
                                     <AccordionItem value="description">
-                                        <AccordionTrigger>Description</AccordionTrigger>
+                                        <AccordionTrigger className="text-slate-700 font-semibold">Description</AccordionTrigger>
                                         <AccordionContent>
                                             <p className="text-sm text-gray-700 leading-relaxed">
                                                 {product.description}
@@ -475,7 +475,7 @@ export default function ProductPage() {
 
                                 {/* PRODUCT DETAILS */}
                                 <AccordionItem value="details">
-                                    <AccordionTrigger>Product Details</AccordionTrigger>
+                                    <AccordionTrigger className="text-slate-700 font-semibold">Product Details</AccordionTrigger>
                                     <AccordionContent>
                                         <ul className="text-sm text-gray-700 space-y-2">
                                             {Object.entries(product.details).map(([key, value]) => (
@@ -493,7 +493,7 @@ export default function ProductPage() {
                                     </AccordionContent>
                                 </AccordionItem>
                                 <AccordionItem value="details">
-                                    <AccordionTrigger>Returns and Exchange</AccordionTrigger>
+                                    <AccordionTrigger className="text-slate-700 font-semibold">Returns and Exchange</AccordionTrigger>
                                     <AccordionContent>
                                         <ul className="text-sm text-gray-700 space-y-2">
                                             {Object.entries(product.details).map(([key, value]) => (
@@ -511,7 +511,7 @@ export default function ProductPage() {
                                     </AccordionContent>
                                 </AccordionItem>
                                 <AccordionItem value="details">
-                                    <AccordionTrigger>Exclusive Offers</AccordionTrigger>
+                                    <AccordionTrigger className="text-slate-700 font-semibold">Exclusive Offers</AccordionTrigger>
                                     <AccordionContent>
                                         <ul className="text-sm text-gray-700 space-y-2">
                                             {Object.entries(product.details).map(([key, value]) => (
