@@ -4,7 +4,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { useEffect, useState } from "react";
 import Masonry from "react-masonry-css";
-import CometLogoLoader from "../FlashLogo/EvoqueLoader";
+import CometLogoLoader from "../FlashLogo/LayerLogo";
 
 interface Category {
     name: string;
@@ -54,59 +54,52 @@ const FeaturedCategories = () => {
 
 
     return (
-        <section className="px-2 w-full flex flex-col justify-center my-8 ">
+        <section className="px-2 w-full flex flex-col justify-center my-8">
             {/* Heading */}
             <h2 className="text-center text-sm tracking-widest font-semibold font-poppins text-neutral-700 mb-1.5">
                 Your Wardrobe Starts Here
             </h2>
 
-            {/* Pinterest Grid */}
-            <Masonry breakpointCols={breakpoints}
-                className="flex gap-2 w-full"
-                columnClassName="masonry-column"
-            >
-                {categories.map((item, index) => (
-                    <Link
-                        href={`/categories/${item.slug}`}
-                        key={index}
-                        className="mb-2 block break-inside-avoid"
-                    >
-                        <div className="group h-80 relative rounded-sm overflow-hidden bg-neutral-100">
-                            {/* Image */}
-                            <Image
-                                src={item.image}
-                                alt={item.name}
-                                fill
-                                className="
-                                            w-full object-cover
-                                            transition-transform duration-500
-                                            group-hover:scale-105
-                                            "
-                            />
+            {/* Fallback */}
+            {categories.length === 0 ? (
+                <div className="flex items-center justify-center h-64 text-neutral-500 text-sm tracking-wide">
+                   <h2 className="text-center text-sm tracking-widest font-semibold font-poppins text-neutral-700 mb-1.5">
+                        Dropping Soon...
+                   </h2>
+                </div>
+            ) : (
+                <Masonry
+                    breakpointCols={breakpoints}
+                    className="flex gap-2 w-full"
+                    columnClassName="masonry-column"
+                >
+                    {categories.map((item) => (
+                        <Link
+                            href={`/categories/${item.slug}`}
+                            key={item._id}
+                            className="mb-2 block break-inside-avoid"
+                        >
+                            <div className="group h-80 relative rounded-sm overflow-hidden bg-neutral-100">
+                                {/* Image */}
+                                <Image
+                                    src={item.image}
+                                    alt={item.name}
+                                    fill
+                                    className="w-full object-cover transition-transform duration-500 group-hover:scale-105"
+                                />
 
-                            {/* Dark overlay */}
-                            <div
-                                className="
-                                        absolute inset-0
-                                        bg-black/15
-                                        opacity-0
-                                        group-hover:opacity-100
-                                        transition-opacity duration-300
-                                        "
-                            />
+                                {/* Dark overlay */}
+                                <div className="absolute inset-0 bg-black/15 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
 
-                            {/* Tag */}
-                            {item.name && (
-                                <div className="absolute bottom-3 left-1/2 -translate-x-1/2     
-        z-10 text-white text-sm bg-black/50 font-extrabold px-3 py-1 rounded-sm">
-                                    <span>{item.name}</span>
+                                {/* Tag */}
+                                <div className="absolute bottom-3 left-1/2 -translate-x-1/2 z-10 text-white text-sm bg-black/50 font-extrabold px-3 py-1 rounded-sm">
+                                    {item.name}
                                 </div>
-                            )}
-
-                        </div>
-                    </Link>
-                ))}
-            </Masonry>
+                            </div>
+                        </Link>
+                    ))}
+                </Masonry>
+            )}
         </section>
     );
 };

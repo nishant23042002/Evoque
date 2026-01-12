@@ -58,7 +58,7 @@ const LeftMenu = () => {
             <button data-menu-btn
                 onClick={() => setIsOpen(!isOpen)}
                 className="cursor-pointer
-                    fixed left-0 top-3.5 z-50
+                    fixed left-0 sm:left-2 top-3 z-50
                     p-2
                 "
             >
@@ -80,7 +80,7 @@ const LeftMenu = () => {
             <aside
                 ref={sidebarRef}
                 className={`
-                    fixed left-0 top-16 py-1 z-40 h-screen bg-[#E8E6DF]
+                    fixed left-0 top-16 py-1 z-40 h-screen bg-[#e2dfd6]
                     overflow-hidden
                     transition-all duration-300 ease-in-out
                     ${sidebarWidth}
@@ -150,7 +150,7 @@ const LeftMenu = () => {
                                                             <div
                                                                 className={`
                                                                                 absolute inset-0 transition-all duration-300
-                                                                                ${active ? "bg-black/45" : "bg-black/30 group-hover:bg-black/40"}
+                                                                                ${active ? "bg-black/25" : " "}
                                                                             `}
                                                             />
 

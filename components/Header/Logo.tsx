@@ -3,30 +3,45 @@ import { cn } from "@/lib/utils";
 
 const Logo = ({ className }: { className?: string }) => {
     return (
-        <Link href="/" className="group relative select-none ml-6">
+        <Link
+            href="/"
+            className="group relative select-none"
+            aria-label="The Layer Co. Home"
+        >
             <h1
                 className={cn(
-                    `
-                    relative z-10
-                    text-[18px] max-lg:text-[12px] max-sm:[10px]
-                    font-medium tracking-[0.30em]
-                    uppercase text-brand-red
+                    `relative
+                    text-[20px] 
+                    max-lg:text-[16px] 
+                    max-sm:text-[12px]
+                    
+                    font-light
+                    uppercase
+                    
+                    tracking-[0.2em]
+                    transition-transform duration-300
+                    text-slate-800
+                    dark:text-slate-100
+                    hover:text-brand-red
+                    leading-4
                     `,
                     className
                 )}
             >
-                <span className="relative px-2">
-                    EVOQUE
+                <span className="relative">
+                    THE LAYER CO.
+
                     <span
-                        className="
-                        absolute -bottom-1 left-2 h-0.5 w-[50%]
-                        bg-brand-red
-                        scale-x-0 origin-left
+                        className="max-md:hidden
+                        absolute -bottom-1 left-0.5 h-0.5 w-[50%]
+                         bg-brand-red
+                         scale-x-0 origin-left
                         transition-transform duration-300
                         group-hover:scale-x-100
                     "
                     />
                 </span>
+
             </h1>
         </Link>
     );

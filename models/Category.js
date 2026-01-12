@@ -1,5 +1,6 @@
 import mongoose from "mongoose";
-import { type } from "os";
+
+
 
 /* ---------------- SUB CATEGORY ---------------- */
 
@@ -73,6 +74,10 @@ const categorySchema = new mongoose.Schema(
 
         image: {
             type: String, // banner / hero image
+        },
+
+        leftMenuCategoryImage: {
+            type: String, // specific image for sidemenu were different categories are mapping 
         },
 
         categoryPageBanner: {

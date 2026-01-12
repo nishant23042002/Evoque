@@ -3,7 +3,7 @@ import Container from "@/components/Container";
 import Image from "next/image";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 import { useEffect, useMemo, useState } from "react";
-import EvoqueLogoLoader from "@/components/FlashLogo/EvoqueLoader";
+import EvoqueLogoLoader from "@/components/FlashLogo/LayerLogo";
 import { Heart } from "lucide-react";
 import { useParams, useSearchParams } from "next/navigation";
 import { useRouter } from "next/navigation";

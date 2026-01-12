@@ -53,25 +53,25 @@ export const leftNav: LeftNavSection[] = [
         title: "Shirts",
         href: "/categories/shirts",
         icon: PiShirtFolded,
-        image: "/images/category-shirt.jpg",
+        image: "/images/shirts.jpg",
       },
       {
         title: "T-Shirts",
         href: "/categories/t-shirts",
         icon: PiTShirt,
-        image: "/images/category-tshirt.jpg"
+        image: "/images/t-shirts.jpeg"
       },
       {
         title: "Jeans",
         href: "/categories/jeans",
         icon: GiArmoredPants,
-        image: "/images/category-jeans.jpeg"
+        image: "/images/jean.jpg"
       },
       {
         title: "Trousers",
         href: "/categories/trousers",
         icon: PiPantsDuotone,
-        image: "/images/category-trousers.jpg"
+        image: "/images/trouser.jpeg"
       }
     ],
   },

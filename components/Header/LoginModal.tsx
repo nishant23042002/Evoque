@@ -58,7 +58,7 @@ export default function LoginModalUI({
                 {/* Close */}
                 <button
                     onClick={onClose}
-                    className="cursor-pointer  absolute right-4 top-4 z-10 text-gray-700 hover:text-black"
+                    className="cursor-pointer  absolute right-4 top-4 z-10 text-white md:text-gray-700 md:hover:text-black"
                 >
                     <IoClose size={22} />
                 </button>
@@ -169,7 +169,7 @@ export default function LoginModalUI({
                         </button>
 
                         <p className="mt-4 text-[11px] text-gray-500 text-center">
-                            I accept that I have read & understood Evoque’s{" "}
+                            I accept that I have read & understood The Layer Co.{" "}
                             <span className="underline cursor-pointer">
                                 Privacy Policy
                             </span>{" "}

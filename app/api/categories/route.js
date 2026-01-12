@@ -27,9 +27,9 @@ export async function POST(req) {
 
         const body = await req.json();
 
-        const { name, slug, image, subCategories = [], isActive, isFeatured } = body;
+        const { name, slug, image, leftMenuCategoryImage,categoryPageBanner, subCategories = [], isActive, isFeatured } = body;
 
-        if (!name || !slug || !image) {
+        if (!name || !slug || !image || !leftMenuCategoryImage || !categoryPageBanner) {
             return NextResponse.json(
                 { message: "Name, slug and image are required" },
                 { status: 400 }
@@ -45,7 +45,13 @@ export async function POST(req) {
         }
 
         const categoryUpload = await cloudinary.uploader.upload(image, {
-            folder: `evoque/categories/${slug}`,
+            folder: `thelayerco./categories/${slug}`,
+        });
+        const leftMenuImg = await cloudinary.uploader.upload(leftMenuCategoryImage, {
+            folder: `thelayerco./categories/leftmenu-specific-img/${slug}`,
+        });
+        const categoryPageBannerImg = await cloudinary.uploader.upload(categoryPageBanner, {
+            folder: `thelayerco./banners/${slug}`,
         });
 
         /* ---------------- HANDLE SUB CATEGORIES ---------------- */
@@ -80,6 +86,8 @@ export async function POST(req) {
             name: name,
             slug: slug,
             image: categoryUpload.secure_url,
+            leftMenuCategoryImage: leftMenuImg.secure_url,
+            categoryPageBanner: categoryPageBannerImg.secure_url,
             subCategories: formattedSubCategories,
             isFeatured: isFeatured ?? true,
             isActive: isActive ?? true,

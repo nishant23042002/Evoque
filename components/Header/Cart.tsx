@@ -11,31 +11,18 @@ const Cart = () => {
     return (
         <Link
             href="/cart"
-            className={`relative group p-2 ${active ? "text-brand-red" : "text-neutral-800"
+            className={`relative group  ${active ? "text-brand-red" : "text-neutral-800"
                 }`}
         >
-            <span className="absolute top-0 text-slate-700 right-0 font-bold"><span className="relative text-brand-red right-0.5 -top-1">0</span></span>
+            <span className="absolute -top-2.5 text-slate-700 -right-1 font-bold"><span className="relative text-brand-red right-0.5 -top-1">0</span></span>
             <ShoppingBag
                 size={20}
-                className={`text-inherit group-hover:text-brand-red ${active ? "text-brand-red" : "text-slate-800"
-                    }`}
-            />
-            
-
-            {/* Underline */}
-            <span
+                strokeWidth={2.2}
                 className={`
-                    bg-brand-red absolute bottom-0 left-1/2 -translate-x-full
-                    h-0.5 w-0 group-hover:w-1/3 transition-all duration-300
-                    ${active && "w-1/4"}
-                `}
-            />
-            <span
-                className={`
-                    bg-brand-red absolute bottom-0 left-1/2 translate-x-0
-                    h-0.5 w-0 group-hover:w-1/3 transition-all duration-300
-                    ${active && "w-1/4"}
-                `}
+    transition-colors duration-200
+    ${active ? "text-brand-red" : "text-slate-800"}
+    group-hover:text-brand-red
+  `}
             />
         </Link>
     );

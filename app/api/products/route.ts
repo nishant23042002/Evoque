@@ -296,7 +296,7 @@ export async function POST(req: Request) {
             for (let i = 0; i < (color.images || []).length; i++) {
                 const uploaded = await uploadImage(
                     color.images[i].url,
-                    `evoque/products/${category.slug}/${slug}/${color.slug}`,
+                    `thelayerco./products/${category.slug}/${slug}/${color.slug}`,
                     `${productSku}-${color.slug}-${i + 1}`
                 );
                 if (uploaded) {

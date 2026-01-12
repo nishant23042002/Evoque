@@ -17,7 +17,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body className="font-poppins antialiased" style={{ backgroundColor: "#f2efe9" }}>
+      <body className="font-poppins antialiased" style={{ backgroundColor: "#eceae3" }}>
         <div className="flex">
           <div className="fixed top-0 z-99 h-full">
             <LeftMenu />

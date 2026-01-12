@@ -6,7 +6,7 @@ import SearchBar from "./SearchBar";
 import WishList from "./WishList";
 import LoginModalUI from "./LoginModal";
 import { useState } from "react";
-import Image from "next/image";
+import { User } from "lucide-react";
 
 const Header = () => {
     const [loginOpen, setLoginOpen] = useState(false);
@@ -15,33 +15,30 @@ const Header = () => {
     return (
         <header className="
             sticky top-0 z-40 w-full
-            bg-[#E8E6DF]           
+            bg-[#e2dfd6]          
         ">
-            <div className="flex items-center justify-between px-2 h-16">
+            <div className="flex items-center justify-between px-2 md:px-4 h-16">
 
                 {/* LEFT — Logo */}
-                <div className="flex items-center gap-2">
+                <div className="w-full flex items-center justify-center gap-2">
                     <Logo />
                 </div>
 
-                {/* CENTER — Search */}
-                <div className="
-                    md:flex
-                    flex-1 max-w-xl mx-2
-                ">
-                    <SearchBar />
-                </div>
 
                 {/* RIGHT — Actions */}
-                <div className="flex items-center">
+                <div className="flex items-center gap-4">
+                    <SearchBar />
                     <WishList />
                     <Cart />
                     <button
                         onClick={() => setLoginOpen(true)}
-                        className="cursor-pointer p-2 text-slate-700 hover:text-black"
-                    >
-                        <Image className="text-slate-800" src="/images/login-icon.png" width={22} height={22} alt="login-icon" />
+                        aria-label="Login"
+                        className="cursor-pointer flex items-center justify-center                                   ">
+                        <User size={20}
+                            strokeWidth={2.2}
+                            className="text-slate-800 hover:text-brand-red" />
                     </button>
+
                     <LoginModalUI
                         open={loginOpen}
                         onClose={() => setLoginOpen(false)}

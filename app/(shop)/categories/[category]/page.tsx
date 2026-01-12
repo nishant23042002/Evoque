@@ -1,6 +1,6 @@
 "use client";
 
-import EvoqueLogoLoader from "@/components/FlashLogo/EvoqueLoader";
+import EvoqueLogoLoader from "@/components/FlashLogo/LayerLogo";
 import ProductMasonryGrid from "@/components/Main/ProductMasonryGrid";
 import clsx from "clsx";
 import Image from "next/image";
@@ -139,7 +139,7 @@ const ProductCategoryPage = () => {
                 )}
             </div>
 
-            <div className="md:w-full mx-auto sticky top-15 py-2 z-30 bg-[#f2efe9] mt-4">
+            <div className="md:w-full mx-auto sticky top-15 py-2 z-30 bg-[#eceae3] mt-4">
                 <div className="mx-2 px-0.5 flex flex-nowrap overflow-auto items-center sm:justify-center gap-2 py-1 scrollbar-hide">
                     {/* ALL */}
                     <Link
@@ -218,8 +218,8 @@ const ProductCategoryPage = () => {
 
             <div>
                 {products.length === 0 ? (
-                    <div className="flex items-center justify-center h-[40vh] text-sm text-gray-500">
-                        No products found
+                    <div className="flex items-center font-poppins justify-center h-[40vh] text-sm text-slate-800 font-bold">
+                        Nothing Dropped Here Yet...
                     </div>
                 ) : (
                     <ProductMasonryGrid products={products} />

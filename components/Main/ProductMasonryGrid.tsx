@@ -102,7 +102,7 @@ export default function ProductMasonryGrid({
     }, [products]);
 
     if (!products.length) {
-        return <p className="text-center my-10">No products found</p>;
+        return <p className="flex items-center font-poppins justify-center h-[40vh] text-sm text-slate-800 font-bold">New Drops Coming Soon...</p>;
     }
 
     return (
