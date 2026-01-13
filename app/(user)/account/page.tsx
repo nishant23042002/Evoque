@@ -1,6 +1,6 @@
 const AccountPage = () => {
     return(
-        <div>
+        <div className="min-h-[90vh]">
             hello
         </div>
     )

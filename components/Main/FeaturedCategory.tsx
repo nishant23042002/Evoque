@@ -54,7 +54,7 @@ const FeaturedCategories = () => {
 
 
     return (
-        <section className="px-2 w-full flex flex-col justify-center my-1">
+        <section className="px-2 w-full sm:w-[90%] mx-auto flex flex-col justify-center my-1">
             {/* Heading */}
             <h2 className="py-2 text-center text-md tracking-widest font-semibold font-poppins text-slate-800">
                 Your Wardrobe Starts Here
@@ -63,9 +63,9 @@ const FeaturedCategories = () => {
             {/* Fallback */}
             {categories.length === 0 ? (
                 <div className="flex items-center justify-center h-64 text-neutral-500 text-sm tracking-wide">
-                   <h2 className="text-center text-sm tracking-widest font-semibold font-poppins text-neutral-700 mb-1.5">
+                    <h2 className="text-center text-sm tracking-widest font-semibold font-poppins text-neutral-700 mb-1.5">
                         Dropping Soon...
-                   </h2>
+                    </h2>
                 </div>
             ) : (
                 <Masonry
@@ -87,7 +87,6 @@ const FeaturedCategories = () => {
                                     fill
                                     className="w-full object-cover transition-transform duration-500 group-hover:scale-105"
                                 />
-
                                 {/* Dark overlay */}
                                 <div className="absolute inset-0 bg-black/15 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
 

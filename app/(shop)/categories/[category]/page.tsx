@@ -163,14 +163,14 @@ const ProductCategoryPage = () => {
                                 className="object-center w-full h-full"
                             />
                         </div>
-                        <span
+                        <p
                             className={clsx(
-                                "mt-1 text-[11px] font-extralight",
+                                "w-20 truncate text-center mt-1 text-[11px] font-extralight",
                                 !activeSub ? "text-brand-red" : "text-slate-800"
                             )}
                         >
-                            All <span>{categorySlug}</span>
-                        </span>
+                            All <span>{categorySlug?.toUpperCase()}</span>
+                        </p>
 
                     </Link>
 
@@ -199,17 +199,19 @@ const ProductCategoryPage = () => {
                                         width={80}
                                         height={80}
                                         className="object-cover w-full h-full"
-                                    />
+                                    />                                  
                                 </div>
+                                <div className="w-20 flex items-center justify-center">
+                                    <p
+                                        className={clsx(
+                                            "mt-1 text-[11px] text-center truncate font-extralight",
+                                            isActive ? "text-brand-red" : "text-slate-700"
+                                        )}
+                                    >
+                                        {item.name}
+                                    </p>
 
-                                <span
-                                    className={clsx(
-                                        "mt-1 text-[11px] truncate font-extralight",
-                                        isActive ? "text-brand-red" : "text-slate-700"
-                                    )}
-                                >
-                                    {item.name}
-                                </span>
+                                </div>
                             </Link>
                         );
                     })}

@@ -13,6 +13,7 @@ import {
 } from "react-icons/hi";
 import { MdFiberNew } from "react-icons/md";
 import { Flame } from "lucide-react";
+import { cn } from "@/lib/utils";
 
 const MOBILE_BREAKPOINT = 550;
 
@@ -100,6 +101,18 @@ const LeftMenu = () => {
         return () => document.removeEventListener("click", handleClickOutside);
     }, [isOpen]);
 
+    useEffect(() => {
+        if (isOpen) {
+            document.body.style.overflow = "hidden";
+        } else {
+            document.body.style.overflow = "";
+        }
+
+        return () => {
+            document.body.style.overflow = "";
+        };
+    }, [isOpen]);
+
     const handleNavClick = () => {
         setIsOpen(false);
     };
@@ -114,15 +127,15 @@ const LeftMenu = () => {
             {/* MENU BUTTON */}
             <button
                 onClick={() => setIsOpen(!isOpen)}
-                className="fixed left-0 sm:left-2 top-11.5 z-50 p-2 cursor-pointer"
+                className={`fixed left-2 top-0 z-50 py-2 duration-200 hover:text-brand-red cursor-pointer ${isOpen ? "left-4 top-5" : "top-12"}`}
             >
                 {isOpen ? (
-                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.25">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2">
                         <path d="M18 6 6 18" />
                         <path d="m6 6 12 12" />
                     </svg>
                 ) : (
-                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.25">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2">
                         <path d="M4 5h16" />
                         <path d="M4 12h16" />
                         <path d="M4 19h16" />
@@ -130,11 +143,19 @@ const LeftMenu = () => {
                 )}
             </button>
 
+            <div
+                className={cn(
+                    "fixed inset-0 bg-black/30 z-40 transition-opacity duration-300",
+                    isOpen ? "opacity-100 pointer-events-auto" : "opacity-0 pointer-events-none"
+                )}
+                onClick={() => setIsOpen(false)}
+            />
+
             {/* SIDEBAR */}
             <aside
                 ref={sidebarRef}
                 className={`
-                                    fixed top-24.5 m-0 left-0 z-40 h-screen py-1
+                                    fixed top-0 m-0 left-0 z-40 h-screen py-1
                                     bg-[#e2dfd6] border border-r-black/20
                                     ${SIDEBAR_WIDTH}
 
@@ -143,7 +164,7 @@ const LeftMenu = () => {
                                 `}
             >
 
-                <nav className="flex flex-col h-full min-[551px]:mx-2">
+                <nav className="flex flex-col pt-16 h-full min-[551px]:mx-2">
 
                     {/* ---------- TOP: PRIMARY ---------- */}
                     <div className="space-y-1 pt-2">

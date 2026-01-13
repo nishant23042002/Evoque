@@ -35,7 +35,7 @@ const Header = () => {
             </div>
             <div className="flex items-center justify-between px-2 md:px-4 h-16">
                 {/* LEFT — Logo */}
-                <div className="w-full flex items-center max-md:ml-9 md:justify-center gap-2">
+                <div className="w-full flex items-center max-sm:ml-7 max-md:ml-9 md:justify-center gap-2">
                     <Logo />
                 </div>
 
