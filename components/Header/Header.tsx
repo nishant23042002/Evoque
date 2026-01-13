@@ -10,6 +10,10 @@ import { User } from "lucide-react";
 
 const Header = () => {
     const [loginOpen, setLoginOpen] = useState(false);
+    const announcements = [
+        "Free Shipping on Orders Above ₹999",
+    ];
+    const repeatedAnnouncements = Array(10).fill(announcements[0]);
 
 
     return (
@@ -17,10 +21,21 @@ const Header = () => {
             sticky top-0 z-40 w-full
             bg-[#e2dfd6]          
         ">
+            <div className="cursor-pointer relative w-full overflow-hidden bg-brand-red text-white">
+                <div className="marquee flex w-max items-center gap-6 py-1.75">
+                    {repeatedAnnouncements.map((text, i) => (
+                        <span
+                            key={`a-${i}`}
+                            className="whitespace-nowrap font-poppins tracking-wider px-2 text-sm font-extrabold"
+                        >
+                            {text}
+                        </span>
+                    ))}
+                </div>
+            </div>
             <div className="flex items-center justify-between px-2 md:px-4 h-16">
-
                 {/* LEFT — Logo */}
-                <div className="w-full flex items-center justify-center gap-2">
+                <div className="w-full flex items-center max-md:ml-9 md:justify-center gap-2">
                     <Logo />
                 </div>
 

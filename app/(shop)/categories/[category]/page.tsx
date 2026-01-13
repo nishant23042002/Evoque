@@ -134,12 +134,12 @@ const ProductCategoryPage = () => {
                         width={1600}
                         height={600}
                         priority
-                        className="w-full h-90 md:h-140 sm:object-cover mix-blend-multiply"
+                        className="w-full h-70 max-[550px]:h-60 md:h-100 "
                     />
                 )}
             </div>
 
-            <div className="md:w-full mx-auto sticky top-15 py-2 z-30 bg-[#eceae3] mt-4">
+            <div className="md:w-full mx-auto sticky top-24 py-2 z-30 bg-[#eceae3] mt-4">
                 <div className="mx-2 px-0.5 flex flex-nowrap overflow-auto items-center sm:justify-center gap-2 py-1 scrollbar-hide">
                     {/* ALL */}
                     <Link
@@ -222,7 +222,7 @@ const ProductCategoryPage = () => {
                         Nothing Dropped Here Yet...
                     </div>
                 ) : (
-                    <ProductMasonryGrid products={products} />
+                    <ProductMasonryGrid products={products} showHeading={false} />
                 )}
             </div>
         </section>

@@ -11,13 +11,10 @@ const Logo = ({ className }: { className?: string }) => {
             <h1
                 className={cn(
                     `relative
-                    text-[20px] 
-                    max-lg:text-[16px] 
-                    max-sm:text-[12px]
-                    
+                    text-[20px]  
+                    max-[550px]:text-[14px]                                 
                     font-light
-                    uppercase
-                    
+                    uppercase                   
                     tracking-[0.2em]
                     transition-transform duration-300
                     text-slate-800

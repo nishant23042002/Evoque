@@ -1,19 +1,71 @@
 "use client";
 
 import Image from "next/image";
-import { leftNav } from "@/constants/leftNavItems";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { useState, useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
+
+
+import {
+    HiOutlineHome,
+    HiOutlineHeart,
+    HiOutlineUser,
+} from "react-icons/hi";
+import { MdFiberNew } from "react-icons/md";
+import { Flame } from "lucide-react";
 
 const MOBILE_BREAKPOINT = 550;
+
+/* ---------------- TYPES ---------------- */
+interface Category {
+    _id: string;
+    name: string;
+    slug: string;
+    leftMenuCategoryImage: string;
+}
+
+interface StaticItem {
+    title: string;
+    href: string;
+    icon: React.ElementType;
+}
+
+/* ---------------- STATIC NAV ---------------- */
+const PRIMARY_ITEMS: StaticItem[] = [
+    { title: "Home", href: "/", icon: HiOutlineHome },
+    { title: "New Arrivals", href: "/new-arrivals", icon: MdFiberNew },
+    { title: "Best Sellers", href: "/best-sellers", icon: Flame },
+];
+
+const SECONDARY_ITEMS: StaticItem[] = [
+    { title: "Wishlist", href: "/wishlist", icon: HiOutlineHeart },
+    { title: "Account", href: "/account", icon: HiOutlineUser },
+];
+
 
 const LeftMenu = () => {
     const pathname = usePathname();
     const sidebarRef = useRef<HTMLDivElement | null>(null);
 
+    const [categories, setCategories] = useState<Category[]>([]);
     const [isOpen, setIsOpen] = useState(false);
     const [isMobile, setIsMobile] = useState(false);
+
+    /* ---------- FETCH CATEGORIES ---------- */
+    useEffect(() => {
+        async function fetchCategories() {
+
+            try {
+                const res = await fetch("/api/categories");
+                const data = await res.json();
+                setCategories(data);
+            } catch (err) {
+                console.error("Failed to fetch categories", err);
+            }
+        }
+
+        if (isOpen) fetchCategories();
+    }, [isOpen]);
 
     /* ---------- SCREEN SIZE ---------- */
     useEffect(() => {
@@ -31,9 +83,14 @@ const LeftMenu = () => {
         if (!isOpen) return;
 
         const handleClickOutside = (e: MouseEvent) => {
+            const target = e.target as HTMLElement;
+
+            // ❗ Ignore menu button click
+            if (target.closest("[data-menu-btn]")) return;
+
             if (
                 sidebarRef.current &&
-                !sidebarRef.current.contains(e.target as Node)
+                !sidebarRef.current.contains(target)
             ) {
                 setIsOpen(false);
             }
@@ -43,24 +100,21 @@ const LeftMenu = () => {
         return () => document.removeEventListener("click", handleClickOutside);
     }, [isOpen]);
 
+    const handleNavClick = () => {
+        setIsOpen(false);
+    };
 
 
     /* ---------- WIDTH LOGIC ---------- */
-    const sidebarWidth = !isOpen
-        ? "w-0"
-        : isMobile
-            ? "w-12"
-            : "w-90";
+    const SIDEBAR_WIDTH = isMobile ? "w-14" : "w-90";
+
 
     return (
         <>
-            {/* MENU BUTTON (VISIBLE ON ALL SCREENS) */}
-            <button data-menu-btn
+            {/* MENU BUTTON */}
+            <button
                 onClick={() => setIsOpen(!isOpen)}
-                className="cursor-pointer
-                    fixed left-0 sm:left-2 top-3 z-50
-                    p-2
-                "
+                className="fixed left-0 sm:left-2 top-11.5 z-50 p-2 cursor-pointer"
             >
                 {isOpen ? (
                     <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.25">
@@ -80,133 +134,166 @@ const LeftMenu = () => {
             <aside
                 ref={sidebarRef}
                 className={`
-                    fixed left-0 top-16 py-1 z-40 h-screen bg-[#e2dfd6]
-                    overflow-hidden
-                    transition-all duration-300 ease-in-out
-                    ${sidebarWidth}
-                `}
+                                    fixed top-24.5 m-0 left-0 z-40 h-screen py-1
+                                    bg-[#e2dfd6] border border-r-black/20
+                                    ${SIDEBAR_WIDTH}
+
+                                    transform transition-transform duration-300 ease-in-out
+                                    ${isOpen ? "translate-x-0" : "-translate-x-full"}
+                                `}
             >
-                <nav className="space-y-6">
-                    {leftNav.map((group) => (
-                        <div className="min-[550px]:mx-2" key={group.section}>
-                            {/* SECTION TITLE (DESKTOP ONLY & OPEN) */}
-                            {!isMobile && isOpen && (
-                                <h4 className="px-4 mb-2 text-[10px] font-extrabold text-slate-700 uppercase">
-                                    {group.section}
-                                </h4>
-                            )}
 
-                            <div className="space-y-1 ">
-                                {group.items.map((item) => {
-                                    const active = pathname === item.href;
+                <nav className="flex flex-col h-full min-[551px]:mx-2">
 
-                                    return (
-                                        <Link
-                                            key={item.title}
-                                            href={item.href}
-                                            className={`active:scale-[0.98] transition-transform
-                                                        relative flex items-center
-                                                        rounded-sm
-                                                        hover:bg-black/5
-                                                        ${active ? "bg-black/5" : ""}
-                                                    `}
+                    {/* ---------- TOP: PRIMARY ---------- */}
+                    <div className="space-y-1 pt-2">
+                        {!isMobile && (
+                            <h2 className="select-none hover:text-brand-red duration-200 mx-1 text-sm tracking-widest font-extralight font-poppins text-neutral-700 mb-1.5">
+                                The Layers
+                            </h2>
+                        )}
+                        {PRIMARY_ITEMS.map((item) => {
+                            const active = pathname === item.href;
+                            const Icon = item.icon;
+
+                            return (
+                                <Link
+                                    key={item.title}
+                                    href={item.href}
+                                    onClick={handleNavClick}
+                                    className="relative flex items-center rounded-sm hover:bg-black/5 transition-all"
+                                >
+                                    {active && (
+                                        <span className="absolute left-0 top-1/2 -translate-y-1/2 h-6 w-1 bg-brand-red" />
+                                    )}
+
+                                    {isMobile ? (
+                                        <Icon
+                                            size={20}
+                                            className={`m-3 ${active ? "text-brand-red" : "text-slate-700"
+                                                }`}
+                                        />
+                                    ) : (
+                                        <div
+                                            className={`flex items-center gap-5 mx-1 px-3 py-2 w-full ${active ? "bg-brand-red/5" : ""
+                                                }`}
                                         >
-                                            {/* ACTIVE BAR */}
-                                            {active && (
-                                                <span className="absolute left-0 top-1/2 -translate-y-1/2 h-6 w-1 bg-brand-red" />
-                                            )}
+                                            <Icon
+                                                size={20}
+                                                className={
+                                                    active
+                                                        ? "text-brand-red scale-105"
+                                                        : "text-slate-700"
+                                                }
+                                            />
+                                            <span
+                                                className={
+                                                    active
+                                                        ? "text-brand-red font-medium"
+                                                        : "text-slate-800"
+                                                }
+                                            >
+                                                {item.title}
+                                            </span>
+                                        </div>
+                                    )}
+                                </Link>
+                            );
+                        })}
+                    </div>
 
-                                            {/* MOBILE → ICON ONLY */}
-                                            {isMobile && (
-                                                <item.icon
-                                                    size={20}
-                                                    className={`m-3 ${active ? "text-brand-red" : "text-slate-700"}`}
-                                                />
-                                            )}
+                    {/* ---------- MIDDLE: CATEGORIES ---------- */}
+                    <div className="mt-4">
+                        {!isMobile && (
+                            <h2 className="mx-1 text-sm tracking-widest font-extralight hover:text-brand-red select-none font-poppins text-neutral-700 mb-1.5">
+                                Now Trending
+                            </h2>
+                        )}
 
-                                            {/* DESKTOP → IMAGE OR ICON */}
-                                            {!isMobile && (
-                                                <>
-                                                    {item.image ? (
-                                                        <div
-                                                            className={`
-        relative mx-1 w-full h-14 overflow-hidden rounded-md group
-        transition-all duration-300
-        ${active ? "ring-1 ring-brand-red/40" : ""}
-    `}
-                                                        >
-                                                            <Image
-                                                                src={item.image}
-                                                                alt={item.title}
-                                                                fill
-                                                                className={`
-            object-cover transition-transform duration-300
-            ${active ? "scale-105" : "group-hover:scale-105"}
-        `}
-                                                                sizes="(min-width: 640px) 100vw"
-                                                            />
+                        <div className="space-y-1">
+                            {categories.slice(0, 5).map((category, i) => {
+                                const active =
+                                    pathname === `/categories/${category.slug}`;
 
-                                                            {/* OVERLAY */}
-                                                            <div
-                                                                className={`
-                                                                                absolute inset-0 transition-all duration-300
-                                                                                ${active ? "bg-black/25" : " "}
-                                                                            `}
-                                                            />
+                                return (
+                                    <Link
+                                        key={category._id}
+                                        href={`/categories/${category.slug}`}
+                                        onClick={handleNavClick}
+                                        className="relative flex items-center rounded-sm hover:bg-black/5 transition-all"
+                                    >
+                                        {active && (
+                                            <span className="absolute left-0 top-1/2 -translate-y-1/2 h-6 w-1 bg-brand-red" />
+                                        )}
 
-                                                            {/* ACTIVE ACCENT */}
-                                                            {active && (
-                                                                <span className="absolute left-0 top-0 h-full w-0.75 bg-brand-red" />
-                                                            )}
+                                        <div className={`relative mx-1 w-full h-12 min-[551px]:h-14 rounded-md overflow-hidden`}>
+                                            <Image
+                                                src={category.leftMenuCategoryImage}
+                                                alt={category.name}
+                                                fill
+                                                loading={i === 0 ? "eager" : "lazy"}
+                                                className="object-cover transition-transform duration-300 group-hover:scale-105"
+                                            />
+                                            <div className={active ? "absolute inset-0 bg-black/25" : ""} />
+                                            <span className="absolute left-1 min-[551px]:left-3 bottom-2 text-[12px] min-[551px]:text-sm text-white font-medium">
+                                                {category.name}
+                                            </span>
+                                        </div>
 
-                                                            {/* TITLE */}
-                                                            <span
-                                                                className={`
-                                                                            absolute left-3 bottom-2
-                                                                            text-sm font-medium tracking-wide drop-shadow-md
-                                                                            transition-colors duration-200
-                                                                            ${active ? "text-white" : "text-white/90"}
-                                                                        `}
-                                                            >
-                                                                {item.title}
-                                                            </span>
-                                                        </div>
-
-                                                    ) : (
-                                                        <div
-                                                            className={`
-                                                                    flex items-center gap-6 mx-1 px-3 py-2 w-full
-                                                                    transition-all duration-200
-                                                                    ${active ? "bg-brand-red/5" : ""}
-                                                                `}
-                                                        >
-                                                            <item.icon
-                                                                size={20}
-                                                                className={`
-                                                                    transition-all duration-200
-                                                                    ${active ? "text-brand-red scale-105" : "text-slate-700"}
-                                                                `}
-                                                            />
-
-                                                            <span
-                                                                className={`
-                                                                    text-sm whitespace-nowrap transition-colors duration-200
-                                                                    ${active ? "text-brand-red font-medium" : "text-slate-800"}
-                                                                `}
-                                                            >
-                                                                {item.title}
-                                                            </span>
-                                                        </div>
-
-                                                    )}
-                                                </>
-                                            )}
-                                        </Link>
-                                    );
-                                })}
-                            </div>
+                                    </Link>
+                                );
+                            })}
                         </div>
-                    ))}
+                    </div>
+
+                    {/* ---------- BOTTOM: SECONDARY ---------- */}
+                    <div className=" space-y-1 pb-4 mt-4">
+                        {SECONDARY_ITEMS.map((item) => {
+                            const active = pathname === item.href;
+                            const Icon = item.icon;
+
+                            return (
+                                <Link
+                                    key={item.title}
+                                    href={item.href}
+                                    onClick={handleNavClick}
+                                    className="relative flex items-center rounded-sm hover:bg-black/5 transition-all"
+                                >
+                                    {active && (
+                                        <span className="absolute left-0 top-5.5 -translate-y-1/2 h-6 w-1 bg-brand-red" />
+                                    )}
+
+                                    {isMobile ? (
+                                        <Icon
+                                            size={20}
+                                            className={`m-3 ${active ? "text-brand-red" : "text-slate-700"
+                                                }`}
+                                        />
+                                    ) : (
+                                        <div className={`flex items-center gap-5 mx-1 px-3 py-2 w-full`}>
+                                            <Icon
+                                                size={20}
+                                                className={
+                                                    active
+                                                        ? "text-brand-red scale-105"
+                                                        : "text-slate-700"
+                                                }
+                                            />
+                                            <span
+                                                className={
+                                                    active
+                                                        ? "text-brand-red font-medium"
+                                                        : "text-slate-800"
+                                                }
+                                            >
+                                                {item.title}
+                                            </span>
+                                        </div>
+                                    )}
+                                </Link>
+                            );
+                        })}
+                    </div>
                 </nav>
             </aside>
         </>

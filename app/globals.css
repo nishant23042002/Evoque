@@ -331,6 +331,20 @@
   animation: glowPulse 2.2s ease-in-out infinite;
 }
 
+@keyframes marquee {
+  0% {
+    transform: translateX(0);
+  }
+
+  100% {
+    transform: translateX(-50%);
+  }
+}
+
+.marquee {
+  animation: marquee 25s linear infinite;
+}
+
 
 .hoverEffect {
   transition: all 0.2s ease;

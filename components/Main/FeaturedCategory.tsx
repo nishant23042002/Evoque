@@ -4,7 +4,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { useEffect, useState } from "react";
 import Masonry from "react-masonry-css";
-import CometLogoLoader from "../FlashLogo/LayerLogo";
+import LayerLogoLoader from "../FlashLogo/LayerLogo";
 
 interface Category {
     name: string;
@@ -47,16 +47,16 @@ const FeaturedCategories = () => {
     if (loading) {
         return (
             <div className="flex flex-nowrap items-center justify-center h-[70vh]">
-                <CometLogoLoader />
+                <LayerLogoLoader />
             </div>
         );
     }
 
 
     return (
-        <section className="px-2 w-full flex flex-col justify-center my-8">
+        <section className="px-2 w-full flex flex-col justify-center my-1">
             {/* Heading */}
-            <h2 className="text-center text-sm tracking-widest font-semibold font-poppins text-neutral-700 mb-1.5">
+            <h2 className="py-2 text-center text-md tracking-widest font-semibold font-poppins text-slate-800">
                 Your Wardrobe Starts Here
             </h2>
 

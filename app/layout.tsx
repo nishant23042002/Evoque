@@ -6,8 +6,8 @@ import LeftMenu from "@/components/LeftMenu/LeftMenu";
 
 
 export const metadata: Metadata = {
-  title: "The Evoque Store",
-  description: "Your go to Clothing Store",
+  title: "Men's Clothing | The Layer Co.",
+  description: "The Layer Co. offers premium men’s clothing including oversized t-shirts, casual shirts, linen shirts, overshirts and modern essentials. Elevate your everyday style with quality fits."
 };
 
 export default function RootLayout({

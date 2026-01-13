@@ -62,7 +62,6 @@ const SearchBar = () => {
               }))
         );
 
-        console.log(activeSubCategories); // 🔥 CHECK THIS
         setPopularCategory(activeSubCategories);
       } catch (err) {
         console.error("Failed to fetch categories", err);
@@ -120,13 +119,13 @@ const SearchBar = () => {
             <input
               type="text"
               placeholder="Search shirts, jeans, jackets..."
-              className="w-full border border-black/10 rounded px-3 py-2 outline-none focus:border-brand-red transition-all"
+              className="w-full border border-black/10 rounded px-3 py-2 select-none outline-none focus:border-brand-red transition-all"
             />
           </div>
           <button
             onClick={() => setOpen(false)}
             aria-label="Close search"
-            className="cursor-pointer p-2 hover:text-brand-red transition-colors"
+            className="cursor-pointer p-2 hover:text-brand-red transition-colors "
           >
             <X size={20} />
           </button>
@@ -135,14 +134,14 @@ const SearchBar = () => {
         {/* Optional: Search Results */}
         <div className="p-4 overflow-y-auto h-[calc(100%-128px)]">
           {/* Replace this with actual search results */}
-          <h1 className="text-sm font-bold text-slate-700 py-3">Most Popular Category</h1>
+          <h1 className="text-sm font-bold text-slate-800 py-3">Most Popular Category</h1>
           {popularCategory.map((cat, i) => (
             <div key={i}>
               <Link
                 href={`/categories/${cat.categorySlug}?sub=${cat.slug}`}
                 onClick={() => setOpen(false)} // optional UX improvement
               >
-                <p className="text-sm font-medium text-slate-700 hover:underline hover:text-brand-red decoration-brand-red cursor-pointer py-1 duration-200">
+                <p className="text-sm font-semibold text-slate-800 hover:underline hover:text-brand-red decoration-brand-red cursor-pointer py-1 duration-200">
                   {cat.name}
                 </p>
               </Link>

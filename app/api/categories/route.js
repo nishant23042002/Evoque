@@ -48,10 +48,10 @@ export async function POST(req) {
             folder: `thelayerco./categories/${slug}`,
         });
         const leftMenuImg = await cloudinary.uploader.upload(leftMenuCategoryImage, {
-            folder: `thelayerco./categories/leftmenu-specific-img/${slug}`,
+            folder: `thelayerco./categories/${slug}/leftmenu-specific-img`,
         });
         const categoryPageBannerImg = await cloudinary.uploader.upload(categoryPageBanner, {
-            folder: `thelayerco./banners/${slug}`,
+            folder: `thelayerco./categories/${slug}/category-page-banners`,
         });
 
         /* ---------------- HANDLE SUB CATEGORIES ---------------- */
@@ -67,7 +67,7 @@ export async function POST(req) {
             }
 
             const subUpload = await cloudinary.uploader.upload(sub.image, {
-                folder: `evoque/categories/${slug}/subcategories/${sub.slug}`,
+                folder: `thelayerco./categories/${slug}/subcategories/${sub.slug}`,
             });
 
             const fullSubCategoryName = `${toTitle(sub.name)} ${toTitle(name)}`;

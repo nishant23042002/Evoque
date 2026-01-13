@@ -66,6 +66,7 @@ export interface Product {
 
 interface ProductMasonryGridProps {
     products?: Product[];
+    showHeading?: boolean;
 }
 
 /* =======================
@@ -74,6 +75,7 @@ interface ProductMasonryGridProps {
 
 export default function ProductMasonryGrid({
     products = [],
+    showHeading = true,
 }: ProductMasonryGridProps) {
     const [activeIndex, setActiveIndex] = useState<number | null>(null);
     const [hoverVariants, setHoverVariants] = useState<Record<string, Variant>>({});
@@ -106,10 +108,12 @@ export default function ProductMasonryGrid({
     }
 
     return (
-        <div className="my-8 md:w-[90%] mx-auto">
-            <h2 className="text-center text-sm tracking-widest font-semibold font-poppins text-neutral-700 mb-1.5">
-                Everything You Need
-            </h2>
+        <div className="md:w-[90%] mx-auto my-1">
+            {showHeading && (
+                <h2 className="py-2 text-center text-md tracking-widest font-semibold font-poppins text-slate-800">
+                    Everything You Need
+                </h2>
+            )}
             <Masonry
                 breakpointCols={breakpoints}
                 className="flex gap-2 mx-2"
@@ -133,7 +137,7 @@ export default function ProductMasonryGrid({
                                     }
                                     alt={item.productName}
                                     fill
-                                    className="object-cover transition-all duration-300 group-hover:scale-105"
+                                    className="object-cover duration-300"
                                 />
 
                                 {/* COLOR DOTS */}
