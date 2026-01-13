@@ -1,165 +1,150 @@
-import { CiLinkedin, CiFacebook, CiInstagram } from "react-icons/ci";
-import { PiWhatsappLogoLight } from "react-icons/pi";
-
+import Link from "next/link";
+import { CiLinkedin, CiInstagram } from "react-icons/ci";
 
 export default function Footer() {
     return (
-        <footer className="mt-30">
-            <div className="text-slate-800 bg-[#e2dfd6] md:max-w-[90%] mx-2 md:mx-auto px-2 sm:px-8 py-14">
+        <footer className="relative bg-black text-[#e6e6e6] overflow-hidden">
 
-                {/* Title */}
-                <h2 className="text-[18px] font-extrabold mb-8">
-                    More about shopping At Snitch for men
-                </h2>
+            {/* MAIN GRID */}
+            <div
+                className="
+                                relative z-10
+                                max-w-360 mx-auto
+                                px-5 sm:px-6 md:px-10
+                                py-12 sm:py-14 md:py-20
+                                grid grid-cols-1
+                                gap-12 sm:gap-14 md:grid-cols-4 md:gap-16
+                            "
+            >
+                {/* BRAND / PHILOSOPHY */}
+                <div className="space-y-4 sm:space-y-6">
+                    <p className="text-sm leading-relaxed text-neutral-300 max-w-sm">
+                        The Layer Co. is a modern menswear label focused on restraint,
+                        proportion, and purpose. Designed to layer, adapt, and endure —
+                        each piece is built for everyday wear beyond trends.
+                    </p>
 
-                {/* TOP CATEGORIES */}
-                <section>
-                    <h3 className="text-[16px] font-extrabold mb-1.5 tracking-wide">
-                        TOP CATEGORIES
-                    </h3>
-
-                    <div className="grid grid-cols-3 max-sm:grid-cols-2 md:grid-cols-4 lg:grid-cols-7 gap-x-14 gap-y-2 text-[13px] leading-5 tracking-normal">
-                        <Column items={["T-shirts", "Bags", "Co-ords", "Shoes"]} />
-                        <Column items={["Shirts", "Accessories", "Hoodies", "Sunglasses"]} />
-                        <Column items={["Joggers", "Belts", "Jackets"]} />
-                        <Column items={["Shorts", "Blazers", "Jeans"]} />
-                        <Column items={["Trousers", "Boxers", "Night Suit & Pyjamas"]} />
-                        <Column items={["Sweatshirts & Hoodies", "Cargo Pants", "Overshirt"]} />
-                        <Column items={["Sweaters", "Chinos", "Perfumes"]} />
-                    </div>
-                </section>
-
-                {/* POPULAR SEARCHES */}
-                <section className="mt-14">
-                    <h3 className="text-[16px] font-extrabold mb-1.5 tracking-wide">
-                        POPULAR SEARCHES
-                    </h3>
-
-                    <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-7 gap-x-14 gap-y-2 text-[13px] leading-5">
-                        <Column items={[
-                            "shirts for men", "hoodie", "polo t-shirts for men",
-                            "trousers for men", "branded shirts for men", "mens tshirt"
-                        ]} />
-
-                        <Column items={[
-                            "jackets for men", "joggers for men", "formal trousers for men",
-                            "cargo jeans", "linen shirt"
-                        ]} />
-
-                        <Column items={[
-                            "t-shirts for men", "baggy jeans mens", "sweatshirt",
-                            "oversized shirt", "check shirt for men", "denim jeans"
-                        ]} />
-
-                        <Column items={[
-                            "cargo", "straight fit jeans", "white shirt for men",
-                            "denim", "casual shirts for men", "baggy pants men"
-                        ]} />
-
-                        <Column items={[
-                            "baggy jeans", "printed shirts for men", "black shirt",
-                            "linen pants", "chinos for men", "varsity jacket mens"
-                        ]} />
-
-                        <Column items={[
-                            "mens jeans", "varsity jacket", "korean pants",
-                            "crochet shirt", "formal shirts for men", "black t-shirt men"
-                        ]} />
-
-                        <Column items={[
-                            "polo t-shirts", "formal pants for men", "baggy pants",
-                            "old money outfits", "printed shirts", "club wear for men"
-                        ]} />
-                    </div>
-                </section>
-
-                {/* ACCESSORIES */}
-                <section className="mt-14">
-                    <h3 className="text-[16px] font-extrabold mb-1.5 tracking-wide">
-                        MOST POPULAR ACCESSORIES
-                    </h3>
-
-                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-x-16 gap-y-2 text-[13px] leading-5">
-                        <Column items={[
-                            "Ravenwood Braided Bracelet", "Divine Skull Cross Chain",
-                            "Debonair Black Bracelet", "Abstract Trio Metal Bracelet",
-                            "Rover Wrap Black Bracelet", "Bold Swirl Bracelet",
-                            "Wavecrest Dollar Brown Bracelet"
-                        ]} />
-
-                        <Column items={[
-                            "EternaWrap Black Bracelet", "Bar of Luxe Chain",
-                            "Solid Block SS Chain", "Rattle Square Chain",
-                            "Mafia SS Chain", "Grey Cuboid SS Chain"
-                        ]} />
-
-                        <Column items={[
-                            "Obsidian Blue Braided Bracelet", "Rogue Bullet Pendant",
-                            "Hyphenated Weave Braided Bracelet",
-                            "Blacksmith Nail Braided Bracelet",
-                            "Nob Nail Edge Braided Bracelet",
-                            "Midnight Eclipse Braid Bracelet"
-                        ]} />
-
-                        <Column items={[
-                            "Rustic Revolve Brown Braided Bracelet",
-                            "Pirate's Anchor Steel Chain",
-                            "Metal Black Trio Bracelet",
-                            "Duo Gold & Silver SS Chain",
-                            "Hexa Beads Bracelet",
-                            "Black Cuboid SS Chain"
-                        ]} />
-                    </div>
-                </section>
-
-                {/* COMPANY */}
-                <section className="mt-14">
-                    <h3 className="text-[16px] font-extrabold mb-1.5 tracking-wide">
-                        COMPANY
-                    </h3>
-
-                    <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-7 gap-x-14 text-[13px] leading-5">
-                        {[
-                            "About Us", "Privacy Policy", "Terms & Conditions",
-                            "Return/Exchange Policy", "Contact Us", "Sitemap", "Stakeholders"
-                        ].map(item => (
-                            <p key={item}>{item}</p>
-                        ))}
-                    </div>
-                </section>
-
-                {/* SOCIAL + APP */}
-                <div className="mt-16 flex flex-col items-center gap-8">
-                    <div className="flex gap-6 text-[20px]">
-                        <span className="text-brand-red cursor-pointer"><CiFacebook /></span>
-                        <span className="text-brand-red cursor-pointer"><CiInstagram /></span>
-                        <span className="text-brand-red cursor-pointer"><CiLinkedin /></span>
-                        <span className="text-brand-red cursor-pointer"><PiWhatsappLogoLight /></span>
-                    </div>
-
-                    <div className="text-center">
-                        <p className="text-[13px] font-extrabold tracking-wide">
-                            DOWNLOAD APP
+                    <div className="text-sm text-neutral-400 space-y-1">
+                        <p className="hover:text-white text-brand-red cursor-pointer">
+                            <Link href="/">thelayerco.co.in</Link>
                         </p>
-                        <div className="flex justify-center items-center">
-                            <img alt="appstore" className="h-15 sm:h-20" src="/images/appstore.png" />
-                            <img alt="playstore" className="h-25 sm:h-30" src="/images/playstore.png" />
-                        </div>
+                        <p className="text-xs sm:text-sm">
+                            Designed in India · Worn Everywhere
+                        </p>
                     </div>
                 </div>
 
+
+                {/* PRIMARY NAV */}
+                <nav
+                    className="
+                                space-y-2 sm:space-y-3
+                                text-2xl sm:text-3xl
+                                font-semibold tracking-tight
+                            "
+                >
+                    {[
+                        "Home",
+                        "Shop",
+                        "Editions",
+                        "Journal",
+                        "About Us",
+                        "Contact",
+                    ].map((item) => (
+                        <p
+                            key={item}
+                            className="
+                                cursor-pointer transition
+                                hover:opacity-70 hover:text-brand-red
+                                last:text-brand-red/80 last:tracking-wider last:font-serif
+                            "
+                        >
+                            {item}
+                        </p>
+                    ))}
+                </nav>
+
+
+                {/* CATEGORY NAV */}
+                <div className="space-y-3 sm:space-y-4">
+                    <p className="text-xs uppercase font-serif tracking-wider text-brand-red">
+                        The Wardrobe
+                    </p>
+
+                    <div className="
+                                grid grid-cols-2 gap-y-2 gap-x-6
+                                sm:block sm:space-y-2
+                                text-base sm:text-lg
+                            ">
+                        {[
+                            "Shirts",
+                            "T-Shirts",
+                            "Overshirts",
+                            "Jackets",
+                            "Trousers",
+                            "Denim",
+                            "Sweatshirts",
+                            "Accessories",
+                        ].map((item) => (
+                            <p
+                                key={item}
+                                className="cursor-pointer text-neutral-300 hover:text-brand-red transition"
+                            >
+                                {item}
+                            </p>
+                        ))}
+                    </div>
+                </div>
+
+                {/* SOCIAL + LEGAL */}
+                <div className="flex flex-col gap-8 sm:gap-12 justify-between">
+
+                    <div className="space-y-4">
+                        <p className="text-xs uppercase font-serif  tracking-wider text-brand-red">
+                            Follow
+                        </p>
+
+                        <div className="space-y-2 text-xs sm:text-sm text-white">
+
+                            <p className="flex items-center gap-2 cursor-pointer hover:text-brand-red">
+                                <CiInstagram /> Instagram
+                            </p>
+                            <p className="flex items-center gap-2 cursor-pointer hover:text-brand-red">
+                                <CiLinkedin /> LinkedIn
+                            </p>
+                        </div>
+                    </div>
+
+                    <div className="space-y-1 text-[11px] sm:text-xs">
+
+                        <p className="cursor-pointer hover:text-white tracking-wider font-serif">Privacy</p>
+                        <p className="cursor-pointer hover:text-white tracking-wider font-serif">Terms</p>
+                        <p className="cursor-pointer hover:text-white tracking-wider font-serif">
+                            Shipping & Returns
+                        </p>
+                    </div>
+                </div>
+            </div>
+
+            {/* OVERSIZED BRAND WORDMARK */}
+            <div className="absolute left-0 w-full text-center pointer-events-none select-none
+                -bottom-2 sm:-bottom-3 md:-bottom-4.5">
+                <h1
+                    className="
+                        font-extrabold tracking-tight leading-none
+                        text-white/40
+                        text-[14vw] sm:text-[12vw] md:text-[10vw]
+                        "
+                >
+                    THE LAYER CO.
+                </h1>
+            </div>
+
+
+            {/* BASE BAR */}
+            <div className="relative z-10 py-6 text-center tracking-wider font-serif text-xs">
+                © {new Date().getFullYear()} The Layer Co. · All rights reserved
             </div>
         </footer>
-    );
-}
-
-/* Column helper */
-function Column({ items }: { items: string[] }) {
-    return (
-        <div className="space-y-0.5">
-            {items.map(item => (
-                <p className="cursor-pointer hover:underline decoration-brand-red hover:text-brand-red" key={item}>{item}</p>
-            ))}
-        </div>
     );
 }
