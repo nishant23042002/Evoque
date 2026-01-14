@@ -54,9 +54,9 @@ const FeaturedCategories = () => {
 
 
     return (
-        <section className="px-2 w-full sm:w-[90%] mx-auto flex flex-col justify-center my-1">
+        <section className="px-2 py-2 w-full sm:w-[90%] mx-auto flex flex-col justify-center my-1">
             {/* Heading */}
-            <h2 className="py-2 text-center text-md tracking-widest font-semibold font-poppins text-slate-800">
+            <h2 className="py-3 text-center text-md tracking-widest font-semibold font-poppins text-slate-800">
                 Your Wardrobe Starts Here
             </h2>
 
@@ -91,7 +91,7 @@ const FeaturedCategories = () => {
                                 <div className="absolute inset-0 bg-black/15 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
 
                                 {/* Tag */}
-                                <div className="absolute bottom-3 left-1/2 -translate-x-1/2 z-10 text-white text-sm bg-black/50 font-extrabold px-3 py-1 rounded-sm">
+                                <div className="absolute bottom-3 left-1/2 -translate-x-1/2 z-10 text-slate-800 text-sm bg-white/50 font-semibold tracking-wider px-2 py-0.5 rounded-sm">
                                     {item.name}
                                 </div>
                             </div>

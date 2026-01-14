@@ -127,7 +127,7 @@ const LeftMenu = () => {
             {/* MENU BUTTON */}
             <button
                 onClick={() => setIsOpen(!isOpen)}
-                className={`fixed left-2 top-0 z-50 py-2 duration-200 hover:text-brand-red cursor-pointer ${isOpen ? "left-4 top-5" : "top-12"}`}
+                className={`fixed left-2 top-0 z-50 py-2 duration-200 hover:text-brand-red cursor-pointer ${isOpen ? "left-4 top-5" : "top-12.25"}`}
             >
                 {isOpen ? (
                     <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2">

@@ -15,7 +15,7 @@ const Logo = ({ className }: { className?: string }) => {
                     max-[550px]:text-[18px]                                 
                     font-light
                     uppercase                   
-                    sm:tracking-[0.2em]
+                    sm:tracking-widest
                     transition-transform duration-300
                     text-slate-800
                     dark:text-slate-100
@@ -25,12 +25,12 @@ const Logo = ({ className }: { className?: string }) => {
                     className
                 )}
             >
-                <span className="relative font-extrabold text-slate-700">
-                    THE LAYER CO.
+                <span>
+                    <img src="/images/header-logo.png" alt="thelayerco" />
 
                     <span
                         className="max-md:hidden
-                        absolute -bottom-1.5 left-1 h-0.5 w-[50%]
+                        absolute bottom-0 left-3 h-0.75 w-[50%]
                          bg-brand-red
                          scale-x-0 origin-left
                         transition-transform duration-300

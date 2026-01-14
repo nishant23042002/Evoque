@@ -33,9 +33,9 @@ const Header = () => {
                     ))}
                 </div>
             </div>
-            <div className="flex items-center justify-between px-2 md:px-4 h-16">
+            <div className="relative flex items-center justify-between px-2 md:px-4 h-16">
                 {/* LEFT — Logo */}
-                <div className="w-full flex items-center max-sm:ml-7 max-md:ml-9 md:justify-center gap-2">
+                <div className="w-full ml-11 flex items-center justify-center gap-2">
                     <Logo />
                 </div>
 
@@ -48,7 +48,7 @@ const Header = () => {
                     <button
                         onClick={() => setLoginOpen(true)}
                         aria-label="Login"
-                        className="cursor-pointer flex items-center justify-center                                   ">
+                        className="max-[550px]:absolute left-10 cursor-pointer flex items-center justify-center                                   ">
                         <User size={20}
                             strokeWidth={2.2}
                             className="text-slate-800 hover:text-brand-red" />
