@@ -91,6 +91,7 @@ const sizeScaleMap: Record<string, string[]> = {
     shirts: ["XS", "S", "M", "L", "XL", "XXL"],
     tshirts: ["XS", "S", "M", "L", "XL"],
     jeans: ["28", "30", "32", "34", "36"],
+    trousers: ["28", "30", "32", "34", "36"],
 };
 
 /* ====================
@@ -198,7 +199,7 @@ export default function ProductPage() {
                                     <button
                                         key={i}
                                         onClick={() => setActiveImageIndex(i)}
-                                        className={`
+                                        className={`cursor-pointer
                                                 relative w-25 h-25 border transition-all duration-200
                                                 ${isActive
                                                 ? ""
@@ -221,7 +222,7 @@ export default function ProductPage() {
                                             sizes="(max-width: 640px) 100vw,
                                                         (max-width: 1024px) 50vw,
                                                         33vw"
-                                            className="object-cover w-auto h-auto p-0.5 bg-white"
+                                            className="object-cover w-auto h-auto"
                                         />
                                     </button>
                                 );
@@ -241,11 +242,11 @@ export default function ProductPage() {
                                     alt={product.productName}
                                     width={800}
                                     height={800}
-                                    className="cursor-none transition-all duration-300"
+                                    className="cursor-none object-cover transition-all duration-300"
                                 />
                                 {cursor.direction && (
                                     <div className="fixed z-50 pointer-events-none" style={{ left: cursor.x, top: cursor.y, transform: "translate(-50%, -50%)" }}>
-                                        <div className="w-9 h-9 rounded-sm backdrop-blur-md bg-white/55 flex items-center justify-center transition-all duration-200">
+                                        <div className="w-9 h-9 rounded-sm backdrop-blur-md bg-black/55 flex items-center justify-center transition-all duration-200">
                                             {cursor.direction === "left" ? <FaArrowLeftLong className="text-xl" style={{ color: activeVariant?.color?.hex || "#000" }} /> : <FaArrowRightLong className="text-xl" style={{ color: activeVariant?.color?.hex || "#000" }} />}
                                         </div>
                                     </div>
@@ -286,7 +287,7 @@ export default function ProductPage() {
                                                 setSelectedColor(color.slug);
                                                 router.replace(`/products/${product.slug}?color=${color.slug}`, { scroll: false });
                                             }}
-                                            className={`flex-shrink-0 cursor-pointer border ${isActive ? "" : "border-gray-300 hover:border-gray-500"
+                                            className={`shrink-0 cursor-pointer border ${isActive ? "" : "border-gray-300 hover:border-gray-500"
                                                 }`}
                                             style={
                                                 isActive
@@ -298,8 +299,10 @@ export default function ProductPage() {
                                                     : undefined
                                             }
                                         >
-                                            <Image src={color.image} alt={color.name} width={70} height={70} className="p-0.5" />
-                                            <span className="text-[10px] block text-center py-0.5">{color.name}</span>
+                                            <div className="w-18 h-31.5 flex flex-col justify-between items-center">
+                                                <Image src={color.image} className="object-cover h-full w-full" alt={color.name} width={70} height={70} />
+                                                <span className="text-[10px] block text-center py-0.5">{color.name}</span>
+                                            </div>
                                         </button>
                                     );
                                 })}

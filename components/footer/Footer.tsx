@@ -1,9 +1,8 @@
-import Link from "next/link";
 import { CiLinkedin, CiInstagram } from "react-icons/ci";
 
 export default function Footer() {
     return (
-        <footer>
+        <footer className="mt-12">
             <div className="relative bg-black text-[#e6e6e6] overflow-hidden">
                 {/* MAIN GRID */}
                 <div
@@ -19,14 +18,16 @@ export default function Footer() {
                     {/* BRAND / PHILOSOPHY */}
                     <div className="space-y-4 sm:space-y-6">
                         <p className="text-sm leading-relaxed text-neutral-300 max-w-sm">
-                            The Layer Co. is a modern menswear label focused on restraint,
+                            <span className="my-2 sm:w-30 text-xs uppercase font-serif  tracking-wider text-brand-red">
+                                The Layer Co.
+                            </span> is a modern menswear label focused on restraint,
                             proportion, and purpose. Designed to layer, adapt, and endure —
                             each piece is built for everyday wear beyond trends.
                         </p>
 
                         <div className="text-sm text-neutral-400 space-y-1">
                             <p className="hover:text-white text-brand-red cursor-pointer">
-                                <Link href="/">thelayerco.co.in</Link>
+                                <a href="https://thelayerco.co.in/">thelayerco.co.in</a>
                             </p>
                             <p className="text-xs sm:text-sm">
                                 Designed in India · Worn Everywhere
@@ -38,12 +39,13 @@ export default function Footer() {
                     {/* PRIMARY NAV */}
                     <nav
                         className="flex flex-col flex-wrap gap-4                             
-                                text-base sm:text-lg
+                                text-base
                                 tracking-tight
                             "
                     >
-                        <p className="text-xs uppercase font-serif tracking-wider text-brand-red">The Layer Info
-                        </p>
+                        <span className="my-2 sm:w-30 text-xs uppercase font-serif  tracking-wider text-brand-red">
+                            The Layer
+                        </span>
                         {[
                             "Home",
                             "Order Tracking",
@@ -55,7 +57,7 @@ export default function Footer() {
                                 key={item}
                                 className="
                                 cursor-pointer transition
-                                hover:opacity-70 hover:text-brand-red
+                                hover:opacity-60
                             "
                             >
                                 {item}
@@ -66,14 +68,14 @@ export default function Footer() {
 
                     {/* CATEGORY NAV */}
                     <div className="space-y-3 sm:space-y-4">
-                        <p className="text-xs uppercase font-serif tracking-wider text-brand-red">
+                        <span className="my-2 text-xs uppercase font-serif  tracking-wider text-brand-red">
                             The Wardrobe
-                        </p>
+                        </span>
 
-                        <div className="
+                        <div className="py-2
                                 grid grid-cols-2 gap-y-2 gap-x-6
                                 sm:block sm:space-y-2
-                                text-base sm:text-lg
+                                text-base
                             ">
                             {[
                                 "Shirts",
@@ -87,7 +89,7 @@ export default function Footer() {
                             ].map((item) => (
                                 <p
                                     key={item}
-                                    className="cursor-pointer text-neutral-300 hover:text-brand-red transition"
+                                    className="cursor-pointer text-neutral-300 hover:opacity-60 transition"
                                 >
                                     {item}
                                 </p>
@@ -99,16 +101,16 @@ export default function Footer() {
                     <div className="flex flex-col gap-8 sm:gap-12 justify-between">
 
                         <div className="space-y-4">
-                            <p className="text-xs uppercase font-serif  tracking-wider text-brand-red">
-                                Follow Us
-                            </p>
+                            <span className="my-2 text-xs uppercase font-serif  tracking-wider text-brand-red">
+                                Social Layer
+                            </span>
 
-                            <div className="space-y-2 text-xs sm:text-sm text-white">
+                            <div className="space-y-2 py-2 text-xs sm:text-sm text-white">
 
-                                <p className="flex items-center gap-2 cursor-pointer hover:text-brand-red">
+                                <p className="flex items-center gap-2 cursor-pointer hover:opacity-60">
                                     <CiInstagram /> Instagram
                                 </p>
-                                <p className="flex items-center gap-2 cursor-pointer hover:text-brand-red">
+                                <p className="flex items-center gap-2 cursor-pointer hover:opacity-60">
                                     <CiLinkedin /> LinkedIn
                                 </p>
                             </div>
@@ -116,12 +118,12 @@ export default function Footer() {
 
                         <div className="space-y-1 text-[11px] sm:text-xs">
 
-                            <p className="cursor-pointer hover:text-white tracking-wider font-serif">Privacy & Policy</p>
-                            <p className="cursor-pointer hover:text-white tracking-wider font-serif">Terms & Conditions</p>
-                            <p className="cursor-pointer hover:text-white tracking-wider font-serif">
+                            <p className="cursor-pointer hover:opacity-60 tracking-wider font-serif">Privacy & Policy</p>
+                            <p className="cursor-pointer hover:opacity-60 tracking-wider font-serif">Terms & Conditions</p>
+                            <p className="cursor-pointer hover:opacity-60 tracking-wider font-serif">
                                 Shipping & Returns
                             </p>
-                            <p className="cursor-pointer hover:text-white tracking-wider font-serif">Help</p>
+                            <p className="cursor-pointer hover:opacity-60 tracking-wider font-serif">Help</p>
                         </div>
                     </div>
                 </div>
@@ -143,7 +145,7 @@ export default function Footer() {
 
                 {/* BASE BAR */}
                 <div className="relative uppercase z-10 py-6 text-center tracking-wider font-serif text-xs">
-                   Copyright © {new Date().getFullYear()} The Layer Co. · All rights reserved
+                    Copyright © {new Date().getFullYear()} The Layer Co. · All rights reserved
                 </div>
             </div>
         </footer>

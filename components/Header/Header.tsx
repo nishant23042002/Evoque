@@ -8,32 +8,17 @@ import LoginModalUI from "./LoginModal";
 import { useState } from "react";
 import { User } from "lucide-react";
 
+
 const Header = () => {
     const [loginOpen, setLoginOpen] = useState(false);
-    const announcements = [
-        "Free Shipping on Orders Above ₹999",
-    ];
-    const repeatedAnnouncements = Array(10).fill(announcements[0]);
-
+    
 
     return (
-        <header className="
+        <header className="p-1.5
             sticky top-0 z-40 w-full
             bg-[#e2dfd6]          
         ">
-            <div className="cursor-pointer relative w-full overflow-hidden bg-brand-red text-white">
-                <div className="marquee flex w-max items-center gap-6 py-1.75">
-                    {repeatedAnnouncements.map((text, i) => (
-                        <span
-                            key={`a-${i}`}
-                            className="whitespace-nowrap font-poppins tracking-wider px-2 text-sm font-extrabold"
-                        >
-                            {text}
-                        </span>
-                    ))}
-                </div>
-            </div>
-            <div className="relative flex items-center justify-between px-2 md:px-4 h-16">
+            <div className="relative p-2 flex items-center justify-between px-2 md:px-4">
                 {/* LEFT — Logo */}
                 <div className="w-full ml-11 flex items-center justify-center gap-2">
                     <Logo />
@@ -48,7 +33,7 @@ const Header = () => {
                     <button
                         onClick={() => setLoginOpen(true)}
                         aria-label="Login"
-                        className="max-[550px]:absolute left-10 cursor-pointer flex items-center justify-center                                   ">
+                        className="max-[550px]:absolute max-[350px]:left-7 left-8 cursor-pointer flex items-center justify-center                                   ">
                         <User size={20}
                             strokeWidth={2.2}
                             className="text-slate-800 hover:text-brand-red" />

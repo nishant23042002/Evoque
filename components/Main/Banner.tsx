@@ -1,5 +1,6 @@
 "use client";
 
+import Image from "next/image";
 import { useEffect, useRef, useState } from "react";
 
 interface BannerImage {
@@ -19,28 +20,38 @@ interface BannerSliderProps {
   banners: Banner[];
 }
 
+const AUTO_SLIDE_DELAY = 3500;
+const DESKTOP_BREAKPOINT = 1024;
+
 const BannerSlider = ({ banners }: BannerSliderProps) => {
-  const sliderRef = useRef<HTMLDivElement>(null);
+  const intervalRef = useRef<NodeJS.Timeout | null>(null);
+
   const [index, setIndex] = useState(0);
   const [direction, setDirection] =
     useState<"forward" | "backward">("forward");
   const [isMobile, setIsMobile] = useState(false);
 
-  /* Detect screen size */
-  useEffect(() => {
-    const checkMobile = () => setIsMobile(window.innerWidth < 1024);
-    checkMobile();
-    window.addEventListener("resize", checkMobile);
-    return () => window.removeEventListener("resize", checkMobile);
-  }, []);
-
   const total = banners.length;
 
-  /* Auto slide (ping-pong logic) */
+  /* -------------------------------
+   * Screen size detection
+   * ------------------------------- */
   useEffect(() => {
-    if (total <= 1) return;
+    const update = () =>
+      setIsMobile(window.innerWidth < DESKTOP_BREAKPOINT);
 
-    const interval = setInterval(() => {
+    update();
+    window.addEventListener("resize", update);
+    return () => window.removeEventListener("resize", update);
+  }, []);
+
+  /* -------------------------------
+   * Auto fade switch (ping-pong)
+   * ------------------------------- */
+  const startAutoSlide = () => {
+    if (intervalRef.current || total <= 1) return;
+
+    intervalRef.current = setInterval(() => {
       setIndex((prev) => {
         if (direction === "forward") {
           if (prev === total - 1) {
@@ -56,52 +67,84 @@ const BannerSlider = ({ banners }: BannerSliderProps) => {
         }
         return prev - 1;
       });
-    }, 3500);
+    }, AUTO_SLIDE_DELAY);
+  };
 
-    return () => clearInterval(interval);
+  const stopAutoSlide = () => {
+    if (intervalRef.current) {
+      clearInterval(intervalRef.current);
+      intervalRef.current = null;
+    }
+  };
+
+  useEffect(() => {
+    startAutoSlide();
+    return stopAutoSlide;
   }, [direction, total]);
 
-  /* Apply transform */
+  /* -------------------------------
+   * Pause on tab inactive
+   * ------------------------------- */
   useEffect(() => {
-    const slider = sliderRef.current;
-    if (!slider) return;
+    const onVisibilityChange = () => {
+      document.hidden ? stopAutoSlide() : startAutoSlide();
+    };
 
-    slider.style.transition = "transform 1.2s ease-out";
-    slider.style.transform = `translateX(-${index * 100}%)`;
-  }, [index]);
+    document.addEventListener("visibilitychange", onVisibilityChange);
+    return () =>
+      document.removeEventListener(
+        "visibilitychange",
+        onVisibilityChange
+      );
+  }, []);
+
+  /* -------------------------------
+   * Helpers
+   * ------------------------------- */
+  const getBestImage = (images: BannerImage[]) =>
+    images?.length
+      ? [...images].sort((a, b) => b.width - a.width)[0]
+      : null;
 
   const goToSlide = (i: number) => {
+    stopAutoSlide();
     setIndex(i);
+    startAutoSlide();
   };
 
   return (
-    <div className="relative w-full overflow-hidden">
-      {/* Slides */}
-      <div ref={sliderRef} className="flex w-full">
+    <div className="relative overflow-hidden">
+      {/* FADE STACK */}
+      <div className="relative w-full max-sm:h-100 h-200 bg-neutral-100">
         {banners.map((banner, i) => {
-          const images: BannerImage[] = isMobile ? banner.mobileImages || [] : banner.desktopImages || [];
-          const sortedImages = images.length > 0 ? [...images].sort((a, b) => b.width - a.width) : [];
-          const largestImage = sortedImages[0];
+          const images = isMobile
+            ? banner.mobileImages
+            : banner.desktopImages;
 
-          const srcSet = sortedImages.map((img) => `${img.url} ${img.width}w`).join(", ");
+          const image = getBestImage(images);
+          const isActive = i === index;
 
           return (
             <a
               key={banner._id}
               href={banner.redirectUrl}
-              className="relative w-full shrink-0 block"
+              aria-label={banner.title || `banner-${i}`}
+              className={`absolute inset-0 transition-opacity duration-700 ease-in-out
+                ${isActive ? "opacity-100 z-10" : "opacity-0 z-0"}
+              `}
             >
-              <div className="w-full relative">
-                <img
-                  src={largestImage?.url}
-                  srcSet={srcSet}
-                  sizes="100vw"
+              {image && (
+                <Image
+                  src={image.url}
                   alt={banner.title || `banner-${i}`}
-                  className={`w-full h-full ${isMobile ? "object-cover" : "object-cover"}`}
+                  fill
+                  priority={i === 0}
                   loading={i === 0 ? "eager" : "lazy"}
-                  fetchPriority={i === 0 ? "high" : "auto"}
+                  sizes="100vw"
+                  quality={85}
+                  className="object-center"
                 />
-              </div>
+              )}
             </a>
           );
         })}
@@ -109,15 +152,16 @@ const BannerSlider = ({ banners }: BannerSliderProps) => {
 
       {/* Pagination */}
       {total > 1 && (
-        <div className="absolute bottom-3 left-1/2 -translate-x-1/2 flex gap-2">
+        <div className="absolute bottom-3 left-1/2 -translate-x-1/2 flex gap-1 z-20">
           {banners.map((_, i) => (
             <button
               key={i}
               onClick={() => goToSlide(i)}
-              className={`
-                h-2 w-2 rounded-full transition-all duration-300
-                ${index === i ? "bg-white w-6" : "bg-white/50 hover:bg-white"}
-              `}
+              className={`h-1 rounded-full transition-all duration-300
+                ${index === i
+                  ? "w-9 bg-black/70"
+                  : "w-3 bg-black/20 cursor-pointer hover:bg-white"
+                }`}
               aria-label={`Go to banner ${i + 1}`}
             />
           ))}

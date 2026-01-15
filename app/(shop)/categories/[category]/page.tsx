@@ -125,21 +125,21 @@ const ProductCategoryPage = () => {
     }
 
     return (
-        <section className="">
-            <div className="mx-auto">
+        <section>
+            <div>
                 {bannerImage && (
                     <Image
                         src={bannerImage}
                         alt={`${categorySlug} banner`}
-                        width={1600}
-                        height={600}
+                        width={800}
+                        height={800}
                         priority
-                        className="w-full h-70 max-[550px]:h-60 md:h-100 "
+                        className="w-full object-cover max-[550px]:h-60 h-90 "
                     />
                 )}
             </div>
 
-            <div className="md:w-full mx-auto sticky top-24 py-2 z-30 bg-[#eceae3] mt-4">
+            <div className="md:w-full mx-auto sticky top-17 py-2 z-30 bg-[#eceae3] mt-4">
                 <div className="mx-2 px-0.5 flex flex-nowrap overflow-auto items-center sm:justify-center gap-2 py-1 scrollbar-hide">
                     {/* ALL */}
                     <Link
@@ -149,28 +149,22 @@ const ProductCategoryPage = () => {
                     >
                         <div
                             className={clsx(
-                                "w-20 h-25 mx-1 rounded-sm overflow-hidden border",
+                                "flex justify-center transition-all bg-brand-red text-white items-center mb-3.75 w-20 h-25 mx-1 rounded-sm overflow-hidden border",
                                 !activeSub
-                                    ? "border-brand-red ring-1 ring-brand-red"
-                                    : "border-2 border-accent-rose hover:border-brand-red"
+                                    ? "border-brand-red ring-2 ring-slate-800"
+                                    : "border-2 border-slate-200 hover:border-slate-800"
                             )}
                         >
-                            <Image
-                                src="/images/all-shirts.png"
-                                alt="All"
-                                width={80}
-                                height={80}
-                                className="object-center w-full h-full"
-                            />
+
+                            <p
+                                className={clsx(
+                                    "w-20 truncate font-semibold text-center mt-1 text-[11px]",
+                                    !activeSub ? "text-white" : "text-white"
+                                )}
+                            >
+                                All <span>{categorySlug?.toUpperCase()}</span>
+                            </p>
                         </div>
-                        <p
-                            className={clsx(
-                                "w-20 truncate text-center mt-1 text-[11px] font-extralight",
-                                !activeSub ? "text-brand-red" : "text-slate-800"
-                            )}
-                        >
-                            All <span>{categorySlug?.toUpperCase()}</span>
-                        </p>
 
                     </Link>
 
@@ -190,7 +184,7 @@ const ProductCategoryPage = () => {
                                         "w-20 h-25 overflow-hidden rounded-sm border transition-all",
                                         isActive
                                             ? "border-brand-red ring-1 ring-brand-red"
-                                            : "border-2 border-accent-rose hover:border-brand-red"
+                                            : "border-2 border-slate-200 hover:border-brand-red"
                                     )}
                                 >
                                     <Image
@@ -199,16 +193,16 @@ const ProductCategoryPage = () => {
                                         width={80}
                                         height={80}
                                         className="object-cover w-full h-full"
-                                    />                                  
+                                    />
                                 </div>
                                 <div className="w-20 flex items-center justify-center">
                                     <p
                                         className={clsx(
-                                            "mt-1 text-[11px] text-center truncate font-extralight",
+                                            "mt-1 text-[11px] text-center truncate font-semibold",
                                             isActive ? "text-brand-red" : "text-slate-700"
                                         )}
                                     >
-                                        {item.name}
+                                        {item?.name}
                                     </p>
 
                                 </div>
@@ -218,13 +212,13 @@ const ProductCategoryPage = () => {
                 </div>
             </div>
 
-            <div>
+            <div className="my-8">
                 {products.length === 0 ? (
                     <div className="flex items-center font-poppins justify-center h-[40vh] text-sm text-slate-800 font-bold">
                         Nothing Dropped Here Yet...
                     </div>
                 ) : (
-                    <ProductMasonryGrid products={products} showHeading={false} />
+                    <ProductMasonryGrid products={products} showHeading={false} showFilter ={false} fullWidth={false} />
                 )}
             </div>
         </section>

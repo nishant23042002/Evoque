@@ -5,6 +5,8 @@ import Footer from "@/components/Footer/Footer";
 import LeftMenu from "@/components/LeftMenu/LeftMenu";
 import { Inter, Poppins } from "next/font/google";
 
+
+
 const inter = Inter({
   subsets: ["latin"],
   weight: ["400", "500", "600", "700"],

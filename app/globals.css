@@ -266,52 +266,6 @@
   }
 }
 
-.evoque-letter {
-  display: inline-block;
-  opacity: 0;
-  animation: evoqueSlide 0.5s ease-out forwards;
-}
-
-/* LEFT side letters */
-.evoque-0 {
-  animation-delay: 0.05s;
-  transform: translateX(-24px);
-}
-
-.evoque-1 {
-  animation-delay: 0.1s;
-  transform: translateX(-18px);
-}
-
-/* CENTER */
-.evoque-2 {
-  animation-delay: 0.15s;
-  transform: translateX(0);
-}
-
-/* RIGHT side letters */
-.evoque-3 {
-  animation-delay: 0.2s;
-  transform: translateX(18px);
-}
-
-.evoque-4 {
-  animation-delay: 0.25s;
-  transform: translateX(24px);
-}
-
-.evoque-5 {
-  animation-delay: 0.3s;
-  transform: translateX(30px);
-}
-
-@keyframes evoqueSlide {
-  to {
-    opacity: 1;
-    transform: translateX(0);
-  }
-}
-
 
 @keyframes glowPulse {
   0% {
@@ -342,7 +296,7 @@
 }
 
 .marquee {
-  animation: marquee 25s linear infinite;
+  animation: marquee 15s linear infinite;
 }
 
 
@@ -387,4 +341,22 @@
 
 .loading-backdrop {
   backdrop-filter: blur(6px);
+}
+
+
+
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(16px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.animate-fade-in-up {
+  animation: fadeInUp 0.45s ease-out both;
 }

@@ -30,7 +30,6 @@ interface VariantColor {
 interface SizeVariant {
     size: string;
     stock: number;
-    isAvailable?: boolean;
 }
 
 interface Variant {
@@ -41,7 +40,6 @@ interface Variant {
         originalPrice?: number;
         discountPercentage?: number;
     };
-    totalStock?: number;
 }
 
 interface Pricing {
@@ -67,6 +65,8 @@ export interface Product {
 interface ProductMasonryGridProps {
     products?: Product[];
     showHeading?: boolean;
+    showFilter?: boolean;
+    fullWidth?: boolean
 }
 
 /* =======================
@@ -76,9 +76,15 @@ interface ProductMasonryGridProps {
 export default function ProductMasonryGrid({
     products = [],
     showHeading = true,
+    showFilter = true,
+    fullWidth = true
 }: ProductMasonryGridProps) {
     const [activeIndex, setActiveIndex] = useState<number | null>(null);
-    const [hoverVariants, setHoverVariants] = useState<Record<string, Variant>>({});
+    const [hoverVariants, setHoverVariants] = useState<Record<string, Variant>>(
+        {}
+    );
+    const [activeCategory, setActiveCategory] = useState<string>("all");
+
     const breakpoints = {
         default: 5,
         1300: 4,
@@ -86,6 +92,31 @@ export default function ProductMasonryGrid({
         800: 2,
         350: 1,
     };
+
+    /* =======================
+       CATEGORIES
+    ======================= */
+
+    const categories = useMemo(() => {
+        const set = new Set<string>();
+        products.forEach((p) => {
+            if (p.subCategory?.slug) {
+                set.add(p.subCategory.slug);
+            }
+        });
+        return ["all", ...Array.from(set)];
+    }, [products]);
+
+    const filteredProducts = useMemo(() => {
+        if (activeCategory === "all") return products;
+        return products.filter(
+            (p) => p.subCategory?.slug === activeCategory
+        );
+    }, [products, activeCategory]);
+
+    /* =======================
+       MASONRY HEIGHTS
+    ======================= */
 
     const heights = useMemo(() => {
         if (!Array.isArray(products) || products.length === 0) return [];
@@ -103,122 +134,184 @@ export default function ProductMasonryGrid({
         });
     }, [products]);
 
-    if (!products.length) {
-        return <p className="flex items-center font-poppins justify-center h-[40vh] text-sm text-slate-800 font-bold">New Drops Coming Soon...</p>;
+    if (!filteredProducts.length) {
+        return (
+            <p className="flex items-center justify-center h-[40vh] text-sm font-semibold text-slate-700">
+                No products found in this category
+            </p>
+        );
     }
 
     return (
-        <div className="md:w-[90%] mx-auto my-1">
+        <div className={`${fullWidth ? "md:w-[85%] max-md:px-2 mx-auto my-10" : "w-full"}`}>
             {showHeading && (
                 <h2 className="py-2 text-center text-md tracking-widest font-semibold font-poppins text-slate-800">
                     Everything You Need
                 </h2>
             )}
-            <Masonry
-                breakpointCols={breakpoints}
-                className="flex gap-2 mx-2"
-                columnClassName="masonry-column"
-            >
-                {products.map((item, index) => {
-                    const isOpen = activeIndex === index;
-                    const variant = hoverVariants[item._id] ?? item.variants[0]; // default variant
 
-                    return (
-                        <div key={item._id} className="block">
-                            <div
-                                className="relative mb-2 w-full rounded-sm overflow-hidden group cursor-pointer"
-                                style={{ height: heights[index] }}
-                            >
-                                {/* IMAGE */}
-                                <Image
-                                    src={
-                                        variant.color.images.find((i) => i.isPrimary)?.url ??
-                                        variant.color.images[0]?.url
+            {/* =======================
+               CATEGORY FILTER
+            ======================= */}
+            {
+                showFilter && (
+                    <div className="flex flex-nowrap overflow-x-auto overflow-y-hidden justify-center gap-2 mb-8 px-2">
+                        {categories.map((cat) => (
+                            <button
+                                key={cat}
+                                onClick={() => setActiveCategory(cat)}
+                                className={`cursor-pointer px-4 py-1.5 rounded-[2px] text-xs uppercase tracking-wider font-semibold border transition-all duration-300
+                            ${activeCategory === cat
+                                        ? "bg-black text-white border-black scale-105"
+                                        : "text-black border-gray-300 hover:bg-gray-100/60"
                                     }
-                                    alt={item.productName}
-                                    fill
-                                    className="object-cover duration-300"
-                                />
+                        `}
+                            >
+                                {cat === "all" ? "All" : cat.replace("-", " ")}
+                            </button>
+                        ))}
+                    </div>
+                )
+            }
 
-                                {/* COLOR DOTS */}
-                                <div className="absolute w-full flex justify-between items-center top-2 right-0 px-2 z-20">
-                                    <div className="flex gap-1">
-                                        {item.variants.map((v) => {
-                                            const isSelected = v.color.slug === variant.color.slug;
-                                            return (
+            {/* =======================
+               ANIMATED GRID WRAPPER
+            ======================= */}
+            <div
+                key={activeCategory}
+                className="animate-fade-in-up"
+            >
+                <Masonry
+                    breakpointCols={breakpoints}
+                    className={`flex gap-2 ${!fullWidth ? "mx-2" : "mx-0"}`}
+                    columnClassName="masonry-column"
+                >
+                    {filteredProducts.map((item, index) => {
+                        const isOpen = activeIndex === index;
+                        const variant =
+                            hoverVariants[item._id] ?? item.variants[0];
+
+                        return (
+                            <div key={item._id}>
+                                <div
+                                    className="relative mb-2 fade-in-75 transition-all duration-300 rounded-[2px] overflow-hidden group cursor-pointer"
+                                    style={{ height: heights[index] }}
+                                >
+                                    {/* IMAGE */}
+                                    <Image
+                                        src={
+                                            variant.color.images.find(
+                                                (i) => i.isPrimary
+                                            )?.url ??
+                                            variant.color.images[0]?.url
+                                        }
+                                        alt={item.productName}
+                                        fill
+                                        className="object-cover transition-transform duration-500 group-hover:scale-105"
+                                    />
+                                    <div className="absolute inset-0 bg-black/15 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+                                    {/* COLOR DOTS */}
+                                    <div className="absolute w-full flex justify-between items-center top-2 px-2 z-20">
+                                        <div className="flex gap-1">
+                                            {item.variants.map((v) => (
                                                 <span
                                                     key={v.color.slug}
-                                                    className={`w-4 h-4 rounded-[2px] border ${isSelected
+                                                    className={`w-4 h-4 rounded-[2px] border cursor-pointer ${v.color.slug ===
+                                                        variant.color.slug
                                                         ? "ring ring-brand-red border-red-400"
                                                         : "border-gray-400"
                                                         }`}
-                                                    style={{ backgroundColor: v.color.hex }}
+                                                    style={{
+                                                        backgroundColor:
+                                                            v.color.hex,
+                                                    }}
                                                     onMouseEnter={() =>
-                                                        setHoverVariants((prev) => ({ ...prev, [item._id]: v }))
+                                                        setHoverVariants(
+                                                            (prev) => ({
+                                                                ...prev,
+                                                                [item._id]: v,
+                                                            })
+                                                        )
                                                     }
                                                     onMouseLeave={() =>
-                                                        setHoverVariants((prev) => {
-                                                            const { [item._id]: _, ...rest } = prev;
-                                                            return rest;
-                                                        })
+                                                        setHoverVariants(
+                                                            (prev) => {
+                                                                const {
+                                                                    [item._id]:
+                                                                    _,
+                                                                    ...rest
+                                                                } = prev;
+                                                                return rest;
+                                                            }
+                                                        )
                                                     }
                                                 />
+                                            ))}
+                                        </div>
+                                        <Heart
+                                            className="text-brand-red"
+                                            strokeWidth={0.9}
+                                        />
+                                    </div>
+
+                                    {/* MOBILE TOGGLE */}
+                                    <button
+                                        onClick={(e) => {
+                                            e.stopPropagation();
+                                            setActiveIndex(
+                                                isOpen ? null : index
                                             );
-                                        })}
+                                        }}
+                                        className="md:hidden absolute bottom-0 w-full z-20 bg-black/70 p-1 flex justify-center"
+                                    >
+                                        {isOpen ? (
+                                            <FaAnglesDown className="text-white" />
+                                        ) : (
+                                            <TbMenu className="text-white" />
+                                        )}
+                                    </button>
+
+                                    {/* DETAILS */}
+                                    <div
+                                        className={`absolute inset-0 max-md:bottom-6 transition-all duration-300 flex flex-col justify-end text-white
+                                            md:opacity-0 md:group-hover:opacity-100
+                                            ${isOpen
+                                                ? "opacity-100"
+                                                : "opacity-0"
+                                            }
+                                        `}
+                                    >
+                                        <div className="bg-black/75 px-2 py-3 text-xs">
+                                            <p className="font-semibold">
+                                                {item.brand}
+                                            </p>
+                                            <p className="my-1">
+                                                {item.productName}
+                                            </p>
+                                            <p className="font-bold">
+                                                ₹{variant.pricing?.price}
+                                                <span className="line-through ml-2">
+                                                    ₹
+                                                    {
+                                                        variant.pricing
+                                                            ?.originalPrice
+                                                    }
+                                                </span>
+                                            </p>
+                                            <RatingBar value={item.rating} />
+                                        </div>
                                     </div>
-                                    <Heart className="text-brand-red" strokeWidth={0.9} />
+
+                                    <Link
+                                        href={`/products/${item.slug}`}
+                                        className="absolute inset-0 z-10"
+                                    />
                                 </div>
-
-                                {/* MOBILE TOGGLE */}
-                                <button
-                                    onClick={(e) => {
-                                        e.preventDefault();
-                                        e.stopPropagation();
-                                        setActiveIndex(activeIndex === index ? null : index);
-                                    }}
-                                    className="md:hidden absolute bottom-0 w-full right-0 z-20 bg-black/75 p-1 flex items-center justify-center"
-                                >
-                                    {!isOpen ? (
-                                        <TbMenu className="w-4 h-4 text-white" />
-                                    ) : (
-                                        <FaAnglesDown className="w-4 h-4 text-white" />
-                                    )}
-                                </button>
-
-                                {/* DETAILS */}
-                                <div
-                                    className={`absolute inset-0 max-md:bottom-6 cursor-pointer transition-all duration-300 flex flex-col justify-end text-white
-                                        md:opacity-0 md:group-hover:opacity-100
-                                        ${activeIndex === index ? "opacity-100" : "opacity-0"}
-                                        md:pointer-events-auto`}
-                                >
-                                    <div className="text-[12px] bg-black/75 sm:bg-black/75 w-full px-2 py-3">
-                                        <p className="font-semibold">{item.brand}</p>
-                                        <p className="leading-tight tracking-tight my-1">
-                                            {item.productName}
-                                        </p>
-                                        <p className="font-bold">
-                                            ₹{variant.pricing?.price}
-                                            <span className="line-through ml-2">
-                                                ₹{variant.pricing?.originalPrice}
-                                            </span>
-                                        </p>
-                                        <RatingBar value={item.rating} />
-                                    </div>
-                                </div>
-
-                                {/* LINK overlay only for clickable area */}
-                                <Link
-                                    href={`/products/${item.slug}`}
-                                    className="absolute inset-0 z-10"
-                                    onClick={(e) => e.stopPropagation()} // let color dots hover still work
-                                />
                             </div>
-                        </div>
-
-                    );
-                })}
-            </Masonry>
+                        );
+                    })}
+                </Masonry>
+            </div>
         </div>
     );
 }

@@ -14,6 +14,7 @@ import {
 import { MdFiberNew } from "react-icons/md";
 import { Flame } from "lucide-react";
 import { cn } from "@/lib/utils";
+import Category from "@/models/Category";
 
 const MOBILE_BREAKPOINT = 550;
 
@@ -22,6 +23,7 @@ interface Category {
     _id: string;
     name: string;
     slug: string;
+    isTrending: boolean;
     leftMenuCategoryImage: string;
 }
 
@@ -59,14 +61,16 @@ const LeftMenu = () => {
             try {
                 const res = await fetch("/api/categories");
                 const data = await res.json();
-                setCategories(data);
+                const isTrendingCategory = data.filter((cat: Category) => cat?.isTrending);
+                
+                setCategories(isTrendingCategory);
             } catch (err) {
                 console.error("Failed to fetch categories", err);
             }
         }
 
-        if (isOpen) fetchCategories();
-    }, [isOpen]);
+        fetchCategories();
+    }, []);
 
     /* ---------- SCREEN SIZE ---------- */
     useEffect(() => {
@@ -127,7 +131,7 @@ const LeftMenu = () => {
             {/* MENU BUTTON */}
             <button
                 onClick={() => setIsOpen(!isOpen)}
-                className={`fixed left-2 top-0 z-50 py-2 duration-200 hover:text-brand-red cursor-pointer ${isOpen ? "left-4 top-5" : "top-12.25"}`}
+                className={`fixed left-2 md:left-3 top-0 z-50 py-2 duration-200 hover:text-brand-red cursor-pointer ${isOpen ? "left-4 top-5" : "top-4"}`}
             >
                 {isOpen ? (
                     <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2">
@@ -155,7 +159,7 @@ const LeftMenu = () => {
             <aside
                 ref={sidebarRef}
                 className={`
-                                    fixed top-0 m-0 left-0 z-40 h-screen py-1
+                                    fixed top-0 m-0 -left-px z-40 h-screen py-1
                                     bg-[#e2dfd6] border border-r-black/20
                                     ${SIDEBAR_WIDTH}
 
@@ -169,8 +173,8 @@ const LeftMenu = () => {
                     {/* ---------- TOP: PRIMARY ---------- */}
                     <div className="space-y-1 pt-2">
                         {!isMobile && (
-                            <h2 className="select-none hover:text-brand-red duration-200 mx-1 text-sm tracking-widest font-extralight font-poppins text-neutral-700 mb-1.5">
-                                The Layers
+                            <h2 className="text-center select-none hover:text-brand-red duration-200 mx-1 text-sm tracking-widest font-semibold font-poppins text-neutral-700 mb-1.5">
+                                The Layer
                             </h2>
                         )}
                         {PRIMARY_ITEMS.map((item) => {
@@ -185,7 +189,7 @@ const LeftMenu = () => {
                                     className="relative flex items-center rounded-sm hover:bg-black/5 transition-all"
                                 >
                                     {active && (
-                                        <span className="absolute left-0 top-1/2 -translate-y-1/2 h-6 w-1 bg-brand-red" />
+                                        <span className="absolute left-0 top-1/2 -translate-y-1/2 h-6 rounded-l-sm w-1 bg-brand-red" />
                                     )}
 
                                     {isMobile ? (
@@ -196,7 +200,7 @@ const LeftMenu = () => {
                                         />
                                     ) : (
                                         <div
-                                            className={`flex items-center gap-5 mx-1 px-3 py-2 w-full ${active ? "bg-brand-red/5" : ""
+                                            className={`flex items-center gap-5 mx-1 px-3 py-2 w-full ${active ? "bg-brand-red/5 rounded-sm" : ""
                                                 }`}
                                         >
                                             <Icon
@@ -226,8 +230,8 @@ const LeftMenu = () => {
                     {/* ---------- MIDDLE: CATEGORIES ---------- */}
                     <div className="mt-4">
                         {!isMobile && (
-                            <h2 className="mx-1 text-sm tracking-widest font-extralight hover:text-brand-red select-none font-poppins text-neutral-700 mb-1.5">
-                                Now Trending
+                            <h2 className="text-center mx-1 text-sm tracking-widest font-semibold hover:text-brand-red select-none font-poppins text-neutral-700 mb-1.5">
+                                Trending Layer
                             </h2>
                         )}
 
@@ -244,10 +248,10 @@ const LeftMenu = () => {
                                         className="relative flex items-center rounded-sm hover:bg-black/5 transition-all"
                                     >
                                         {active && (
-                                            <span className="absolute left-0 top-1/2 -translate-y-1/2 h-6 w-1 bg-brand-red" />
+                                            <span className="absolute rounded-l-sm left-0 top-1/2 -translate-y-1/2 h-6 w-1 bg-brand-red" />
                                         )}
 
-                                        <div className={`relative mx-1 w-full h-12 min-[551px]:h-14 rounded-md overflow-hidden`}>
+                                        <div className={`${active ? "border border-brand-red" : ""} relative mx-1 w-full h-12 min-[551px]:h-14 rounded-md overflow-hidden`}>
                                             <Image
                                                 src={category.leftMenuCategoryImage}
                                                 alt={category.name}
@@ -255,10 +259,10 @@ const LeftMenu = () => {
                                                 loading={i === 0 ? "eager" : "lazy"}
                                                 className="object-cover transition-transform duration-300 group-hover:scale-105"
                                             />
-                                            <div className={active ? "absolute inset-0 bg-black/25" : ""} />
-                                            <span className="absolute left-1 min-[551px]:left-3 bottom-2 text-[12px] min-[551px]:text-sm text-white font-medium">
+                                            <div className={!active ? "absolute inset-0 bg-black/25" : ""} />
+                                            <p className="absolute truncate left-0.5 min-[551px]:left-3 bottom-2 text-[10px] min-[551px]:text-sm text-white font-medium">
                                                 {category.name}
-                                            </span>
+                                            </p>
                                         </div>
 
                                     </Link>
@@ -269,6 +273,11 @@ const LeftMenu = () => {
 
                     {/* ---------- BOTTOM: SECONDARY ---------- */}
                     <div className=" space-y-1 pb-4 mt-4">
+                        {!isMobile && (
+                            <h2 className="text-center mx-1 text-sm tracking-widest font-semibold hover:text-brand-red select-none font-poppins text-neutral-700 mb-1.5">
+                                Social Layer
+                            </h2>
+                        )}
                         {SECONDARY_ITEMS.map((item) => {
                             const active = pathname === item.href;
                             const Icon = item.icon;
@@ -281,7 +290,7 @@ const LeftMenu = () => {
                                     className="relative flex items-center rounded-sm hover:bg-black/5 transition-all"
                                 >
                                     {active && (
-                                        <span className="absolute left-0 top-5.5 -translate-y-1/2 h-6 w-1 bg-brand-red" />
+                                        <span className="absolute left-0 rounded-l-sm top-5.5 -translate-y-1/2 h-6 w-1 bg-brand-red" />
                                     )}
 
                                     {isMobile ? (
@@ -291,7 +300,7 @@ const LeftMenu = () => {
                                                 }`}
                                         />
                                     ) : (
-                                        <div className={`flex items-center gap-5 mx-1 px-3 py-2 w-full`}>
+                                        <div className={`flex items-center gap-5 mx-1 px-3 py-2 w-full ${active ? "bg-brand-red/5 rounded-sm" : ""}`}>
                                             <Icon
                                                 size={20}
                                                 className={

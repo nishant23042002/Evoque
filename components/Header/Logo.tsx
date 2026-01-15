@@ -26,11 +26,11 @@ const Logo = ({ className }: { className?: string }) => {
                 )}
             >
                 <span>
-                    <img src="/images/header-logo.png" alt="thelayerco" />
+                    <img src="/images/theheaderlogo.png" alt="thelayerco" />
 
                     <span
                         className="max-md:hidden
-                        absolute bottom-0 left-3 h-0.75 w-[50%]
+                        absolute bottom-0.5 left-0.5 h-0.5 w-[50%]
                          bg-brand-red
                          scale-x-0 origin-left
                         transition-transform duration-300

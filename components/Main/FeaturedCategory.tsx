@@ -21,10 +21,12 @@ const FeaturedCategories = () => {
 
 
     const breakpoints = {
-        default: 5,
+        default: 6,
+        1450: 5,
         1200: 4,
         1000: 3,
-        750: 2,
+        750: 3,
+        550:2,
         350: 1,
     };
 
@@ -54,7 +56,7 @@ const FeaturedCategories = () => {
 
 
     return (
-        <section className="px-2 py-2 w-full sm:w-[90%] mx-auto flex flex-col justify-center my-1">
+        <section className="max-md:px-2 py-2 w-full md:w-[85%] mx-auto flex flex-col justify-center my-1">
             {/* Heading */}
             <h2 className="py-3 text-center text-md tracking-widest font-semibold font-poppins text-slate-800">
                 Your Wardrobe Starts Here
@@ -70,14 +72,14 @@ const FeaturedCategories = () => {
             ) : (
                 <Masonry
                     breakpointCols={breakpoints}
-                    className="flex gap-2 w-full"
+                    className="flex gap-2 md:gap-4 w-full"
                     columnClassName="masonry-column"
                 >
                     {categories.map((item) => (
                         <Link
                             href={`/categories/${item.slug}`}
                             key={item._id}
-                            className="mb-2 block break-inside-avoid"
+                            className="mb-2 md:mb-4 block break-inside-avoid"
                         >
                             <div className="group h-80 relative rounded-sm overflow-hidden bg-neutral-100">
                                 {/* Image */}

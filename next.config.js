@@ -3,11 +3,17 @@ const nextConfig = {
   reactStrictMode: true,
 
   images: {
+    formats: ["image/avif", "image/webp"],
     remotePatterns: [
       {
         protocol: "https",
         hostname: "res.cloudinary.com",
-        pathname: "/**",
+        pathname: "/thelayerco/**",
+      },
+      {
+        protocol: "http",
+        hostname: "res.cloudinary.com",
+        pathname: "/thelayerco/**",
       },
       {
         protocol: "https",
