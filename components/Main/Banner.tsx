@@ -142,7 +142,7 @@ const BannerSlider = ({ banners }: BannerSliderProps) => {
                   loading={i === 0 ? "eager" : "lazy"}
                   sizes="100vw"
                   quality={85}
-                  className="object-center"
+                  className="sm:object-center"
                 />
               )}
             </a>

@@ -233,7 +233,7 @@ export default function ProductPage() {
 
                         {/* MAIN IMAGE */}
                         <div className="relative w-full flex flex-col gap-4 overflow-y-auto max-h-[90vh] scrollbar-hide">
-                            <div className="relative w-full h-125 md:h-195 flex justify-center group">
+                            <div className="relative w-full overflow-y-auto h-125 md:h-195 flex justify-items-start group">
                                 <Image
                                     onMouseMove={handleMouseMove}
                                     onMouseLeave={handleMouseLeave}
@@ -242,7 +242,7 @@ export default function ProductPage() {
                                     alt={product.productName}
                                     width={800}
                                     height={800}
-                                    className="cursor-none object-cover transition-all duration-300"
+                                    className="cursor-none object-[10%_20%] object-cover transition-all duration-300"
                                 />
                                 {cursor.direction && (
                                     <div className="fixed z-50 pointer-events-none" style={{ left: cursor.x, top: cursor.y, transform: "translate(-50%, -50%)" }}>

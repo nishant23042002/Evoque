@@ -252,7 +252,7 @@ const SearchBar = () => {
         </div>
 
         {/* Results */}
-        <div className="p-4 overflow-y-auto h-[calc(100%-128px)]">
+        <div className="p-4 overflow-y-auto scrollbar-hide h-[calc(100%-128px)]">
           {loading && (
             <div className="flex justify-center mt-10">
               <CometLogoLoader />
@@ -304,16 +304,17 @@ const SearchBar = () => {
                                 src={image}
                                 alt={p.productName}
                                 fill
-                                className="object-cover"
+                                className="object-cover duration-300 hover:scale-105"
                               />
                             )}
+                            <div className="absolute inset-0 bg-transparent hover:bg-black/30 duration-300"></div>
                           </div>
 
                           <p className="text-xs mt-1 font-medium line-clamp-1">
-                            {p.productName}
+                            {p?.productName}
                           </p>
                           <p className="text-xs font-semibold">
-                            ₹{variant.pricing.price}
+                            ₹{variant?.pricing?.price}
                           </p>
                         </Link>
                       );

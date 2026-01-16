@@ -259,7 +259,7 @@ const LeftMenu = () => {
                                                 loading={i === 0 ? "eager" : "lazy"}
                                                 className="object-cover transition-transform duration-300 group-hover:scale-105"
                                             />
-                                            <div className={!active ? "absolute inset-0 bg-black/25" : ""} />
+                                            <div className={`${!active ? "absolute inset-0 bg-black/25 hover:bg-transparent transition-all duration-200" : ""}`} />
                                             <p className="absolute truncate left-0.5 min-[551px]:left-3 bottom-2 text-[10px] min-[551px]:text-sm text-white font-medium">
                                                 {category.name}
                                             </p>

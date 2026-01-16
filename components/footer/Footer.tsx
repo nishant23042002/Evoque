@@ -10,7 +10,7 @@ export default function Footer() {
                                 relative z-10
                                 mx-auto
                                 px-5 sm:px-6 md:px-10
-                                py-12 sm:py-14 md:py-20
+                                py-6
                                 grid grid-cols-1
                                 gap-12 sm:gap-14 md:grid-cols-4 md:gap-16
                             "
@@ -144,7 +144,7 @@ export default function Footer() {
 
 
                 {/* BASE BAR */}
-                <div className="relative uppercase z-10 py-6 text-center tracking-wider font-serif text-xs">
+                <div className="relative uppercase z-10 py-2 text-center tracking-wider font-serif text-[10px]">
                     Copyright © {new Date().getFullYear()} The Layer Co. · All rights reserved
                 </div>
             </div>

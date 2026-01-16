@@ -46,12 +46,11 @@
     "react-masonry-css": "^1.0.16",
     "react-redux": "^9.2.0",
     "redis": "^5.10.0",
+    "redux-persist": "^6.0.0",
     "sharp": "^0.34.5",
     "slugify": "^1.6.6",
     "tailwind-merge": "^3.4.0",
-    "twilio": "^5.11.2",
-    "zod": "^4.3.5",
-    "zustand": "^5.0.9"
+    "zod": "^4.3.5"
   },
   "devDependencies": {
     "@tailwindcss/postcss": "^4.1.18",

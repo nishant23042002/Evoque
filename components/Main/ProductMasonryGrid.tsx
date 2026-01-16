@@ -8,6 +8,11 @@ import { FaAnglesDown } from "react-icons/fa6";
 import { useMemo, useState } from "react";
 import RatingBar from "@/constants/ratingBar";
 import Link from "next/link";
+import { SlidersHorizontal } from 'lucide-react'
+import { toggleWishlist } from "@/store/wishlist/wishlist.slice";
+import { useAppDispatch, useAppSelector } from "@/store/hooks";
+import { RootState } from "@/store";
+
 
 const Masonry = dynamic(() => import("react-masonry-css"), { ssr: false });
 
@@ -57,9 +62,17 @@ export interface Product {
     pricing: Pricing;
     rating: number;
     variants: Variant[];
+    category?: {
+        name: string;
+        slug: string;
+    };
     subCategory?: {
         slug: string;
     };
+    isActive: string,
+    isFeatured: string,
+    isBestSeller: string,
+    isNewArrival: string,
 }
 
 interface ProductMasonryGridProps {
@@ -83,36 +96,54 @@ export default function ProductMasonryGrid({
     const [hoverVariants, setHoverVariants] = useState<Record<string, Variant>>(
         {}
     );
+    const [isFilterOpen, setIsFilterOpen] = useState(false);
     const [activeCategory, setActiveCategory] = useState<string>("all");
+    const [transitioningProduct, setTransitioningProduct] = useState<string | null>(null);
 
     const breakpoints = {
         default: 5,
         1300: 4,
         1000: 3,
-        800: 2,
-        350: 1,
+        700: 2,
+        400: 1,
     };
+
+    const dispatch = useAppDispatch();
+
+    const selectWishlistIds = (state: RootState) =>
+        new Set(state.wishlist.items.map(i => i.productId));
+    const wishlistIds = useAppSelector(selectWishlistIds);
+
 
     /* =======================
        CATEGORIES
     ======================= */
 
     const categories = useMemo(() => {
-        const set = new Set<string>();
+        const map = new Map<string, string>();
+
         products.forEach((p) => {
-            if (p.subCategory?.slug) {
-                set.add(p.subCategory.slug);
+            if (p.category?.slug && p.category?.name) {
+                map.set(p.category.slug, p.category.name);
             }
         });
-        return ["all", ...Array.from(set)];
+
+        return [
+            { slug: "all", name: "All" },
+            ...Array.from(map, ([slug, name]) => ({ slug, name })),
+        ];
     }, [products]);
+
 
     const filteredProducts = useMemo(() => {
         if (activeCategory === "all") return products;
+
         return products.filter(
-            (p) => p.subCategory?.slug === activeCategory
+            (p) => p.category?.slug === activeCategory
         );
     }, [products, activeCategory]);
+
+
 
     /* =======================
        MASONRY HEIGHTS
@@ -120,7 +151,7 @@ export default function ProductMasonryGrid({
 
     const heights = useMemo(() => {
         if (!Array.isArray(products) || products.length === 0) return [];
-        const buckets = [250, 280, 300, 350, 380, 400, 450, 480, 500];
+        const buckets = [350, 365, 380, 400, 425, 450, 465, 480, 500, 525, 550];
 
         return products.map((product) => {
             let seed = 0;
@@ -153,26 +184,73 @@ export default function ProductMasonryGrid({
             {/* =======================
                CATEGORY FILTER
             ======================= */}
-            {
-                showFilter && (
-                    <div className="flex flex-nowrap overflow-x-auto overflow-y-hidden justify-center gap-2 mb-8 px-2">
-                        {categories.map((cat) => (
-                            <button
-                                key={cat}
-                                onClick={() => setActiveCategory(cat)}
-                                className={`cursor-pointer px-4 py-1.5 rounded-[2px] text-xs uppercase tracking-wider font-semibold border transition-all duration-300
-                            ${activeCategory === cat
-                                        ? "bg-black text-white border-black scale-105"
-                                        : "text-black border-gray-300 hover:bg-gray-100/60"
-                                    }
-                        `}
+            <div className="flex my-4 items-center gap-3 relative">
+                {/* FILTER BUTTON */}
+                {showFilter && (
+                    <button
+                        onClick={() => setIsFilterOpen((prev) => !prev)}
+                        className="flex justify-center items-center gap-2 cursor-pointer shrink-0"
+                    >
+                        <SlidersHorizontal
+                            className={`w-4 h-4 transition-transform duration-300 ${isFilterOpen ? "rotate-180 text-brand-red" : "text-slate-700"
+                                }`}
+                        />
+                        <span className="text-md font-medium text-slate-700">
+                            Filter
+                        </span>
+                    </button>
+                )}
+
+                {/* CATEGORY FILTER BAR */}
+                {showFilter && (
+                    <div className="relative flex-1 overflow-hidden">
+                        <div
+                            className={`
+                                    transition-all duration-300 ease-out
+                                    ${isFilterOpen
+                                    ? "opacity-100 translate-x-0"
+                                    : "opacity-0 -translate-x-4 pointer-events-none"
+                                }
+                                `}
+                        >
+                            <div
+                                className="
+                                            flex gap-8 whitespace-nowrap
+                                            overflow-x-auto
+                                            px-2
+                                            scrollbar-modern md:scrollbar-hide
+                                        "
                             >
-                                {cat === "all" ? "All" : cat.replace("-", " ")}
-                            </button>
-                        ))}
+                                {categories.map((cat) => (
+                                    <button
+                                        key={cat.slug}
+                                        onClick={() => {
+                                            setActiveCategory(cat.slug);
+                                            setIsFilterOpen(false);
+                                        }}
+                                        className="cursor-pointer"
+                                    >
+                                        <p
+                                            className={`text-md truncate transition-colors ${activeCategory === cat.slug
+                                                ? "text-brand-red font-semibold"
+                                                : "text-gray-500 hover:text-brand-red"
+                                                }`}
+                                        >
+                                            {cat.name}
+                                        </p>
+                                    </button>
+                                ))}
+                            </div>
+                        </div>
                     </div>
-                )
-            }
+                )}
+
+                <span className="font-semibold text-sm mx-2">{products?.length}</span>
+            </div>
+
+
+
+
 
             {/* =======================
                ANIMATED GRID WRAPPER
@@ -183,40 +261,47 @@ export default function ProductMasonryGrid({
             >
                 <Masonry
                     breakpointCols={breakpoints}
-                    className={`flex gap-2 ${!fullWidth ? "mx-2" : "mx-0"}`}
+                    className={`flex gap-2 md:gap-4 ${!fullWidth ? "mx-2" : "mx-0"}`}
                     columnClassName="masonry-column"
                 >
                     {filteredProducts.map((item, index) => {
                         const isOpen = activeIndex === index;
                         const variant =
                             hoverVariants[item._id] ?? item.variants[0];
+                        const isWishlisted = wishlistIds.has(item._id);
 
                         return (
                             <div key={item._id}>
                                 <div
-                                    className="relative mb-2 fade-in-75 transition-all duration-300 rounded-[2px] overflow-hidden group cursor-pointer"
+                                    className="relative mb-2 md:mb-4 drop-shadow-sm fade-in-75 transition-all duration-300 rounded-[2px] overflow-hidden group cursor-pointer"
                                     style={{ height: heights[index] }}
                                 >
                                     {/* IMAGE */}
-                                    <Image
-                                        src={
-                                            variant.color.images.find(
-                                                (i) => i.isPrimary
-                                            )?.url ??
-                                            variant.color.images[0]?.url
-                                        }
-                                        alt={item.productName}
-                                        fill
-                                        className="object-cover transition-transform duration-500 group-hover:scale-105"
-                                    />
+                                    <div
+                                        className={`absolute inset-0 transition-opacity duration-300
+                                            ${transitioningProduct === item._id ? "opacity-0" : "opacity-100"}
+                                        `}
+                                    >
+                                        <Image
+                                            src={
+                                                variant.color.images.find((i) => i.isPrimary)?.url ??
+                                                variant.color.images[0]?.url
+                                            }
+                                            alt={item.productName}
+                                            fill
+                                            className="object-cover object-[30%_5%] duration-300 group-hover:scale-105"
+                                        />
+                                    </div>
+
+
                                     <div className="absolute inset-0 bg-black/15 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
                                     {/* COLOR DOTS */}
                                     <div className="absolute w-full flex justify-between items-center top-2 px-2 z-20">
-                                        <div className="flex gap-1">
+                                        <div className="flex gap-0.5">
                                             {item.variants.map((v) => (
                                                 <span
                                                     key={v.color.slug}
-                                                    className={`w-4 h-4 rounded-[2px] border cursor-pointer ${v.color.slug ===
+                                                    className={`w-5 h-4 rounded-[2px] border cursor-pointer ${v.color.slug ===
                                                         variant.color.slug
                                                         ? "ring ring-brand-red border-red-400"
                                                         : "border-gray-400"
@@ -225,33 +310,64 @@ export default function ProductMasonryGrid({
                                                         backgroundColor:
                                                             v.color.hex,
                                                     }}
-                                                    onMouseEnter={() =>
-                                                        setHoverVariants(
-                                                            (prev) => ({
+                                                    onMouseEnter={() => {
+                                                        setTransitioningProduct(item._id);
+
+                                                        setTimeout(() => {
+                                                            setHoverVariants((prev) => ({
                                                                 ...prev,
                                                                 [item._id]: v,
-                                                            })
-                                                        )
-                                                    }
-                                                    onMouseLeave={() =>
-                                                        setHoverVariants(
-                                                            (prev) => {
-                                                                const {
-                                                                    [item._id]:
-                                                                    _,
-                                                                    ...rest
-                                                                } = prev;
+                                                            }));
+                                                            setTransitioningProduct(null);
+                                                        }, 150);
+                                                    }}
+
+                                                    onMouseLeave={() => {
+                                                        setTransitioningProduct(item._id);
+
+                                                        setTimeout(() => {
+                                                            setHoverVariants((prev) => {
+                                                                const { [item._id]: _, ...rest } = prev;
                                                                 return rest;
-                                                            }
-                                                        )
-                                                    }
+                                                            });
+                                                            setTransitioningProduct(null);
+                                                        }, 150);
+                                                    }}
+
                                                 />
                                             ))}
                                         </div>
-                                        <Heart
-                                            className="text-brand-red"
-                                            strokeWidth={0.9}
-                                        />
+                                        <button
+                                            onClick={(e) => {
+                                                e.stopPropagation();
+                                                console.log("🖤 Wishlist clicked:", item._id);
+                                                const image =
+                                                    variant.color.images.find(i => i.isPrimary)?.url ??
+                                                    variant.color.images[0]?.url ??
+                                                    "";
+
+                                                dispatch(
+                                                    toggleWishlist({
+                                                        productId: item?._id,
+                                                        slug: item?.slug,
+                                                        name: item?.productName,
+                                                        image,
+                                                        price: item?.pricing?.price,
+                                                        originalPrice: item?.pricing?.originalPrice,
+                                                        brand: item?.brand
+                                                    })
+                                                );
+                                            }}
+                                            className="p-2 cursor-pointer rounded-full bg-white shadow z-30"
+                                        >
+                                            <Heart
+                                                strokeWidth={0.9}
+                                                className={`h-5 w-5 transition ${isWishlisted
+                                                        ? "fill-brand-red text-brand-red scale-110"
+                                                        : "text-slate-700 hover:text-brand-red"
+                                                    }`}
+                                            />
+                                        </button>
                                     </div>
 
                                     {/* MOBILE TOGGLE */}
@@ -262,7 +378,7 @@ export default function ProductMasonryGrid({
                                                 isOpen ? null : index
                                             );
                                         }}
-                                        className="md:hidden absolute bottom-0 w-full z-20 bg-black/70 p-1 flex justify-center"
+                                        className="md:hidden absolute bottom-0 w-full z-20 bg-black/30 p-1 flex justify-center"
                                     >
                                         {isOpen ? (
                                             <FaAnglesDown className="text-white" />
@@ -281,16 +397,16 @@ export default function ProductMasonryGrid({
                                             }
                                         `}
                                     >
-                                        <div className="bg-black/75 px-2 py-3 text-xs">
+                                        <div className="bg-black/30 px-2 py-3 text-xs">
                                             <p className="font-semibold">
                                                 {item.brand}
                                             </p>
                                             <p className="my-1">
                                                 {item.productName}
                                             </p>
-                                            <p className="font-bold">
+                                            <p className="font-bold text-sm">
                                                 ₹{variant.pricing?.price}
-                                                <span className="line-through ml-2">
+                                                <span className="text-gray-300 font-light text-xs line-through ml-2">
                                                     ₹
                                                     {
                                                         variant.pricing
@@ -301,6 +417,31 @@ export default function ProductMasonryGrid({
                                             <RatingBar value={item.rating} />
                                         </div>
                                     </div>
+                                    {!isOpen && (
+                                        <div
+                                            className="bg-black/30 py-1
+                                                    absolute bottom-5.75 md:bottom-0 text-white
+                                                    flex flex-col justify-center items-center w-full
+                                                    transition-all duration-200
+                                                    opacity-100 translate-y-0
+                                                    md:group-hover:opacity-0 md:group-hover:translate-y-2
+                                                    pointer-events-none
+                                                    "
+                                        >
+                                            <p className="text-sm truncate text-nowrap font-medium">
+                                                {item.productName}
+                                            </p>
+
+                                            <div className="flex gap-3 text-sm w-full justify-evenly z-999">
+                                                <span>₹{variant.pricing?.price}</span>
+                                                <span className="line-through text-gray-300">
+                                                    ₹{variant.pricing?.originalPrice}
+                                                </span>
+                                            </div>
+                                        </div>
+                                    )}
+
+
 
                                     <Link
                                         href={`/products/${item.slug}`}

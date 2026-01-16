@@ -56,7 +56,7 @@ const FeaturedCategories = () => {
 
 
     return (
-        <section className="max-md:px-2 py-2 w-full md:w-[85%] mx-auto flex flex-col justify-center my-1">
+        <section className="max-md:px-2 py-2 w-full md:w-[85%] mx-auto flex flex-col justify-center my-8">
             {/* Heading */}
             <h2 className="py-3 text-center text-md tracking-widest font-semibold font-poppins text-slate-800">
                 Your Wardrobe Starts Here
@@ -81,7 +81,7 @@ const FeaturedCategories = () => {
                             key={item._id}
                             className="mb-2 md:mb-4 block break-inside-avoid"
                         >
-                            <div className="group h-80 relative rounded-sm overflow-hidden bg-neutral-100">
+                            <div className="group h-80 relative rounded-[3px] drop-shadow-sm overflow-hidden bg-neutral-100">
                                 {/* Image */}
                                 <Image
                                     src={item.image}

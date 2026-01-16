@@ -4,7 +4,7 @@ import Header from "@/components/Header/Header";
 import Footer from "@/components/Footer/Footer";
 import LeftMenu from "@/components/LeftMenu/LeftMenu";
 import { Inter, Poppins } from "next/font/google";
-
+import Providers from "./providers";
 
 
 const inter = Inter({
@@ -34,17 +34,19 @@ export default function RootLayout({
   return (
     <html lang="en" className={`${inter.variable} ${poppins.variable}`}>
       <body className="font-poppins antialiased" style={{ backgroundColor: "#eceae3" }}>
-        <div className="flex">
-          <div className="fixed top-0 z-99 h-full">
-            <LeftMenu />
-          </div>
-          <div className="w-full">
-            <Header />
+        <Providers>
+          <div className="flex">
+            <div className="fixed top-0 z-99 h-full">
+              <LeftMenu />
+            </div>
+            <div className="w-full">
+              <Header />
 
-            {children}
-            <Footer />
+              {children}
+              <Footer />
+            </div>
           </div>
-        </div>
+        </Providers>
       </body>
     </html>
   );
