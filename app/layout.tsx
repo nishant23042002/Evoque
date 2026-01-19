@@ -33,7 +33,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" className={`${inter.variable} ${poppins.variable}`}>
-      <body className="font-poppins antialiased" style={{ backgroundColor: "#eceae3" }}>
+      <body className="font-poppins antialiased bg-[var(--linen-100)]">
         <Providers>
           <div className="flex">
             <div className="fixed top-0 z-99 h-full">

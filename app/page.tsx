@@ -72,6 +72,10 @@ export interface Product {
   subCategory?: {
     slug: string;
   };
+  isActive: string,
+  isFeatured: string,
+  isBestSeller: string,
+  isNewArrival: string
 }
 
 export default function Home() {
@@ -126,7 +130,7 @@ export default function Home() {
 
 
   return (
-    <Container className="bg-[#eceae3]">
+    <Container className="bg-[var(--linen-100)]">
       <div className="flex flex-col">
 
         {/* 🔥 Top Hero Banner Section */}
@@ -143,7 +147,7 @@ export default function Home() {
 
         {/* 🔥 Mid / Bottom Banner Section */}
         {bottomBanners.length > 0 && (
-          <section className="w-full">        
+          <section className="w-full">
             <BannerSlider banners={bottomBanners} />
           </section>
         )}

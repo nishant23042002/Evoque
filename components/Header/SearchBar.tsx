@@ -46,13 +46,13 @@ interface Product {
     fitType?: string;
   };
 }
+
 interface SearchSubCategory {
   name: string;
   slug: string;
   isActive: boolean;
   categorySlug: string;
 }
-
 
 interface Category {
   _id: string;
@@ -63,7 +63,6 @@ interface Category {
   isFeatured: boolean;
   isActive: boolean;
   subCategories: SubCategory[];
-  // you can add other fields like merchandising, seo, categoryPageBanner, createdAt, updatedAt, etc.
 }
 
 interface SubCategory {
@@ -89,7 +88,6 @@ const SearchBar = () => {
   const [popularCategory, setPopularCategory] = useState<SearchSubCategory[]>([]);
   const [loading, setLoading] = useState(false);
 
-
   useEffect(() => {
     async function fetchCategories() {
       try {
@@ -97,18 +95,17 @@ const SearchBar = () => {
         const data: Category[] = await res.json();
 
         const activeSubCategories: SearchSubCategory[] = data
-          .filter((category) => category.isTrending) // ✅ only trending categories
-          .flatMap((category) =>
+          .filter(category => category.isTrending)
+          .flatMap(category =>
             category.subCategories
-              .filter((sub) => sub.isActive)
-              .map((sub) => ({
+              .filter(sub => sub.isActive)
+              .map(sub => ({
                 name: sub.name,
                 slug: sub.slug,
                 isActive: sub.isActive,
                 categorySlug: category.slug,
               }))
           );
-
 
         setPopularCategory(activeSubCategories);
       } catch (err) {
@@ -120,9 +117,7 @@ const SearchBar = () => {
 
     fetchCategories();
   }, []);
-  /* ---------------------
-     Fetch Products
-  --------------------- */
+
   useEffect(() => {
     if (!query.trim()) {
       setProducts([]);
@@ -145,9 +140,6 @@ const SearchBar = () => {
     return () => clearTimeout(timer);
   }, [query]);
 
-  /* ---------------------
-     Text Search Filter
-  --------------------- */
   const filteredProducts = useMemo(() => {
     if (!query) return [];
 
@@ -173,9 +165,6 @@ const SearchBar = () => {
     });
   }, [products, query]);
 
-  /* ---------------------
-     Body scroll lock
-  --------------------- */
   useEffect(() => {
     document.body.style.overflow = open ? "hidden" : "";
     return () => {
@@ -196,17 +185,25 @@ const SearchBar = () => {
       <button
         onClick={() => setOpen(true)}
         aria-label="Open search"
-        className="cursor-pointer text-slate-800 hover:text-brand-red transition-colors"
+        className="cursor-pointer"
       >
-        <Search strokeWidth={2.2} size={20} />
+        <Search
+          size={20}
+          strokeWidth={2.2}
+          className="
+            text-[var(--foreground)]
+            hover:text-[var(--primary)]
+            transition-colors duration-200
+          "
+        />
       </button>
 
       {/* Overlay */}
       <div
         className={cn(
-          "fixed inset-0 bg-black/30 z-40 transition-opacity duration-300",
+          "fixed inset-0 z-40 transition-opacity duration-300",
           open
-            ? "opacity-100 pointer-events-auto"
+            ? "opacity-100 pointer-events-auto bg-[rgba(0,0,0,0.35)]"
             : "opacity-0 pointer-events-none"
         )}
         onClick={() => setOpen(false)}
@@ -215,37 +212,37 @@ const SearchBar = () => {
       {/* Sliding Panel */}
       <div
         className={cn(
-          "fixed top-0 right-0 h-full w-[90%] sm:w-100 bg-[#E8E6DF] z-50 shadow-lg transform transition-transform duration-300",
+          "fixed top-0 right-0 h-full w-[90%] sm:w-100 z-50 shadow-xl transform transition-transform duration-300",
+          "bg-[var(--linen-200)]",
           open ? "translate-x-0" : "translate-x-[101%]"
         )}
       >
-        {/* Header */}
-        <div className="relative w-full overflow-hidden bg-brand-red text-white">
-          <div className="marquee flex w-max items-center gap-6 py-1.75">
-            {repeatedAnnouncements.map((text, i) => (
-              <span
-                key={i}
-                className="whitespace-nowrap font-poppins tracking-wider px-2 text-sm font-extrabold"
-              >
-                {text}
-              </span>
-            ))}
-          </div>
-        </div>
-
         {/* Input */}
-        <div className="flex border-b border-black/20 items-center p-2.5">
+        <div className="flex items-center p-3 border-b border-[var(--border-strong)]">
           <input
             autoFocus
             value={query}
             onChange={e => setQuery(e.target.value)}
             placeholder="Search shirts, fabric, style..."
-            className="w-full px-3 py-2 border rounded outline-none focus:border-brand-red"
+            className="
+              w-full px-3 py-1.25 rounded-[3px]
+              bg-[var(--input-bg)]
+              border border-[var(--input-border)]
+              text-[var(--foreground)]
+              placeholder:text-[var(--input-placeholder)]
+              outline-none
+              focus:border-[var(--input-focus)]
+            "
           />
           <button
             onClick={() => setOpen(false)}
             aria-label="Close search"
-            className="p-2 hover:text-brand-red transition-colors"
+            className="
+              p-2
+              text-[var(--text-secondary)]
+              hover:text-[var(--primary)]
+              transition-colors
+            "
           >
             <X size={20} />
           </button>
@@ -260,68 +257,101 @@ const SearchBar = () => {
           )}
 
           {!loading && query && filteredProducts.length === 0 && (
-            <p className="text-center text-sm text-slate-600">
+            <p className="text-center text-sm text-[var(--text-muted)]">
               No products found
             </p>
           )}
 
-          <div>
-            {
-              !query ? (
-                <div className="overflow-y-auto h-[calc(100%-128px)]">
-                  {/* Replace this with actual search results */}
-                  <h1 className="text-sm font-bold text-slate-800 py-2">Most Popular Category</h1>
-                  {popularCategory.map((cat, i) => (
-                    <div key={i}>
-                      <Link
-                        href={`/categories/${cat.categorySlug}?sub=${cat.slug}`}
-                        onClick={() => setOpen(false)} // optional UX improvement
-                      >
-                        <p className="text-sm font-semibold text-slate-800 hover:underline hover:text-brand-red decoration-brand-red cursor-pointer py-1 duration-200">
-                          {cat.name}
-                        </p>
-                      </Link>
+          {!query ? (
+            <>
+              <h1 className="text-sm font-semibold tracking-wide text-[var(--foreground)] py-2">
+                Most Trending Layer
+              </h1>
+
+              {popularCategory.map((cat, i) => (
+                <Link
+                  key={i}
+                  href={`/categories/${cat.categorySlug}?sub=${cat.slug}`}
+                  onClick={() => setOpen(false)}
+                  className="relative group"
+                >
+                  <p
+                    className="
+                      py-1 text-sm font-medium
+                      text-[var(--text-secondary)]
+                      hover:text-[var(--primary)]
+                      transition-colors
+                    "
+                  >
+                    {cat.name}
+                  </p>
+                  <span
+                    className="
+                      absolute left-0 bottom-0
+                      h-[2px]
+                      w-1/2
+                      bg-[var(--primary)]
+                      scale-x-0 origin-left
+                      transition-transform duration-500 ease-out
+                      group-hover:scale-x-30
+                    "
+                  />
+                </Link>
+              ))}
+            </>
+          ) : (
+            <div className="grid grid-cols-2 gap-4">
+              {filteredProducts.map(p => {
+                const variant = p.variants[0];
+                const image = getPrimaryImage(variant);
+
+                return (
+                  <Link
+                    key={p._id}
+                    href={`/products/${p.slug}`}
+                    onClick={() => setOpen(false)}
+                  >
+                    <div className="relative aspect-3/4 rounded-md overflow-hidden bg-[var(--surface-muted)]">
+                      {image && (
+                        <Image
+                          src={image}
+                          alt={p.productName}
+                          fill
+                          className="object-cover transition-transform duration-300 hover:scale-105"
+                        />
+                      )}
+                      <div className="absolute inset-0 bg-[rgba(0,0,0,0.20)] hover:bg-[rgba(0,0,0,0.35)] transition-colors" />
                     </div>
-                  ))}
 
-                </div>
-              )
-                : (
-                  <div className="grid grid-cols-2 gap-4">
-                    {filteredProducts.map(p => {
-                      const variant = p.variants[0];
-                      const image = getPrimaryImage(variant);
+                    <p className="mt-1 text-xs font-medium text-[var(--foreground)] line-clamp-1">
+                      {p.productName}
+                    </p>
+                    <p className="text-xs font-semibold text-[var(--text-secondary)]">
+                      ₹{variant?.pricing?.price}
+                    </p>
+                  </Link>
+                );
+              })}
+            </div>
+          )}
+        </div>
 
-                      return (
-                        <Link
-                          key={p._id}
-                          href={`/products/${p.slug}`}
-                          onClick={() => setOpen(false)}
-                        >
-                          <div className="relative aspect-[3/4] rounded overflow-hidden bg-gray-100">
-                            {image && (
-                              <Image
-                                src={image}
-                                alt={p.productName}
-                                fill
-                                className="object-cover duration-300 hover:scale-105"
-                              />
-                            )}
-                            <div className="absolute inset-0 bg-transparent hover:bg-black/30 duration-300"></div>
-                          </div>
-
-                          <p className="text-xs mt-1 font-medium line-clamp-1">
-                            {p?.productName}
-                          </p>
-                          <p className="text-xs font-semibold">
-                            ₹{variant?.pricing?.price}
-                          </p>
-                        </Link>
-                      );
-                    })}
-                  </div>
-                )
-            }
+        {/* Announcement Bar */}
+        <div className="fixed bottom-0 w-full overflow-hidden bg-[var(--linen-800)]">
+          <div className="marquee flex w-max items-center gap-6 py-1.75">
+            {repeatedAnnouncements.map((text, i) => (
+              <span
+                key={i}
+                className="
+                  whitespace-nowrap
+                  text-[var(--text-inverse)]
+                  font-poppins tracking-wider
+                  px-2 text-sm
+                "
+              >
+                {text}
+              </span>
+            ))}
           </div>
         </div>
       </div>

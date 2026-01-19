@@ -2,27 +2,50 @@
 import Link from "next/link";
 import { ShoppingBag } from "lucide-react";
 import { usePathname } from "next/navigation";
+import { useAppSelector } from "@/store/hooks";
 
 
 const Cart = () => {
     const pathname = usePathname();
     const active = pathname === "/cart";
+    const cartCount = useAppSelector(
+        (state) => state.cart.items.reduce((sum, item) => sum + item.quantity, 0)
+    );
 
     return (
         <Link
             href="/cart"
-            className={`relative group  ${active ? "text-brand-red" : "text-neutral-800"
+            className={`relative group ${active ? "text-brand-red" : "text-neutral-800"
                 }`}
         >
-            <span className="absolute -top-2.5 text-slate-700 -right-1 font-bold"><span className="relative text-brand-red right-0.5 -top-1">0</span></span>
+            <span
+                key={cartCount}
+                className="
+                            absolute -top-2 -right-1.5
+                            min-w-[12px] h-[13px]
+                            p-0.75
+                            bg-[var(--primary)]
+                            flex items-center justify-center
+                            rounded-full
+                            bg-brand-red
+                            text-white
+                            text-[8px]
+                            font-extrabold
+                            animate-scale-in
+                        "
+            >
+                {cartCount}
+            </span>
             <ShoppingBag
                 size={20}
                 strokeWidth={2.2}
                 className={`
-    transition-colors duration-200
-    ${active ? "text-brand-red" : "text-slate-800"}
-    group-hover:text-brand-red
-  `}
+                            text-[var(--foreground)]
+                                hover:text-[var(--primary)]
+                                transition-colors duration-200
+                            ${active ? "text-[var(--primary)]" : "text-[var(--foreground)]"}
+                            group-hover:text-[var(--primary)]
+                        `}
             />
         </Link>
     );

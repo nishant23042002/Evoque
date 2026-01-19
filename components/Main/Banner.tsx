@@ -21,7 +21,7 @@ interface BannerSliderProps {
 }
 
 const AUTO_SLIDE_DELAY = 3500;
-const DESKTOP_BREAKPOINT = 1024;
+const DESKTOP_BREAKPOINT = 768;
 
 const BannerSlider = ({ banners }: BannerSliderProps) => {
   const intervalRef = useRef<NodeJS.Timeout | null>(null);
@@ -113,9 +113,19 @@ const BannerSlider = ({ banners }: BannerSliderProps) => {
   };
 
   return (
-    <div className="relative overflow-hidden">
+    <div className="relative overflow-hidden mx-auto ">
       {/* FADE STACK */}
-      <div className="relative w-full max-sm:h-100 h-200 bg-neutral-100">
+      <div
+        className="
+                  relative w-full bg-neutral-100 overflow-hidden
+                  aspect-21/9
+                  xl:aspect-21/9
+                  lg:aspect-video
+                  md:aspect-12/9
+                  sm:aspect-4/5
+                  max-sm:aspect-4/5
+                "
+      >
         {banners.map((banner, i) => {
           const images = isMobile
             ? banner.mobileImages
@@ -142,7 +152,7 @@ const BannerSlider = ({ banners }: BannerSliderProps) => {
                   loading={i === 0 ? "eager" : "lazy"}
                   sizes="100vw"
                   quality={85}
-                  className="sm:object-center"
+                  className="object-center"
                 />
               )}
             </a>

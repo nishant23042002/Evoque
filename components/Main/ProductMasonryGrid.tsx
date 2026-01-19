@@ -37,6 +37,13 @@ interface SizeVariant {
     stock: number;
 }
 
+interface Pricing {
+    price: number
+    originalPrice: number
+    discountPercentage: number
+    currency?: string
+}
+
 interface Variant {
     color: VariantColor;
     sizes?: SizeVariant[];
@@ -47,12 +54,6 @@ interface Variant {
     };
 }
 
-interface Pricing {
-    price: number;
-    originalPrice: number;
-    discountPercentage: number;
-    currency: string;
-}
 
 export interface Product {
     _id: string;
@@ -167,16 +168,16 @@ export default function ProductMasonryGrid({
 
     if (!filteredProducts.length) {
         return (
-            <p className="flex items-center justify-center h-[40vh] text-sm font-semibold text-slate-700">
+            <p className="flex items-center justify-center h-[40vh] text-sm font-semibold text-[var(--text-secondary)]">
                 No products found in this category
             </p>
         );
     }
 
     return (
-        <div className={`${fullWidth ? "md:w-[85%] max-md:px-2 mx-auto my-10" : "w-full"}`}>
+        <div className={`my-12 ${fullWidth ? "md:w-[85%] max-md:px-2 mx-auto my-3" : "w-full"}`}>
             {showHeading && (
-                <h2 className="py-2 text-center text-md tracking-widest font-semibold font-poppins text-slate-800">
+                <h2 className="text-center py-3 text-md tracking-widest font-semibold font-poppins text-[var(--foreground)]">
                     Everything You Need
                 </h2>
             )}
@@ -184,7 +185,7 @@ export default function ProductMasonryGrid({
             {/* =======================
                CATEGORY FILTER
             ======================= */}
-            <div className="flex my-4 items-center gap-3 relative">
+            <div className="flex mb-2 items-center gap-3 relative">
                 {/* FILTER BUTTON */}
                 {showFilter && (
                     <button
@@ -192,12 +193,16 @@ export default function ProductMasonryGrid({
                         className="flex justify-center items-center gap-2 cursor-pointer shrink-0"
                     >
                         <SlidersHorizontal
-                            className={`w-4 h-4 transition-transform duration-300 ${isFilterOpen ? "rotate-180 text-brand-red" : "text-slate-700"
+                            className={`w-4 h-6 transition-transform duration-300 ${isFilterOpen
+                                ? "rotate-180 text-[var(--primary)]"
+                                : "text-[var(--text-secondary)]"
                                 }`}
                         />
-                        <span className="text-md font-medium text-slate-700">
+
+                        <span className="text-md font-medium text-[var(--text-secondary)]">
                             Filter
                         </span>
+
                     </button>
                 )}
 
@@ -232,8 +237,8 @@ export default function ProductMasonryGrid({
                                     >
                                         <p
                                             className={`text-md truncate transition-colors ${activeCategory === cat.slug
-                                                ? "text-brand-red font-semibold"
-                                                : "text-gray-500 hover:text-brand-red"
+                                                ? "text-[var(--primary)] font-semibold"
+                                                : "text-[var(--text-muted)] hover:text-[var(--primary)]"
                                                 }`}
                                         >
                                             {cat.name}
@@ -245,7 +250,7 @@ export default function ProductMasonryGrid({
                     </div>
                 )}
 
-                <span className="font-semibold text-sm mx-2">{products?.length}</span>
+                <span className="font-semibold text-sm mx-2 text-[oklch(0.45_0.01_85)]">{products?.length}</span>
             </div>
 
 
@@ -273,7 +278,16 @@ export default function ProductMasonryGrid({
                         return (
                             <div key={item._id}>
                                 <div
-                                    className="relative mb-2 md:mb-4 drop-shadow-sm fade-in-75 transition-all duration-300 rounded-[2px] overflow-hidden group cursor-pointer"
+                                    className="border border-[var(--border-strong)]
+                                        relative mb-2 md:mb-4
+                                        drop-shadow-xs
+                                        fade-in-75
+                                        transition-all duration-300
+                                        rounded-[2px]
+                                        overflow-hidden
+                                        group cursor-pointer
+                                        bg-[var(--card-bg)]
+                                    "
                                     style={{ height: heights[index] }}
                                 >
                                     {/* IMAGE */}
@@ -289,27 +303,24 @@ export default function ProductMasonryGrid({
                                             }
                                             alt={item.productName}
                                             fill
-                                            className="object-cover object-[30%_5%] duration-300 group-hover:scale-105"
+                                            className="object-cover  object-center duration-300 group-hover:scale-105"
                                         />
                                     </div>
 
 
-                                    <div className="absolute inset-0 bg-black/15 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+                                    <div className="absolute inset-0 bg-[var(--earth-charcoal)]/15 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+
                                     {/* COLOR DOTS */}
-                                    <div className="absolute w-full flex justify-between items-center top-2 px-2 z-20">
+                                    <div className="absolute w-full flex justify-between items-center top-1 px-2 z-20">
                                         <div className="flex gap-0.5">
                                             {item.variants.map((v) => (
                                                 <span
                                                     key={v.color.slug}
-                                                    className={`w-5 h-4 rounded-[2px] border cursor-pointer ${v.color.slug ===
-                                                        variant.color.slug
-                                                        ? "ring ring-brand-red border-red-400"
-                                                        : "border-gray-400"
+                                                    className={`w-5 h-4 rounded-[2px] border cursor-pointer ${v.color.slug === variant.color.slug
+                                                        ? "ring-1 ring-[var(--ring)] border-[var(--primary)]"
+                                                        : "border-[var(--border-light)]"
                                                         }`}
-                                                    style={{
-                                                        backgroundColor:
-                                                            v.color.hex,
-                                                    }}
+                                                    style={{ backgroundColor: v.color.hex }}
                                                     onMouseEnter={() => {
                                                         setTransitioningProduct(item._id);
 
@@ -358,13 +369,13 @@ export default function ProductMasonryGrid({
                                                     })
                                                 );
                                             }}
-                                            className="p-2 cursor-pointer rounded-full bg-white shadow z-30"
+                                            className="p-1.5 cursor-pointer rounded-full bg-[var(--surface)] shadow z-30"
                                         >
                                             <Heart
                                                 strokeWidth={0.9}
                                                 className={`h-5 w-5 transition ${isWishlisted
-                                                        ? "fill-brand-red text-brand-red scale-110"
-                                                        : "text-slate-700 hover:text-brand-red"
+                                                    ? "fill-[var(--primary)] text-[var(--primary)] scale-110"
+                                                    : "text-[var(--text-secondary)] hover:text-[var(--primary)]"
                                                     }`}
                                             />
                                         </button>
@@ -378,7 +389,7 @@ export default function ProductMasonryGrid({
                                                 isOpen ? null : index
                                             );
                                         }}
-                                        className="md:hidden absolute bottom-0 w-full z-20 bg-black/30 p-1 flex justify-center"
+                                        className="md:hidden absolute bottom-0 w-full z-20 bg-[var(--earth-charcoal)]/30 p-1 flex justify-center"
                                     >
                                         {isOpen ? (
                                             <FaAnglesDown className="text-white" />
@@ -387,36 +398,38 @@ export default function ProductMasonryGrid({
                                         )}
                                     </button>
 
+                                   
                                     {/* DETAILS */}
                                     <div
-                                        className={`absolute inset-0 max-md:bottom-6 transition-all duration-300 flex flex-col justify-end text-white
-                                            md:opacity-0 md:group-hover:opacity-100
-                                            ${isOpen
-                                                ? "opacity-100"
-                                                : "opacity-0"
-                                            }
+                                        className={`
+                                                absolute inset-0 max-md:bottom-6
+                                                flex flex-col justify-end text-white
+                                                transition-all duration-300 ease-out
+
+                                                md:opacity-0 md:translate-y-0
+                                                md:group-hover:opacity-100
+
+                                         ${isOpen
+                                                ? "opacity-100 translate-y-0"
+                                                : "opacity-0 translate-y-6 pointer-events-none"}
                                         `}
                                     >
-                                        <div className="bg-black/30 px-2 py-3 text-xs">
-                                            <p className="font-semibold">
-                                                {item.brand}
-                                            </p>
-                                            <p className="my-1">
-                                                {item.productName}
-                                            </p>
+                                        <div className="bg-[var(--earth-charcoal)]/40 backdrop-blur-xs transition-all duration-300 px-2 py-3 text-xs text-[var(--text-inverse)]">
+                                            <p className="font-semibold">{item.brand}</p>
+
+                                            <p className="my-1">{item.productName}</p>
+
                                             <p className="font-bold text-sm">
                                                 ₹{variant.pricing?.price}
-                                                <span className="text-gray-300 font-light text-xs line-through ml-2">
-                                                    ₹
-                                                    {
-                                                        variant.pricing
-                                                            ?.originalPrice
-                                                    }
+                                                <span className="ml-2 text-xs font-semibold line-through text-[var(--earth-olive)]">
+                                                    ₹{variant.pricing?.originalPrice}
                                                 </span>
                                             </p>
+
                                             <RatingBar value={item.rating} />
                                         </div>
                                     </div>
+
                                     {!isOpen && (
                                         <div
                                             className="bg-black/30 py-1

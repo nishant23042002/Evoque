@@ -3,254 +3,264 @@
 
 @custom-variant dark (&:is(.dark *));
 
-@theme {
-  --font-poppins: Poppins, sans-serif;
 
-  /* -------------------------------------- */
-  /* BRAND COLORS                           */
-  /* -------------------------------------- */
 
-  --color-brand-red: #E60023;
-  /* Pinterest primary red */
-  --color-brand-red-dark: #C0001C;
-  --color-brand: #f2f2f2;
-  /* Hover/active state */
-  --color-brand-red-light: #FFEDF0;
-  /* Soft tint for backgrounds */
 
-  /* -------------------------------------- */
-  /* COMPLEMENTARY ACCENTS (Pinterest-style) */
-  /* -------------------------------------- */
+/* =========================================================
+   THE LAYER CO. – LINEN DESIGN SYSTEM
+   Premium • Minimal • Breathable • Menswear
+   ========================================================= */
 
-  --color-accent-rose: #F7DDE2;
-  /* Soft rose */
-  --color-accent-peach: #FAD9C1;
-  /* Creamy peach */
-  --color-accent-mint: #DFF1E5;
-  /* Pastel mint */
-  --color-accent-sky: #E2EFF8;
-  /* Light sky blue */
-  --color-accent-sand: #F5EFE7;
-  /* Beige / warm background */
+:root {
+  /* -------------------------------------------------------
+     TYPOGRAPHY
+  ------------------------------------------------------- */
+  --font-sans: "Poppins", system-ui, sans-serif;
 
-  /* -------------------------------------- */
-  /* NEUTRAL SCALE (Pinterest aesthetic)    */
-  /* -------------------------------------- */
+  /* -------------------------------------------------------
+     RADIUS & MOTION
+  ------------------------------------------------------- */
+  --radius: 0.625rem;
+  --ease-soft: cubic-bezier(0.4, 0, 0.2, 1);
 
-  --color-white: #FFFFFF;
-  --color-neutral-50: #FAFAFA;
-  --color-neutral-100: #F2F2F2;
-  --color-neutral-200: #E8E8E8;
-  --color-neutral-300: #DADADA;
-  --color-neutral-400: #B8B8B8;
-  --color-neutral-500: #888888;
-  --color-neutral-600: #555555;
-  --color-neutral-700: #3A3A3A;
-  --color-neutral-800: #222222;
-  --color-neutral-900: #111111;
+  /* -------------------------------------------------------
+     LINEN NEUTRAL PALETTE
+     (Fabric-inspired, warm, natural)
+  ------------------------------------------------------- */
+  --linen-50: #FCFBF9;
+  --linen-100: #F6F3EE;
+  --linen-200: #ECE6DC;
+  --linen-300: #DED6C8;
+  --linen-400: #C8BCA8;
+  --linen-500: #A89E8A;
+  --linen-600: #7E7668;
+  --linen-700: #5A5449;
+  --linen-800: #3D392F;
+  --linen-900: #24221C;
 
-  /* -------------------------------------- */
-  /* SEMANTIC UI COLORS                     */
-  /* -------------------------------------- */
+  /* -------------------------------------------------------
+     EARTH ACCENTS (USED SPARINGLY)
+  ------------------------------------------------------- */
+  --earth-olive: #6B705C;
+  --earth-clay: #B08968;
+  --earth-sand: #E6D8C3;
+  --earth-charcoal: #2B2B2B;
 
-  /* Backgrounds */
-  --bg-body: var(--color-neutral-50);
-  --bg-surface: var(--color-white);
-  --bg-surface-muted: var(--color-neutral-100);
-  --bg-card: var(--color-white);
-  --bg-hover: var(--color-neutral-200);
-  --bg-navbar: var(--color-white);
-  --bg-navbar-hover: var(--color-neutral-100);
+  /* -------------------------------------------------------
+     BACKGROUNDS
+  ------------------------------------------------------- */
+  --background: var(--linen-50);
+  --surface: #FFFFFF;
+  --surface-muted: var(--linen-100);
+  --surface-elevated: #FFFFFF;
 
-  /* Text Colors */
-  --text-first: #1f1f1f;
-  --text-sec: #b8a4b8;
-  --text-muted: var(--color-neutral-500);
-  --text-inverse: var(--color-white);
-  --text-brand: var(--color-brand-red);
+  /* -------------------------------------------------------
+     TEXT COLORS
+  ------------------------------------------------------- */
+  --foreground: var(--linen-900);
+  --text-secondary: var(--linen-700);
+  --text-muted: var(--linen-500);
+  --text-inverse: #FFFFFF;
 
-  /* Borders */
-  --border-light: var(--color-neutral-200);
-  --border: var(--color-neutral-300);
-  --border-strong: var(--color-neutral-400);
+  /* -------------------------------------------------------
+     SEMANTIC BRAND COLORS
+  ------------------------------------------------------- */
+  --primary: var(--earth-olive);
+  --primary-foreground: #FFFFFF;
 
-  /* -------------------------------------- */
-  /* BUTTON COLORS                          */
-  /* -------------------------------------- */
+  --secondary: var(--linen-200);
+  --secondary-foreground: var(--linen-900);
 
-  /* Primary Buttons */
-  --btn-primary-bg: var(--color-brand-red);
-  --btn-primary-bg-hover: var(--color-brand-red-dark);
-  --btn-primary-bg-active: #a40018;
-  --btn-primary-text: var(--color-white);
-  --btn-primary-border: transparent;
+  --accent: var(--earth-clay);
+  --accent-foreground: #FFFFFF;
 
-  /* Secondary Buttons (light grey) */
-  --btn-secondary-bg: var(--color-neutral-200);
-  --btn-secondary-bg-hover: var(--color-neutral-300);
-  --btn-secondary-bg-active: var(--color-neutral-400);
-  --btn-secondary-text: var(--color-neutral-800);
-  --btn-secondary-border: var(--color-neutral-300);
+  --muted: var(--linen-100);
+  --muted-foreground: var(--linen-600);
 
-  /* Outline Buttons */
-  --btn-outline-bg: transparent;
-  --btn-outline-bg-hover: var(--color-neutral-100);
-  --btn-outline-text: var(--color-neutral-900);
-  --btn-outline-border: var(--color-neutral-400);
+  --destructive: #9E2A2B;
+  --destructive-foreground: #FFFFFF;
 
-  /* Ghost Buttons (Pinterest uses a lot of these) */
-  --btn-ghost-text: var(--color-neutral-900);
-  --btn-ghost-hover: var(--color-neutral-100);
-  --btn-ghost-active: var(--color-neutral-200);
+  /* -------------------------------------------------------
+     BORDERS & DIVIDERS
+  ------------------------------------------------------- */
+  --border-light: var(--linen-200);
+  --border: var(--linen-300);
+  --border-strong: var(--linen-400);
 
-  /* -------------------------------------- */
-  /* NAVIGATION COLORS                      */
-  /* -------------------------------------- */
+  /* -------------------------------------------------------
+     SHADOWS (SOFT, FABRIC-LIKE)
+  ------------------------------------------------------- */
+  --shadow-xs: 0 1px 2px rgba(0, 0, 0, 0.04);
+  --shadow-sm: 0 2px 6px rgba(0, 0, 0, 0.06);
+  --shadow-md: 0 6px 16px rgba(0, 0, 0, 0.08);
 
-  --nav-bg: var(--color-white);
-  --nav-text: var(--color-neutral-800);
-  --nav-text-hover: var(--color-neutral-900);
-  --nav-icon: var(--color-neutral-700);
-  --nav-icon-hover: var(--color-brand-red);
-  --nav-active: var(--color-brand-red);
-  --nav-border: var(--color-neutral-200);
+  /* -------------------------------------------------------
+     INPUTS
+  ------------------------------------------------------- */
+  --input-bg: #FFFFFF;
+  --input-border: var(--linen-300);
+  --input-focus: var(--primary);
+  --input-placeholder: var(--linen-500);
 
-  /* -------------------------------------- */
-  /* SHADOWS & ELEVATION                    */
-  /* -------------------------------------- */
+  /* -------------------------------------------------------
+     CARDS
+  ------------------------------------------------------- */
+  --card-bg: var(--surface);
+  --card-border: var(--linen-200);
+  --card-hover: var(--linen-100);
+  --card-shadow: var(--shadow-sm);
 
-  --shadow-soft: 0px 2px 5px rgba(0, 0, 0, 0.05);
-  --shadow-medium: 0px 4px 12px rgba(0, 0, 0, 0.08);
-  --shadow-strong: 0px 6px 18px rgba(0, 0, 0, 0.12);
-  --shadow-card: 0px 2px 8px rgba(0, 0, 0, 0.06);
+  /* -------------------------------------------------------
+     BUTTONS
+  ------------------------------------------------------- */
+  --btn-primary-bg: var(--primary);
+  --btn-primary-hover: #5F6655;
+  --btn-primary-text: var(--primary-foreground);
 
-  /* -------------------------------------- */
-  /* COMPONENT-SPECIFIC COLORS              */
-  /* -------------------------------------- */
+  --btn-outline-border: var(--linen-400);
+  --btn-outline-hover: var(--linen-100);
 
-  /* Inputs */
-  --input-bg: var(--color-white);
-  --input-border: var(--color-neutral-300);
-  --input-border-focus: var(--color-brand-red);
-  --input-placeholder: var(--color-neutral-500);
-
-  /* Badges / Small UI elements */
-  --badge-bg: var(--color-neutral-200);
-  --badge-text: var(--color-neutral-700);
-
-  /* Cards */
-  --card-bg: var(--color-white);
-  --card-bg-hover: var(--color-neutral-100);
-  --card-border: var(--color-neutral-200);
-  --card-shadow: var(--shadow-card);
+  /* -------------------------------------------------------
+     FOCUS & RING
+  ------------------------------------------------------- */
+  --ring: var(--earth-olive);
 }
 
+/* =========================================================
+   TAILWIND v4 THEME MAPPING
+   (Minimal – only what utilities need)
+   ========================================================= */
+
 @theme inline {
+  /* Radius */
   --radius-sm: calc(var(--radius) - 4px);
   --radius-md: calc(var(--radius) - 2px);
   --radius-lg: var(--radius);
   --radius-xl: calc(var(--radius) + 4px);
+
+  /* Core */
   --color-background: var(--background);
   --color-foreground: var(--foreground);
-  --color-card: var(--card);
-  --color-card-foreground: var(--card-foreground);
-  --color-popover: var(--popover);
-  --color-popover-foreground: var(--popover-foreground);
+
+  /* Brand */
   --color-primary: var(--primary);
   --color-primary-foreground: var(--primary-foreground);
+
   --color-secondary: var(--secondary);
   --color-secondary-foreground: var(--secondary-foreground);
-  --color-muted: var(--muted);
-  --color-muted-foreground: var(--muted-foreground);
+
   --color-accent: var(--accent);
   --color-accent-foreground: var(--accent-foreground);
+
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+
   --color-destructive: var(--destructive);
   --color-border: var(--border);
-  --color-input: var(--input);
   --color-ring: var(--ring);
-  --color-chart-1: var(--chart-1);
-  --color-chart-2: var(--chart-2);
-  --color-chart-3: var(--chart-3);
-  --color-chart-4: var(--chart-4);
-  --color-chart-5: var(--chart-5);
-  --color-sidebar: var(--sidebar);
-  --color-sidebar-foreground: var(--sidebar-foreground);
-  --color-sidebar-primary: var(--sidebar-primary);
-  --color-sidebar-primary-foreground: var(--sidebar-primary-foreground);
-  --color-sidebar-accent: var(--sidebar-accent);
-  --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
-  --color-sidebar-border: var(--sidebar-border);
-  --color-sidebar-ring: var(--sidebar-ring);
-}
-
-:root {
-  --radius: 0.625rem;
-  --background: oklch(1 0 0);
-  --foreground: oklch(0.145 0 0);
-  --card: oklch(1 0 0);
-  --card-foreground: oklch(0.145 0 0);
-  --popover: oklch(1 0 0);
-  --popover-foreground: oklch(0.145 0 0);
-  --primary: oklch(0.205 0 0);
-  --primary-foreground: oklch(0.985 0 0);
-  --secondary: oklch(0.97 0 0);
-  --secondary-foreground: oklch(0.205 0 0);
-  --muted: oklch(0.97 0 0);
-  --muted-foreground: oklch(0.556 0 0);
-  --accent: oklch(0.97 0 0);
-  --accent-foreground: oklch(0.205 0 0);
-  --destructive: oklch(0.577 0.245 27.325);
-  --border: oklch(0.922 0 0);
-  --input: oklch(0.922 0 0);
-  --ring: oklch(0.708 0 0);
-  --chart-1: oklch(0.646 0.222 41.116);
-  --chart-2: oklch(0.6 0.118 184.704);
-  --chart-3: oklch(0.398 0.07 227.392);
-  --chart-4: oklch(0.828 0.189 84.429);
-  --chart-5: oklch(0.769 0.188 70.08);
-  --sidebar: oklch(0.985 0 0);
-  --sidebar-foreground: oklch(0.145 0 0);
-  --sidebar-primary: oklch(0.205 0 0);
-  --sidebar-primary-foreground: oklch(0.985 0 0);
-  --sidebar-accent: oklch(0.97 0 0);
-  --sidebar-accent-foreground: oklch(0.205 0 0);
-  --sidebar-border: oklch(0.922 0 0);
-  --sidebar-ring: oklch(0.708 0 0);
 }
 
 .dark {
-  --background: oklch(0.145 0 0);
-  --foreground: oklch(0.985 0 0);
-  --card: oklch(0.205 0 0);
-  --card-foreground: oklch(0.985 0 0);
-  --popover: oklch(0.205 0 0);
-  --popover-foreground: oklch(0.985 0 0);
-  --primary: oklch(0.922 0 0);
-  --primary-foreground: oklch(0.205 0 0);
-  --secondary: oklch(0.269 0 0);
-  --secondary-foreground: oklch(0.985 0 0);
-  --muted: oklch(0.269 0 0);
-  --muted-foreground: oklch(0.708 0 0);
-  --accent: oklch(0.269 0 0);
-  --accent-foreground: oklch(0.985 0 0);
-  --destructive: oklch(0.704 0.191 22.216);
-  --border: oklch(1 0 0 / 10%);
-  --input: oklch(1 0 0 / 15%);
-  --ring: oklch(0.556 0 0);
-  --chart-1: oklch(0.488 0.243 264.376);
-  --chart-2: oklch(0.696 0.17 162.48);
-  --chart-3: oklch(0.769 0.188 70.08);
-  --chart-4: oklch(0.627 0.265 303.9);
-  --chart-5: oklch(0.645 0.246 16.439);
-  --sidebar: oklch(0.205 0 0);
-  --sidebar-foreground: oklch(0.985 0 0);
-  --sidebar-primary: oklch(0.488 0.243 264.376);
-  --sidebar-primary-foreground: oklch(0.985 0 0);
-  --sidebar-accent: oklch(0.269 0 0);
-  --sidebar-accent-foreground: oklch(0.985 0 0);
-  --sidebar-border: oklch(1 0 0 / 10%);
-  --sidebar-ring: oklch(0.556 0 0);
+  /* -------------------------------------- */
+  /* CORE SURFACES — WASHED CHARCOAL LINEN  */
+  /* -------------------------------------- */
+
+  --background: oklch(0.18 0.01 90);
+  /* Charcoal linen */
+  --foreground: oklch(0.94 0.005 95);
+  /* Soft off-white */
+
+  --card: oklch(0.22 0.01 85);
+  /* Elevated linen surface */
+  --card-foreground: oklch(0.94 0.005 95);
+
+  --popover: oklch(0.22 0.01 85);
+  --popover-foreground: oklch(0.94 0.005 95);
+
+  /* -------------------------------------- */
+  /* PRIMARY BRAND — WARM SAND / TAUPE      */
+  /* -------------------------------------- */
+
+  --primary: oklch(0.86 0.03 85);
+  /* Linen sand highlight */
+  --primary-foreground: oklch(0.18 0.01 90);
+
+  /* -------------------------------------- */
+  /* SECONDARY & MUTED — STONE GREYS        */
+  /* -------------------------------------- */
+
+  --secondary: oklch(0.30 0.01 85);
+  /* Muted charcoal */
+  --secondary-foreground: oklch(0.94 0.005 95);
+
+  --muted: oklch(0.26 0.01 85);
+  --muted-foreground: oklch(0.68 0.01 85);
+  /* Washed text */
+
+  /* -------------------------------------- */
+  /* ACCENT — SUBTLE NATURAL HIGHLIGHT      */
+  /* -------------------------------------- */
+
+  --accent: oklch(0.34 0.015 80);
+  /* Warm stone accent */
+  --accent-foreground: oklch(0.94 0.005 95);
+
+  /* -------------------------------------- */
+  /* DESTRUCTIVE — EARTHY BRICK RED         */
+  /* -------------------------------------- */
+
+  --destructive: oklch(0.62 0.18 30);
+  /* Brick red */
+  --destructive-foreground: oklch(0.96 0.01 30);
+
+  /* -------------------------------------- */
+  /* BORDERS & INPUTS — FABRIC EDGES        */
+  /* -------------------------------------- */
+
+  --border: oklch(0.35 0.01 85 / 40%);
+  --input: oklch(0.35 0.01 85 / 55%);
+  --ring: oklch(0.72 0.03 85);
+  /* Focus ring (linen glow) */
+
+  /* -------------------------------------- */
+  /* CHARTS — MUTED NATURAL TONES           */
+  /* -------------------------------------- */
+
+  --chart-1: oklch(0.72 0.04 85);
+  /* Sand */
+  --chart-2: oklch(0.64 0.04 115);
+  /* Olive */
+  --chart-3: oklch(0.58 0.03 65);
+  /* Clay */
+  --chart-4: oklch(0.70 0.05 45);
+  /* Terracotta */
+  --chart-5: oklch(0.66 0.03 160);
+  /* Sage */
+
+  /* -------------------------------------- */
+  /* SIDEBAR — DEEP LINEN PANEL             */
+  /* -------------------------------------- */
+
+  --sidebar: oklch(0.20 0.01 88);
+  --sidebar-foreground: oklch(0.94 0.005 95);
+
+  --sidebar-primary: oklch(0.86 0.03 85);
+  --sidebar-primary-foreground: oklch(0.18 0.01 90);
+
+  --sidebar-accent: oklch(0.30 0.01 85);
+  --sidebar-accent-foreground: oklch(0.94 0.005 95);
+
+  --sidebar-border: oklch(0.35 0.01 85 / 35%);
+  --sidebar-ring: oklch(0.72 0.03 85);
 }
+
+
+
+
+
+
+
+
 
 @layer base {
   * {
@@ -281,9 +291,6 @@
   }
 }
 
-.active-glow {
-  animation: glowPulse 2.2s ease-in-out infinite;
-}
 
 @keyframes marquee {
   0% {
@@ -293,6 +300,51 @@
   100% {
     transform: translateX(-50%);
   }
+}
+
+@keyframes scaleIn {
+  from {
+    opacity: 0;
+    transform: scale(0.95);
+  }
+
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(16px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes scale-in {
+  from {
+    transform: scale(0.6);
+    opacity: 0;
+  }
+
+  to {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+
+
+
+
+.active-glow {
+  animation: glowPulse 2.2s ease-in-out infinite;
 }
 
 .marquee {
@@ -308,17 +360,6 @@
   transform: translateY(-1px);
 }
 
-@keyframes scaleIn {
-  from {
-    opacity: 0;
-    transform: scale(0.95);
-  }
-
-  to {
-    opacity: 1;
-    transform: scale(1);
-  }
-}
 
 .animate-scaleIn {
   animation: scaleIn 0.25s ease-out;
@@ -341,20 +382,6 @@
 
 .loading-backdrop {
   backdrop-filter: blur(6px);
-}
-
-
-
-@keyframes fadeInUp {
-  from {
-    opacity: 0;
-    transform: translateY(16px);
-  }
-
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
 }
 
 .animate-fade-in-up {
@@ -384,11 +411,6 @@
 .scrollbar-modern {
   scrollbar-width: 2px;
   scrollbar-color: rgba(20, 15, 15, 0.322) transparent;
-}
-
-@keyframes scale-in {
-  from { transform: scale(0.6); opacity: 0; }
-  to { transform: scale(1); opacity: 1; }
 }
 
 .animate-scale-in {

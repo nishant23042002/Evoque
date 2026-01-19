@@ -1,45 +1,30 @@
 import Link from "next/link";
-import { cn } from "@/lib/utils";
+import Image from "next/image";
 
-const Logo = ({ className }: { className?: string }) => {
+const Logo = () => {
     return (
         <Link
             href="/"
-            className="group relative select-none"
             aria-label="The Layer Co. Home"
+            className="group relative flex items-center h-11 w-40"
         >
-            <h1
-                className={cn(
-                    `relative
-                    text-[20px]  
-                    max-[550px]:text-[18px]                                 
-                    font-light
-                    uppercase                   
-                    sm:tracking-widest
-                    transition-transform duration-300
-                    text-slate-800
-                    dark:text-slate-100
-                    hover:text-brand-red
-                    leading-4
-                    `,
-                    className
-                )}
-            >
-                <span>
-                    <img src="/images/theheaderlogo.png" alt="thelayerco" />
-
-                    <span
-                        className="max-md:hidden
-                        absolute bottom-0.5 left-0.5 h-0.5 w-[50%]
-                         bg-brand-red
-                         scale-x-0 origin-left
-                        transition-transform duration-300
-                        group-hover:scale-x-100
-                    "
-                    />
-                </span>
-
-            </h1>
+            <Image
+                src="/images/thelayerlogo-bold.svg"
+                alt="The Layer Co"
+                width={160}
+                height={48}
+                priority
+                className="h-full w-auto"
+            />
+            <span className="
+                              absolute left-0.5 bottom-3
+                              h-0.5
+                              w-1/2
+                              bg-[var(--primary)]
+                              scale-x-0 origin-left
+                              transition-transform duration-500 ease-out
+                              group-hover:scale-x-100
+                            "></span>
         </Link>
     );
 };

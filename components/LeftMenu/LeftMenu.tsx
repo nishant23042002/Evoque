@@ -4,8 +4,6 @@ import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
-
-
 import {
     HiOutlineHome,
     HiOutlineHeart,
@@ -14,7 +12,7 @@ import {
 import { MdFiberNew } from "react-icons/md";
 import { Flame } from "lucide-react";
 import { cn } from "@/lib/utils";
-import Category from "@/models/Category";
+import { TbMenu } from "react-icons/tb";
 
 const MOBILE_BREAKPOINT = 550;
 
@@ -45,7 +43,6 @@ const SECONDARY_ITEMS: StaticItem[] = [
     { title: "Account", href: "/account", icon: HiOutlineUser },
 ];
 
-
 const LeftMenu = () => {
     const pathname = usePathname();
     const sidebarRef = useRef<HTMLDivElement | null>(null);
@@ -57,18 +54,17 @@ const LeftMenu = () => {
     /* ---------- FETCH CATEGORIES ---------- */
     useEffect(() => {
         async function fetchCategories() {
-
             try {
                 const res = await fetch("/api/categories");
                 const data = await res.json();
-                const isTrendingCategory = data.filter((cat: Category) => cat?.isTrending);
-                
+                const isTrendingCategory = data.filter(
+                    (cat: Category) => cat?.isTrending
+                );
                 setCategories(isTrendingCategory);
             } catch (err) {
                 console.error("Failed to fetch categories", err);
             }
         }
-
         fetchCategories();
     }, []);
 
@@ -77,7 +73,6 @@ const LeftMenu = () => {
         const handleResize = () => {
             setIsMobile(window.innerWidth < MOBILE_BREAKPOINT);
         };
-
         handleResize();
         window.addEventListener("resize", handleResize);
         return () => window.removeEventListener("resize", handleResize);
@@ -89,14 +84,9 @@ const LeftMenu = () => {
 
         const handleClickOutside = (e: MouseEvent) => {
             const target = e.target as HTMLElement;
-
-            // ❗ Ignore menu button click
             if (target.closest("[data-menu-btn]")) return;
 
-            if (
-                sidebarRef.current &&
-                !sidebarRef.current.contains(target)
-            ) {
+            if (sidebarRef.current && !sidebarRef.current.contains(target)) {
                 setIsOpen(false);
             }
         };
@@ -106,32 +96,26 @@ const LeftMenu = () => {
     }, [isOpen]);
 
     useEffect(() => {
-        if (isOpen) {
-            document.body.style.overflow = "hidden";
-        } else {
-            document.body.style.overflow = "";
-        }
-
+        document.body.style.overflow = isOpen ? "hidden" : "";
         return () => {
             document.body.style.overflow = "";
         };
     }, [isOpen]);
 
-    const handleNavClick = () => {
-        setIsOpen(false);
-    };
+    const handleNavClick = () => setIsOpen(false);
 
-
-    /* ---------- WIDTH LOGIC ---------- */
     const SIDEBAR_WIDTH = isMobile ? "w-14" : "w-90";
-
 
     return (
         <>
             {/* MENU BUTTON */}
             <button
                 onClick={() => setIsOpen(!isOpen)}
-                className={`fixed left-2 md:left-3 top-0 z-50 py-2 duration-200 hover:text-brand-red cursor-pointer ${isOpen ? "left-4 top-5" : "top-4"}`}
+                className={cn(
+                    "fixed left-2 md:left-3 top-0 z-50 py-2 duration-200 cursor-pointer",
+                    "text-[var(--foreground)] hover:text-[var(--primary)]",
+                    isOpen ? "left-4 top-5" : "top-3.5"
+                )}
             >
                 {isOpen ? (
                     <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2">
@@ -139,17 +123,15 @@ const LeftMenu = () => {
                         <path d="m6 6 12 12" />
                     </svg>
                 ) : (
-                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2">
-                        <path d="M4 5h16" />
-                        <path d="M4 12h16" />
-                        <path d="M4 19h16" />
-                    </svg>
+                    <TbMenu size={20} />
                 )}
             </button>
 
+            {/* BACKDROP */}
             <div
                 className={cn(
-                    "fixed inset-0 bg-black/30 z-40 transition-opacity duration-300",
+                    "fixed inset-0 z-40 transition-opacity duration-300",
+                    "bg-[var(--earth-charcoal)]/30",
                     isOpen ? "opacity-100 pointer-events-auto" : "opacity-0 pointer-events-none"
                 )}
                 onClick={() => setIsOpen(false)}
@@ -158,25 +140,24 @@ const LeftMenu = () => {
             {/* SIDEBAR */}
             <aside
                 ref={sidebarRef}
-                className={`
-                                    fixed top-0 m-0 -left-px z-40 h-screen py-1
-                                    bg-[#e2dfd6] border border-r-black/20
-                                    ${SIDEBAR_WIDTH}
-
-                                    transform transition-transform duration-300 ease-in-out
-                                    ${isOpen ? "translate-x-0" : "-translate-x-full"}
-                                `}
+                className={cn(
+                    "fixed top-0 m-0 -left-px z-40 h-screen py-1",
+                    "bg-[var(--linen-200)] border-r border-[var(--border-strong)]",
+                    SIDEBAR_WIDTH,
+                    "transform transition-transform duration-300 ease-in-out",
+                    isOpen ? "translate-x-0" : "-translate-x-full"
+                )}
             >
-
                 <nav className="flex flex-col pt-16 h-full min-[551px]:mx-2">
 
-                    {/* ---------- TOP: PRIMARY ---------- */}
+                    {/* ---------- TOP ---------- */}
                     <div className="space-y-1 pt-2">
                         {!isMobile && (
-                            <h2 className="text-center select-none hover:text-brand-red duration-200 mx-1 text-sm tracking-widest font-semibold font-poppins text-neutral-700 mb-1.5">
+                            <h2 className="text-center select-none mx-1 text-sm tracking-widest font-semibold font-poppins text-[var(--primary)] mb-1.5">
                                 The Layer
                             </h2>
                         )}
+
                         {PRIMARY_ITEMS.map((item) => {
                             const active = pathname === item.href;
                             const Icon = item.icon;
@@ -186,38 +167,24 @@ const LeftMenu = () => {
                                     key={item.title}
                                     href={item.href}
                                     onClick={handleNavClick}
-                                    className="relative flex items-center rounded-sm hover:bg-black/5 transition-all"
+                                    className="relative flex items-center rounded-sm hover:bg-[var(--earth-sand)]/50 transition-all"
                                 >
                                     {active && (
-                                        <span className="absolute left-0 top-1/2 -translate-y-1/2 h-6 rounded-l-sm w-1 bg-brand-red" />
+                                        <span className="absolute left-0 top-1/2 -translate-y-1/2 h-6 w-1 bg-[var(--primary)]" />
                                     )}
 
                                     {isMobile ? (
                                         <Icon
                                             size={20}
-                                            className={`m-3 ${active ? "text-brand-red" : "text-slate-700"
-                                                }`}
+                                            className={`m-3 ${active ? "text-[var(--primary)]" : "text-[var(--text-secondary)]"}`}
                                         />
                                     ) : (
-                                        <div
-                                            className={`flex items-center gap-5 mx-1 px-3 py-2 w-full ${active ? "bg-brand-red/5 rounded-sm" : ""
-                                                }`}
-                                        >
+                                        <div className={`flex items-center gap-5 mx-1 px-3 py-2 w-full ${active ? "bg-[var(--primary)]/20 rounded-sm" : ""}`}>
                                             <Icon
                                                 size={20}
-                                                className={
-                                                    active
-                                                        ? "text-brand-red scale-105"
-                                                        : "text-slate-700"
-                                                }
+                                                className={active ? "text-[var(--primary)]" : "text-[var(--text-secondary)]"}
                                             />
-                                            <span
-                                                className={
-                                                    active
-                                                        ? "text-brand-red font-medium"
-                                                        : "text-slate-800"
-                                                }
-                                            >
+                                            <span className={active ? "text-[var(--primary)] font-medium" : "text-[var(--foreground)]"}>
                                                 {item.title}
                                             </span>
                                         </div>
@@ -227,57 +194,58 @@ const LeftMenu = () => {
                         })}
                     </div>
 
-                    {/* ---------- MIDDLE: CATEGORIES ---------- */}
+                    {/* ---------- MIDDLE ---------- */}
                     <div className="mt-4">
                         {!isMobile && (
-                            <h2 className="text-center mx-1 text-sm tracking-widest font-semibold hover:text-brand-red select-none font-poppins text-neutral-700 mb-1.5">
+                            <h2 className="text-center mx-1 text-sm tracking-widest font-semibold font-poppins text-[var(--primary)] mb-1.5">
                                 Trending Layer
                             </h2>
                         )}
 
                         <div className="space-y-1">
                             {categories.slice(0, 5).map((category, i) => {
-                                const active =
-                                    pathname === `/categories/${category.slug}`;
+                                const active = pathname === `/categories/${category.slug}`;
 
                                 return (
                                     <Link
                                         key={category._id}
                                         href={`/categories/${category.slug}`}
                                         onClick={handleNavClick}
-                                        className="relative flex items-center rounded-sm hover:bg-black/5 transition-all"
+                                        className="relative flex items-center rounded-sm transition-all"
                                     >
                                         {active && (
-                                            <span className="absolute rounded-l-sm left-0 top-1/2 -translate-y-1/2 h-6 w-1 bg-brand-red" />
+                                            <span className="absolute left-0 top-1/2 -translate-y-1/2 h-6 w-1 bg-[var(--primary)]" />
                                         )}
 
-                                        <div className={`${active ? "border border-brand-red" : ""} relative mx-1 w-full h-12 min-[551px]:h-14 rounded-md overflow-hidden`}>
+                                        <div className={`${active ? "border border-[var(--primary)]" : ""} relative mx-1 w-full h-12 min-[551px]:h-14 rounded-md overflow-hidden`}>
                                             <Image
                                                 src={category.leftMenuCategoryImage}
                                                 alt={category.name}
                                                 fill
                                                 loading={i === 0 ? "eager" : "lazy"}
-                                                className="object-cover transition-transform duration-300 group-hover:scale-105"
+                                                className="object-cover object-center"
                                             />
-                                            <div className={`${!active ? "absolute inset-0 bg-black/25 hover:bg-transparent transition-all duration-200" : ""}`} />
-                                            <p className="absolute truncate left-0.5 min-[551px]:left-3 bottom-2 text-[10px] min-[551px]:text-sm text-white font-medium">
+                                            {!active && (
+                                                <div className="absolute inset-0 transition-all duration-300 bg-black/25 hover:bg-transparent" />
+                                            )}
+                                            <p className="absolute truncate left-1 min-[551px]:left-3 bottom-2 text-[10px] min-[551px]:text-sm text-[var(--text-inverse)] font-medium">
                                                 {category.name}
                                             </p>
                                         </div>
-
                                     </Link>
                                 );
                             })}
                         </div>
                     </div>
 
-                    {/* ---------- BOTTOM: SECONDARY ---------- */}
-                    <div className=" space-y-1 pb-4 mt-4">
+                    {/* ---------- BOTTOM ---------- */}
+                    <div className="space-y-1 pb-4 mt-4">
                         {!isMobile && (
-                            <h2 className="text-center mx-1 text-sm tracking-widest font-semibold hover:text-brand-red select-none font-poppins text-neutral-700 mb-1.5">
+                            <h2 className="text-center mx-1 text-sm tracking-widest font-semibold font-poppins text-[var(--primary)] mb-1.5">
                                 Social Layer
                             </h2>
                         )}
+
                         {SECONDARY_ITEMS.map((item) => {
                             const active = pathname === item.href;
                             const Icon = item.icon;
@@ -287,35 +255,24 @@ const LeftMenu = () => {
                                     key={item.title}
                                     href={item.href}
                                     onClick={handleNavClick}
-                                    className="relative flex items-center rounded-sm hover:bg-black/5 transition-all"
+                                    className="relative flex items-center rounded-sm hover:bg-[var(--earth-sand)]/50 transition-all"
                                 >
                                     {active && (
-                                        <span className="absolute left-0 rounded-l-sm top-5.5 -translate-y-1/2 h-6 w-1 bg-brand-red" />
+                                        <span className="absolute left-0 top-5.5 -translate-y-1/2 h-6 w-1 bg-[var(--primary)]" />
                                     )}
 
                                     {isMobile ? (
                                         <Icon
                                             size={20}
-                                            className={`m-3 ${active ? "text-brand-red" : "text-slate-700"
-                                                }`}
+                                            className={`m-3 ${active ? "text-[var(--primary)]" : "text-[var(--text-secondary)]"}`}
                                         />
                                     ) : (
-                                        <div className={`flex items-center gap-5 mx-1 px-3 py-2 w-full ${active ? "bg-brand-red/5 rounded-sm" : ""}`}>
+                                        <div className={`flex items-center gap-5 mx-1 px-3 py-2 w-full ${active ? "bg-[var(--primary)]/20 rounded-sm" : ""}`}>
                                             <Icon
                                                 size={20}
-                                                className={
-                                                    active
-                                                        ? "text-brand-red scale-105"
-                                                        : "text-slate-700"
-                                                }
+                                                className={active ? "text-[var(--primary)]" : "text-[var(--text-secondary)]"}
                                             />
-                                            <span
-                                                className={
-                                                    active
-                                                        ? "text-brand-red font-medium"
-                                                        : "text-slate-800"
-                                                }
-                                            >
+                                            <span className={active ? "text-[var(--primary)] font-medium" : "text-[var(--foreground)]"}>
                                                 {item.title}
                                             </span>
                                         </div>

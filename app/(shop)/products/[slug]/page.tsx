@@ -179,12 +179,22 @@ export default function ProductPage() {
     const handleMouseLeave = () => setCursor(prev => ({ ...prev, direction: null }));
     const handleClick = () => { if (cursor.direction === "left") handlePrevImage(); else handleNextImage(); };
 
-    if (loading) return <div className="flex items-center justify-center h-[70vh]"><EvoqueLogoLoader /></div>;
-    if (!product) return <p className="ml-20 text-center font-poppins text-sm tracking-widest font-semibold text-slate-700">Fresh styles coming your way</p>;
+    if (loading)
+        return (
+            <div className="flex items-center justify-center h-[70vh] bg-[var(--background)]">
+                <EvoqueLogoLoader />
+            </div>
+        );
 
+    if (!product)
+        return (
+            <p className="ml-20 text-center font-poppins text-sm tracking-widest font-semibold text-[var(--text-muted)]">
+                Fresh styles coming your way
+            </p>
+        );
     return (
         <Container>
-            <div className="flex md:w-[90%] mx-auto flex-col w-full">
+            <div className="flex md:w-[90%] bg-[var(--linen-100)] mx-auto flex-col w-full pb-14">
                 <div className=" w-full mx-auto lg:flex gap-2 justify-between">
 
                     {/* LEFT: IMAGES */}
@@ -200,11 +210,9 @@ export default function ProductPage() {
                                         key={i}
                                         onClick={() => setActiveImageIndex(i)}
                                         className={`cursor-pointer
-                                                relative w-25 h-25 border transition-all duration-200
-                                                ${isActive
-                                                ? ""
-                                                : "border-slate-300 hover:border-slate-500"}
-                                            `}
+                                                        relative w-25 h-25 border transition-all duration-200
+                                                        ${isActive ? "" : "border-[var(--border)] hover:border-[var(--border-strong)]"}
+                                                        `}
                                         style={
                                             isActive
                                                 ? {
@@ -242,7 +250,7 @@ export default function ProductPage() {
                                     alt={product.productName}
                                     width={800}
                                     height={800}
-                                    className="cursor-none object-[10%_20%] object-cover transition-all duration-300"
+                                    className="cursor-none object-[50%_30%] object-cover transition-all duration-300"
                                 />
                                 {cursor.direction && (
                                     <div className="fixed z-50 pointer-events-none" style={{ left: cursor.x, top: cursor.y, transform: "translate(-50%, -50%)" }}>
@@ -258,24 +266,37 @@ export default function ProductPage() {
                     {/* RIGHT: DETAILS */}
                     <div className="lg:w-4xl w-full flex flex-col p-3 lg:py-7">
                         <div className="flex justify-between items-center">
-                            <h1 className="text-sm md:text-lg font-bold text-slate-700">{product.productName.toUpperCase()}</h1>
-                            <Heart className="hover:bg-brand-red rounded-full cursor-pointer duration-200 border border-black/15 p-1 hover:text-white" />
+                            <h1 className="text-sm md:text-lg font-bold text-[var(--earth-charcoal)]">
+                                {product.productName.toUpperCase()}
+                            </h1>
+                            <Heart className="
+                                    rounded-full cursor-pointer duration-200
+                                    border border-[var(--border)]
+                                    p-1
+                                    hover:bg-[var(--primary)]
+                                    hover:text-[var(--primary-foreground)]
+                                    "/>
                         </div>
 
                         <div className="flex gap-3 items-center justify-between">
-                            <div className="flex justify-center items-center gap-3 my-1.5">
-                                <span className="text-brand-red text-lg font-semibold">₹ {activeVariant?.pricing?.price}</span>
-                                <span className="font-semibold text-[12px] text-[#5a5858] line-through decoration-red-500">{activeVariant?.pricing?.originalPrice}</span>
+                            <div className="flex items-center gap-3 my-1.5">
+                                <span className="text-[var(--primary)] text-lg font-semibold">
+                                    ₹ {activeVariant?.pricing?.price}
+                                </span>
+                                <span className="font-semibold text-[12px] text-[var(--text-muted)] line-through">{activeVariant?.pricing?.originalPrice}</span>
                             </div>
-                            <div><span className="text-white text-[10px] bg-brand-red p-1 font-semibold rounded-sm">- {product.pricing.discountPercentage}%</span></div>
+                            <span className="text-white text-[10px] bg-[oklch(0.55_0.04_75)] p-1 font-semibold rounded-[3px]">
+                                - {product.pricing.discountPercentage}%
+                            </span>
                         </div>
 
-                        <div><span className="text-[10px] font-semibold text-text-[#5a5858]">SKU: {product.sku}</span></div>
+                        <div><span className="text-[10px] font-semibold text-[var(--text-secondary)]">
+                            SKU: {product.sku}</span>
+                        </div>
 
                         {/* COLORS */}
                         <div className="py-2 flex flex-col">
-                            <h1 className="font-extrabold mb-1 text-slate-700">Colors</h1>
-
+                            <h1 className="font-extrabold mb-1 text-[var(--foreground)]">Colors</h1>
                             <div className="flex flex-row flex-nowrap items-center gap-2 w-full overflow-x-auto scrollbar-hide">
                                 {colorVariants.map((color) => {
                                     const isActive = selectedColor === color.slug;
@@ -287,7 +308,7 @@ export default function ProductPage() {
                                                 setSelectedColor(color.slug);
                                                 router.replace(`/products/${product.slug}?color=${color.slug}`, { scroll: false });
                                             }}
-                                            className={`shrink-0 cursor-pointer border ${isActive ? "" : "border-gray-300 hover:border-gray-500"
+                                            className={`rounded-[3px] shrink-0 cursor-pointer border ${isActive ? "" : "border-[var(--border)] hover:border-[var(--border-strong)]"
                                                 }`}
                                             style={
                                                 isActive
@@ -300,8 +321,10 @@ export default function ProductPage() {
                                             }
                                         >
                                             <div className="w-18 h-31.5 flex flex-col justify-between items-center">
-                                                <Image src={color.image} className="object-cover h-full w-full" alt={color.name} width={70} height={70} />
-                                                <span className="text-[10px] block text-center py-0.5">{color.name}</span>
+                                                <Image src={color.image} className="rounded-[3px] object-cover h-full w-full" alt={color.name} width={70} height={70} />
+                                                <span className="text-[10px] text-[var(--text-secondary)]">
+                                                    {color.name}
+                                                </span>
                                             </div>
                                         </button>
                                     );
@@ -312,7 +335,10 @@ export default function ProductPage() {
 
                         {/* SIZES */}
                         <div className="py-2">
-                            <h3 className="font-bold mb-1 text-slate-700">{product.category.slug === "jeans" ? "Choose Waist" : "Select Size"}</h3>
+                            <h3 className="font-bold mb-1 text-[var(--foreground)]">
+                                {product.category.slug === "jeans" ? "Choose Waist" : "Select Size"}
+                            </h3>
+
                             <div className="flex flex-row flex-nowrap items-center gap-2 w-full overflow-x-auto scrollbar-hide">
                                 {sizes.map(s => {
                                     const isActive = selectedSize?.variantSku === s.variant?.variantSku;
@@ -322,48 +348,127 @@ export default function ProductPage() {
                                         <button
                                             key={s.size}
                                             disabled={disabled}
-                                            onClick={() => s.variant && setSelectedSize(s.variant)} // ✅ Use original SizeVariant
-                                            className={`border border-black/15 px-3 py-1 text-sm font-bold cursor-pointer ${disabled ? "opacity-40 line-through cursor-not-allowed" : isActive ? "bg-black text-white" : "text-[#5a5858]"}`}
+                                            onClick={() => s.variant && setSelectedSize(s.variant)}
+                                            className={`
+                                                    relative
+                                                    border
+                                                    px-3 py-1
+                                                    text-sm font-bold
+                                                    cursor-pointer
+                                                    transition-colors duration-200 rounded-[3px]
+
+                                                ${disabled
+                                                    ? "opacity-40 line-through cursor-not-allowed border-[var(--border)] text-[var(--linen-800)]"
+                                                    : isActive
+                                                        ? "bg-[var(--primary)] text-[var(--primary-foreground)] border-[var(--primary)]"
+                                                        : "border-[var(--border)] text-[var(--text-secondary)] hover:border-[var(--primary)]"
+                                                }
+                                           `}
                                         >
                                             {s.size}
+
                                             {s.exists && !s.inStock && (
-                                                <span className="absolute inset-0 flex items-center justify-center">
-                                                    <span className="w-full h-px bg-black -rotate-12" />
+                                                <span className="absolute inset-0 flex items-center justify-center pointer-events-none">
+                                                    <span className="w-full h-px bg-[var(--primary)] -rotate-12" />
                                                 </span>
                                             )}
                                         </button>
                                     );
                                 })}
-
                             </div>
                         </div>
 
+
                         {/* ADD TO CART */}
                         <div className="flex justify-between gap-2 text-sm w-full my-4">
-                            <button className="cursor-pointer w-full rounded-[5px] bg-black/80 text-white font-bold p-3">ADD TO BAG</button>
-                            <button className="cursor-pointer w-full rounded-[5px] bg-brand-red text-white font-bold p-3">BUY NOW</button>
+                            <button
+                                className="
+                                    cursor-pointer
+                                    w-full
+                                    rounded-[3px]
+                                    p-3
+                                    font-bold
+                                    transition-colors duration-200
+
+                                    hover:bg-[var(--btn-primary-bg)]
+                                    text-[var(--btn-primary-text)]
+                                    bg-[var(--btn-primary-hover)]
+                                "
+                            >
+                                ADD TO BAG
+                            </button>
+
+                            <button
+                                className="
+                                                cursor-pointer
+                                                w-full
+                                                rounded-[3px]
+                                                p-3
+                                                font-bold
+                                                transition-colors duration-200
+
+                                                hover:bg-[var(--accent)]/90
+                                                text-[var(--accent-foreground)]
+                                                bg-[var(--earth-clay)]
+                                            "
+                            >
+                                BUY NOW
+                            </button>
                         </div>
+
 
                         {/* ACCORDION */}
                         <div className="max-h-75 overflow-y-auto scrollbar-hide my-4">
-                            <Accordion type="single" collapsible className="border border-black/15 p-2">
+                            <Accordion
+                                type="single"
+                                collapsible
+                                className="
+                                        border
+                                        border border-[var(--border)]
+                                        
+                                        p-2
+                                        rounded-sm
+                                    "
+                            >
                                 {product.description && (
                                     <AccordionItem value="description">
-                                        <AccordionTrigger className="text-slate-700 font-semibold">Description</AccordionTrigger>
+                                        <AccordionTrigger
+                                            className="
+                                                    text-[var(--foreground)]
+                                                    font-semibold
+                                                    hover:text-[var(--primary)]
+                                                "
+                                        >
+                                            Description
+                                        </AccordionTrigger>
                                         <AccordionContent>
-                                            <p className="text-sm text-gray-700 leading-relaxed">{product.description}</p>
+                                            <p className="text-sm text-[var(--text-secondary)] leading-relaxed">
+                                                {product.description}
+                                            </p>
                                         </AccordionContent>
                                     </AccordionItem>
                                 )}
 
                                 <AccordionItem value="productDetails">
-                                    <AccordionTrigger className="text-slate-700 font-semibold">Product Details</AccordionTrigger>
+                                    <AccordionTrigger
+                                        className="
+                                                text-[var(--foreground)]
+                                                    font-semibold
+                                                    hover:text-[var(--primary)]
+                                            "
+                                    >
+                                        Product Details
+                                    </AccordionTrigger>
                                     <AccordionContent>
-                                        <ul className="text-sm text-gray-700 space-y-2">
+                                        <ul className="text-sm text-[var(--text-secondary)] space-y-2">
                                             {Object.entries(product.details).map(([key, value]) => (
                                                 <li key={key} className="flex gap-2">
-                                                    <span className="font-semibold min-w-30">{DETAILS_LABELS[key as keyof Product["details"]]}</span>
-                                                    <span>{Array.isArray(value) ? value.join(", ") : value}</span>
+                                                    <span className="font-semibold min-w-30 text-[var(--foreground)]">
+                                                        {DETAILS_LABELS[key as keyof Product["details"]]}
+                                                    </span>
+                                                    <span>
+                                                        {Array.isArray(value) ? value.join(", ") : value}
+                                                    </span>
                                                 </li>
                                             ))}
                                         </ul>
@@ -371,16 +476,36 @@ export default function ProductPage() {
                                 </AccordionItem>
 
                                 <AccordionItem value="returns">
-                                    <AccordionTrigger className="text-slate-700 font-semibold">Returns and Exchange</AccordionTrigger>
+                                    <AccordionTrigger
+                                        className="
+                                                text-[var(--foreground)]
+                                                    font-semibold
+                                                    hover:text-[var(--primary)]
+                                            "
+                                    >
+                                        Returns and Exchange
+                                    </AccordionTrigger>
                                     <AccordionContent>
-                                        <p className="text-sm text-gray-700">Standard returns and exchange policies apply.</p>
+                                        <p className="text-sm text-[var(--text-secondary)]">
+                                            Standard returns and exchange policies apply.
+                                        </p>
                                     </AccordionContent>
                                 </AccordionItem>
 
                                 <AccordionItem value="offers">
-                                    <AccordionTrigger className="text-slate-700 font-semibold">Exclusive Offers</AccordionTrigger>
+                                    <AccordionTrigger
+                                        className="
+                                                text-[var(--foreground)]
+                                                    font-semibold
+                                                    hover:text-[var(--primary)]
+                                            "
+                                    >
+                                        Exclusive Offers
+                                    </AccordionTrigger>
                                     <AccordionContent>
-                                        <p className="text-sm text-gray-700">Check for current discounts and deals.</p>
+                                        <p className="text-sm text-[var(--text-secondary)]">
+                                            Check for current discounts and deals.
+                                        </p>
                                     </AccordionContent>
                                 </AccordionItem>
                             </Accordion>

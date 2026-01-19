@@ -13,6 +13,7 @@ const WishList = () => {
         state.wishlist.items.length;
     const count = useAppSelector(selectWishlistCount);
 
+
     return (
         <Link
             href="/wishlist"
@@ -22,15 +23,16 @@ const WishList = () => {
             <span
                 key={count}
                 className="
-                            absolute -top-1.5 -right-1.5
-                            min-w-[14px] h-[14px]
-                            px-1
+                            absolute -top-2 -right-1.5
+                            min-w-[12px] h-[13px]
+                            p-0.75
                             flex items-center justify-center
                             rounded-full
                             bg-brand-red
                             text-white
-                            text-[10px]
-                            font-semibold
+                            bg-[var(--primary)]
+                            text-[8px]
+                            font-extrabold
                             animate-scale-in
                         "
             >
@@ -40,10 +42,11 @@ const WishList = () => {
             <HeartIcon
                 size={20}
                 strokeWidth={2.2}
-                className={`
-                            transition-colors duration-200
-                            ${active ? "text-brand-red" : "text-slate-800"}
-                            group-hover:text-brand-red
+                className={`text-[var(--foreground)]
+                                hover:text-[var(--primary)]
+                                transition-colors duration-200                          
+                            ${active ? "text-[var(--primary)]" : "text-[var(--foreground)]"}
+                            group-hover:text-[var(--primary)]
                         `}
             />
         </Link>
