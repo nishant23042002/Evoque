@@ -12,7 +12,7 @@ import { SlidersHorizontal } from 'lucide-react'
 import { toggleWishlist } from "@/store/wishlist/wishlist.slice";
 import { useAppDispatch, useAppSelector } from "@/store/hooks";
 import { RootState } from "@/store";
-
+import LayerLogoLoader from "../FlashLogo/LayerLogo"
 
 const Masonry = dynamic(() => import("react-masonry-css"), { ssr: false });
 
@@ -97,6 +97,7 @@ export default function ProductMasonryGrid({
     const [hoverVariants, setHoverVariants] = useState<Record<string, Variant>>(
         {}
     );
+    const [isLoading, setIsLoading] = useState(false)
     const [isFilterOpen, setIsFilterOpen] = useState(false);
     const [activeCategory, setActiveCategory] = useState<string>("all");
     const [transitioningProduct, setTransitioningProduct] = useState<string | null>(null);
@@ -171,6 +172,14 @@ export default function ProductMasonryGrid({
             <p className="flex items-center justify-center h-[40vh] text-sm font-semibold text-[var(--text-secondary)]">
                 No products found in this category
             </p>
+        );
+    }
+
+    if (isLoading) {
+        return (
+            <div className="flex flex-nowrap items-center justify-center h-[70vh]">
+                <LayerLogoLoader />
+            </div>
         );
     }
 
@@ -278,7 +287,7 @@ export default function ProductMasonryGrid({
                         return (
                             <div key={item._id}>
                                 <div
-                                    className="border border-[var(--border-strong)]
+                                    className="border border-[var(--border-light)]
                                         relative mb-2 md:mb-4
                                         drop-shadow-xs
                                         fade-in-75
@@ -398,13 +407,13 @@ export default function ProductMasonryGrid({
                                         )}
                                     </button>
 
-                                   
+
                                     {/* DETAILS */}
                                     <div
                                         className={`
                                                 absolute inset-0 max-md:bottom-6
                                                 flex flex-col justify-end text-white
-                                                transition-all duration-300 ease-out
+                                                transition-transform duration-700 ease-out
 
                                                 md:opacity-0 md:translate-y-0
                                                 md:group-hover:opacity-100
@@ -414,7 +423,14 @@ export default function ProductMasonryGrid({
                                                 : "opacity-0 translate-y-6 pointer-events-none"}
                                         `}
                                     >
-                                        <div className="bg-[var(--earth-charcoal)]/40 backdrop-blur-xs transition-all duration-300 px-2 py-3 text-xs text-[var(--text-inverse)]">
+                                        <div className="
+                                                bg-[var(--earth-charcoal)]/40
+                                                backdrop-blur-xs
+                                                px-2 py-3
+                                                text-xs
+                                                text-[var(--text-inverse)]
+                                                will-change-transform
+                                            ">
                                             <p className="font-semibold">{item.brand}</p>
 
                                             <p className="my-1">{item.productName}</p>

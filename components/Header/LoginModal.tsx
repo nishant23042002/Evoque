@@ -11,6 +11,11 @@ interface LoginModalUIProps {
 export default function LoginModalUI({ open, onClose }: LoginModalUIProps) {
     const sliderRef = useRef<HTMLDivElement | null>(null);
     const [activeIndex, setActiveIndex] = useState(0);
+
+    const [step, setStep] = useState<"mobile" | "otp">("mobile");
+    const [mobile, setMobile] = useState("");
+    const [otp, setOtp] = useState("");
+    const [loading, setLoading] = useState(false);
     const SLIDES_COUNT = 3;
 
     useEffect(() => {
@@ -32,6 +37,50 @@ export default function LoginModalUI({ open, onClose }: LoginModalUIProps) {
     }, [open]);
 
     if (!open) return null;
+
+    const sendOtp = async () => {
+        if (mobile.length !== 10) return alert("Enter valid mobile number");
+
+        try {
+            setLoading(true);
+
+            await fetch("/api/auth/send-otp", {
+                method: "POST",
+                headers: {
+                    "authorization": "89odhN3XyvoTzRYLc7OYihR3Zvd6jZ24fuTmmtXezVc8LBpYxslSTCUpkxTN",
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify({ mobile }),
+            });
+
+            setStep("otp");
+        } catch {
+            alert("Failed to send OTP");
+        } finally {
+            setLoading(false);
+        }
+    };
+    const verifyOtp = async () => {
+        if (otp.length !== 6) return alert("Enter valid OTP");
+
+        try {
+            setLoading(true);
+
+            const res = await fetch("/api/auth/verify-otp", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ mobile, otp }),
+            });
+
+            if (!res.ok) throw new Error();
+
+            onClose(); // Logged in 🎉
+        } catch {
+            alert("Invalid OTP");
+        } finally {
+            setLoading(false);
+        }
+    };
 
     return (
         <div className="fixed inset-0 z-9999 flex items-center justify-center select-none">
@@ -119,11 +168,10 @@ export default function LoginModalUI({ open, onClose }: LoginModalUIProps) {
                                 {[0, 1, 2].map(i => (
                                     <span
                                         key={i}
-                                        className={`h-1.5 w-1.5 rounded-full transition-all ${
-                                            activeIndex === i
-                                                ? "bg-[var(--text-inverse)]"
-                                                : "bg-[rgba(255,255,255,0.4)]"
-                                        }`}
+                                        className={`h-1.5 w-1.5 rounded-full transition-all ${activeIndex === i
+                                            ? "bg-[var(--text-inverse)]"
+                                            : "bg-[rgba(255,255,255,0.4)]"
+                                            }`}
                                     />
                                 ))}
                             </div>
@@ -132,34 +180,79 @@ export default function LoginModalUI({ open, onClose }: LoginModalUIProps) {
 
                     {/* RIGHT */}
                     <div className="bg-[var(--surface)] p-5 flex flex-col justify-center">
-                        <h3 className="text-lg text-[var(--foreground)] font-semibold mb-3 text-center">
-                            Enter Mobile Number
-                        </h3>
+                        {step === "mobile" ? (
+                            <>
+                                <h3 className="text-lg font-semibold mb-4 text-center">
+                                    Login with WhatsApp
+                                </h3>
 
-                        <div className="flex items-center gap-2 border border-[var(--border)] rounded-md px-2 py-2 mb-5 bg-[var(--surface-muted)]">
-                            <div className="flex flex-col items-center justify-center rounded-md relative">
-                                <span className="text-sm font-medium">🇮🇳</span>
-                                <p className="text-xs font-bold text-[var(--foreground)]">
-                                    +91
+                                <div className="relative flex gap-2 border rounded-[3px] p-1 mb-5">
+                                    <span className="text-sm font-extraboldbold z-99"><span className="font-bold text-[var(--secondory)]">🇮🇳</span> +91</span>
+                                    <input
+                                        value={mobile}
+                                        onChange={e => setMobile(e.target.value.replace(/\D/g, ""))}
+                                        maxLength={10}
+                                        placeholder="Enter Mobile Number"
+                                        className="w-full outline-none text-center"
+                                    />
+
+                                    <span className="absolute bottom-9 w-5 h-1 bg-orange-700"></span>
+                                    <span className="absolute bottom-8 w-5 h-1 bg-white"></span>
+                                    <span className="absolute bottom-7 w-5 h-1 bg-green-700"></span>
+                                </div>
+
+                                <button
+                                    onClick={sendOtp}
+                                    disabled={loading}
+                                    className="
+                                                    w-full rounded-[3px] py-3 text-sm cursor-pointer
+                                                    bg-[var(--primary)]
+                                                    text-[var(--primary-foreground)]
+                                                    hover:bg-[var(--btn-primary-hover)]
+                                                    transition-colors
+                                                "
+                                >
+                                    {loading ? "Sending OTP..." : "Continue"}
+                                </button>
+                            </>
+                        ) : (
+                            <>
+                                <h3 className="text-lg font-semibold mb-4 text-center">
+                                    Enter OTP
+                                </h3>
+
+                                <input
+                                    value={otp}
+                                    onChange={e => setOtp(e.target.value.replace(/\D/g, ""))}
+                                    maxLength={6}
+                                    placeholder="6-digit OTP"
+                                    className="border rounded-[3px] p-3 text-center tracking-widest mb-4"
+                                />
+
+                                <button
+                                    onClick={verifyOtp}
+                                    disabled={loading}
+                                    className="
+                                                    w-full rounded-[3px] py-3 text-sm cursor-pointer
+                                                    bg-[var(--primary)]
+                                                    text-[var(--primary-foreground)]
+                                                    hover:bg-[var(--btn-primary-hover)]
+                                                    transition-colors
+                                                "
+                                >
+                                    {loading ? "Verifying..." : "Verify OTP"}
+                                </button>
+
+                                <p
+                                    onClick={sendOtp}
+                                    className="text-xs text-center underline cursor-pointer mt-4"
+                                >
+                                    Resend OTP
                                 </p>
-                            </div>
+                            </>
+                        )}
 
-                            <input
-                                type="tel"
-                                maxLength={12}
-                                placeholder="Enter Mobile Number"
-                                className="
-                                    w-full p-3 rounded-sm outline-none text-sm
-                                    bg-transparent
-                                    border border-[var(--input-border)]
-                                    text-[var(--foreground)]
-                                    placeholder:text-[var(--input-placeholder)]
-                                    focus:border-[var(--input-focus)]
-                                "
-                            />
-                        </div>
-
-                        <label className="flex items-center gap-2 text-xs text-[var(--text-secondary)] mb-6">
+                        <label className="flex items-center gap-2 py-2 text-xs text-[var(--text-secondary)] mb-6">
                             <input
                                 type="checkbox"
                                 className="accent-[var(--primary)] cursor-pointer"
@@ -167,19 +260,8 @@ export default function LoginModalUI({ open, onClose }: LoginModalUIProps) {
                             Notify me for updates & offers
                         </label>
 
-                        <button
-                            className="
-                                w-full rounded-md py-3 text-sm cursor-pointer
-                                bg-[var(--primary)]
-                                text-[var(--primary-foreground)]
-                                hover:bg-[var(--btn-primary-hover)]
-                                transition-colors
-                            "
-                        >
-                            CONTINUE
-                        </button>
 
-                        <p className="mt-4 text-[11px] text-[var(--text-muted)] text-center">
+                        <p className="text-[11px] text-[var(--text-muted)] text-center">
                             By continuing, you agree to our{" "}
                             <span className="underline cursor-pointer">Privacy Policy</span>{" "}
                             &{" "}

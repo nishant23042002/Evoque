@@ -226,7 +226,7 @@ const SearchBar = () => {
             placeholder="Search shirts, fabric, style..."
             className="
               w-full px-3 py-1.25 rounded-[3px]
-              bg-[var(--input-bg)]
+              bg-[var(--linen-100)]
               border border-[var(--input-border)]
               text-[var(--foreground)]
               placeholder:text-[var(--input-placeholder)]

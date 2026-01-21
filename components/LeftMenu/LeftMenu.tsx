@@ -217,7 +217,7 @@ const LeftMenu = () => {
                                             <span className="absolute left-0 top-1/2 -translate-y-1/2 h-6 w-1 bg-[var(--primary)]" />
                                         )}
 
-                                        <div className={`${active ? "border border-[var(--primary)]" : ""} relative mx-1 w-full h-12 min-[551px]:h-14 rounded-md overflow-hidden`}>
+                                        <div className={`shadow-xs border border-[var(--border-strong)] ${active ? "border border-[var(--primary)]" : ""} relative mx-1 w-full h-12 min-[551px]:h-14 rounded-md overflow-hidden`}>
                                             <Image
                                                 src={category.leftMenuCategoryImage}
                                                 alt={category.name}

@@ -5,7 +5,7 @@ import { Star } from "lucide-react";
 
 interface RatingBarProps {
   value?: number;
-  max?: number
+  max?: number;
 }
 
 export default function RatingBar({
@@ -17,38 +17,45 @@ export default function RatingBar({
   const percent = Math.min(100, Math.max(0, (value / max) * 100));
 
   useEffect(() => {
-    const t = setTimeout(() => setProgress(percent), 120);
+    const t = setTimeout(() => setProgress(percent), 160);
     return () => clearTimeout(t);
   }, [percent]);
 
-  const tone =
-    value >= 4.3 ? "good" : value >= 3.6 ? "mid" : "low";
-
-  const gradient =
-    tone === "good"
-      ? "from-emerald-400 to-emerald-500"
-      : tone === "mid"
-        ? "from-amber-300 to-amber-400"
-        : "from-rose-400 to-rose-500";
-
   return (
-    <div className="mt-2 space-y-1">
-      {/* Top row */}
-      <div className="flex items-center gap-1 text-[11px] text-white/90">
-        <Star size={16} className="fill-yellow-400 stroke-yellow-400" />
-        <span className="font-medium pt-1">{value.toFixed(1)}</span>
-        <span className="opacity-60 pt-1">/ {max}</span>
+    <div className="mt-2 space-y-2">
+      {/* TOP ROW */}
+      <div className="flex items-center gap-2">
+        <Star
+          size={14}
+          className="fill-[var(--linen-400)] stroke-[var(--primary)]"
+        />
+
+        <span className="text-[12px] font-semibold text-[var(--text-inverse)]">
+          {value.toFixed(1)}
+        </span>
+
+        <span className="text-[11px] text-[var(--linen-200)]">
+          / {max}
+        </span>
       </div>
 
-      {/* Bar */}
-      <div className="relative h-1 w-full rounded-full bg-white/20 overflow-hidden">
+      {/* LINEN BAR */}
+      <div className="relative h-[6px] w-full rounded-full bg-[var(--linen-200)] overflow-hidden">
         <div
-          className={`absolute left-0 top-0 h-full rounded-full
-          bg-linear-to-r ${gradient}
-          transition-[width] duration-700 ease-out`}
+          className="
+            absolute left-0 top-0 h-full
+            rounded-full
+            bg-[var(--primary)]
+            transition-[width] duration-700 ease-[cubic-bezier(0.22,1,0.36,1)]
+          "
           style={{ width: `${progress}%` }}
         />
       </div>
+
+      {/* MICRO LABEL */}
+      <p className="text-[8px] tracking-wide font-medium uppercase text-[var(--secondary)]">
+        Customer Rating
+      </p>
     </div>
   );
 }
