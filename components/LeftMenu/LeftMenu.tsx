@@ -142,7 +142,7 @@ const LeftMenu = () => {
                 ref={sidebarRef}
                 className={cn(
                     "fixed top-0 m-0 -left-px z-40 h-screen py-1",
-                    "bg-[var(--linen-200)] border-r border-[var(--border-strong)]",
+                    "bg-(--linen-200) border-r border-(--border-strong)",
                     SIDEBAR_WIDTH,
                     "transform transition-transform duration-300 ease-in-out",
                     isOpen ? "translate-x-0" : "-translate-x-full"
@@ -153,7 +153,7 @@ const LeftMenu = () => {
                     {/* ---------- TOP ---------- */}
                     <div className="space-y-1 pt-2">
                         {!isMobile && (
-                            <h2 className="text-center select-none mx-1 text-sm tracking-widest font-semibold font-poppins text-[var(--primary)] mb-1.5">
+                            <h2 className="text-center select-none mx-1 text-sm tracking-widest font-semibold font-poppins text-primary mb-1.5">
                                 The Layer
                             </h2>
                         )}
@@ -167,10 +167,10 @@ const LeftMenu = () => {
                                     key={item.title}
                                     href={item.href}
                                     onClick={handleNavClick}
-                                    className="relative flex items-center rounded-sm hover:bg-[var(--earth-sand)]/50 transition-all"
+                                    className="relative flex items-center rounded-sm hover:bg-(--earth-sand)/50 transition-all"
                                 >
                                     {active && (
-                                        <span className="absolute left-0 top-1/2 -translate-y-1/2 h-6 w-1 bg-[var(--primary)]" />
+                                        <span className="absolute left-0 top-1/2 -translate-y-1/2 h-6 w-1 bg-primary" />
                                     )}
 
                                     {isMobile ? (
@@ -179,12 +179,12 @@ const LeftMenu = () => {
                                             className={`m-3 ${active ? "text-[var(--primary)]" : "text-[var(--text-secondary)]"}`}
                                         />
                                     ) : (
-                                        <div className={`flex items-center gap-5 mx-1 px-3 py-2 w-full ${active ? "bg-[var(--primary)]/20 rounded-sm" : ""}`}>
+                                        <div className={`flex items-center gap-5 mx-1 px-3 py-2 w-full ${active ? "bg-(--primary)/20 rounded-sm" : ""}`}>
                                             <Icon
                                                 size={20}
-                                                className={active ? "text-[var(--primary)]" : "text-[var(--text-secondary)]"}
+                                                className={active ? "text-primary" : "text-(--text-secondary)"}
                                             />
-                                            <span className={active ? "text-[var(--primary)] font-medium" : "text-[var(--foreground)]"}>
+                                            <span className={active ? "text-primary font-medium" : "text-foreground"}>
                                                 {item.title}
                                             </span>
                                         </div>
@@ -197,7 +197,7 @@ const LeftMenu = () => {
                     {/* ---------- MIDDLE ---------- */}
                     <div className="mt-4">
                         {!isMobile && (
-                            <h2 className="text-center mx-1 text-sm tracking-widest font-semibold font-poppins text-[var(--primary)] mb-1.5">
+                            <h2 className="text-center mx-1 text-sm tracking-widest font-semibold font-poppins text-primary mb-1.5">
                                 Trending Layer
                             </h2>
                         )}
@@ -214,10 +214,10 @@ const LeftMenu = () => {
                                         className="relative flex items-center rounded-sm transition-all"
                                     >
                                         {active && (
-                                            <span className="absolute left-0 top-1/2 -translate-y-1/2 h-6 w-1 bg-[var(--primary)]" />
+                                            <span className="absolute left-0 top-1/2 -translate-y-1/2 h-6 w-1 bg-primary" />
                                         )}
 
-                                        <div className={`shadow-xs border border-[var(--border-strong)] ${active ? "border border-[var(--primary)]" : ""} relative mx-1 w-full h-12 min-[551px]:h-14 rounded-md overflow-hidden`}>
+                                        <div className={`shadow-xs border border-(--border-strong) ${active ? "border border-primary" : ""} relative mx-1 w-full h-12 min-[551px]:h-14 rounded-md overflow-hidden`}>
                                             <Image
                                                 src={category.leftMenuCategoryImage}
                                                 alt={category.name}
@@ -228,7 +228,7 @@ const LeftMenu = () => {
                                             {!active && (
                                                 <div className="absolute inset-0 transition-all duration-300 bg-black/25 hover:bg-transparent" />
                                             )}
-                                            <p className="absolute truncate left-1 min-[551px]:left-3 bottom-2 text-[10px] min-[551px]:text-sm text-[var(--text-inverse)] font-medium">
+                                            <p className="absolute truncate left-1 min-[551px]:left-3 bottom-2 text-[10px] min-[551px]:text-sm text-(--text-inverse) font-medium">
                                                 {category.name}
                                             </p>
                                         </div>
@@ -241,7 +241,7 @@ const LeftMenu = () => {
                     {/* ---------- BOTTOM ---------- */}
                     <div className="space-y-1 pb-4 mt-4">
                         {!isMobile && (
-                            <h2 className="text-center mx-1 text-sm tracking-widest font-semibold font-poppins text-[var(--primary)] mb-1.5">
+                            <h2 className="text-center mx-1 text-sm tracking-widest font-semibold font-poppins text-primary mb-1.5">
                                 Social Layer
                             </h2>
                         )}
@@ -255,24 +255,24 @@ const LeftMenu = () => {
                                     key={item.title}
                                     href={item.href}
                                     onClick={handleNavClick}
-                                    className="relative flex items-center rounded-sm hover:bg-[var(--earth-sand)]/50 transition-all"
+                                    className="relative flex items-center rounded-sm hover:bg-(--earth-sand)/50 transition-all"
                                 >
                                     {active && (
-                                        <span className="absolute left-0 top-5.5 -translate-y-1/2 h-6 w-1 bg-[var(--primary)]" />
+                                        <span className="absolute left-0 top-5.5 -translate-y-1/2 h-6 w-1 bg-primary" />
                                     )}
 
                                     {isMobile ? (
                                         <Icon
                                             size={20}
-                                            className={`m-3 ${active ? "text-[var(--primary)]" : "text-[var(--text-secondary)]"}`}
+                                            className={`m-3 ${active ? "text-primary" : "text-(--text-secondary)"}`}
                                         />
                                     ) : (
-                                        <div className={`flex items-center gap-5 mx-1 px-3 py-2 w-full ${active ? "bg-[var(--primary)]/20 rounded-sm" : ""}`}>
+                                        <div className={`flex items-center gap-5 mx-1 px-3 py-2 w-full ${active ? "bg-(--primary)/20 rounded-sm" : ""}`}>
                                             <Icon
                                                 size={20}
-                                                className={active ? "text-[var(--primary)]" : "text-[var(--text-secondary)]"}
+                                                className={active ? "text-primary" : "text-(--text-secondary)"}
                                             />
-                                            <span className={active ? "text-[var(--primary)] font-medium" : "text-[var(--foreground)]"}>
+                                            <span className={active ? "text-primary font-medium" : "text-foreground"}>
                                                 {item.title}
                                             </span>
                                         </div>

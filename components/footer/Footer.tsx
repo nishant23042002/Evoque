@@ -3,7 +3,7 @@ import { CiLinkedin, CiInstagram } from "react-icons/ci";
 export default function Footer() {
     return (
         <footer>
-            <div className="relative bg-[var(--linen-900)] text-[var(--linen-200)] overflow-hidden">
+            <div className="relative bg-(--linen-900) text-(--linen-200) overflow-hidden">
 
                 {/* MAIN GRID */}
                 <div
@@ -18,8 +18,8 @@ export default function Footer() {
                 >
                     {/* BRAND / PHILOSOPHY */}
                     <div className="space-y-6">
-                        <p className="text-sm leading-relaxed text-[var(--text-muted)] max-w-sm">
-                            <span className="block mb-2 text-xs uppercase font-serif tracking-wider text-[var(--earth-clay)]">
+                        <p className="text-sm leading-relaxed text-(--text-linen-300) max-w-sm">
+                            <span className="block mb-2 text-xs uppercase font-serif tracking-wider text-(--earth-clay)">
                                 The Layer Co.
                             </span>
                             A modern menswear label focused on restraint, proportion,
@@ -27,10 +27,10 @@ export default function Footer() {
                             piece is built for everyday wear beyond trends.
                         </p>
 
-                        <div className="text-sm space-y-1 text-[var(--muted-foreground)]">
+                        <div className="text-sm space-y-1 text-(--linen-200)">
                             <a
                                 href="https://thelayerco.co.in/"
-                                className="hover:text-[var(--linen-100)] transition"
+                                className="hover:text-(--linen-400)/30 transition"
                             >
                                 thelayerco.co.in
                             </a>
@@ -41,8 +41,8 @@ export default function Footer() {
                     </div>
 
                     {/* PRIMARY NAV */}
-                    <nav className="flex flex-col gap-4 text-sm">
-                        <span className="text-xs uppercase font-serif tracking-wider text-[var(--earth-clay)]">
+                    <nav className="flex flex-col text-sm">
+                        <span className="text-xs uppercase font-serif tracking-wider text-(--earth-clay)">
                             The Layer
                         </span>
 
@@ -53,18 +53,32 @@ export default function Footer() {
                             "About Us",
                             "Contact",
                         ].map((item) => (
-                            <p
-                                key={item}
-                                className="cursor-pointer text-[var(--linen-50)]/50 hover:text-[var(--linen-200)] transition"
-                            >
-                                {item}
-                            </p>
+                            <div key={item} className="relative mb-2 group w-fit">
+                                <p
+                                    className="cursor-pointer text-(--linen-100) hover:text-(--linen-200)/50 transition"
+                                >
+                                    {item}
+                                </p>
+
+                                <span
+                                    className="
+                                        absolute left-0 bottom-0.5
+                                        h-0.5
+                                        w-1/2
+                                        bg-(--earth-clay)
+                                        scale-x-0
+                                        origin-left
+                                        transition-transform duration-500 ease-out
+                                        group-hover:scale-x-100
+                                    "
+                                />
+                            </div>
                         ))}
                     </nav>
 
                     {/* CATEGORY NAV */}
                     <div className="space-y-4">
-                        <span className="text-xs uppercase font-serif tracking-wider text-[var(--earth-clay)]">
+                        <span className="text-xs uppercase font-serif tracking-wider text-(--earth-clay)">
                             The Wardrobe
                         </span>
 
@@ -85,12 +99,25 @@ export default function Footer() {
                                 "Sweatshirts",
                                 "Accessories",
                             ].map((item) => (
-                                <p
-                                    key={item}
-                                    className="cursor-pointer text-[var(--linen-50)]/60 hover:text-[var(--linen-200)] transition"
-                                >
-                                    {item}
-                                </p>
+                                <div className="relative group w-fit" key={item}>
+                                    <p
+                                        className="cursor-pointer text-(--linen-100) hover:text-(--linen-200)/50 transition"
+                                    >
+                                        {item}
+                                    </p>
+                                    <span
+                                        className="
+                                            absolute left-0 bottom-px
+                                            h-0.5
+                                            w-1/2
+                                            bg-(--earth-clay)
+                                            scale-x-0
+                                            origin-left
+                                            transition-transform duration-500 ease-out
+                                            group-hover:scale-x-100
+                                        "
+                                    />
+                                </div>
                             ))}
                         </div>
                     </div>
@@ -99,25 +126,25 @@ export default function Footer() {
                     <div className="flex flex-col justify-between gap-10">
 
                         <div className="space-y-4">
-                            <span className="text-xs uppercase font-serif tracking-wider text-[var(--earth-clay)]">
+                            <span className="text-xs uppercase font-serif tracking-wider text-(--earth-clay)">
                                 Social Layer
                             </span>
 
                             <div className="space-y-2 text-sm">
-                                <p className="flex items-center gap-2 cursor-pointer text-[var(--linen-200)] hover:text-[var(--linen-100)] transition">
+                                <p className="flex items-center gap-2 cursor-pointer text-(--linen-200) hover:text-(--linen-200)/30 transition">
                                     <CiInstagram /> Instagram
                                 </p>
-                                <p className="flex items-center gap-2 cursor-pointer text-[var(--linen-200)] hover:text-[var(--linen-100)] transition">
+                                <p className="flex items-center gap-2 cursor-pointer text-(--linen-200) hover:text-(--linen-200)/30 transition">
                                     <CiLinkedin /> LinkedIn
                                 </p>
                             </div>
                         </div>
 
-                        <div className="space-y-1 text-[11px] text-[var(--text-muted)] font-serif tracking-wider">
-                            <p className="cursor-pointer hover:text-[var(--linen-100)]">Privacy Policy</p>
-                            <p className="cursor-pointer hover:text-[var(--linen-100)]">Terms & Conditions</p>
-                            <p className="cursor-pointer hover:text-[var(--linen-100)]">Shipping & Returns</p>
-                            <p className="cursor-pointer hover:text-[var(--linen-100)]">Help</p>
+                        <div className="space-y-1 text-[11px] text-(--text-muted) font-serif tracking-wider">
+                            <p className="cursor-pointer hover:text-(--linen-100)">Privacy Policy</p>
+                            <p className="cursor-pointer hover:text-(--linen-100)">Terms & Conditions</p>
+                            <p className="cursor-pointer hover:text-(--linen-100)">Shipping & Returns</p>
+                            <p className="cursor-pointer hover:text-(--linen-100)">Help</p>
                         </div>
                     </div>
                 </div>
@@ -132,7 +159,7 @@ export default function Footer() {
                     <h1
                         className="
                             font-extrabold tracking-tight leading-none
-                            text-[color:rgba(236,230,220,0.06)]
+                            text-(--linen-700)
                             text-[27vw] sm:text-[20vw] md:text-[14vw]
                         "
                     >
@@ -146,7 +173,7 @@ export default function Footer() {
                         relative z-10
                         py-3 text-center
                         text-[10px] uppercase tracking-widest font-serif
-                        text-[var(--muted-foreground)]
+                        text-(--text-inverse)
                     "
                 >
                     © {new Date().getFullYear()} The Layer Co. · All rights reserved

@@ -8,6 +8,7 @@ import { MdDeleteOutline } from "react-icons/md";
 import { useAppDispatch, useAppSelector } from "@/store/hooks";
 import { toggleWishlist } from "@/store/wishlist/wishlist.slice";
 import { addToCart } from "@/store/cart/cart.slice";
+import { Heart } from "lucide-react";
 
 
 
@@ -16,7 +17,6 @@ const Masonry = dynamic(() => import("react-masonry-css"), { ssr: false });
 export default function Wishlist() {
   const dispatch = useAppDispatch();
   const wishlistItems = useAppSelector((state) => state.wishlist.items);
-
   const [activeId, setActiveId] = useState<string | null>(null);
 
 
@@ -75,20 +75,44 @@ export default function Wishlist() {
   ======================= */
   if (!wishlistItems.length) {
     return (
-      <div className="flex items-center justify-center h-[60vh] text-sm text-[var(--text-muted)]">
-        Your wishlist is empty
+      <div className="flex flex-col items-center justify-center min-h-[60vh] text-center px-6">
+        {/* Icon */}
+        <div className="mb-2 animate-float flex items-center justify-center w-20 h-20 rounded-full bg-[var(--earth-charcoal)]/10">
+          <Heart className="w-10 h-10 text-[var(--primary)]" />
+        </div>
+
+        {/* Text */}
+        <h2 className="text-xl font-semibold text-[var(--linen-100)]">
+          Your wishlist is empty
+        </h2>
+        <p className="mt-2 text-sm font-medium text-[var(--linen-800)]/70 max-w-sm">
+          Save your favourite items here and come back anytime to find them quickly.
+        </p>
+
+        {/* CTA */}
+        <Link
+          href="/"
+          className="mt-6 inline-flex items-center justify-center rounded-full px-6 py-2 text-sm font-medium
+                          bg-[var(--primary)] text-black hover:opacity-90 transition"
+        >
+          <span className="text-[var(--linen-100)]">
+            Explore Products
+          </span>
+        </Link>
       </div>
     );
   }
 
+
+
   return (
-    <div className="px-2 py-2 sm:py-4 bg-[var(--linen-100)]">
+    <div className="px-2 py-2 sm:py-4 bg-(--linen-100)">
       <div className="flex flex-col lg:flex-row gap-6 justify-center">
 
         {/* LEFT — BIG ITEM */}
         {activeItem && (
           <div className="hidden lg:block lg:w-[40%]">
-            <div className="sticky top-20 border border-[var(--border-light)]">
+            <div className="sticky top-20 border border-(--border-light)">
 
               {/* IMAGE */}
               <div className="relative rounded-[3px] w-full h-165 overflow-hidden">
@@ -100,24 +124,24 @@ export default function Wishlist() {
                 />
 
                 {/* BRAND TAG */}
-                <span className="absolute top-2 left-2 text-xs font-semibold bg-[var(--surface)]/80 text-[var(--foreground)] px-2 py-0.5 rounded">
+                <span className="absolute top-2 left-2 text-xs font-semibold bg-(--surface)/80 text-foreground px-2 py-0.5 rounded">
                   {activeItem.brand}
                 </span>
               </div>
 
               {/* DETAILS */}
               <div className="mt-3 py-3 mx-2">
-                <h2 className="text-lg font-medium text-[var(--foreground)]">
+                <h2 className="text-lg font-medium text-foreground">
                   {activeItem.name}
                 </h2>
 
                 <div className="flex items-center gap-3 mt-1">
-                  <span className="text-lg font-semibold text-[var(--primary)]">
+                  <span className="text-lg font-semibold text-primary">
                     ₹{activeItem.price}
                   </span>
 
                   {activeItem.originalPrice && (
-                    <span className="line-through text-sm text-[var(--text-muted)]">
+                    <span className="line-through text-sm text-(--text-muted)">
                       ₹{activeItem.originalPrice}
                     </span>
                   )}
@@ -145,13 +169,13 @@ export default function Wishlist() {
                 }}
                   className="
                             cursor-pointer mt-2 w-full
-                            hover:bg-[var(--btn-primary-bg)]
-                            text-[var(--btn-primary-text)]
+                            hover:bg-(--btn-primary-bg)
+                            text-(--btn-primary-text)
                             font-semibold
                             py-3
                             rounded-[3px]
-                            border border-[var(--border)]
-                            bg-[var(--btn-primary-hover)]
+                            border border-border
+                            bg-(--btn-primary-hover)
                             transition-all duration-300
                           ">
                   MOVE TO BAG
@@ -174,10 +198,10 @@ export default function Wishlist() {
                 key={item.productId}
                 href={`/products/${item.slug}`}
                 onClick={() => setActiveId(item.productId)}
-                className="block cursor-pointer border border-[var(--border-light)] rounded-[3px]"
+                className="block cursor-pointer border border-(--border-light) rounded-[3px]"
               >
                 <div
-                  className="group relative w-full rounded-[3px] overflow-hidden bg-[var(--surface-muted)]"
+                  className="group relative w-full rounded-[3px] overflow-hidden bg-(--surface-muted)"
                   style={{ height: heights[index] }}
                 >
                   <Image
@@ -191,7 +215,7 @@ export default function Wishlist() {
 
                   {/* TOP BAR */}
                   <div className="absolute flex justify-between top-2 left-2 right-2">
-                    <h3 className="text-[11px] text-[var(--foreground)] font-semibold">
+                    <h3 className="text-[11px] text-foreground font-semibold">
                       {item?.brand}
                     </h3>
 
@@ -201,17 +225,17 @@ export default function Wishlist() {
                         e.stopPropagation();
                         dispatch(toggleWishlist(item));
                       }}
-                      className="text-[var(--text-muted)] hover:text-[var(--accent)] cursor-pointer"
+                      className="text-(--text-muted) hover:text-accent cursor-pointer"
                     />
                   </div>
 
                   {/* BOTTOM INFO */}
-                  <div className="absolute bottom-0 w-full bg-[var(--earth-charcoal)]/30 p-1.5 text-[var(--text-inverse)]">
+                  <div className="absolute bottom-0 w-full bg-(--earth-charcoal)/30 p-1.5 text-(--text-inverse)">
                     <p className="text-sm mb-1">{item.name}</p>
 
                     <div className="flex justify-between text-[11px]">
                       <span className="text-md">Price: {item.price}</span>
-                      <span className="line-through text-[var(--muted-foreground)] text-[12px]">
+                      <span className="line-through text-muted-foreground text-[12px]">
                         {item.originalPrice}
                       </span>
                     </div>
@@ -238,13 +262,13 @@ export default function Wishlist() {
                     }}
                       className="
                               cursor-pointer mt-2 w-full
-                              hover:bg-[var(--primary)]
-                              text-[var(--primary-foreground)]
+                              hover:bg-primary
+                              text-primary-foreground
                               font-semibold
                               text-[11px]
                               py-1.5
                               rounded
-                              bg-[var(--btn-primary-hover)]
+                              bg-(--btn-primary-hover)
                               transition-all duration-300
                             ">
                       Move to Bag

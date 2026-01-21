@@ -97,7 +97,6 @@ export default function ProductMasonryGrid({
     const [hoverVariants, setHoverVariants] = useState<Record<string, Variant>>(
         {}
     );
-    const [isLoading, setIsLoading] = useState(false)
     const [isFilterOpen, setIsFilterOpen] = useState(false);
     const [activeCategory, setActiveCategory] = useState<string>("all");
     const [transitioningProduct, setTransitioningProduct] = useState<string | null>(null);
@@ -139,7 +138,6 @@ export default function ProductMasonryGrid({
 
     const filteredProducts = useMemo(() => {
         if (activeCategory === "all") return products;
-
         return products.filter(
             (p) => p.category?.slug === activeCategory
         );
@@ -169,24 +167,17 @@ export default function ProductMasonryGrid({
 
     if (!filteredProducts.length) {
         return (
-            <p className="flex items-center justify-center h-[40vh] text-sm font-semibold text-[var(--text-secondary)]">
+            <p className="flex items-center justify-center h-[40vh] text-sm font-semibold text-(--text-secondary)">
                 No products found in this category
             </p>
         );
     }
 
-    if (isLoading) {
-        return (
-            <div className="flex flex-nowrap items-center justify-center h-[70vh]">
-                <LayerLogoLoader />
-            </div>
-        );
-    }
 
     return (
         <div className={`my-12 ${fullWidth ? "md:w-[85%] max-md:px-2 mx-auto my-3" : "w-full"}`}>
             {showHeading && (
-                <h2 className="text-center py-3 text-md tracking-widest font-semibold font-poppins text-[var(--foreground)]">
+                <h2 className="text-center py-3 text-md tracking-widest font-semibold font-poppins text-foreground">
                     Everything You Need
                 </h2>
             )}
@@ -203,12 +194,12 @@ export default function ProductMasonryGrid({
                     >
                         <SlidersHorizontal
                             className={`w-4 h-6 transition-transform duration-300 ${isFilterOpen
-                                ? "rotate-180 text-[var(--primary)]"
-                                : "text-[var(--text-secondary)]"
+                                ? "rotate-180 text-primary"
+                                : "text-(--text-secondary)"
                                 }`}
                         />
 
-                        <span className="text-md font-medium text-[var(--text-secondary)]">
+                        <span className="text-md font-medium text-(--text-secondary)">
                             Filter
                         </span>
 
@@ -246,8 +237,8 @@ export default function ProductMasonryGrid({
                                     >
                                         <p
                                             className={`text-md truncate transition-colors ${activeCategory === cat.slug
-                                                ? "text-[var(--primary)] font-semibold"
-                                                : "text-[var(--text-muted)] hover:text-[var(--primary)]"
+                                                ? "text-primary font-semibold"
+                                                : "text-(--text-muted) hover:text-primary"
                                                 }`}
                                         >
                                             {cat.name}
@@ -287,7 +278,7 @@ export default function ProductMasonryGrid({
                         return (
                             <div key={item._id}>
                                 <div
-                                    className="border border-[var(--border-light)]
+                                    className="border border-(--border-light)
                                         relative mb-2 md:mb-4
                                         drop-shadow-xs
                                         fade-in-75
@@ -295,7 +286,7 @@ export default function ProductMasonryGrid({
                                         rounded-[2px]
                                         overflow-hidden
                                         group cursor-pointer
-                                        bg-[var(--card-bg)]
+                                        bg-(--card-bg)
                                     "
                                     style={{ height: heights[index] }}
                                 >
@@ -317,7 +308,7 @@ export default function ProductMasonryGrid({
                                     </div>
 
 
-                                    <div className="absolute inset-0 bg-[var(--earth-charcoal)]/15 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+                                    <div className="absolute inset-0 bg-(--earth-charcoal)/15 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
 
                                     {/* COLOR DOTS */}
                                     <div className="absolute w-full flex justify-between items-center top-1 px-2 z-20">
@@ -326,8 +317,8 @@ export default function ProductMasonryGrid({
                                                 <span
                                                     key={v.color.slug}
                                                     className={`w-5 h-4 rounded-[2px] border cursor-pointer ${v.color.slug === variant.color.slug
-                                                        ? "ring-1 ring-[var(--ring)] border-[var(--primary)]"
-                                                        : "border-[var(--border-light)]"
+                                                        ? "ring-1 ring-ring border-primary"
+                                                        : "border-(--border-light)"
                                                         }`}
                                                     style={{ backgroundColor: v.color.hex }}
                                                     onMouseEnter={() => {
@@ -378,13 +369,13 @@ export default function ProductMasonryGrid({
                                                     })
                                                 );
                                             }}
-                                            className="p-1.5 cursor-pointer rounded-full bg-[var(--surface)] shadow z-30"
+                                            className="p-1.5 border border-(--border-light) cursor-pointer rounded-full bg-(--surface) shadow z-30"
                                         >
                                             <Heart
                                                 strokeWidth={0.9}
                                                 className={`h-5 w-5 transition ${isWishlisted
-                                                    ? "fill-[var(--primary)] text-[var(--primary)] scale-110"
-                                                    : "text-[var(--text-secondary)] hover:text-[var(--primary)]"
+                                                    ? "fill-primary text-primary scale-110"
+                                                    : "text-(--text-secondary) hover:text-primary"
                                                     }`}
                                             />
                                         </button>
@@ -398,7 +389,7 @@ export default function ProductMasonryGrid({
                                                 isOpen ? null : index
                                             );
                                         }}
-                                        className="md:hidden absolute bottom-0 w-full z-20 bg-[var(--earth-charcoal)]/30 p-1 flex justify-center"
+                                        className="md:hidden absolute bottom-0 w-full z-20 bg-(--earth-charcoal)/30 p-1 flex justify-center"
                                     >
                                         {isOpen ? (
                                             <FaAnglesDown className="text-white" />
@@ -424,11 +415,11 @@ export default function ProductMasonryGrid({
                                         `}
                                     >
                                         <div className="
-                                                bg-[var(--earth-charcoal)]/40
+                                                bg-(--earth-charcoal)/40
                                                 backdrop-blur-xs
                                                 px-2 py-3
                                                 text-xs
-                                                text-[var(--text-inverse)]
+                                                text-(--text-inverse)
                                                 will-change-transform
                                             ">
                                             <p className="font-semibold">{item.brand}</p>
@@ -437,7 +428,7 @@ export default function ProductMasonryGrid({
 
                                             <p className="font-bold text-sm">
                                                 ₹{variant.pricing?.price}
-                                                <span className="ml-2 text-xs font-semibold line-through text-[var(--earth-olive)]">
+                                                <span className="ml-2 text-xs font-semibold line-through text-(--earth-olive)">
                                                     ₹{variant.pricing?.originalPrice}
                                                 </span>
                                             </p>

@@ -181,20 +181,20 @@ export default function ProductPage() {
 
     if (loading)
         return (
-            <div className="flex items-center justify-center h-[70vh] bg-[var(--background)]">
+            <div className="flex items-center justify-center h-[70vh] bg-background">
                 <EvoqueLogoLoader />
             </div>
         );
 
     if (!product)
         return (
-            <p className="ml-20 text-center font-poppins text-sm tracking-widest font-semibold text-[var(--text-muted)]">
+            <p className="ml-20 text-center font-poppins text-sm tracking-widest font-semibold text-(--text-muted)">
                 Fresh styles coming your way
             </p>
         );
     return (
         <Container>
-            <div className="flex md:w-[90%] bg-[var(--linen-100)] mx-auto flex-col w-full pb-14">
+            <div className="flex md:w-[90%] bg-(--linen-100) mx-auto flex-col w-full pb-14">
                 <div className=" w-full mx-auto lg:flex gap-2 justify-between">
 
                     {/* LEFT: IMAGES */}
@@ -211,7 +211,7 @@ export default function ProductPage() {
                                         onClick={() => setActiveImageIndex(i)}
                                         className={`cursor-pointer
                                                         relative w-25 h-25 border transition-all duration-200
-                                                        ${isActive ? "" : "border-[var(--border)] hover:border-[var(--border-strong)]"}
+                                                        ${isActive ? "" : "border-border hover:border-(--border-strong)"}
                                                         `}
                                         style={
                                             isActive
@@ -266,37 +266,37 @@ export default function ProductPage() {
                     {/* RIGHT: DETAILS */}
                     <div className="lg:w-4xl w-full flex flex-col p-3 lg:py-7">
                         <div className="flex justify-between items-center">
-                            <h1 className="text-sm md:text-lg font-bold text-[var(--earth-charcoal)]">
+                            <h1 className="text-sm md:text-lg font-bold text-(--earth-charcoal)">
                                 {product.productName.toUpperCase()}
                             </h1>
                             <Heart className="
                                     rounded-full cursor-pointer duration-200
-                                    border border-[var(--border)]
+                                    border border-border
                                     p-1
-                                    hover:bg-[var(--primary)]
-                                    hover:text-[var(--primary-foreground)]
+                                    hover:bg-primary
+                                    hover:text-primary-foreground
                                     "/>
                         </div>
 
                         <div className="flex gap-3 items-center justify-between">
                             <div className="flex items-center gap-3 my-1.5">
-                                <span className="text-[var(--primary)] text-lg font-semibold">
+                                <span className="text-primary text-lg font-semibold">
                                     ₹ {activeVariant?.pricing?.price}
                                 </span>
-                                <span className="font-semibold text-[12px] text-[var(--text-muted)] line-through">{activeVariant?.pricing?.originalPrice}</span>
+                                <span className="font-semibold text-[12px] text-(--text-muted) line-through">{activeVariant?.pricing?.originalPrice}</span>
                             </div>
                             <span className="text-white text-[10px] bg-[oklch(0.55_0.04_75)] p-1 font-semibold rounded-[3px]">
                                 - {product.pricing.discountPercentage}%
                             </span>
                         </div>
 
-                        <div><span className="text-[10px] font-semibold text-[var(--text-secondary)]">
+                        <div><span className="text-[10px] font-semibold text-(--text-secondary)">
                             SKU: {product.sku}</span>
                         </div>
 
                         {/* COLORS */}
                         <div className="py-2 flex flex-col">
-                            <h1 className="font-extrabold mb-1 text-[var(--foreground)]">Colors</h1>
+                            <h1 className="font-extrabold mb-1 text-foreground">Colors</h1>
                             <div className="flex flex-row flex-nowrap items-center gap-2 w-full overflow-x-auto scrollbar-hide">
                                 {colorVariants.map((color) => {
                                     const isActive = selectedColor === color.slug;
@@ -308,7 +308,7 @@ export default function ProductPage() {
                                                 setSelectedColor(color.slug);
                                                 router.replace(`/products/${product.slug}?color=${color.slug}`, { scroll: false });
                                             }}
-                                            className={`rounded-[3px] shrink-0 cursor-pointer border ${isActive ? "" : "border-[var(--border)] hover:border-[var(--border-strong)]"
+                                            className={`rounded-[3px] shrink-0 cursor-pointer border ${isActive ? "" : "border-border hover:border-(--border-strong)"
                                                 }`}
                                             style={
                                                 isActive
@@ -322,7 +322,7 @@ export default function ProductPage() {
                                         >
                                             <div className="w-18 h-31.5 flex flex-col justify-between items-center">
                                                 <Image src={color.image} className="rounded-[3px] object-cover h-full w-full" alt={color.name} width={70} height={70} />
-                                                <span className="text-[10px] text-[var(--text-secondary)]">
+                                                <span className="text-[10px] text-(--text-secondary)">
                                                     {color.name}
                                                 </span>
                                             </div>
@@ -335,7 +335,7 @@ export default function ProductPage() {
 
                         {/* SIZES */}
                         <div className="py-2">
-                            <h3 className="font-bold mb-1 text-[var(--foreground)]">
+                            <h3 className="font-bold mb-1 text-foreground">
                                 {product.category.slug === "jeans" ? "Choose Waist" : "Select Size"}
                             </h3>
 
@@ -358,10 +358,10 @@ export default function ProductPage() {
                                                     transition-colors duration-200 rounded-[3px]
 
                                                 ${disabled
-                                                    ? "opacity-40 line-through cursor-not-allowed border-[var(--border)] text-[var(--linen-800)]"
+                                                    ? "opacity-40 line-through cursor-not-allowed border-border text-(--linen-800)"
                                                     : isActive
-                                                        ? "bg-[var(--primary)] text-[var(--primary-foreground)] border-[var(--primary)]"
-                                                        : "border-[var(--border)] text-[var(--text-secondary)] hover:border-[var(--primary)]"
+                                                        ? "bg-primary text-primary-foreground border-primary"
+                                                        : "border-border text-(--text-secondary) hover:border-primary"
                                                 }
                                            `}
                                         >
@@ -369,7 +369,7 @@ export default function ProductPage() {
 
                                             {s.exists && !s.inStock && (
                                                 <span className="absolute inset-0 flex items-center justify-center pointer-events-none">
-                                                    <span className="w-full h-px bg-[var(--primary)] -rotate-12" />
+                                                    <span className="w-full h-px bg-primary -rotate-12" />
                                                 </span>
                                             )}
                                         </button>
@@ -389,10 +389,9 @@ export default function ProductPage() {
                                     p-3
                                     font-bold
                                     transition-colors duration-200
-
-                                    hover:bg-[var(--btn-primary-bg)]
-                                    text-[var(--btn-primary-text)]
-                                    bg-[var(--btn-primary-hover)]
+                                    hover:bg-(--btn-primary-bg)
+                                    text-(--btn-primary-text)
+                                    bg-(--btn-primary-hover)
                                 "
                             >
                                 ADD TO BAG
@@ -406,10 +405,9 @@ export default function ProductPage() {
                                                 p-3
                                                 font-bold
                                                 transition-colors duration-200
-
-                                                hover:bg-[var(--accent)]/90
-                                                text-[var(--accent-foreground)]
-                                                bg-[var(--earth-clay)]
+                                                hover:bg-(--accent)/90
+                                                text-accent-foreground
+                                                bg-(--earth-clay)
                                             "
                             >
                                 BUY NOW
@@ -424,8 +422,7 @@ export default function ProductPage() {
                                 collapsible
                                 className="
                                         border
-                                        border border-[var(--border)]
-                                        
+                                        border-border                                      
                                         p-2
                                         rounded-sm
                                     "
@@ -434,15 +431,15 @@ export default function ProductPage() {
                                     <AccordionItem value="description">
                                         <AccordionTrigger
                                             className="
-                                                    text-[var(--foreground)]
+                                                    text-foreground
                                                     font-semibold
-                                                    hover:text-[var(--primary)]
+                                                    hover:text-primary
                                                 "
                                         >
                                             Description
                                         </AccordionTrigger>
                                         <AccordionContent>
-                                            <p className="text-sm text-[var(--text-secondary)] leading-relaxed">
+                                            <p className="text-sm text-(--text-secondary) leading-relaxed">
                                                 {product.description}
                                             </p>
                                         </AccordionContent>
@@ -452,18 +449,18 @@ export default function ProductPage() {
                                 <AccordionItem value="productDetails">
                                     <AccordionTrigger
                                         className="
-                                                text-[var(--foreground)]
+                                                text-foreground
                                                     font-semibold
-                                                    hover:text-[var(--primary)]
+                                                   hover:text-primary
                                             "
                                     >
                                         Product Details
                                     </AccordionTrigger>
                                     <AccordionContent>
-                                        <ul className="text-sm text-[var(--text-secondary)] space-y-2">
+                                        <ul className="text-sm text-(--text-secondary) space-y-2">
                                             {Object.entries(product.details).map(([key, value]) => (
                                                 <li key={key} className="flex gap-2">
-                                                    <span className="font-semibold min-w-30 text-[var(--foreground)]">
+                                                    <span className="font-semibold min-w-30 text-foreground">
                                                         {DETAILS_LABELS[key as keyof Product["details"]]}
                                                     </span>
                                                     <span>
@@ -478,15 +475,15 @@ export default function ProductPage() {
                                 <AccordionItem value="returns">
                                     <AccordionTrigger
                                         className="
-                                                text-[var(--foreground)]
+                                                text-foreground
                                                     font-semibold
-                                                    hover:text-[var(--primary)]
+                                                    hover:text-primary
                                             "
                                     >
                                         Returns and Exchange
                                     </AccordionTrigger>
                                     <AccordionContent>
-                                        <p className="text-sm text-[var(--text-secondary)]">
+                                        <p className="text-sm text-(--text-secondary)">
                                             Standard returns and exchange policies apply.
                                         </p>
                                     </AccordionContent>
@@ -495,15 +492,15 @@ export default function ProductPage() {
                                 <AccordionItem value="offers">
                                     <AccordionTrigger
                                         className="
-                                                text-[var(--foreground)]
+                                                text-foreground
                                                     font-semibold
-                                                    hover:text-[var(--primary)]
+                                                    hover:text-primary
                                             "
                                     >
                                         Exclusive Offers
                                     </AccordionTrigger>
                                     <AccordionContent>
-                                        <p className="text-sm text-[var(--text-secondary)]">
+                                        <p className="text-sm text-(--text-secondary)">
                                             Check for current discounts and deals.
                                         </p>
                                     </AccordionContent>

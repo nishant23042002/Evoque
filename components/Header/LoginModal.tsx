@@ -96,8 +96,8 @@ export default function LoginModalUI({ open, onClose }: LoginModalUIProps) {
                 className="
                     relative w-225 max-w-[95vw] overflow-hidden rounded-[3px]
                     bg-linear-to-b
-                    from-[var(--linen-800)]
-                    to-[var(--primary)]
+                    from-(--linen-800)
+                    to-primary
                     shadow-xl
                 "
             >
@@ -106,8 +106,8 @@ export default function LoginModalUI({ open, onClose }: LoginModalUIProps) {
                     onClick={onClose}
                     className="
                         absolute right-4 top-4 z-10 cursor-pointer
-                        text-[var(--text-inverse)]
-                        hover:text-[var(--linen-900)]
+                        text-(--text-inverse)
+                        hover:text-(--linen-900)
                         transition-colors
                     "
                 >
@@ -116,7 +116,7 @@ export default function LoginModalUI({ open, onClose }: LoginModalUIProps) {
 
                 <div className="flex max-md:flex-col min-h-70">
                     {/* LEFT */}
-                    <div className="p-6 md:p-10 text-[var(--text-inverse)]">
+                    <div className="p-6 md:p-10 text-(--text-inverse)">
                         <h2 className="text-xl md:text-2xl font-semibold mb-6 text-center md:text-left">
                             Unlock Exclusive Benefits
                         </h2>
@@ -169,7 +169,7 @@ export default function LoginModalUI({ open, onClose }: LoginModalUIProps) {
                                     <span
                                         key={i}
                                         className={`h-1.5 w-1.5 rounded-full transition-all ${activeIndex === i
-                                            ? "bg-[var(--text-inverse)]"
+                                            ? "bg-(--text-inverse)"
                                             : "bg-[rgba(255,255,255,0.4)]"
                                             }`}
                                     />
@@ -179,7 +179,7 @@ export default function LoginModalUI({ open, onClose }: LoginModalUIProps) {
                     </div>
 
                     {/* RIGHT */}
-                    <div className="bg-[var(--surface)] p-5 flex flex-col justify-center">
+                    <div className="bg-(--surface) p-5 flex flex-col justify-center">
                         {step === "mobile" ? (
                             <>
                                 <h3 className="text-lg font-semibold mb-4 text-center">
@@ -187,7 +187,7 @@ export default function LoginModalUI({ open, onClose }: LoginModalUIProps) {
                                 </h3>
 
                                 <div className="relative flex gap-2 border rounded-[3px] p-1 mb-5">
-                                    <span className="text-sm font-extraboldbold z-99"><span className="font-bold text-[var(--secondory)]">🇮🇳</span> +91</span>
+                                    <span className="text-sm font-extraboldbold z-99"><span className="font-bold text-(--secondory)">🇮🇳</span> +91</span>
                                     <input
                                         value={mobile}
                                         onChange={e => setMobile(e.target.value.replace(/\D/g, ""))}
@@ -206,9 +206,9 @@ export default function LoginModalUI({ open, onClose }: LoginModalUIProps) {
                                     disabled={loading}
                                     className="
                                                     w-full rounded-[3px] py-3 text-sm cursor-pointer
-                                                    bg-[var(--primary)]
-                                                    text-[var(--primary-foreground)]
-                                                    hover:bg-[var(--btn-primary-hover)]
+                                                    bg-primary
+                                                    text-primary-foreground
+                                                    hover:bg-(--btn-primary-hover)
                                                     transition-colors
                                                 "
                                 >
@@ -234,9 +234,9 @@ export default function LoginModalUI({ open, onClose }: LoginModalUIProps) {
                                     disabled={loading}
                                     className="
                                                     w-full rounded-[3px] py-3 text-sm cursor-pointer
-                                                    bg-[var(--primary)]
-                                                    text-[var(--primary-foreground)]
-                                                    hover:bg-[var(--btn-primary-hover)]
+                                                    bg-primary
+                                                    text-primary-foreground
+                                                    hover:bg-(--btn-primary-hover)
                                                     transition-colors
                                                 "
                                 >
@@ -252,23 +252,23 @@ export default function LoginModalUI({ open, onClose }: LoginModalUIProps) {
                             </>
                         )}
 
-                        <label className="flex items-center gap-2 py-2 text-xs text-[var(--text-secondary)] mb-6">
+                        <label className="flex items-center gap-2 py-2 text-xs text-(--text-secondary) mb-6">
                             <input
                                 type="checkbox"
-                                className="accent-[var(--primary)] cursor-pointer"
+                                className="accent-primary cursor-pointer"
                             />
                             Notify me for updates & offers
                         </label>
 
 
-                        <p className="text-[11px] text-[var(--text-muted)] text-center">
+                        <p className="text-[11px] text-(--text-muted) text-center">
                             By continuing, you agree to our{" "}
                             <span className="underline cursor-pointer">Privacy Policy</span>{" "}
                             &{" "}
                             <span className="underline cursor-pointer">T&Cs</span>
                         </p>
 
-                        <p className="mt-3 text-xs text-center text-[var(--text-secondary)] underline cursor-pointer">
+                        <p className="mt-3 text-xs text-center text-(--text-secondary) underline cursor-pointer">
                             Trouble logging in?
                         </p>
                     </div>
@@ -283,10 +283,10 @@ export default function LoginModalUI({ open, onClose }: LoginModalUIProps) {
 function FeatureCard({ title, desc }: { title: string; desc: string }) {
     return (
         <div className="rounded-xl bg-[rgba(255,255,255,0.15)] backdrop-blur-md p-5">
-            <h4 className="font-semibold text-sm mb-1 text-[var(--text-inverse)]">
+            <h4 className="font-semibold text-sm mb-1 text-(--text-inverse)">
                 ★ {title}
             </h4>
-            <p className="text-xs opacity-90 leading-relaxed text-[var(--text-inverse)]">
+            <p className="text-xs opacity-90 leading-relaxed text-(--text-inverse)">
                 {desc}
             </p>
         </div>

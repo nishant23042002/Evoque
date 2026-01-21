@@ -1,6 +1,7 @@
 "use client";
 
-import EvoqueLogoLoader from "@/components/FlashLogo/LayerLogo";
+
+import LayerLogo from "@/components/FlashLogo/LayerLogo";
 import ProductMasonryGrid from "@/components/Main/ProductMasonryGrid";
 import clsx from "clsx";
 import Image from "next/image";
@@ -80,7 +81,7 @@ const ProductCategoryPage = () => {
     const [subCategories, setSubCategories] = useState<SubCategory[]>([]);
     const [products, setProducts] = useState<Product[]>([]);
     const [bannerImage, setBannerImage] = useState<string>("");
-    const [loading, setLoading] = useState(true);
+    const [loading, setLoading] = useState(false);
 
     const bannerRef = useRef<HTMLDivElement>(null);
     const [bannerHeight, setBannerHeight] = useState<number>(0);
@@ -132,8 +133,10 @@ const ProductCategoryPage = () => {
         if (categorySlug) fetchCategoryAndProducts();
     }, [categorySlug, activeSub]);
 
+    if(loading) return <div><LayerLogo /></div>
+
     return (
-        <section className="min-h-[95vh] bg-[var(--linen-150)]">
+        <section className="min-h-[95vh] bg-(--linen-150)">
             {/* ---------------- CATEGORY BANNER ---------------- */}
             <div
                 style={{
@@ -166,7 +169,7 @@ const ProductCategoryPage = () => {
             </div>
 
             {/* ---------------- SUB CATEGORY BAR ---------------- */}
-            <div className="md:w-full mx-auto sticky top-15 z-30 border border-b-[var(--border-strong)] bg-[var(--linen-200)] border-b border-[var(--border-light)]">
+            <div className="md:w-full mx-auto sticky top-15 z-30 border border-b-(--border-strong) bg-(--linen-200) border-b border-(--border-light)">
                 <div className="mx-2 h-40 flex flex-nowrap overflow-auto items-center sm:justify-center gap-2 scrollbar-hide">
                     {/* ALL */}
                     <Link
@@ -178,16 +181,16 @@ const ProductCategoryPage = () => {
                             className={clsx(
                                 "flex justify-center items-center mb-3.75 w-20 h-25 mx-1 rounded-sm overflow-hidden border transition-all",
                                 !activeSub
-                                    ? "bg-[var(--primary)] border-[var(--primary)] ring-1 ring-[var(--accent)]"
-                                    : "bg-[var(--surface-muted)] border-[var(--border)] hover:ring-[var(--accent)]"
+                                    ? "bg-primary border-primary ring-1 ring-accent"
+                                    : "bg-(--surface-muted) hover:ring-accent"
                             )}
                         >
                             <p
                                 className={clsx(
                                     "w-20 truncate font-semibold text-center mt-1 text-[11px]",
                                     activeSub
-                                        ? "text-[var(--primary)]"
-                                        : "text-[var(--primary-foreground)]"
+                                        ? "text-primary"
+                                        : "text-primary-foreground"
                                 )}
                             >
                                 All <span>{categorySlug?.toUpperCase()}</span>
@@ -208,10 +211,10 @@ const ProductCategoryPage = () => {
                             >
                                 <div
                                     className={clsx(
-                                        "overflow-hidden bg-[var(--linen-100)] rounded-[3px] border transition-all",
+                                        "overflow-hidden bg-(--linen-100) rounded-[3px] border transition-all",
                                         isActive
-                                            ? "border-[var(--primary)] ring-1 ring-[var(--primary)]"
-                                            : "border-[var(--border)] hover:border-[var(--primary)]"
+                                            ? "border-primary ring-1 ring-primary"
+                                            : "border-border hover:border-primary"
                                     )}
                                 >
                                     <Image
@@ -226,10 +229,10 @@ const ProductCategoryPage = () => {
                                 <div className="w-20 flex items-center justify-center">
                                     <p
                                         className={clsx(
-                                            "mt-1 text-[11px] text-center truncate font-semibold hover:text-[var(--primary)]",
+                                            "mt-1 text-[11px] text-center truncate font-semibold hover:text-primary",
                                             isActive
-                                                ? "text-[var(--primary)]"
-                                                : "text-[var(--text-secondary)]"
+                                                ? "text-primary"
+                                                : "text-(--text-secondary)"
                                         )}
                                     >
                                         {item.name}
@@ -244,7 +247,7 @@ const ProductCategoryPage = () => {
             {/* ---------------- PRODUCTS ---------------- */}
             <div>
                 {products.length === 0 ? (
-                    <div className="flex w-full items-center justify-center h-[40vh] text-sm font-semibold text-[var(--text-muted)]">
+                    <div className="flex w-full items-center justify-center h-[40vh] text-sm font-semibold text-(--text-muted)">
                         Nothing Dropped Here Yet...
                     </div>
                 ) : (

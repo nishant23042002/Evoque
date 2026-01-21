@@ -20,7 +20,7 @@ const Logo = () => {
                               absolute left-0.5 bottom-3
                               h-0.5
                               w-1/2
-                              bg-[var(--primary)]
+                              bg-primary
                               scale-x-0 origin-left
                               transition-transform duration-500 ease-out
                               group-hover:scale-x-100

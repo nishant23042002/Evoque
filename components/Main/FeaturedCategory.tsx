@@ -53,14 +53,14 @@ const FeaturedCategories = () => {
     return (
         <section className="max-md:px-2 py-2 w-full md:w-[85%] mx-auto flex flex-col justify-center my-12">
             {/* Heading */}
-            <h2 className="py-3 text-center text-md tracking-widest font-semibold font-poppins text-[var(--foreground)]">
+            <h2 className="py-3 text-center text-md tracking-widest font-semibold font-poppins text-foreground">
                 Your Wardrobe Starts Here
             </h2>
 
             {/* Fallback */}
             {categories.length === 0 ? (
                 <div className="flex items-center justify-center h-64">
-                    <h2 className="text-center text-sm tracking-widest font-semibold font-poppins text-[var(--text-muted)]">
+                    <h2 className="text-center text-sm tracking-widest font-semibold font-poppins text-(--text-muted)">
                         Dropping Soon...
                     </h2>
                 </div>
@@ -77,12 +77,11 @@ const FeaturedCategories = () => {
                             className="mb-2 md:mb-4 block break-inside-avoid"
                         >
                             <div
-                                className="border border-[var(--border-strong)]
+                                className="border border-(--border-light)
                                     group h-80 relative
                                     rounded-[3px]
                                     overflow-hidden
-                                    bg-[var(--linen-100)]
-                                    border border-[var(--border-light)]
+                                    bg-(--linen-100)                        
                                     transition-all duration-300
                                 "
                             >
@@ -102,7 +101,7 @@ const FeaturedCategories = () => {
                                 <div
                                     className="
                                         absolute inset-0
-                                        bg-[var(--earth-charcoal)]
+                                        bg-(--earth-charcoal)
                                         opacity-0
                                         group-hover:opacity-15
                                         transition-opacity duration-300
@@ -112,14 +111,14 @@ const FeaturedCategories = () => {
                                 {/* Category label */}
                                 <div
                                     className="
-                                        absolute -bottom-0.25 z-10 w-full
-                                        bg-[var(--primary)]
+                                        absolute -bottom-px z-10 w-full
+                                        bg-primary
                                         backdrop-blur-[1px]
-                                        border-t border-[var(--border-strong)]
+                                        border-t border-(--border-strong)
                                         text-center px-2 py-1
                                     "
                                 >
-                                    <span className="text-xs font-semibold tracking-wide text-[var(--primary-foreground)]">
+                                    <span className="text-xs font-semibold tracking-wide text-primary-foreground">
                                         {item.name}
                                     </span>
                                 </div>

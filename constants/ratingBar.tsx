@@ -27,25 +27,25 @@ export default function RatingBar({
       <div className="flex items-center gap-2">
         <Star
           size={14}
-          className="fill-[var(--linen-400)] stroke-[var(--primary)]"
+          className="fill-(--linen-400) stroke-primary"
         />
 
-        <span className="text-[12px] font-semibold text-[var(--text-inverse)]">
+        <span className="text-[12px] font-semibold text-(--text-inverse)">
           {value.toFixed(1)}
         </span>
 
-        <span className="text-[11px] text-[var(--linen-200)]">
+        <span className="text-[11px] text-(--linen-200)">
           / {max}
         </span>
       </div>
 
       {/* LINEN BAR */}
-      <div className="relative h-[6px] w-full rounded-full bg-[var(--linen-200)] overflow-hidden">
+      <div className="relative h-1.5 w-full rounded-full bg-(--linen-200) overflow-hidden">
         <div
           className="
             absolute left-0 top-0 h-full
             rounded-full
-            bg-[var(--primary)]
+            bg-primary
             transition-[width] duration-700 ease-[cubic-bezier(0.22,1,0.36,1)]
           "
           style={{ width: `${progress}%` }}
@@ -53,7 +53,7 @@ export default function RatingBar({
       </div>
 
       {/* MICRO LABEL */}
-      <p className="text-[8px] tracking-wide font-medium uppercase text-[var(--secondary)]">
+      <p className="text-[8px] tracking-wide font-medium uppercase text-secondary">
         Customer Rating
       </p>
     </div>

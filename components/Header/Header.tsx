@@ -15,8 +15,8 @@ const Header = () => {
         <header
             className="
                 sticky top-0 z-40 w-full
-                bg-[var(--linen-200)]
-                border-b border-[var(--border-strong)]
+                bg-(--linen-200)
+                border-b border-(--border-strong)
             "
         >
             <div className="relative p-2 flex items-center justify-between px-2 md:px-4">
@@ -43,8 +43,8 @@ const Header = () => {
                             size={20}
                             strokeWidth={2.2}
                             className="
-                                text-[var(--foreground)]
-                                hover:text-[var(--primary)]
+                                text-foreground
+                                hover:text-primary
                                 transition-colors duration-200
                             "
                         />

@@ -191,8 +191,8 @@ const SearchBar = () => {
           size={20}
           strokeWidth={2.2}
           className="
-            text-[var(--foreground)]
-            hover:text-[var(--primary)]
+            text-foreground
+            hover:text-primary
             transition-colors duration-200
           "
         />
@@ -213,12 +213,12 @@ const SearchBar = () => {
       <div
         className={cn(
           "fixed top-0 right-0 h-full w-[90%] sm:w-100 z-50 shadow-xl transform transition-transform duration-300",
-          "bg-[var(--linen-200)]",
+          "bg-(--linen-200)",
           open ? "translate-x-0" : "translate-x-[101%]"
         )}
       >
         {/* Input */}
-        <div className="flex items-center p-3 border-b border-[var(--border-strong)]">
+        <div className="flex items-center p-3 border-b border-(--border-strong) ">
           <input
             autoFocus
             value={query}
@@ -226,12 +226,12 @@ const SearchBar = () => {
             placeholder="Search shirts, fabric, style..."
             className="
               w-full px-3 py-1.25 rounded-[3px]
-              bg-[var(--linen-100)]
-              border border-[var(--input-border)]
-              text-[var(--foreground)]
-              placeholder:text-[var(--input-placeholder)]
+              bg-(--linen-100)
+              border border-(--input-border)
+              text-foreground
+              placeholder:text-(--input-placeholder)
               outline-none
-              focus:border-[var(--input-focus)]
+              focus:border-(--input-focus)
             "
           />
           <button
@@ -239,8 +239,8 @@ const SearchBar = () => {
             aria-label="Close search"
             className="
               p-2
-              text-[var(--text-secondary)]
-              hover:text-[var(--primary)]
+              text-(--text-secondary)
+              hover:text-primary
               transition-colors
             "
           >
@@ -257,14 +257,14 @@ const SearchBar = () => {
           )}
 
           {!loading && query && filteredProducts.length === 0 && (
-            <p className="text-center text-sm text-[var(--text-muted)]">
+            <p className="text-center text-sm text-(--text-muted)">
               No products found
             </p>
           )}
 
           {!query ? (
             <>
-              <h1 className="text-sm font-semibold tracking-wide text-[var(--foreground)] py-2">
+              <h1 className="text-sm font-semibold tracking-wide text-foreground py-2">
                 Most Trending Layer
               </h1>
 
@@ -278,8 +278,8 @@ const SearchBar = () => {
                   <p
                     className="
                       py-1 text-sm font-medium
-                      text-[var(--text-secondary)]
-                      hover:text-[var(--primary)]
+                      text-(--text-secondary)
+                      hover:text-primary
                       transition-colors
                     "
                   >
@@ -288,9 +288,9 @@ const SearchBar = () => {
                   <span
                     className="
                       absolute left-0 bottom-0
-                      h-[2px]
+                      h-0.5
                       w-1/2
-                      bg-[var(--primary)]
+                      bg-primary
                       scale-x-0 origin-left
                       transition-transform duration-500 ease-out
                       group-hover:scale-x-30
@@ -311,7 +311,7 @@ const SearchBar = () => {
                     href={`/products/${p.slug}`}
                     onClick={() => setOpen(false)}
                   >
-                    <div className="relative aspect-3/4 rounded-md overflow-hidden bg-[var(--surface-muted)]">
+                    <div className="relative aspect-3/4 rounded-md overflow-hidden bg-(--surface-muted)">
                       {image && (
                         <Image
                           src={image}
@@ -323,10 +323,10 @@ const SearchBar = () => {
                       <div className="absolute inset-0 bg-[rgba(0,0,0,0.20)] hover:bg-[rgba(0,0,0,0.35)] transition-colors" />
                     </div>
 
-                    <p className="mt-1 text-xs font-medium text-[var(--foreground)] line-clamp-1">
+                    <p className="mt-1 text-xs font-medium text-foreground line-clamp-1">
                       {p.productName}
                     </p>
-                    <p className="text-xs font-semibold text-[var(--text-secondary)]">
+                    <p className="text-xs font-semibold text-(--text-secondary)">
                       ₹{variant?.pricing?.price}
                     </p>
                   </Link>
@@ -337,14 +337,14 @@ const SearchBar = () => {
         </div>
 
         {/* Announcement Bar */}
-        <div className="fixed bottom-0 w-full overflow-hidden bg-[var(--linen-800)]">
+        <div className="fixed bottom-0 w-full overflow-hidden bg-(--linen-800)">
           <div className="marquee flex w-max items-center gap-6 py-1.75">
             {repeatedAnnouncements.map((text, i) => (
               <span
                 key={i}
                 className="
                   whitespace-nowrap
-                  text-[var(--text-inverse)]
+                  text-(--text-inverse)
                   font-poppins tracking-wider
                   px-2 text-sm
                 "

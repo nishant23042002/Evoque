@@ -76,8 +76,8 @@ export default function CartPage() {
     }
 
     return (
-        <div className="bg-[var(--linen-100)] min-h-[95vh] px-2 sm:px-4 py-10 mx-auto">
-            <h1 className="text-lg sm:text-xl my-3 font-semibold text-[var(--primary)]">
+        <div className="bg-(--linen-100) min-h-[95vh] px-2 sm:px-4 py-10 mx-auto">
+            <h1 className="text-lg sm:text-xl my-3 font-semibold text-primary">
                 My Bag ({itemCount} items)
             </h1>
 
@@ -96,7 +96,7 @@ export default function CartPage() {
                                 key={item.productId}
                                 className="block break-inside-avoid"
                             >
-                                <div style={{ height: heights[index] }} className="border border-[var(--border-strong)] shadow-xs group h-80 relative overflow-hidden rounded-[3px]">
+                                <div style={{ height: heights[index] }} className="border border-(--border-strong) shadow-xs group h-80 relative overflow-hidden rounded-[3px]">
 
                                     <Image
                                         src={item.image}
@@ -149,7 +149,7 @@ export default function CartPage() {
                                                     −
                                                 </button>
 
-                                                <span className="min-w-[16px] text-center">
+                                                <span className="min-w-4 text-center">
                                                     {item.quantity}
                                                 </span>
 
@@ -190,7 +190,7 @@ export default function CartPage() {
 
                 {/* RIGHT – SUMMARY */}
                 <div className="w-full lg:w-[35%]">
-                    <div className="lg:sticky lg:top-20 border border-[var(--border-strong)] rounded-[3px] p-3 space-y-4">
+                    <div className="lg:sticky lg:top-20 border border-(--border-strong) rounded-[3px] p-3 space-y-4">
 
                         {/* Address */}
                         <div className="flex justify-between gap-3">
@@ -249,7 +249,7 @@ export default function CartPage() {
                         </div>
 
                         {/* Pay */}
-                        <button className="cursor-pointer w-full bg-[var(--linen-900)]  hover:bg-[var(--linen-800)] text-white py-3 rounded-md font-semibold transition">
+                        <button className="cursor-pointer w-full bg-(--linen-900)  hover:bg-(--linen-800) text-white py-3 rounded-md font-semibold transition">
                             PAY ₹{grandTotal}
                         </button>
                     </div>

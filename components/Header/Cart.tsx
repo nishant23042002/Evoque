@@ -22,9 +22,9 @@ const Cart = () => {
                 key={cartCount}
                 className="
                             absolute -top-2 -right-1.5
-                            min-w-[12px] h-[13px]
+                            min-w-3 h-3.25
                             p-0.75
-                            bg-[var(--primary)]
+                            bg-primary
                             flex items-center justify-center
                             rounded-full
                             bg-brand-red
@@ -40,11 +40,11 @@ const Cart = () => {
                 size={20}
                 strokeWidth={2.2}
                 className={`
-                            text-[var(--foreground)]
-                                hover:text-[var(--primary)]
+                            text-foreground
+                                hover:text-primary
                                 transition-colors duration-200
-                            ${active ? "text-[var(--primary)]" : "text-[var(--foreground)]"}
-                            group-hover:text-[var(--primary)]
+                            ${active ? "text-primary" : "text-foreground"}
+                            group-hover:text-primary
                         `}
             />
         </Link>
