@@ -5,6 +5,7 @@ import Footer from "@/components/Footer/Footer";
 import LeftMenu from "@/components/LeftMenu/LeftMenu";
 import { Inter, Poppins } from "next/font/google";
 import Providers from "./providers";
+import { AuthProvider } from "@/components/AuthProvider";
 
 
 const inter = Inter({
@@ -32,22 +33,25 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" className={`${inter.variable} ${poppins.variable}`}>
-      <body className="font-poppins antialiased bg-[var(--linen-100)]">
-        <Providers>
-          <div className="flex">
-            <div className="fixed top-0 z-99 h-full">
-              <LeftMenu />
-            </div>
-            <div className="w-full">
-              <Header />
+    <AuthProvider>
+      <html lang="en" className={`${inter.variable} ${poppins.variable}`}>
+        <body className="font-poppins antialiased bg-(--linen-100)">
+          <Providers>
+            <div className="flex">
+              <div className="fixed top-0 z-99 h-full">
+                <LeftMenu />
+              </div>
+              <div className="w-full">
+                <Header />
 
-              {children}
-              <Footer />
+                {children}
+                <div id="recaptcha-container"></div>
+                <Footer />
+              </div>
             </div>
-          </div>
-        </Providers>
-      </body>
-    </html>
+          </Providers>
+        </body>
+      </html>
+    </AuthProvider>
   );
 }

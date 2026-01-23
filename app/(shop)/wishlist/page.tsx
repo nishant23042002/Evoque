@@ -77,15 +77,15 @@ export default function Wishlist() {
     return (
       <div className="flex flex-col items-center justify-center min-h-[60vh] text-center px-6">
         {/* Icon */}
-        <div className="mb-2 animate-float flex items-center justify-center w-20 h-20 rounded-full bg-[var(--earth-charcoal)]/10">
-          <Heart className="w-10 h-10 text-[var(--primary)]" />
+        <div className="mb-2 animate-float flex items-center justify-center w-20 h-20 rounded-full bg-(--earth-charcoal)/10">
+          <Heart className="w-10 h-10 text-primary" />
         </div>
 
         {/* Text */}
-        <h2 className="text-xl font-semibold text-[var(--linen-100)]">
+        <h2 className="text-xl font-semibold text-primary">
           Your wishlist is empty
         </h2>
-        <p className="mt-2 text-sm font-medium text-[var(--linen-800)]/70 max-w-sm">
+        <p className="mt-2 text-sm font-medium text-(--linen-800)/70 max-w-sm">
           Save your favourite items here and come back anytime to find them quickly.
         </p>
 
@@ -93,9 +93,9 @@ export default function Wishlist() {
         <Link
           href="/"
           className="mt-6 inline-flex items-center justify-center rounded-full px-6 py-2 text-sm font-medium
-                          bg-[var(--primary)] text-black hover:opacity-90 transition"
+                          bg-primary text-black hover:opacity-90 transition"
         >
-          <span className="text-[var(--linen-100)]">
+          <span className="text-(--linen-100)">
             Explore Products
           </span>
         </Link>

@@ -12,7 +12,7 @@ import { SlidersHorizontal } from 'lucide-react'
 import { toggleWishlist } from "@/store/wishlist/wishlist.slice";
 import { useAppDispatch, useAppSelector } from "@/store/hooks";
 import { RootState } from "@/store";
-import LayerLogoLoader from "../FlashLogo/LayerLogo"
+
 
 const Masonry = dynamic(() => import("react-masonry-css"), { ssr: false });
 
@@ -404,7 +404,7 @@ export default function ProductMasonryGrid({
                                         className={`
                                                 absolute inset-0 max-md:bottom-6
                                                 flex flex-col justify-end text-white
-                                                transition-transform duration-700 ease-out
+                                                transition-transform duration-300 ease-out
 
                                                 md:opacity-0 md:translate-y-0
                                                 md:group-hover:opacity-100

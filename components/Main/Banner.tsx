@@ -113,7 +113,7 @@ const BannerSlider = ({ banners }: BannerSliderProps) => {
   };
 
   return (
-    <div className="relative overflow-hidden mx-auto ">
+    <div className="relative overflow-hidden mx-auto md:w-[85%]">
       {/* FADE STACK */}
       <div
         className="

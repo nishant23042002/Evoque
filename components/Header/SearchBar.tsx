@@ -258,7 +258,7 @@ const SearchBar = () => {
 
           {!loading && query && filteredProducts.length === 0 && (
             <p className="text-center text-sm text-(--text-muted)">
-              No products found
+              Dropping Soon. Stay Tune...
             </p>
           )}
 

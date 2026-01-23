@@ -104,7 +104,7 @@ const LeftMenu = () => {
 
     const handleNavClick = () => setIsOpen(false);
 
-    const SIDEBAR_WIDTH = isMobile ? "w-14" : "w-90";
+    const SIDEBAR_WIDTH = isMobile ? "w-70" : "w-90";
 
     return (
         <>
@@ -113,7 +113,7 @@ const LeftMenu = () => {
                 onClick={() => setIsOpen(!isOpen)}
                 className={cn(
                     "fixed left-2 md:left-3 top-0 z-50 py-2 duration-200 cursor-pointer",
-                    "text-[var(--foreground)] hover:text-[var(--primary)]",
+                    "text-foreground hover:text-primary",
                     isOpen ? "left-4 top-5" : "top-3.5"
                 )}
             >
@@ -131,7 +131,7 @@ const LeftMenu = () => {
             <div
                 className={cn(
                     "fixed inset-0 z-40 transition-opacity duration-300",
-                    "bg-[var(--earth-charcoal)]/30",
+                    "bg-(--earth-charcoal)/30",
                     isOpen ? "opacity-100 pointer-events-auto" : "opacity-0 pointer-events-none"
                 )}
                 onClick={() => setIsOpen(false)}
@@ -148,15 +148,15 @@ const LeftMenu = () => {
                     isOpen ? "translate-x-0" : "-translate-x-full"
                 )}
             >
-                <nav className="flex flex-col pt-16 h-full min-[551px]:mx-2">
+                <nav className="flex flex-col mt-6 h-full min-[551px]:mx-2">
 
                     {/* ---------- TOP ---------- */}
-                    <div className="space-y-1 pt-2">
-                        {!isMobile && (
-                            <h2 className="text-center select-none mx-1 text-sm tracking-widest font-semibold font-poppins text-primary mb-1.5">
-                                The Layer
-                            </h2>
-                        )}
+                    <div className="space-y-1 mt-10">
+{/* 
+                        <h2 className="text-center select-none mx-1 text-sm tracking-widest font-semibold font-poppins text-primary mb-1.5">
+                            The Layer
+                        </h2> */}
+
 
                         {PRIMARY_ITEMS.map((item) => {
                             const active = pathname === item.href;
@@ -173,22 +173,15 @@ const LeftMenu = () => {
                                         <span className="absolute left-0 top-1/2 -translate-y-1/2 h-6 w-1 bg-primary" />
                                     )}
 
-                                    {isMobile ? (
+                                    <div className={`flex items-center gap-5 mx-1 px-3 py-2 w-full ${active ? "bg-(--primary)/20 rounded-sm" : ""}`}>
                                         <Icon
                                             size={20}
-                                            className={`m-3 ${active ? "text-[var(--primary)]" : "text-[var(--text-secondary)]"}`}
+                                            className={active ? "text-primary" : "text-(--text-secondary)"}
                                         />
-                                    ) : (
-                                        <div className={`flex items-center gap-5 mx-1 px-3 py-2 w-full ${active ? "bg-(--primary)/20 rounded-sm" : ""}`}>
-                                            <Icon
-                                                size={20}
-                                                className={active ? "text-primary" : "text-(--text-secondary)"}
-                                            />
-                                            <span className={active ? "text-primary font-medium" : "text-foreground"}>
-                                                {item.title}
-                                            </span>
-                                        </div>
-                                    )}
+                                        <span className={active ? "text-primary font-medium" : `${isMobile ? "text-foreground text-xs" : ""}`}>
+                                            {item.title}
+                                        </span>
+                                    </div>
                                 </Link>
                             );
                         })}
@@ -196,11 +189,9 @@ const LeftMenu = () => {
 
                     {/* ---------- MIDDLE ---------- */}
                     <div className="mt-4">
-                        {!isMobile && (
-                            <h2 className="text-center mx-1 text-sm tracking-widest font-semibold font-poppins text-primary mb-1.5">
-                                Trending Layer
-                            </h2>
-                        )}
+                        <h2 className="text-center mx-1 text-sm tracking-widest font-semibold font-poppins text-primary mb-1.5">
+                            Trending Layer
+                        </h2>
 
                         <div className="space-y-1">
                             {categories.slice(0, 5).map((category, i) => {
@@ -226,7 +217,7 @@ const LeftMenu = () => {
                                                 className="object-cover object-center"
                                             />
                                             {!active && (
-                                                <div className="absolute inset-0 transition-all duration-300 bg-black/25 hover:bg-transparent" />
+                                                <div className={`${isMobile ? "absolute inset-0 transition-all duration-300 bg-transparent" : "absolute inset-0 transition-all duration-300 bg-black/25 hover:bg-transparent"}`} />
                                             )}
                                             <p className="absolute truncate left-1 min-[551px]:left-3 bottom-2 text-[10px] min-[551px]:text-sm text-(--text-inverse) font-medium">
                                                 {category.name}
@@ -240,11 +231,9 @@ const LeftMenu = () => {
 
                     {/* ---------- BOTTOM ---------- */}
                     <div className="space-y-1 pb-4 mt-4">
-                        {!isMobile && (
-                            <h2 className="text-center mx-1 text-sm tracking-widest font-semibold font-poppins text-primary mb-1.5">
-                                Social Layer
-                            </h2>
-                        )}
+                        <h2 className="text-center mx-1 text-sm tracking-widest font-semibold font-poppins text-primary mb-1.5">
+                            Social Layer
+                        </h2>
 
                         {SECONDARY_ITEMS.map((item) => {
                             const active = pathname === item.href;
@@ -261,22 +250,16 @@ const LeftMenu = () => {
                                         <span className="absolute left-0 top-5.5 -translate-y-1/2 h-6 w-1 bg-primary" />
                                     )}
 
-                                    {isMobile ? (
+                                    <div className={`flex items-center gap-5 mx-1 px-3 py-2 w-full ${active ? "bg-(--primary)/20 rounded-sm" : ""}`}>
                                         <Icon
                                             size={20}
-                                            className={`m-3 ${active ? "text-primary" : "text-(--text-secondary)"}`}
+                                            className={active ? "text-primary" : "text-(--text-secondary)"}
                                         />
-                                    ) : (
-                                        <div className={`flex items-center gap-5 mx-1 px-3 py-2 w-full ${active ? "bg-(--primary)/20 rounded-sm" : ""}`}>
-                                            <Icon
-                                                size={20}
-                                                className={active ? "text-primary" : "text-(--text-secondary)"}
-                                            />
-                                            <span className={active ? "text-primary font-medium" : "text-foreground"}>
-                                                {item.title}
-                                            </span>
-                                        </div>
-                                    )}
+                                        <span className={active ? "text-primary font-medium" : `${isMobile ? "text-foreground text-xs" : ""}`}>
+                                            {item.title}
+                                        </span>
+                                    </div>
+
                                 </Link>
                             );
                         })}

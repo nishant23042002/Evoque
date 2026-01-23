@@ -1,7 +1,21 @@
 "use client";
 
 import { IoClose } from "react-icons/io5";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState, useTransition } from "react";
+import {
+    RecaptchaVerifier,
+    signInWithPhoneNumber,
+    ConfirmationResult,
+} from "firebase/auth";
+import { auth } from "@/firebase";
+import { useRouter } from "next/navigation";
+import {
+    InputOTP, InputOTPGroup, InputOTPSeparator,
+    InputOTPSlot
+} from "../ui/input-otp";
+
+
+
 
 interface LoginModalUIProps {
     open: boolean;
@@ -10,15 +24,41 @@ interface LoginModalUIProps {
 
 export default function LoginModalUI({ open, onClose }: LoginModalUIProps) {
     const sliderRef = useRef<HTMLDivElement | null>(null);
+    const router = useRouter();
     const [activeIndex, setActiveIndex] = useState(0);
+    const [phoneNumber, setPhoneNumber] = useState("");
+    const [otp, setOtp] = useState("");
+    const [success, setSuccess] = useState("");
+    const [error, setError] = useState("");
+    const [resendCountdown, setResendCountdown] = useState(0);
+
+    const [confirmationResult, setConfirmationResult] =
+        useState<ConfirmationResult | null>(null);
+    const [isPending, startTransition] = useTransition();
+    const recaptchaVerifierRef = useRef<RecaptchaVerifier | undefined>(undefined);
 
     const [step, setStep] = useState<"mobile" | "otp">("mobile");
-    const [mobile, setMobile] = useState("");
-    const [otp, setOtp] = useState("");
-    const [loading, setLoading] = useState(false);
     const SLIDES_COUNT = 3;
 
+
     useEffect(() => {
+        if (!open) return;
+
+        if (!recaptchaVerifierRef.current) {
+            recaptchaVerifierRef.current = new RecaptchaVerifier(
+                auth,
+                "recaptcha-container",
+                {
+                    size: "invisible",
+                }
+            );
+        }
+    }, [open]);
+
+    /* ---------------- Slider ---------------- */
+    useEffect(() => {
+        if (!open) return;
+
         const slider = sliderRef.current;
         if (!slider) return;
 
@@ -36,51 +76,97 @@ export default function LoginModalUI({ open, onClose }: LoginModalUIProps) {
         return () => clearInterval(interval);
     }, [open]);
 
+    /* ---------------- Countdown ---------------- */
+    useEffect(() => {
+        if (resendCountdown <= 0) return;
+        const timer = setTimeout(
+            () => setResendCountdown(c => c - 1),
+            1000
+        );
+        return () => clearTimeout(timer);
+    }, [resendCountdown]);
+
+    /* ---------------- Verify OTP ---------------- */
+    const verifyOtp = async () => {
+        if (!confirmationResult) {
+            setError("Please request OTP first");
+            return;
+        }
+
+        try {
+            setError("");
+
+            await confirmationResult.confirm(otp);
+            // ✅ user is now authenticated
+            // result.user contains Firebase user
+
+            onClose();              // ✅ close modal first
+            router.replace("/");    // ✅ then navigate
+
+        } catch (error) {
+            console.error(error);
+            setError("Failed to verify OTP. Please check the OTP.");
+        }
+    };
+
+
+    /* ---------------- Auto Verify OTP ---------------- */
+    useEffect(() => {
+        if (otp.length !== 6 || !confirmationResult) return;
+
+        const id = setTimeout(() => {
+            verifyOtp();
+        }, 0);
+
+        return () => clearTimeout(id);
+    }, [otp, confirmationResult]);
+
+
     if (!open) return null;
 
+
+    /* ---------------- Send OTP ---------------- */
     const sendOtp = async () => {
-        if (mobile.length !== 10) return alert("Enter valid mobile number");
+        setError("");
 
-        try {
-            setLoading(true);
-
-            await fetch("/api/auth/send-otp", {
-                method: "POST",
-                headers: {
-                    "authorization": "89odhN3XyvoTzRYLc7OYihR3Zvd6jZ24fuTmmtXezVc8LBpYxslSTCUpkxTN",
-                    "Content-Type": "application/json"
-                },
-                body: JSON.stringify({ mobile }),
-            });
-
-            setStep("otp");
-        } catch {
-            alert("Failed to send OTP");
-        } finally {
-            setLoading(false);
+        if (phoneNumber.length !== 10) {
+            setError("Enter a valid 10-digit mobile number");
+            return;
         }
-    };
-    const verifyOtp = async () => {
-        if (otp.length !== 6) return alert("Enter valid OTP");
-
-        try {
-            setLoading(true);
-
-            const res = await fetch("/api/auth/verify-otp", {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ mobile, otp }),
-            });
-
-            if (!res.ok) throw new Error();
-
-            onClose(); // Logged in 🎉
-        } catch {
-            alert("Invalid OTP");
-        } finally {
-            setLoading(false);
+        setResendCountdown(60);
+        if (!recaptchaVerifierRef.current) {
+            setError("reCAPTCHA not ready");
+            return;
         }
-    };
+
+        startTransition(async () => {
+
+            try {
+                const formattedPhone = `+91${phoneNumber}`;
+
+                const confirmationResult = await signInWithPhoneNumber(
+                    auth,
+                    formattedPhone,
+                    recaptchaVerifierRef.current
+                );
+
+
+                setConfirmationResult(confirmationResult);
+                setStep("otp")
+                setSuccess("OTP sent successfully");
+            } catch (error) {
+                console.log(error);
+                setResendCountdown(0);
+            }
+        })
+    }
+
+    const Loader = (
+        <div className="flex items-center justify-center">
+            <div className="h-6 w-6 animate-spin rounded-full border-2 border-slate-300 border-t-slate-900" />
+        </div>
+    );
+
 
     return (
         <div className="fixed inset-0 z-9999 flex items-center justify-center select-none">
@@ -89,7 +175,6 @@ export default function LoginModalUI({ open, onClose }: LoginModalUIProps) {
                 className="absolute inset-0 bg-black/30 backdrop-blur-sm"
                 onClick={onClose}
             />
-
             {/* Modal */}
             <div
                 onClick={e => e.stopPropagation()}
@@ -177,82 +262,143 @@ export default function LoginModalUI({ open, onClose }: LoginModalUIProps) {
                             </div>
                         </div>
                     </div>
+                    <div id="recaptcha-container" />
 
                     {/* RIGHT */}
                     <div className="bg-(--surface) p-5 flex flex-col justify-center">
                         {step === "mobile" ? (
-                            <>
-                                <h3 className="text-lg font-semibold mb-4 text-center">
-                                    Login with WhatsApp
+                            <div className="w-full max-w-sm mx-auto px-2 sm:px-0">
+                                <h3 className="text-base sm:text-lg font-semibold text-[var(--linen-800)] mb-4 text-center">
+                                    Login with Mobile
                                 </h3>
 
-                                <div className="relative flex gap-2 border rounded-[3px] p-1 mb-5">
-                                    <span className="text-sm font-extraboldbold z-99"><span className="font-bold text-(--secondory)">🇮🇳</span> +91</span>
+                                {/* Phone Input */}
+                                <div className="relative flex items-center w-full border border-gray-300 rounded-md px-2 py-2 focus-within:border-primary transition">
+
+                                    {/* Country Code */}
+                                    <div className="flex items-center gap-1 pr-2 border-r border-gray-200">
+                                        <span className="text-base">🇮🇳</span>
+                                        <span className="text-sm font-medium text-gray-700">+91</span>
+                                    </div>
+
+                                    {/* Input */}
                                     <input
-                                        value={mobile}
-                                        onChange={e => setMobile(e.target.value.replace(/\D/g, ""))}
+                                        value={phoneNumber}
+                                        onChange={e => setPhoneNumber(e.target.value.replace(/\D/g, ""))}
                                         maxLength={10}
-                                        placeholder="Enter Mobile Number"
-                                        className="w-full outline-none text-center"
+                                        inputMode="numeric"
+                                        placeholder="Enter mobile number"
+                                        className="
+                                                flex-1 pl-3 text-sm sm:text-base
+                                                outline-none bg-transparent
+                                                placeholder:text-gray-400
+                                            "
                                     />
 
-                                    <span className="absolute bottom-9 w-5 h-1 bg-orange-700"></span>
-                                    <span className="absolute bottom-8 w-5 h-1 bg-white"></span>
-                                    <span className="absolute bottom-7 w-5 h-1 bg-green-700"></span>
+                                    {/* Tricolor accent */}
+                                    <div className="absolute left-2 bottom-7 flex gap-1">
+                                        <span className="w-3 h-[3px] bg-orange-600" />
+                                        <span className="w-3 h-[3px] bg-white border" />
+                                        <span className="w-3 h-[3px] bg-green-600" />
+                                    </div>
                                 </div>
 
+                                {/* Button */}
                                 <button
                                     onClick={sendOtp}
-                                    disabled={loading}
+                                    disabled={!phoneNumber || isPending || resendCountdown > 0}
                                     className="
-                                                    w-full rounded-[3px] py-3 text-sm cursor-pointer
-                                                    bg-primary
-                                                    text-primary-foreground
-                                                    hover:bg-(--btn-primary-hover)
-                                                    transition-colors
-                                                "
+                                        w-full mt-4 py-2 rounded-md
+                                        text-sm sm:text-base font-medium
+                                        bg-primary text-primary-foreground
+                                        hover:bg-[var(--btn-primary-hover)]
+                                        hover:disabled:opacity-80 disabled:cursor-not-allowed
+                                        transition
+                                        "
                                 >
-                                    {loading ? "Sending OTP..." : "Continue"}
+                                    {resendCountdown > 0
+                                        ? `Resend OTP in ${resendCountdown}s`
+                                        : isPending
+                                            ? "Sending OTP…"
+                                            : "Send OTP"}
                                 </button>
-                            </>
+
+                                {/* Status */}
+                                <div className="mt-3 text-center text-xs sm:text-sm">
+                                    {error && <p className="text-red-500">{error}</p>}
+                                    {success && <p className="text-green-600">{success}</p>}
+                                </div>
+
+                                {isPending && (
+                                    <div className="mt-3 flex justify-center">{Loader}</div>
+                                )}
+                            </div>
+
                         ) : (
-                            <>
-                                <h3 className="text-lg font-semibold mb-4 text-center">
-                                    Enter OTP
-                                </h3>
+                            <div className="w-full max-w-sm mx-auto px-2 sm:px-0">
+                                <p className="text-xs sm:text-sm text-(--text-secondary)">
+                                    OTP sent to{" "}
+                                    <span className="font-medium text-(--linen-800)">
+                                        +91 {phoneNumber}
+                                    </span>
+                                </p>
+                                <button
+                                    type="button"
+                                    onClick={() => {
+                                        setStep("mobile");
+                                        setOtp("");
+                                        setError("");
+                                        setSuccess("");
+                                        setResendCountdown(0);
+                                        setConfirmationResult(null);
+                                    }}
+                                    className="mt-1 text-xs sm:text-sm text-primary underline"
+                                >
+                                    Edit phone number
+                                </button>
+                                {/* OTP Inputs */}
+                                <div className="w-full flex justify-center mb-4">
+                                    <InputOTP
+                                        maxLength={6}
+                                        value={otp}
+                                        onChange={(value) => setOtp(value)}
+                                    >
+                                        <InputOTPGroup>
+                                            <InputOTPSlot index={0} />
+                                            <InputOTPSlot index={1} />
+                                            <InputOTPSlot index={2} />
+                                        </InputOTPGroup>
 
-                                <input
-                                    value={otp}
-                                    onChange={e => setOtp(e.target.value.replace(/\D/g, ""))}
-                                    maxLength={6}
-                                    placeholder="6-digit OTP"
-                                    className="border rounded-[3px] p-3 text-center tracking-widest mb-4"
-                                />
+                                        <InputOTPSeparator className="opacity-80" />
 
+                                        <InputOTPGroup>
+                                            <InputOTPSlot index={3} />
+                                            <InputOTPSlot index={4} />
+                                            <InputOTPSlot index={5} />
+                                        </InputOTPGroup>
+                                    </InputOTP>
+                                </div>
+
+                                {/* Verify Button */}
                                 <button
                                     onClick={verifyOtp}
-                                    disabled={loading}
+                                    disabled={!phoneNumber || isPending || resendCountdown > 0}
                                     className="
-                                                    w-full rounded-[3px] py-3 text-sm cursor-pointer
-                                                    bg-primary
-                                                    text-primary-foreground
-                                                    hover:bg-(--btn-primary-hover)
-                                                    transition-colors
-                                                "
+                                            w-full py-2 rounded-md
+                                        text-sm sm:text-base font-medium
+                                        bg-primary text-primary-foreground
+                                        hover:bg-(--btn-primary-hover)
+                                        hover:disabled:opacity-80 disabled:cursor-not-allowed
+                                        transition
+                                            "
                                 >
-                                    {loading ? "Verifying..." : "Verify OTP"}
+                                    {isPending ? "Verifying OTP…" : "Verify OTP"}
                                 </button>
+                            </div>
 
-                                <p
-                                    onClick={sendOtp}
-                                    className="text-xs text-center underline cursor-pointer mt-4"
-                                >
-                                    Resend OTP
-                                </p>
-                            </>
                         )}
 
-                        <label className="flex items-center gap-2 py-2 text-xs text-(--text-secondary) mb-6">
+                        <label className="min-[400px]:w-[80%] w-full mx-auto flex items-center gap-2 py-2 text-xs text-(--text-secondary) mb-6">
                             <input
                                 type="checkbox"
                                 className="accent-primary cursor-pointer"

@@ -19,7 +19,7 @@ export default function Footer() {
                     {/* BRAND / PHILOSOPHY */}
                     <div className="space-y-6">
                         <p className="text-sm leading-relaxed text-(--text-linen-300) max-w-sm">
-                            <span className="block mb-2 text-xs uppercase font-serif tracking-wider text-(--earth-clay)">
+                            <span className="block text-xs uppercase font-serif tracking-wider text-(--earth-clay)">
                                 The Layer Co.
                             </span>
                             A modern menswear label focused on restraint, proportion,

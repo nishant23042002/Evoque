@@ -21,25 +21,58 @@ export default function RatingBar({
     return () => clearTimeout(t);
   }, [percent]);
 
+  /* =======================
+     STAR CALCULATION
+  ======================= */
+  const fullStars = Math.floor(value);
+  const hasHalfStar = value % 1 >= 0.5;
+  const emptyStars = max - fullStars - (hasHalfStar ? 1 : 0);
+
   return (
     <div className="mt-2 space-y-2">
-      {/* TOP ROW */}
-      <div className="flex items-center gap-2">
-        <Star
-          size={14}
-          className="fill-(--linen-400) stroke-primary"
-        />
+      {/* STAR ROW */}
+      <div className="flex items-center gap-1">
+        {/* FULL STARS */}
+        {[...Array(fullStars)].map((_, i) => (
+          <Star
+            key={`full-${i}`}
+            size={14}
+            className="fill-primary stroke-primary"
+          />
+        ))}
 
-        <span className="text-[12px] font-semibold text-(--text-inverse)">
+        {/* HALF STAR */}
+        {hasHalfStar && (
+          <div className="relative w-[14px] h-[14px]">
+            <Star
+              size={14}
+              className="absolute inset-0 fill-(--linen-300) stroke-primary"
+            />
+            <div className="absolute inset-0 overflow-hidden w-1/2">
+              <Star
+                size={14}
+                className="fill-primary stroke-primary"
+              />
+            </div>
+          </div>
+        )}
+
+        {/* EMPTY STARS */}
+        {[...Array(emptyStars)].map((_, i) => (
+          <Star
+            key={`empty-${i}`}
+            size={14}
+            className="stroke-(--linen-300)"
+          />
+        ))}
+
+        {/* VALUE */}
+        <span className="ml-1 text-[12px] font-semibold text-(--text-inverse)">
           {value.toFixed(1)}
-        </span>
-
-        <span className="text-[11px] text-(--linen-200)">
-          / {max}
         </span>
       </div>
 
-      {/* LINEN BAR */}
+      {/* PROGRESS BAR */}
       <div className="relative h-1.5 w-full rounded-full bg-(--linen-200) overflow-hidden">
         <div
           className="
@@ -52,7 +85,7 @@ export default function RatingBar({
         />
       </div>
 
-      {/* MICRO LABEL */}
+      {/* LABEL */}
       <p className="text-[8px] tracking-wide font-medium uppercase text-secondary">
         Customer Rating
       </p>

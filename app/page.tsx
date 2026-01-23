@@ -5,6 +5,11 @@ import FeaturedCategories from "@/components/Main/FeaturedCategory";
 import BannerSlider from "@/components/Main/Banner";
 import ProductMasonryGrid from "@/components/Main/ProductMasonryGrid";
 import { useEffect, useState } from "react";
+import { auth } from "@/firebase";
+import Link from "next/link";
+import { useAuth } from "@/components/AuthProvider";
+import { signOut } from "firebase/auth";
+import LoginModalUI from "@/components/Header/LoginModal";
 
 
 
@@ -78,11 +83,17 @@ export interface Product {
   isNewArrival: string
 }
 
-export default function Home() {
+interface LoginModalUIProps {
+  open: boolean;
+  onClose: () => void;
+}
+
+export default function Home({ open, onClose }: LoginModalUIProps) {
   const [items, setItems] = useState<Product[]>([]);
   const [topBanners, setTopBanners] = useState<Banner[]>([]);
   const [bottomBanners, setBottomBanners] = useState<Banner[]>([]);
-
+  const [loginOpen, setLoginOpen] = useState(false);
+  const { user } = useAuth();
 
   useEffect(() => {
     // Fetch products from backend API
@@ -132,7 +143,28 @@ export default function Home() {
   return (
     <Container className="bg-[var(--linen-100)]">
       <div className="flex flex-col">
+        <div className="flex justify-center items-center">
+          {user ? (
+            <h2>Welcome to the LAYER CLUB. {user?.uid}</h2>
+          ) : (
+            <h2>
+              You are not logged in
+            </h2>
+          )}
+          {user ? (
+            <button onClick={() => signOut(auth)} className="mt-10">
+              Sign Out
+            </button>
+          ) : (
+            <button
+              onClick={() => setLoginOpen(true)}
+              className="mt-10"
+            >
+              Sign In
+            </button>
 
+          )}
+        </div>
         {/* 🔥 Top Hero Banner Section */}
         {topBanners.length > 0 && (
           <section className="w-full">
@@ -156,6 +188,10 @@ export default function Home() {
         <section className="w-full">
           <ProductMasonryGrid products={items} />
         </section>
+        <LoginModalUI
+          open={loginOpen}
+          onClose={() => setLoginOpen(false)}
+        />
 
       </div>
     </Container>

@@ -11,6 +11,7 @@ import {
 } from "@/store/cart/cart.slice";
 import { toggleWishlist } from "@/store/wishlist/wishlist.slice";
 import { useMemo } from "react";
+import { ShoppingBag } from "lucide-react";
 
 export default function CartPage() {
     const dispatch = useAppDispatch();
@@ -69,8 +70,40 @@ export default function CartPage() {
 
     if (!cartItems.length) {
         return (
-            <div className="h-[60vh] flex items-center justify-center text-sm text-slate-600">
-                Your bag is empty
+            <div className="min-h-[60vh] flex items-center justify-center px-4">
+                <div className="max-w-sm w-full text-center space-y-6">
+                    {/* Icon */}
+                    <div className="flex justify-center ">
+                        <div className="mb-2 animate-float flex items-center justify-center w-20 h-20 rounded-full bg-(--earth-charcoal)/10">
+                            <ShoppingBag
+                                className="w-9 h-9 text-(--text-muted)"
+                                strokeWidth={1.5}
+                            />
+                        </div>
+                    </div>
+
+                    {/* Text */}
+                    <div className="space-y-2">
+                        <h2 className="text-lg font-semibold text-primary">
+                            Your cart is empty
+                        </h2>
+                        <p className="text-sm font-medium text-(--linen-800)/70">
+                            Looks like you haven’t added anything yet.
+                            Start exploring and find something you love.
+                        </p>
+                    </div>
+
+                    {/* CTA */}
+                    <Link
+                        href="/"
+                        className="inline-flex items-center justify-center w-full rounded-md
+                     bg-primary text-primary-foreground
+                     px-4 py-2 text-sm font-medium
+                     hover:opacity-90 transition"
+                    >
+                        Continue Shopping
+                    </Link>
+                </div>
             </div>
         );
     }
