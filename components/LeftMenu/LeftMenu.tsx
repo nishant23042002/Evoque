@@ -12,7 +12,7 @@ import {
 import { MdFiberNew } from "react-icons/md";
 import { Flame } from "lucide-react";
 import { cn } from "@/lib/utils";
-import { TbMenu } from "react-icons/tb";
+import { Menu } from "lucide-react";
 
 const MOBILE_BREAKPOINT = 550;
 
@@ -96,11 +96,16 @@ const LeftMenu = () => {
     }, [isOpen]);
 
     useEffect(() => {
-        document.body.style.overflow = isOpen ? "hidden" : "";
+        if (!isOpen) return;
+
+        const original = document.body.style.overflow;
+        document.body.style.overflow = "hidden";
+
         return () => {
-            document.body.style.overflow = "";
+            document.body.style.overflow = original;
         };
     }, [isOpen]);
+
 
     const handleNavClick = () => setIsOpen(false);
 
@@ -110,54 +115,64 @@ const LeftMenu = () => {
         <>
             {/* MENU BUTTON */}
             <button
-                onClick={() => setIsOpen(!isOpen)}
-                className={cn(
-                    "fixed left-2 md:left-3 top-0 z-50 py-2 duration-200 cursor-pointer",
-                    "text-foreground hover:text-primary",
-                    isOpen ? "left-4 top-5" : "top-3.5"
-                )}
+                data-menu-btn
+                onClick={() => setIsOpen(v => !v)}
+                className={"fixed max-[550px]:left-1.5 left-3 top-5 z-50 cursor-pointer rounded-md text-foreground hover:text-primary transition-transform duration-300 ease-in-out"}
             >
-                {isOpen ? (
-                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2">
-                        <path d="M18 6 6 18" />
-                        <path d="m6 6 12 12" />
-                    </svg>
-                ) : (
-                    <TbMenu size={20} />
-                )}
+                <span
+                    className={cn(
+                        "inline-block transition-transform duration-300",
+                        isOpen && "rotate-90"
+                    )}
+                >
+                    {isOpen ? (
+                        <svg
+                            width="20"
+                            height="20"
+                            viewBox="0 0 24 24"
+                            fill="none"
+                            stroke="currentColor"
+                            strokeWidth="2.2"
+                        >
+                            <path d="M18 6 6 18" />
+                            <path d="m6 6 12 12" />
+                        </svg>
+                    ) : (
+                        <Menu size={20} />
+                    )}
+                </span>
             </button>
+
 
             {/* BACKDROP */}
             <div
                 className={cn(
-                    "fixed inset-0 z-40 transition-opacity duration-300",
-                    "bg-(--earth-charcoal)/30",
-                    isOpen ? "opacity-100 pointer-events-auto" : "opacity-0 pointer-events-none"
+                    "fixed inset-0 z-30",
+                    "bg-(--earth-charcoal)/40",
+                    "transition-opacity duration-300 ease-in-out",
+                    isOpen
+                        ? "opacity-100 pointer-events-auto"
+                        : "opacity-0 pointer-events-none"
                 )}
                 onClick={() => setIsOpen(false)}
             />
+
 
             {/* SIDEBAR */}
             <aside
                 ref={sidebarRef}
                 className={cn(
-                    "fixed top-0 m-0 -left-px z-40 h-screen py-1",
+                    "fixed top-0 left-0 z-40 h-dvh py-1",
                     "bg-(--linen-200) border-r border-(--border-strong)",
                     SIDEBAR_WIDTH,
-                    "transform transition-transform duration-300 ease-in-out",
+                    "will-change-transform transform-gpu",
+                    "transition-transform duration-500 ease-in-out",
                     isOpen ? "translate-x-0" : "-translate-x-full"
                 )}
             >
                 <nav className="flex flex-col mt-6 h-full min-[551px]:mx-2">
-
                     {/* ---------- TOP ---------- */}
                     <div className="space-y-1 mt-10">
-{/* 
-                        <h2 className="text-center select-none mx-1 text-sm tracking-widest font-semibold font-poppins text-primary mb-1.5">
-                            The Layer
-                        </h2> */}
-
-
                         {PRIMARY_ITEMS.map((item) => {
                             const active = pathname === item.href;
                             const Icon = item.icon;

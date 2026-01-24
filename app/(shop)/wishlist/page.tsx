@@ -167,14 +167,13 @@ export default function Wishlist() {
 
                   dispatch(toggleWishlist(activeItem));
                 }}
-                  className="
+                  className="border border-(--border-light)
                             cursor-pointer mt-2 w-full
                             hover:bg-(--btn-primary-bg)
                             text-(--btn-primary-text)
                             font-semibold
                             py-3
-                            rounded-[3px]
-                            border border-border
+                            rounded-[3px]                         
                             bg-(--btn-primary-hover)
                             transition-all duration-300
                           ">
@@ -225,7 +224,8 @@ export default function Wishlist() {
                         e.stopPropagation();
                         dispatch(toggleWishlist(item));
                       }}
-                      className="text-(--text-muted) hover:text-accent cursor-pointer"
+                      size={18}
+                      className="duration-200 text-(--linen-700) hover:text-red-600 cursor-pointer"
                     />
                   </div>
 
@@ -260,7 +260,7 @@ export default function Wishlist() {
 
                       dispatch(toggleWishlist(activeItem));
                     }}
-                      className="
+                      className="border border-(--border-light)
                               cursor-pointer mt-2 w-full
                               hover:bg-primary
                               text-primary-foreground

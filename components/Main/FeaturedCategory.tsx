@@ -51,7 +51,7 @@ const FeaturedCategories = () => {
     }
 
     return (
-        <section className="max-md:px-2 py-2 w-full md:w-[85%] mx-auto flex flex-col justify-center my-12">
+        <section className="max-md:px-2 w-full md:w-[85%] mx-auto flex flex-col justify-center ">
             {/* Heading */}
             <h2 className="py-3 text-center text-md tracking-widest font-semibold font-poppins text-foreground">
                 Your Wardrobe Starts Here

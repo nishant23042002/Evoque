@@ -7,48 +7,64 @@ import WishList from "./WishList";
 import LoginModalUI from "./LoginModal";
 import { useState } from "react";
 import { User } from "lucide-react";
+import { useAuth } from "../AuthProvider";
+import AccountDropdown from "./AccountDropdown";
+import { IoClose } from "react-icons/io5";
+
 
 const Header = () => {
     const [loginOpen, setLoginOpen] = useState(false);
+    const [accountOpen, setAccountOpen] = useState(false);
+    const { user } = useAuth();
 
     return (
-        <header
-            className="
-                sticky top-0 z-40 w-full
-                bg-(--linen-200)
-                border-b border-(--border-strong)
-            "
-        >
+        <header className="sticky top-0 z-40 w-full bg-(--linen-200) border-b border-(--border-strong)">
             <div className="relative p-2 flex items-center justify-between px-2 md:px-4">
-                {/* LEFT — Logo */}
+
+                {/* Logo */}
                 <div className="w-full ml-11 flex items-center justify-center gap-2">
                     <Logo />
                 </div>
 
-                {/* RIGHT — Actions */}
-                <div className="flex items-center gap-4">
+                {/* Actions */}
+                <div className="flex items-center gap-4 relative">
                     <SearchBar />
                     <WishList />
                     <Cart />
 
-                    <button
-                        onClick={() => setLoginOpen(true)}
-                        aria-label="Login"
-                        className="
-                            max-[550px]:absolute left-9 top-5.75
-                            cursor-pointer flex items-center justify-center
-                        "
-                    >
-                        <User
-                            size={20}
-                            strokeWidth={2.2}
-                            className="
-                                text-foreground
-                                hover:text-primary
-                                transition-colors duration-200
-                            "
-                        />
-                    </button>
+                    {/* USER */}
+                    {user ? (
+                        <div className="relative">
+                            <button
+                                onClick={(e) => {
+                                    e.stopPropagation();          // prevents outside click
+                                    setAccountOpen(prev => !prev);
+                                }}
+                                className="cursor-pointer flex items-center justify-center
+                                           text-foreground hover:text-primary"
+                            >
+                                {!accountOpen ? <User size={20} strokeWidth={2.2} /> : <IoClose size={20} />}
+                            </button>
+
+
+                            <AccountDropdown
+                                open={accountOpen}
+                                onClose={() => setAccountOpen(false)}
+                            />
+                        </div>
+                    ) : (
+                        <button
+                            onClick={() => setLoginOpen(true)}
+                            aria-label="Login"
+                            className="cursor-pointer flex items-center justify-center"
+                        >
+                            <User
+                                size={20}
+                                strokeWidth={2.2}
+                                className="text-foreground hover:text-primary"
+                            />
+                        </button>
+                    )}
 
                     <LoginModalUI
                         open={loginOpen}
@@ -59,5 +75,6 @@ const Header = () => {
         </header>
     );
 };
+
 
 export default Header;

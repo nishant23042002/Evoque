@@ -152,32 +152,33 @@ export default function CartPage() {
                                                 e.stopPropagation();
                                                 dispatch(removeFromCart(item.productId));
                                             }}
-                                            className="text-slate-600 hover:text-red-500 cursor-pointer duration-250"
+                                            size={18}
+                                            className="text-(--linen-700) hover:text-red-600 cursor-pointer duration-200"
                                         />
                                     </div>
 
                                     {/* Footer */}
                                     <div className="absolute bottom-0 w-full bg-black/30 p-2 text-white">
-                                        <p className="text-[11px] mb-1">{item.name}</p>
+                                        <p className="text-sm mb-1 font-medium">{item.name}</p>
 
-                                        <div className="flex justify-between text-[11px]">
+                                        <div className="flex justify-between text-[12px]">
                                             <span>Price: ₹{item.price}</span>
                                             {item.originalPrice && (
-                                                <span className="line-through text-gray-200">
+                                                <span className="line-through text-[11px] text-(--linen-600)">
                                                     ₹{item.originalPrice}
                                                 </span>
                                             )}
                                         </div>
 
                                         <div className="flex items-center justify-between mt-1 text-[11px]">
-                                            <div className="flex items-center gap-2 bg-white/90 text-black rounded px-2 py-0.5">
+                                            <div className="flex items-center gap-2 bg-(--linen-100)/70 text-black rounded px-2 py-0.5">
                                                 <button
                                                     onClick={(e) => {
                                                         e.preventDefault();
                                                         e.stopPropagation();
                                                         dispatch(decreaseQuantity(item.productId));
                                                     }}
-                                                    className="px-1 font-bold hover:text-red-500"
+                                                    className="cursor-pointer px-1 font-bold hover:text-red-500"
                                                 >
                                                     −
                                                 </button>
@@ -192,7 +193,7 @@ export default function CartPage() {
                                                         e.stopPropagation();
                                                         dispatch(increaseQuantity(item.productId));
                                                     }}
-                                                    className="px-1 font-bold hover:text-green-600"
+                                                    className="cursor-pointer px-1 font-bold hover:text-green-600"
                                                 >
                                                     +
                                                 </button>
@@ -210,7 +211,7 @@ export default function CartPage() {
                                                 dispatch(toggleWishlist(item));
                                                 dispatch(removeFromCart(item.productId));
                                             }}
-                                            className="cursor-pointer mt-2 w-full bg-brand-red font-semibold hover:text-brand-red  text-[11px] py-1.5 rounded hover:bg-white/90 transition-all duration-300"
+                                            className="cursor-pointer mt-2 w-full border border-(--border-light) bg-(--linen-400) font-semibold text-xs py-1.5 rounded hover:bg-(--linen-400)/70 transition-all duration-300"
                                         >
                                             Move to wishlist
                                         </button>

@@ -13,14 +13,15 @@ import {
     InputOTP, InputOTPGroup, InputOTPSeparator,
     InputOTPSlot
 } from "../ui/input-otp";
-
-
-
+import { FirebaseError } from "firebase/app";
+import { useAuth } from "../AuthProvider";
 
 interface LoginModalUIProps {
     open: boolean;
     onClose: () => void;
 }
+
+
 
 export default function LoginModalUI({ open, onClose }: LoginModalUIProps) {
     const sliderRef = useRef<HTMLDivElement | null>(null);
@@ -39,22 +40,25 @@ export default function LoginModalUI({ open, onClose }: LoginModalUIProps) {
 
     const [step, setStep] = useState<"mobile" | "otp">("mobile");
     const SLIDES_COUNT = 3;
+    const { syncUser } = useAuth();
 
+    /* ------------------ reCAPTCHA helpers ------------------ */
 
-    useEffect(() => {
-        if (!open) return;
-
-        if (!recaptchaVerifierRef.current) {
-            recaptchaVerifierRef.current = new RecaptchaVerifier(
-                auth,
-                "recaptcha-container",
-                {
-                    size: "invisible",
-                }
-            );
+    const resetRecaptcha = () => {
+        if (recaptchaVerifierRef.current) {
+            recaptchaVerifierRef.current.clear();
+            recaptchaVerifierRef.current = undefined;
         }
-    }, [open]);
+    };
 
+    const initRecaptcha = () => {
+        resetRecaptcha();
+        recaptchaVerifierRef.current = new RecaptchaVerifier(
+            auth,
+            "recaptcha-container",
+            { size: "invisible" }
+        );
+    };
     /* ---------------- Slider ---------------- */
     useEffect(() => {
         if (!open) return;
@@ -95,17 +99,48 @@ export default function LoginModalUI({ open, onClose }: LoginModalUIProps) {
 
         try {
             setError("");
+            setSuccess("");
 
             await confirmationResult.confirm(otp);
+            resetRecaptcha();
             // ✅ user is now authenticated
             // result.user contains Firebase user
+            setSuccess("✅ OTP verified successfully!");
 
-            onClose();              // ✅ close modal first
-            router.replace("/");    // ✅ then navigate
+            const firebaseUser = auth.currentUser;
 
-        } catch (error) {
-            console.error(error);
-            setError("Failed to verify OTP. Please check the OTP.");
+            const idToken = await firebaseUser?.getIdToken();
+            console.log(auth.currentUser);
+
+            const res = await fetch("/api/auth/phone-login", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ idToken }),
+            });
+
+            const data = await res.json();
+            console.log("BACKEND LOGIN RESPONSE:", data);
+
+            // 🔐 store backend JWT
+            localStorage.setItem("token", data.token);
+
+            await syncUser();
+
+            setTimeout(() => {
+                onClose();
+                router.replace("/");
+            }, 800);
+
+        } catch (err: unknown) {
+            if (err instanceof FirebaseError) {
+                if (err.code === "auth/invalid-verification-code") {
+                    setError("Incorrect OTP");
+                } else if (err.code === "auth/code-expired") {
+                    setError("OTP expired");
+                } else {
+                    setError("Verification failed");
+                }
+            }
         }
     };
 
@@ -122,44 +157,60 @@ export default function LoginModalUI({ open, onClose }: LoginModalUIProps) {
     }, [otp, confirmationResult]);
 
 
-    if (!open) return null;
-
-
     /* ---------------- Send OTP ---------------- */
     const sendOtp = async () => {
         setError("");
+        setSuccess("");
+        if (resendCountdown > 0) return;
 
         if (phoneNumber.length !== 10) {
             setError("Enter a valid 10-digit mobile number");
-            return;
-        }
-        setResendCountdown(60);
-        if (!recaptchaVerifierRef.current) {
-            setError("reCAPTCHA not ready");
             return;
         }
 
         startTransition(async () => {
 
             try {
+                initRecaptcha();
+                setResendCountdown(60);
                 const formattedPhone = `+91${phoneNumber}`;
 
                 const confirmationResult = await signInWithPhoneNumber(
                     auth,
                     formattedPhone,
-                    recaptchaVerifierRef.current
+                    recaptchaVerifierRef.current!
                 );
 
 
                 setConfirmationResult(confirmationResult);
                 setStep("otp")
                 setSuccess("OTP sent successfully");
-            } catch (error) {
-                console.log(error);
+            } catch (err) {
+                resetRecaptcha();
                 setResendCountdown(0);
+
+                if (err instanceof FirebaseError) {
+                    setError(err.message);
+                } else {
+                    setError("Failed to send OTP. Try again.");
+                }
             }
         })
     }
+
+    const handleClose = () => {
+        resetRecaptcha();
+        setPhoneNumber("");
+        setOtp("");
+        setError("");
+        setSuccess("");
+        setResendCountdown(0);
+        setConfirmationResult(null);
+        setStep("mobile");
+        onClose();
+    };
+
+    if (!open) return null;
 
     const Loader = (
         <div className="flex items-center justify-center">
@@ -173,8 +224,10 @@ export default function LoginModalUI({ open, onClose }: LoginModalUIProps) {
             {/* Overlay */}
             <div
                 className="absolute inset-0 bg-black/30 backdrop-blur-sm"
-                onClick={onClose}
+                onClick={handleClose}
             />
+
+            <div id="recaptcha-container"></div>
             {/* Modal */}
             <div
                 onClick={e => e.stopPropagation()}
@@ -188,18 +241,18 @@ export default function LoginModalUI({ open, onClose }: LoginModalUIProps) {
             >
                 {/* Close */}
                 <button
-                    onClick={onClose}
+                    onClick={handleClose}
                     className="
                         absolute right-4 top-4 z-10 cursor-pointer
-                        text-(--text-inverse)
-                        hover:text-(--linen-900)
+                        text-(--linen-400)
+                        hover:text-(--linen-500)
                         transition-colors
                     "
                 >
                     <IoClose size={22} />
                 </button>
 
-                <div className="flex max-md:flex-col min-h-70">
+                <div className="flex justify-evenly max-md:flex-col min-h-70">
                     {/* LEFT */}
                     <div className="p-6 md:p-10 text-(--text-inverse)">
                         <h2 className="text-xl md:text-2xl font-semibold mb-6 text-center md:text-left">
@@ -262,13 +315,13 @@ export default function LoginModalUI({ open, onClose }: LoginModalUIProps) {
                             </div>
                         </div>
                     </div>
-                    <div id="recaptcha-container" />
+
 
                     {/* RIGHT */}
-                    <div className="bg-(--surface) p-5 flex flex-col justify-center">
+                    <div className="bg-(--surface) md:mb-6 md:rounded-b-sm p-5 flex flex-col justify-center">
                         {step === "mobile" ? (
                             <div className="w-full max-w-sm mx-auto px-2 sm:px-0">
-                                <h3 className="text-base sm:text-lg font-semibold text-[var(--linen-800)] mb-4 text-center">
+                                <h3 className="text-base sm:text-lg font-semibold text-(--linen-800) mb-4 text-center">
                                     Login with Mobile
                                 </h3>
 
@@ -297,9 +350,9 @@ export default function LoginModalUI({ open, onClose }: LoginModalUIProps) {
 
                                     {/* Tricolor accent */}
                                     <div className="absolute left-2 bottom-7 flex gap-1">
-                                        <span className="w-3 h-[3px] bg-orange-600" />
-                                        <span className="w-3 h-[3px] bg-white border" />
-                                        <span className="w-3 h-[3px] bg-green-600" />
+                                        <span className="w-3 h-0.75 bg-orange-600" />
+                                        <span className="w-3 h-0.75 bg-white border" />
+                                        <span className="w-3 h-0.75 bg-green-600" />
                                     </div>
                                 </div>
 
@@ -311,7 +364,7 @@ export default function LoginModalUI({ open, onClose }: LoginModalUIProps) {
                                         w-full mt-4 py-2 rounded-md
                                         text-sm sm:text-base font-medium
                                         bg-primary text-primary-foreground
-                                        hover:bg-[var(--btn-primary-hover)]
+                                       hover:bg-(--btn-primary-hover)
                                         hover:disabled:opacity-80 disabled:cursor-not-allowed
                                         transition
                                         "
@@ -345,6 +398,7 @@ export default function LoginModalUI({ open, onClose }: LoginModalUIProps) {
                                 <button
                                     type="button"
                                     onClick={() => {
+                                        resetRecaptcha();
                                         setStep("mobile");
                                         setOtp("");
                                         setError("");
@@ -382,7 +436,7 @@ export default function LoginModalUI({ open, onClose }: LoginModalUIProps) {
                                 {/* Verify Button */}
                                 <button
                                     onClick={verifyOtp}
-                                    disabled={!phoneNumber || isPending || resendCountdown > 0}
+                                    disabled={otp.length !== 6 || isPending}
                                     className="
                                             w-full py-2 rounded-md
                                         text-sm sm:text-base font-medium
@@ -394,6 +448,34 @@ export default function LoginModalUI({ open, onClose }: LoginModalUIProps) {
                                 >
                                     {isPending ? "Verifying OTP…" : "Verify OTP"}
                                 </button>
+
+                                {success && (
+                                    <div
+                                        role="status"
+                                        className="
+                                                mt-2 rounded-md border border-green-500/30
+                                                bg-green-500/10 px-3 py-1 text-sm text-green-700
+                                                transition-all duration-200
+                                            "
+                                    >
+                                        {success}
+                                    </div>
+                                )}
+
+
+                                {error && (
+                                    <div
+                                        role="alert"
+                                        className="
+                                                mt-2 rounded-md border border-red-500/30
+                                                bg-red-500/10 px-3 py-1 text-xs text-red-600
+                                                transition-all duration-200
+                                            "
+                                    >
+                                        {error}
+                                    </div>
+                                )}
+
                             </div>
 
                         )}

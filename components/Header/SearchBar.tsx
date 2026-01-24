@@ -212,11 +212,15 @@ const SearchBar = () => {
       {/* Sliding Panel */}
       <div
         className={cn(
-          "fixed top-0 right-0 h-full w-[90%] sm:w-100 z-50 shadow-xl transform transition-transform duration-300",
-          "bg-(--linen-200)",
+          "fixed inset-y-0 right-0 z-50",
+          "bg-(--linen-200) shadow-xl",
+          "w-[80vw] sm:w-105",
+          "transform-gpu will-change-transform",
+          "transition-transform duration-700 ease-in-out",
           open ? "translate-x-0" : "translate-x-[101%]"
         )}
       >
+
         {/* Input */}
         <div className="flex items-center p-3 border-b border-(--border-strong) ">
           <input

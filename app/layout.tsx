@@ -45,7 +45,6 @@ export default function RootLayout({
                 <Header />
 
                 {children}
-                <div id="recaptcha-container"></div>
                 <Footer />
               </div>
             </div>
