@@ -1,15 +1,26 @@
+import { cookies } from "next/headers";
 import jwt from "jsonwebtoken";
 
-export function requireAuth(req: Request) {
-    const authHeader = req.headers.get("authorization");
 
-    if (!authHeader) throw new Error("Unauthorized");
+export async function requireAuth() {
+    const cookieStore = await cookies();
+    const token = cookieStore.get("token")?.value;
+    console.log("🔐 TOKEN IN requireAuth:", token);
+    if (!token) {
+        throw new Error("Unauthorized");
+    }
 
-    const token = authHeader.split(" ")[1];
+    try {
+        const decoded = jwt.verify(
+            token,
+            process.env.JWT_SECRET!
+        ) as { userId: string };
 
-    const decoded = jwt.verify(token, process.env.JWT_SECRET!) as {
-        userId: string;
-    };
+        console.log("✅ JWT DECODED:", decoded);
 
-    return decoded.userId;
+        return { userId: decoded.userId };
+    } catch (err) {
+        console.error("❌ JWT VERIFY FAILED:", err);
+        throw new Error("Unauthorized");
+    }
 }

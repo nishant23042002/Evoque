@@ -8,6 +8,7 @@ import Providers from "./providers";
 import { AuthProvider } from "@/components/AuthProvider";
 
 
+
 const inter = Inter({
   subsets: ["latin"],
   weight: ["400", "500", "600", "700"],
@@ -33,10 +34,10 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <AuthProvider>
-      <html lang="en" className={`${inter.variable} ${poppins.variable}`}>
-        <body className="font-poppins antialiased bg-(--linen-100)">
-          <Providers>
+    <html lang="en" className={`${inter.variable} ${poppins.variable}`}>
+      <body className="font-poppins antialiased bg-(--linen-100)">
+        <Providers>
+          <AuthProvider>
             <div className="flex">
               <div className="fixed top-0 z-99 h-full">
                 <LeftMenu />
@@ -48,9 +49,9 @@ export default function RootLayout({
                 <Footer />
               </div>
             </div>
-          </Providers>
-        </body>
-      </html>
-    </AuthProvider>
+          </AuthProvider>
+        </Providers>
+      </body>
+    </html>
   );
 }

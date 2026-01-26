@@ -150,7 +150,7 @@ const BannerSlider = ({ banners }: BannerSliderProps) => {
                   priority={i === 0}
                   loading={i === 0 ? "eager" : "lazy"}
                   sizes="100vw"
-                  quality={85}
+                  quality={100}
                   className="min-[1000px]:object-cover object-center"
                 />
               )}

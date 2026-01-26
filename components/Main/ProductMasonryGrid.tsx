@@ -9,9 +9,10 @@ import { useMemo, useState } from "react";
 import RatingBar from "@/constants/ratingBar";
 import Link from "next/link";
 import { SlidersHorizontal } from 'lucide-react'
-import { toggleWishlist } from "@/store/wishlist/wishlist.slice";
 import { useAppDispatch, useAppSelector } from "@/store/hooks";
 import { RootState } from "@/store";
+import { addWishlistItem, removeWishlistItem } from "@/store/wishlist/wishlist.thunks";
+import { useAuth } from "../AuthProvider";
 
 
 const Masonry = dynamic(() => import("react-masonry-css"), { ssr: false });
@@ -100,6 +101,8 @@ export default function ProductMasonryGrid({
     const [isFilterOpen, setIsFilterOpen] = useState(false);
     const [activeCategory, setActiveCategory] = useState<string>("all");
     const [transitioningProduct, setTransitioningProduct] = useState<string | null>(null);
+    const { isAuthenticated, loading } = useAuth();
+
 
     const breakpoints = {
         default: 5,
@@ -167,15 +170,15 @@ export default function ProductMasonryGrid({
 
     if (!filteredProducts.length) {
         return (
-            <p className="flex items-center justify-center h-[40vh] text-sm font-semibold text-(--text-secondary)">
-                No products found in this category
+            <p className="flex animate-pulse items-center justify-center h-[40vh] text-sm font-semibold text-(--text-secondary)">
+                New Collection Dropping Soon...
             </p>
         );
     }
 
 
     return (
-        <div className={`${fullWidth ? "md:w-[85%] max-md:px-2 mx-auto" : "w-full"}`}>
+        <div className={`my-4 md:my-10 ${fullWidth ? "px-2 mx-auto" : "w-full"}`}>
             {showHeading && (
                 <h2 className="text-center py-3 text-md tracking-widest font-semibold font-poppins text-foreground">
                     Everything You Need
@@ -266,7 +269,7 @@ export default function ProductMasonryGrid({
             >
                 <Masonry
                     breakpointCols={breakpoints}
-                    className={`flex gap-2 md:gap-4 ${!fullWidth ? "mx-2" : "mx-0"}`}
+                    className={`flex gap-2 ${!fullWidth ? "mx-2" : "mx-0"}`}
                     columnClassName="masonry-column"
                 >
                     {filteredProducts.map((item, index) => {
@@ -279,7 +282,7 @@ export default function ProductMasonryGrid({
                             <div key={item._id}>
                                 <div
                                     className="border border-(--border-light)
-                                        relative mb-2 md:mb-4
+                                        relative mb-2
                                         drop-shadow-xs
                                         fade-in-75
                                         transition-all duration-300
@@ -357,17 +360,28 @@ export default function ProductMasonryGrid({
                                                     variant.color.images[0]?.url ??
                                                     "";
 
-                                                dispatch(
-                                                    toggleWishlist({
-                                                        productId: item?._id,
-                                                        slug: item?.slug,
-                                                        name: item?.productName,
-                                                        image,
-                                                        price: item?.pricing?.price,
-                                                        originalPrice: item?.pricing?.originalPrice,
-                                                        brand: item?.brand
-                                                    })
-                                                );
+                                                if (loading) return;
+                                                if (!isAuthenticated) {
+                                                    // open login modal instead
+                                                    return;
+                                                }
+
+                                                if (isWishlisted) {
+                                                    dispatch(removeWishlistItem(item._id));
+                                                } else {
+                                                    dispatch(
+                                                        addWishlistItem({
+                                                            productId: item._id,
+                                                            slug: item.slug,
+                                                            name: item.productName,
+                                                            image: image,
+                                                            price: item.pricing.price,
+                                                            originalPrice: item.pricing.originalPrice,
+                                                            brand: item.brand,
+                                                        })
+                                                    );
+
+                                                }
                                             }}
                                             className="p-1.5 border border-(--border-light) cursor-pointer rounded-full bg-(--surface) shadow z-30"
                                         >

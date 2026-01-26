@@ -7,6 +7,12 @@ import EvoqueLogoLoader from "@/components/FlashLogo/LayerLogo";
 import { Heart } from "lucide-react";
 import { useParams, useSearchParams, useRouter } from "next/navigation";
 import { FaArrowLeftLong, FaArrowRightLong } from "react-icons/fa6";
+import { useAppDispatch, useAppSelector } from "@/store/hooks";
+import { RootState } from "@/store";
+import { addToCart } from "@/store/cart/cart.slice";
+import { addWishlistItem, removeWishlistItem } from "@/store/wishlist/wishlist.thunks";
+import { toggleWishlist } from "@/lib/wishlist";
+
 
 /* ====================
    TYPES
@@ -69,6 +75,7 @@ interface Product {
         rise: string;
         closure: string;
     };
+    sizeChart: string;
     sku: string;
     reviews: string[];
     description?: string;
@@ -103,6 +110,7 @@ export default function ProductPage() {
     const router = useRouter();
     const searchParams = useSearchParams();
     const colorFromUrl = searchParams.get("color");
+    const [sizeError, setSizeError] = useState(false);
 
     const [product, setProduct] = useState<Product | null>(null);
     const [loading, setLoading] = useState(true);
@@ -110,7 +118,12 @@ export default function ProductPage() {
     const [selectedSize, setSelectedSize] = useState<SizeVariant | null>(null);
     const [activeImageIndex, setActiveImageIndex] = useState(0);
     const [cursor, setCursor] = useState<{ x: number; y: number; direction: "left" | "right" | null }>({ x: 0, y: 0, direction: null });
+    const dispatch = useAppDispatch();
 
+    const selectWishlistIds = (state: RootState) =>
+        new Set(state.wishlist.items.map(i => i.productId));
+    const wishlistIds = useAppSelector(selectWishlistIds);
+    const isWishlisted = product && wishlistIds.has(product._id);
     /* ---------------- FETCH PRODUCT ---------------- */
     useEffect(() => {
         let timer: NodeJS.Timeout;
@@ -139,6 +152,9 @@ export default function ProductPage() {
 
     useEffect(() => setActiveImageIndex(0), [selectedColor]);
     useEffect(() => setSelectedSize(null), [selectedColor]);
+    useEffect(() => {
+        if (selectedSize) setSizeError(false);
+    }, [selectedSize]);
 
     /* ---------------- DERIVED DATA ---------------- */
     const activeVariant = useMemo(() => product?.variants.find(v => v.color.slug === selectedColor) ?? product?.variants[0], [product, selectedColor]);
@@ -167,6 +183,10 @@ export default function ProductPage() {
         });
     }, [activeVariant, product]);
 
+    const cartImage =
+        activeVariant?.color.images.find(img => img.isPrimary)?.url ||
+        activeVariant?.color.images[0]?.url ||
+        "";
 
     /* ---------------- IMAGE ARROWS ---------------- */
     const handlePrevImage = () => setActiveImageIndex(prev => prev === 0 ? images.length - 1 : prev - 1);
@@ -235,8 +255,6 @@ export default function ProductPage() {
                                     </button>
                                 );
                             })}
-
-
                         </div>
 
                         {/* MAIN IMAGE */}
@@ -269,13 +287,46 @@ export default function ProductPage() {
                             <h1 className="text-sm md:text-lg font-bold text-(--earth-charcoal)">
                                 {product.productName.toUpperCase()}
                             </h1>
-                            <Heart className="
-                                    rounded-full cursor-pointer duration-200
-                                    border border-border
-                                    p-1
-                                    hover:bg-primary
-                                    hover:text-primary-foreground
-                                    "/>
+
+                            <button
+                                onClick={(e) => {
+                                    e.stopPropagation();
+                                    if (!product) return;
+
+                                    if (isWishlisted) {
+                                        dispatch(removeWishlistItem(product._id));
+                                    } else {
+                                        dispatch(
+                                            addWishlistItem({
+                                                productId: product._id,
+                                                slug: product.slug,
+                                                name: product.productName,
+                                                image:
+                                                    activeVariant?.color.images.find(img => img.isPrimary)?.url ||
+                                                    activeVariant?.color.images[0]?.url ||
+                                                    "",
+                                                price: activeVariant?.pricing?.price || 0,
+                                                originalPrice: activeVariant?.pricing?.originalPrice || 0,
+                                                brand: product.brand,
+                                            })
+                                        );
+                                    }
+
+
+                                }}
+                                className="p-1.5 border border-(--border-light) cursor-pointer rounded-full bg-(--surface) shadow"
+                            >
+                                <Heart
+                                    strokeWidth={0.9}
+                                    className={`h-5 w-5 transition-all ${isWishlisted
+                                        ? "fill-primary text-primary scale-110"
+                                        : "text-(--text-secondary) hover:text-primary"
+                                        }`}
+                                />
+                            </button>
+
+
+
                         </div>
 
                         <div className="flex gap-3 items-center justify-between">
@@ -335,10 +386,12 @@ export default function ProductPage() {
 
                         {/* SIZES */}
                         <div className="py-2">
-                            <h3 className="font-bold mb-1 text-foreground">
-                                {product.category.slug === "jeans" ? "Choose Waist" : "Select Size"}
-                            </h3>
-
+                            <div className="flex justify-between">
+                                <h3 className="font-bold mb-1 text-foreground">
+                                    {product.category.slug === "jeans" ? "Choose Waist" : "Select Size"}
+                                </h3>
+                                <h1 className="text-sm font-medium text-[var(--linen-600)] hover:text-primary cursor-pointer underline">Size Chart</h1>
+                            </div>
                             <div className="flex flex-row flex-nowrap items-center gap-2 w-full overflow-x-auto scrollbar-hide">
                                 {sizes.map(s => {
                                     const isActive = selectedSize?.variantSku === s.variant?.variantSku;
@@ -378,10 +431,43 @@ export default function ProductPage() {
                             </div>
                         </div>
 
-
+                        {sizeError && (
+                            <p className="mt-1 text-[11px] font-semibold text-red-600">
+                                Please select a size before adding to bag
+                            </p>
+                        )}
                         {/* ADD TO CART */}
                         <div className="flex justify-between gap-2 text-sm w-full my-4">
-                            <button
+                            <button onClick={(e) => {
+                                e.preventDefault();
+                                e.stopPropagation();
+                                console.log("Item added to cart");
+                                console.log(`ProductId: ${product._id}`);
+                                if (!selectedSize) {
+                                    setSizeError(true);
+
+                                    // auto-hide error after 2s (nice UX)
+                                    setTimeout(() => setSizeError(false), 2000);
+                                    return;
+                                }
+
+                                dispatch(
+                                    addToCart({
+                                        productId: product._id,
+                                        name: product.productName,
+                                        slug: product.slug,
+                                        image: cartImage,
+                                        price: product.pricing.price,
+                                        originalPrice: product.pricing.originalPrice,
+                                        quantity: 1,
+                                        brand: product.brand
+                                    })
+                                );
+
+                                if (isWishlisted) {
+                                    dispatch(removeWishlistItem(product._id));
+                                }
+                            }}
                                 className="
                                     cursor-pointer
                                     w-full

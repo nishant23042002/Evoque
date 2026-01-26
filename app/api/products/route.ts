@@ -65,6 +65,7 @@ type ProductPOSTBody = {
         slug: string;
         image?: string;
     };
+    thumbnail: string;
     fit?: string;
     offers?: { type: string; title: string }[];
     pricing: Pricing;
@@ -230,11 +231,14 @@ export async function POST(req: Request) {
             variants = [],
             pricing,
             attributes,
+            thumbnail,
             description,
+            fit,
             sizeChart,
             details,
             seo,
             shipping,
+            offers,
             tags,
             badges,
             merchandising,
@@ -257,6 +261,13 @@ export async function POST(req: Request) {
         if (!subCategory?.slug) {
             return NextResponse.json(
                 { message: "subCategory is required" },
+                { status: 400 }
+            );
+        }
+
+        if (!thumbnail) {
+            return NextResponse.json(
+                { message: "Thumbnail is required" },
                 { status: 400 }
             );
         }
@@ -358,13 +369,16 @@ export async function POST(req: Request) {
                 slug: validSub.slug,
                 image: validSub.image,
             },
+            fit,
             attributes,
             variants: uploadedVariants,
             pricing,
+            thumbnail,
             totalStock,
             description,
             sizeChart,
             details,
+            offers,
             seo,
             shipping,
             tags,

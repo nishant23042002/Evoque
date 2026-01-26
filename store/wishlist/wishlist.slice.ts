@@ -1,39 +1,59 @@
-// store/wishlist/wishlist.slice.ts
 import { createSlice } from "@reduxjs/toolkit";
 import { WishlistItem } from "./wishlist.types";
+import { fetchWishlist, addWishlistItem, removeWishlistItem } from "./wishlist.thunks";
 
 interface WishlistState {
     items: WishlistItem[];
+    loading: boolean;
 }
 
 const initialState: WishlistState = {
-    items: []
+    items: [],
+    loading: false
 };
 
 const wishlistSlice = createSlice({
     name: "wishlist",
     initialState,
     reducers: {
-        toggleWishlist(state, action) {
-            const exists = state.items.find(
-                item => item.productId === action.payload.productId
-            );
-
-            if (exists) {
-                state.items = state.items.filter(
-                    item => item.productId !== action.payload.productId
-                );
-                console.log("❌ Removed from wishlist:", action.payload);
-            } else {
-                state.items.push(action.payload);
-                console.log("✅ Added to wishlist:", action.payload);
-            }
-        },
         clearWishlist(state) {
             state.items = [];
+            state.loading = false;
         }
+    },
+    extraReducers: builder => {
+        builder
+            // FETCH
+            .addCase(fetchWishlist.pending, state => {
+                state.loading = true;
+            })
+            .addCase(fetchWishlist.fulfilled, (state, action) => {
+                state.items = action.payload;
+                state.loading = false;
+            })
+            .addCase(fetchWishlist.rejected, state => {
+                state.loading = false;
+            })
+
+            // ADD
+            .addCase(addWishlistItem.fulfilled, (state, action) => {
+                const exists = state.items.some(
+                    i => i.productId === action.payload.productId
+                );
+
+                if (!exists) {
+                    state.items.push(action.payload);
+                }
+            })
+
+            // REMOVE
+            .addCase(removeWishlistItem.fulfilled, (state, action) => {
+                state.items = state.items.filter(
+                    i => i.productId !== action.payload
+                );
+            });
     }
 });
 
-export const { toggleWishlist, clearWishlist } = wishlistSlice.actions;
+export const { clearWishlist } = wishlistSlice.actions;
 export default wishlistSlice.reducer;

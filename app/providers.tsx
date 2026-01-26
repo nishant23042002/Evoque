@@ -1,15 +1,20 @@
 "use client";
 
 import { Provider } from "react-redux";
-import { PersistGate } from "redux-persist/integration/react";
-import { store, persistor } from "@/store";
+import { store } from "@/store";
+export const dynamic = "force-dynamic";
 
-export default function Providers({ children }: { children: React.ReactNode }) {
+export default function Providers({
+    children
+}: {
+    children: React.ReactNode;
+}) {
+
+    console.log("Redux Provider mounted");
+
     return (
         <Provider store={store}>
-            <PersistGate loading={null} persistor={persistor}>
-                {children}
-            </PersistGate>
+            {children}
         </Provider>
     );
 }

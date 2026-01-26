@@ -1,50 +1,60 @@
+import { NextResponse } from "next/server";
 import admin from "@/lib/firebaseAdmin";
-import User from "@/models/User";
 import jwt from "jsonwebtoken";
+import connectDB from "@/lib/db";
+import User from "@/models/User";
+export const dynamic = "force-dynamic";
 
 export async function POST(req: Request) {
-    const { idToken } = await req.json();
+    try {
+        const body = await req.json();
 
-    if (!idToken) {
-        return Response.json({ error: "Token missing" }, { status: 401 });
-    }
+        if (!body?.firebaseToken) {
+            return NextResponse.json(
+                { message: "Firebase token missing" },
+                { status: 400 }
+            );
+        }
 
-    // 🔐 Verify Firebase token
-    const decoded = await admin.auth().verifyIdToken(idToken);
+        const decoded = await admin
+            .auth()
+            .verifyIdToken(body.firebaseToken);
 
-    const firebaseUid = decoded.uid;
-    const phone = decoded.phone_number;
+        await connectDB();
 
-    if (!phone) {
-        return Response.json({ error: "Phone not found" }, { status: 400 });
-    }
-    console.log("Firebase UID:", firebaseUid);
-    console.log("Phone:", phone);
-
-    // 🔁 Find or create user
-    let user = await User.findOne({ firebaseUid });
-
-    if (!user) {
-        user = await User.create({
-            firebaseUid,
-            phone,
+        let user = await User.findOne({
+            firebaseUid: decoded.uid
         });
+
+        if (!user) {
+            user = await User.create({
+                firebaseUid: decoded.uid,
+                phone: decoded.phone_number
+            });
+        }
+
+        const token = jwt.sign(
+            { userId: user._id.toString() },
+            process.env.JWT_SECRET!,
+            { expiresIn: "7d" }
+        );
+
+        const res = NextResponse.json({ success: true });
+
+        res.cookies.set("token", token, {
+            httpOnly: true,
+            sameSite: "lax",
+            path: "/",
+            maxAge: 60 * 60 * 24 * 7
+        });
+
+        return res;
+    } catch (error) {
+        console.error("Phone login error:", error);
+
+        return NextResponse.json(
+            { message: "Authentication failed" },
+            { status: 401 }
+        );
     }
-    console.log("DB user:", user._id);
-
-
-    // 🎟️ Issue backend JWT
-    const appToken = jwt.sign(
-        { userId: user._id },
-        process.env.JWT_SECRET!,
-        { expiresIn: "7d" }
-    );
-
-    return Response.json({
-        token: appToken,
-        user: {
-            id: user._id,
-            phone: user.phone,
-        },
-    });
 }

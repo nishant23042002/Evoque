@@ -51,7 +51,7 @@ const FeaturedCategories = () => {
     }
 
     return (
-        <section className="max-md:px-2 w-full md:w-[85%] mx-auto flex flex-col justify-center ">
+        <section className="px-2 w-full my-4 md:my-10 mx-auto flex flex-col justify-center ">
             {/* Heading */}
             <h2 className="py-3 text-center text-md tracking-widest font-semibold font-poppins text-foreground">
                 Your Wardrobe Starts Here
@@ -67,14 +67,14 @@ const FeaturedCategories = () => {
             ) : (
                 <Masonry
                     breakpointCols={breakpoints}
-                    className="flex gap-2 md:gap-4 w-full"
+                    className="flex gap-2 w-full"
                     columnClassName="masonry-column"
                 >
                     {categories.map((item) => (
                         <Link
                             href={`/categories/${item.slug}`}
                             key={item._id}
-                            className="mb-2 md:mb-4 block break-inside-avoid"
+                            className="mb-2 block break-inside-avoid"
                         >
                             <div
                                 className="border border-(--border-light)

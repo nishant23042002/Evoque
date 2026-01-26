@@ -6,9 +6,9 @@ import dynamic from "next/dynamic";
 import Link from "next/link";
 import { MdDeleteOutline } from "react-icons/md";
 import { useAppDispatch, useAppSelector } from "@/store/hooks";
-import { toggleWishlist } from "@/store/wishlist/wishlist.slice";
 import { addToCart } from "@/store/cart/cart.slice";
 import { Heart } from "lucide-react";
+import { removeWishlistItem } from "@/store/wishlist/wishlist.thunks";
 
 
 
@@ -54,11 +54,13 @@ export default function Wishlist() {
         ? [280, 300, 320, 340]
         : [350, 370, 390, 420, 450, 480, 510];
 
-
     return wishlistItems.map((product) => {
-      let seed = 0;
-      const id = product.productId;
+      const id = product?.productId;
 
+      // 🔒 SAFETY GUARD
+      if (!id) return buckets[0];
+
+      let seed = 0;
       for (let i = 0; i < id.length; i++) {
         seed = (seed << 5) - seed + id.charCodeAt(i);
       }
@@ -69,6 +71,7 @@ export default function Wishlist() {
       return buckets[index] + jitter;
     });
   }, [wishlistItems]);
+
 
   /* =======================
      EMPTY STATE
@@ -116,12 +119,17 @@ export default function Wishlist() {
 
               {/* IMAGE */}
               <div className="relative rounded-[3px] w-full h-165 overflow-hidden">
-                <Image
-                  src={activeItem.image}
-                  alt={activeItem.name}
-                  fill
-                  className="object-cover object-[50%_40%]"
-                />
+                {activeItem.image ? (
+                  <Image
+                    src={activeItem.image}
+                    alt={activeItem.name}
+                    fill
+                    className="object-cover object-[50%_40%]"
+                  />
+                ) : (
+                  <div className="w-full h-full bg-(--surface-muted)" />
+                )}
+
 
                 {/* BRAND TAG */}
                 <span className="absolute top-2 left-2 text-xs font-semibold bg-(--surface)/80 text-foreground px-2 py-0.5 rounded">
@@ -150,8 +158,7 @@ export default function Wishlist() {
                 <button onClick={(e) => {
                   e.preventDefault();
                   e.stopPropagation();
-                  console.log("Item added to cart");
-                  console.log(`ProductId: ${activeItem.productId}`);
+
                   dispatch(
                     addToCart({
                       productId: activeItem?.productId,
@@ -165,7 +172,8 @@ export default function Wishlist() {
                     })
                   );
 
-                  dispatch(toggleWishlist(activeItem));
+                  dispatch(removeWishlistItem(activeItem.productId));
+
                 }}
                   className="border border-(--border-light)
                             cursor-pointer mt-2 w-full
@@ -194,21 +202,24 @@ export default function Wishlist() {
           >
             {wishlistItems.map((item, index) => (
               <Link
-                key={item.productId}
+                key={`wishlist-${item.productId}-${index}`}
                 href={`/products/${item.slug}`}
                 onClick={() => setActiveId(item.productId)}
                 className="block cursor-pointer border border-(--border-light) rounded-[3px]"
               >
                 <div
                   className="group relative w-full rounded-[3px] overflow-hidden bg-(--surface-muted)"
-                  style={{ height: heights[index] }}
+                  style={{ height: heights[index] ?? 350 }}
                 >
-                  <Image
-                    src={item.image}
-                    alt={item.name}
-                    fill
-                    className="object-cover transition-transform duration-500 will-change-transform group-hover:scale-110"
-                  />
+                  {item.image && (
+                    <Image
+                      src={item.image}
+                      alt={item.name}
+                      fill
+                      className="object-cover transition-transform duration-500 will-change-transform group-hover:scale-110"
+                    />
+                  )}
+
 
                   <div className="pointer-events-none absolute inset-0 bg-black/20 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
 
@@ -222,7 +233,7 @@ export default function Wishlist() {
                       onClick={(e) => {
                         e.preventDefault();
                         e.stopPropagation();
-                        dispatch(toggleWishlist(item));
+                        dispatch(removeWishlistItem(item.productId));
                       }}
                       size={18}
                       className="duration-200 text-(--linen-700) hover:text-red-600 cursor-pointer"
@@ -235,16 +246,17 @@ export default function Wishlist() {
 
                     <div className="flex justify-between text-[11px]">
                       <span className="text-md">Price: {item.price}</span>
-                      <span className="line-through text-muted-foreground text-[12px]">
-                        {item.originalPrice}
-                      </span>
+                      {item.originalPrice && (
+                        <span className="line-through text-muted-foreground text-[12px]">
+                          {item.originalPrice}
+                        </span>
+                      )}
                     </div>
 
                     <button onClick={(e) => {
                       e.preventDefault();
                       e.stopPropagation();
-                      console.log("Item added to cart");
-                      console.log(`ProductId: ${item.productId}`);
+                     
                       dispatch(
                         addToCart({
                           productId: item.productId,
@@ -258,7 +270,8 @@ export default function Wishlist() {
                         })
                       );
 
-                      dispatch(toggleWishlist(activeItem));
+                      dispatch(removeWishlistItem(item.productId));
+
                     }}
                       className="border border-(--border-light)
                               cursor-pointer mt-2 w-full

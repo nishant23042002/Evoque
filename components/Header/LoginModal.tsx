@@ -16,6 +16,7 @@ import {
 import { FirebaseError } from "firebase/app";
 import { useAuth } from "../AuthProvider";
 
+
 interface LoginModalUIProps {
     open: boolean;
     onClose: () => void;
@@ -108,21 +109,29 @@ export default function LoginModalUI({ open, onClose }: LoginModalUIProps) {
             setSuccess("✅ OTP verified successfully!");
 
             const firebaseUser = auth.currentUser;
-
-            const idToken = await firebaseUser?.getIdToken();
-            console.log(auth.currentUser);
+            if (!firebaseUser) {
+                setError("Authentication failed");
+                return;
+            }
+            const idToken = await firebaseUser?.getIdToken(true);
+            console.log("firebaseID: ",auth.currentUser);
 
             const res = await fetch("/api/auth/phone-login", {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ idToken }),
+                credentials: "include", // 👈 IMPORTANT
+                body: JSON.stringify({ firebaseToken: idToken }),
             });
+            if (!res.ok) {
+                const err = await res.json();
+                throw new Error(err?.message || "Login failed");
+            }
 
             const data = await res.json();
             console.log("BACKEND LOGIN RESPONSE:", data);
-
-            // 🔐 store backend JWT
-            localStorage.setItem("token", data.token);
+            if (!res.ok) {
+                throw new Error(data?.error || "Backend login failed");
+            }
 
             await syncUser();
 

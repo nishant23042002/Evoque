@@ -42,9 +42,9 @@ const colorVariantSchema = new mongoose.Schema(
         },
         sizes: [sizeVariantSchema],
         pricing: {
-            price: Number,
-            originalPrice: Number,
-            discountPercentage: Number,
+            price: { type: Number },
+            originalPrice: { type: Number },
+            discountPercentage: { type: Number },
         },
         totalStock: { type: Number, default: 0 },
     },
@@ -84,6 +84,11 @@ const productSchema = new mongoose.Schema(
         },
 
         fit: String,
+        thumbnail: {
+            type: String,
+            required: true,
+            index: true
+        },
 
         // 🖼 Media
         variants: [colorVariantSchema],
@@ -209,6 +214,44 @@ productSchema.index({
     isFeatured: 1,
     "merchandising.priority": -1,
 });
+
+productSchema.pre("save", function () {
+    if (!this.thumbnail && this.variants?.length) {
+        const primaryImage =
+            this.variants
+                .flatMap(v => v.color?.images || [])
+                .find(img => img.isPrimary) ||
+            this.variants[0]?.color?.images?.[0];
+
+        if (primaryImage?.url) {
+            this.thumbnail = primaryImage.url;
+        }
+    }
+});
+
+
+productSchema.virtual("primaryImage").get(function () {
+    const img =
+        this.variants
+            ?.flatMap(v => v.color?.images || [])
+            ?.find(i => i.isPrimary);
+
+    return img?.url || this.thumbnail;
+});
+
+productSchema.set("toJSON", { virtuals: true });
+
+productSchema.set("toObject", { virtuals: true });
+
+productSchema.methods.recalculateRating = function () {
+    if (!this.reviews?.length) {
+        this.rating = 0;
+        return;
+    }
+    this.rating =
+        this.reviews.reduce((a, r) => a + r.rating, 0) /
+        this.reviews.length;
+};
 
 
 export default mongoose.models.Product ||

@@ -6,51 +6,27 @@ import Masonry from "react-masonry-css";
 import { MdDeleteOutline } from "react-icons/md";
 import { useAppDispatch, useAppSelector } from "@/store/hooks";
 import {
-    removeFromCart, increaseQuantity,
-    decreaseQuantity
+    removeFromCart,
+    increaseQuantity,
+    decreaseQuantity,
 } from "@/store/cart/cart.slice";
-import { toggleWishlist } from "@/store/wishlist/wishlist.slice";
-import { useMemo } from "react";
+
 import { ShoppingBag } from "lucide-react";
+import { addWishlistItem } from "@/store/wishlist/wishlist.thunks";
 
 export default function CartPage() {
     const dispatch = useAppDispatch();
     const cartItems = useAppSelector((state) => state.cart.items);
     const subtotal = useAppSelector((state) => state.cart.subtotal);
 
+    /* Masonry: fewer columns → horizontal feel */
     const breakpoints = {
-        default: 4,
-        1280: 3,
+        default: 2,
+        1280: 2,
+        1024: 2,
         768: 2,
-        470: 1,
+        650: 1,
     };
-
-    /* =======================
-         STABLE HEIGHTS (NO JITTER)
-      ======================= */
-    const heights = useMemo(() => {
-        if (!cartItems.length) return [];
-
-        const buckets =
-            typeof window !== "undefined" && window.innerWidth < 640
-                ? [280, 300, 320, 340]
-                : [350, 370, 390, 420, 450, 480, 510];
-
-
-        return cartItems.map((product) => {
-            let seed = 0;
-            const id = product.productId;
-
-            for (let i = 0; i < id.length; i++) {
-                seed = (seed << 5) - seed + id.charCodeAt(i);
-            }
-
-            const index = Math.abs(seed) % buckets.length;
-            const jitter = (Math.abs(seed) % 30) - 15;
-
-            return buckets[index] + jitter;
-        });
-    }, [cartItems]);
 
     const itemCount = cartItems.reduce(
         (sum, item) => sum + item.quantity,
@@ -60,46 +36,34 @@ export default function CartPage() {
     const discount =
         cartItems.reduce((sum, item) => {
             if (!item.originalPrice) return sum;
-            return (
-                sum +
-                (item.originalPrice - item.price) * item.quantity
-            );
+            return sum + (item.originalPrice - item.price) * item.quantity;
         }, 0) || 0;
 
     const grandTotal = subtotal;
 
+    /* EMPTY STATE */
     if (!cartItems.length) {
         return (
             <div className="min-h-[60vh] flex items-center justify-center px-4">
                 <div className="max-w-sm w-full text-center space-y-6">
-                    {/* Icon */}
-                    <div className="flex justify-center ">
-                        <div className="mb-2 animate-float flex items-center justify-center w-20 h-20 rounded-full bg-(--earth-charcoal)/10">
-                            <ShoppingBag
-                                className="w-9 h-9 text-(--text-muted)"
-                                strokeWidth={1.5}
-                            />
+                    <div className="flex justify-center">
+                        <div className="mb-2 flex items-center justify-center w-20 h-20 rounded-full bg-(--earth-charcoal)/10">
+                            <ShoppingBag className="w-9 h-9 text-(--text-muted)" />
                         </div>
                     </div>
 
-                    {/* Text */}
                     <div className="space-y-2">
-                        <h2 className="text-lg font-semibold text-primary">
-                            Your cart is empty
-                        </h2>
-                        <p className="text-sm font-medium text-(--linen-800)/70">
+                        <h2 className="text-lg font-semibold">Your cart is empty</h2>
+                        <p className="text-sm text-(--linen-800)/70">
                             Looks like you haven’t added anything yet.
-                            Start exploring and find something you love.
                         </p>
                     </div>
 
-                    {/* CTA */}
                     <Link
                         href="/"
-                        className="inline-flex items-center justify-center w-full rounded-md
-                     bg-primary text-primary-foreground
-                     px-4 py-2 text-sm font-medium
-                     hover:opacity-90 transition"
+                        className="inline-flex w-full justify-center rounded-md
+              bg-primary text-primary-foreground
+              px-4 py-2 text-sm font-medium"
                     >
                         Continue Shopping
                     </Link>
@@ -109,112 +73,161 @@ export default function CartPage() {
     }
 
     return (
-        <div className="bg-(--linen-100) min-h-[95vh] px-2 sm:px-4 py-10 mx-auto">
-            <h1 className="text-lg sm:text-xl my-3 font-semibold text-primary">
+        <div>
+            {/* HEADER */}
+            <div className="px-2 w-full py-3 text-primary text-lg sm:text-xl font-semibold z-20 bg-(--linen-100)">
                 My Bag ({itemCount} items)
-            </h1>
+            </div>
 
-            <div className="flex flex-col lg:flex-row gap-6">
+            <div className="mb-20
+                    relative bg-(--linen-100)
+                    h-[calc(100vh-72px)]
+                    px-2 lg:px-4 mx-auto
+                    flex flex-col lg:flex-row
+                    gap-6
+                    ">
+                {/* LEFT – PINTEREST STYLE CART */}
+                <div
+                    className="
+                        w-full lg:w-[65%]
+                        order-2 lg:order-1
+                        overflow-y-auto
+                        scrollbar-hide
+                        min-h-[60vh]
+                        lg:mt-2
+                    "
+                >
 
-                {/* LEFT – CART ITEMS */}
-                <div className="w-full lg:w-[65%]">
                     <Masonry
                         breakpointCols={breakpoints}
-                        className="flex gap-4 w-full"
+                        className="flex gap-2 lg:gap-4 w-full"
                         columnClassName="masonry-column"
                     >
-                        {cartItems.map((item, index) => (
+                        {cartItems.map((item) => (
                             <Link
                                 href={`/products/${item.slug}`}
                                 key={item.productId}
-                                className="block break-inside-avoid"
+                                className="block"
                             >
-                                <div style={{ height: heights[index] }} className="border border-(--border-strong) shadow-xs group h-80 relative overflow-hidden rounded-[3px]">
-
-                                    <Image
-                                        src={item.image}
-                                        alt={item.name}
-                                        fill
-                                        className="object-cover object-center duration-500 transition-transform will-change-transform group-hover:scale-110"
-                                    />
-
-                                    <div className="absolute inset-0 bg-black/15 opacity-0 group-hover:opacity-100 transition" />
-
-                                    {/* Header */}
-                                    <div className="absolute flex justify-between top-2 left-2 right-2">
-                                        <h3 className="text-[11px] text-slate-800 font-semibold">
-                                            {item.brand ?? "Brand"}
-                                        </h3>
-
-                                        <MdDeleteOutline
-                                            onClick={(e) => {
-                                                e.preventDefault();
-                                                e.stopPropagation();
-                                                dispatch(removeFromCart(item.productId));
-                                            }}
-                                            size={18}
-                                            className="text-(--linen-700) hover:text-red-600 cursor-pointer duration-200"
-                                        />
+                                <div
+                                    className="
+                                                border border-(--border-strong)
+                                                bg-(--linen-200)
+                                                rounded-[3px]
+                                                shadow-xs
+                                                p-1
+                                                flex gap-3
+                                                hover:shadow-sm
+                                                transition mb-2 lg:mb-4
+                                            "
+                                >
+                                    {/* IMAGE */}
+                                    <div className="group relative w-28 h-36 shrink-0 rounded-[3px] overflow-hidden">
+                                        {item.image && (
+                                            <Image
+                                                src={item.image}
+                                                alt={item.name}
+                                                fill
+                                                className="object-cover"
+                                            />
+                                        )}
+                                        <div className="pointer-events-none absolute inset-0 bg-black/20 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
                                     </div>
 
-                                    {/* Footer */}
-                                    <div className="absolute bottom-0 w-full bg-black/30 p-2 text-white">
-                                        <p className="text-sm mb-1 font-medium">{item.name}</p>
+                                    {/* CONTENT */}
+                                    <div className="flex flex-col justify-between flex-1 text-sm">
+                                        <div>
+                                            <div className="flex justify-between items-start">
+                                                <h3 className="max-[400px]:text-[11px] text-xs font-semibold text-(--linen-600)">
+                                                    {item.brand ?? "Brand"}
+                                                </h3>
 
-                                        <div className="flex justify-between text-[12px]">
-                                            <span>Price: ₹{item.price}</span>
-                                            {item.originalPrice && (
-                                                <span className="line-through text-[11px] text-(--linen-600)">
-                                                    ₹{item.originalPrice}
+                                                <MdDeleteOutline
+                                                    onClick={(e) => {
+                                                        e.preventDefault();
+                                                        e.stopPropagation();
+                                                        dispatch(removeFromCart(item.productId));
+                                                    }}
+                                                    className="cursor-pointer  hover:text-red-600 duration-200"
+                                                    size={16}
+                                                />
+                                            </div>
+
+                                            <p className="font-medium max-[400px]:text-[11px] text-xs leading-tight mt-1">
+                                                {item.name}
+                                            </p>
+
+                                            <div className="flex items-center gap-2 mt-1 text-xs">
+                                                <span className="font-semibold">
+                                                    ₹{item.price}
                                                 </span>
+                                                {item.originalPrice && (
+                                                    <span className="line-through text-[11px] text-(--linen-700)">
+                                                        ₹{item.originalPrice}
+                                                    </span>
+                                                )}
+                                            </div>
+
+                                            {item.size && (
+                                                <p className="text-xs text-slate-500 mt-1">
+                                                    Size: {item.size}
+                                                </p>
                                             )}
                                         </div>
 
-                                        <div className="flex items-center justify-between mt-1 text-[11px]">
-                                            <div className="flex items-center gap-2 bg-(--linen-100)/70 text-black rounded px-2 py-0.5">
+                                        {/* ACTIONS */}
+                                        <div className="flex justify-between items-center mt-2">
+                                            <div className="flex items-center gap-2 border rounded-[3px] px-1 py-px">
                                                 <button
                                                     onClick={(e) => {
                                                         e.preventDefault();
                                                         e.stopPropagation();
                                                         dispatch(decreaseQuantity(item.productId));
                                                     }}
-                                                    className="cursor-pointer px-1 font-bold hover:text-red-500"
+                                                    className="font-bold hover:text-red-500 cursor-pointer"
                                                 >
                                                     −
                                                 </button>
-
-                                                <span className="min-w-4 text-center">
-                                                    {item.quantity}
-                                                </span>
-
+                                                <span className="text-[11px]">{item.quantity}</span>
                                                 <button
                                                     onClick={(e) => {
                                                         e.preventDefault();
                                                         e.stopPropagation();
                                                         dispatch(increaseQuantity(item.productId));
                                                     }}
-                                                    className="cursor-pointer px-1 font-bold hover:text-green-600"
+                                                    className="font-bold hover:text-green-500 cursor-pointer"
                                                 >
                                                     +
                                                 </button>
                                             </div>
 
-                                            {item.size && <span>Size: {item.size}</span>}
+                                            <button
+                                                onClick={(e) => {
+                                                    e.preventDefault();
+                                                    e.stopPropagation();
+
+                                                    dispatch(
+                                                        addWishlistItem({
+                                                            productId: item.productId,
+                                                            slug: item.slug,
+                                                            name: item.name,
+                                                            image: item.image,
+                                                            price: item.price,
+                                                            originalPrice: item.originalPrice ?? 0,
+                                                            brand: item.brand,
+                                                        })
+                                                    );
+
+                                                    dispatch(removeFromCart(item.productId));
+
+                                                }}
+                                                className="max-[400px]:text-[11px] text-xs font-semibold cursor-pointer
+                                                        text-primary border border-(--border-strong)
+                                                        p-1 rounded-[3px] hover:underline"
+                                            >
+                                                Move to wishlist
+                                            </button>
                                         </div>
-
-
-                                        <button
-                                            onClick={(e) => {
-                                                e.preventDefault();
-                                                e.stopPropagation();
-
-                                                dispatch(toggleWishlist(item));
-                                                dispatch(removeFromCart(item.productId));
-                                            }}
-                                            className="cursor-pointer mt-2 w-full border border-(--border-light) bg-(--linen-400) font-semibold text-xs py-1.5 rounded hover:bg-(--linen-400)/70 transition-all duration-300"
-                                        >
-                                            Move to wishlist
-                                        </button>
                                     </div>
                                 </div>
                             </Link>
@@ -222,68 +235,41 @@ export default function CartPage() {
                     </Masonry>
                 </div>
 
-                {/* RIGHT – SUMMARY */}
-                <div className="w-full lg:w-[35%]">
-                    <div className="lg:sticky lg:top-20 border border-(--border-strong) rounded-[3px] p-3 space-y-4">
+                {/* RIGHT – SUMMARY (UNCHANGED) */}
+                <div className="w-full lg:w-[35%] order-1 lg:order-2">
 
-                        {/* Address */}
+                    <div className="lg:sticky lg:top-30 border border-(--border-strong) rounded-[3px] p-3 space-y-4 bg-(--linen-200)">
+
                         <div className="flex justify-between gap-3">
-                            <div className="flex gap-3">
-                                <span className="text-orange-500 text-xl">🚚</span>
-                                <div className="text-sm mb-5">
-                                    <p className="font-semibold">
-                                        Delivering to Nishant Sapkal
-                                    </p>
-                                    <p className="text-xs text-gray-500">
-                                        402116 · Raigad
-                                    </p>
-                                </div>
+                            <div>
+                                <p className="font-semibold">Delivering to Nishant Sapkal</p>
+                                <p className="text-xs text-gray-500">402116 · Raigad</p>
                             </div>
                             <button className="text-xs font-semibold text-orange-600">
                                 CHANGE
                             </button>
                         </div>
 
-                        {/* Coupon */}
-                        <div className="flex justify-between items-center text-sm">
-                            <p>
-                                Save more with coupons
-                            </p>
-                            <button className="text-xs text-orange-600 font-semibold">
-                                View
-                            </button>
+                        <div className="flex justify-between text-sm">
+                            <span>Bag Total</span>
+                            <span>₹{subtotal}</span>
                         </div>
 
-                        {/* Price */}
-                        <div>
-                            <h3 className="text-sm text-center font-semibold mb-2 uppercase">
-                                Price Details
-                            </h3>
-
-                            <div className="space-y-2 text-sm">
-                                <div className="flex justify-between">
-                                    <span>Bag Total</span>
-                                    <span>₹{subtotal}</span>
-                                </div>
-
-                                {discount > 0 && (
-                                    <div className="flex justify-between text-green-600">
-                                        <span>Discount</span>
-                                        <span>-₹{discount}</span>
-                                    </div>
-                                )}
-
-                                <hr />
-
-                                <div className="flex justify-between font-semibold mb-6">
-                                    <span>Grand Total</span>
-                                    <span>₹{grandTotal}</span>
-                                </div>
+                        {discount > 0 && (
+                            <div className="flex justify-between text-sm text-green-600">
+                                <span>Discount</span>
+                                <span>-₹{discount}</span>
                             </div>
+                        )}
+
+                        <hr />
+
+                        <div className="flex justify-between font-semibold">
+                            <span>Grand Total</span>
+                            <span>₹{grandTotal}</span>
                         </div>
 
-                        {/* Pay */}
-                        <button className="cursor-pointer w-full bg-(--linen-900)  hover:bg-(--linen-800) text-white py-3 rounded-md font-semibold transition">
+                        <button className="w-full bg-(--linen-900) text-white py-3 rounded-md font-semibold hover:bg-(--linen-800)">
                             PAY ₹{grandTotal}
                         </button>
                     </div>

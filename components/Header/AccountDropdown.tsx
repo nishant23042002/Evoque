@@ -4,8 +4,7 @@ import Link from "next/link";
 import { LogOut, User } from "lucide-react";
 import { useEffect, useRef } from "react";
 import { cn } from "@/lib/utils";
-import { signOut } from "firebase/auth";
-import { auth } from "@/firebase";
+import { useAuth } from "../AuthProvider";
 
 
 interface Props {
@@ -15,7 +14,7 @@ interface Props {
 
 const AccountDropdown = ({ open, onClose }: Props) => {
     const ref = useRef<HTMLDivElement | null>(null);
-
+    const { logout } = useAuth();
     // click outside
     useEffect(() => {
         if (!open) return;
@@ -31,7 +30,10 @@ const AccountDropdown = ({ open, onClose }: Props) => {
     }, [open, onClose]);
 
 
-
+    const handleLogout = async () => {
+        await logout();   // 🔐 Firebase + backend logout
+        onClose();
+    };
     return (
         <div
             ref={ref}
@@ -60,11 +62,7 @@ const AccountDropdown = ({ open, onClose }: Props) => {
             </Link>
 
             <button
-                onClick={() => {
-                    signOut(auth);
-                    window.location.href = "/"
-                    onClose();
-                }}
+                onClick={handleLogout}
                 className="
                             w-full flex items-center gap-2 duration-500 font-medium px-3 py-2 text-sm
                             text-red-600 hover:bg-red-500/10
