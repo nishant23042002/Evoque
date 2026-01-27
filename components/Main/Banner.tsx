@@ -2,19 +2,7 @@
 
 import Image from "next/image";
 import { useEffect, useRef, useState } from "react";
-
-interface BannerImage {
-  url: string;
-  width: number;
-}
-
-interface Banner {
-  _id: string;
-  title?: string;
-  desktopImages: BannerImage[];
-  mobileImages: BannerImage[];
-  redirectUrl: string;
-}
+import { Banner,BannerImage } from "@/types/ProductTypes";
 
 interface BannerSliderProps {
   banners: Banner[];
@@ -150,7 +138,7 @@ const BannerSlider = ({ banners }: BannerSliderProps) => {
                   priority={i === 0}
                   loading={i === 0 ? "eager" : "lazy"}
                   sizes="100vw"
-                  quality={100}
+                  quality={85}
                   className="min-[1000px]:object-cover object-center"
                 />
               )}

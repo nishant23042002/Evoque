@@ -8,4 +8,6 @@ export interface CartItem {
   quantity: number;
   size?: string;
   brand: string;
+  variantSku?: string;
+  color?: string;
 }

@@ -11,9 +11,9 @@ const Logo = () => {
             <Image
                 src="/images/thelayerlogo-bold.svg"
                 alt="The Layer Co"
-                width={160}
-                height={48}
+                fill
                 priority
+                style={{ width: "100%", height: "100%" }}
                 className="h-full w-auto"
             />
             <span className="

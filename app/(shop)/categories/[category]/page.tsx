@@ -8,89 +8,47 @@ import Image from "next/image";
 import Link from "next/link";
 import { usePathname, useSearchParams } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
+import axios from "axios";
+import { Category, Product, SubCategory } from "@/types/ProductTypes";
+import { useQuery } from "@tanstack/react-query";
 
-/* ---------------- TYPES ---------------- */
-
-interface SubCategory {
-    name: string;
-    slug: string;
-    image: string;
-    isActive: boolean;
+interface CategoryProductsResponse {
+    category: Category;
+    products: Product[];
 }
 
-interface Pricing {
-    price: number;
-    originalPrice: number;
-    discountPercentage: number;
-    currency: string;
+export async function fetchCategoryWithProducts(slug: string, sub?: string) {
+    const { data } = await axios.get<{ category: Category; products: Product[] }>(
+        `/api/categories/${slug}`,
+        { params: sub ? { sub } : undefined }
+    );
+    return data;
 }
 
-interface VariantImage {
-    url: string;
-    isPrimary?: boolean;
-}
 
-interface VariantColor {
-    name: string;
-    slug: string;
-    hex?: string;
-    images: VariantImage[];
-}
-
-interface SizeVariant {
-    size: string;
-    stock: number;
-    isAvailable?: boolean;
-}
-
-interface Variant {
-    color: VariantColor;
-    sizes: SizeVariant[];
-    pricing?: {
-        price?: number;
-        originalPrice?: number;
-        discountPercentage?: number;
-    };
-    totalStock?: number;
-}
-
-export interface Product {
-    _id: string;
-    productName: string;
-    slug: string;
-    brand: string;
-    category?: {
-        name: string;
-        slug: string;
-    };
-    pricing: Pricing;
-    rating: number;
-    variants: Variant[];
-    subCategory?: {
-        slug: string;
-    };
-    isActive: string;
-    isFeatured: string;
-    isBestSeller: string;
-    isNewArrival: string;
-}
-
-/* ---------------- COMPONENT ---------------- */
 
 const ProductCategoryPage = () => {
-    const [subCategories, setSubCategories] = useState<SubCategory[]>([]);
-    const [products, setProducts] = useState<Product[]>([]);
-    const [bannerImage, setBannerImage] = useState<string>("");
-    const [loading, setLoading] = useState(false);
-
     const bannerRef = useRef<HTMLDivElement>(null);
     const [bannerHeight, setBannerHeight] = useState<number>(0);
 
     const pathname = usePathname();
     const searchParams = useSearchParams();
 
-    const categorySlug = pathname.split("/").pop();
+    const categorySlug = pathname.split("/").pop() ?? "";
     const activeSub = searchParams.get("sub") || "";
+
+    /* ---------- FETCH DATA ---------- */
+    const { data, isLoading } = useQuery<CategoryProductsResponse>({
+        queryKey: ["categoryProducts", categorySlug, activeSub],
+        queryFn: () => fetchCategoryWithProducts(categorySlug, activeSub),
+        enabled: !!categorySlug,
+        staleTime: 1000 * 60 * 5,
+    });
+
+    const bannerImage = data?.category?.categoryPageBanner ?? "/images/default-category-banner.png";
+    const subCategories = (data?.category?.subCategories ?? []).filter((s: SubCategory) => s.isActive);
+    const products = data?.products ?? [];
+
     const isBannerVisible = Boolean(bannerImage && !activeSub);
 
     useEffect(() => {
@@ -99,74 +57,50 @@ const ProductCategoryPage = () => {
         }
     }, [bannerImage]);
 
-    /* ---------- FETCH DATA ---------- */
-    useEffect(() => {
-        async function fetchCategoryAndProducts() {
-            setLoading(true);
-            try {
-                const url = activeSub
-                    ? `/api/categories/${categorySlug}?sub=${activeSub}`
-                    : `/api/categories/${categorySlug}`;
-
-                const res = await fetch(url, { cache: "no-store" });
-                const data = await res.json();
-
-                setBannerImage(
-                    data.category?.categoryPageBanner ||
-                    "/images/default-category-banner.png"
-                );
-
-                setSubCategories(
-                    (data.category?.subCategories || []).filter(
-                        (s: SubCategory) => s.isActive
-                    )
-                );
-
-                setProducts(data.products || []);
-            } catch (err) {
-                console.error("Failed to fetch category/products", err);
-            } finally {
-                setLoading(false);
-            }
-        }
-
-        if (categorySlug) fetchCategoryAndProducts();
-    }, [categorySlug, activeSub]);
-
-    if(loading) return <div><LayerLogo /></div>
+    if (isLoading) return <div className="min-h-screen flex justify-center items-center"><LayerLogo /></div>
 
     return (
-        <section className="min-h-[95vh] bg-(--linen-150)">
+        <section className="min-h-[95vh]">
             {/* ---------------- CATEGORY BANNER ---------------- */}
             <div
                 style={{
                     height: isBannerVisible ? bannerHeight : 0,
                     opacity: isBannerVisible ? 1 : 0,
-                    transform: isBannerVisible
-                        ? "translateY(0)"
-                        : "translateY(-24px)",
+                    transform: isBannerVisible ? "translateY(0)" : "translateY(-20px)",
                 }}
                 className="
-                    overflow-hidden
-                    transition-[height,opacity,transform]
-                    duration-700
-                    ease-[cubic-bezier(0.22,1,0.36,1)]
-                    will-change-[height,opacity,transform]
-                "
+                        overflow-hidden
+                        transition-[height,opacity,transform]
+                        duration-700
+                        ease-[cubic-bezier(0.22,1,0.36,1)]
+                        will-change-[height,opacity,transform]
+                    "
             >
                 {bannerImage && (
-                    <div ref={bannerRef}>
+                    <div
+                        ref={bannerRef}
+                        className="
+                                relative
+                                w-full
+                                h-100
+                            "
+                    >
                         <Image
                             src={bannerImage}
                             alt={`${categorySlug} banner`}
-                            width={1600}
-                            height={600}
+                            fill
                             priority
-                            className="w-full object-cover object-center h-90"
+                            sizes="100vw"
+                            className="
+                                object-cover
+                                object-center
+                                select-none
+                            "
                         />
                     </div>
                 )}
             </div>
+
 
             {/* ---------------- SUB CATEGORY BAR ---------------- */}
             <div className="md:w-full mx-auto sticky top-15 z-30 border border-b-(--border-strong) bg-(--linen-200) border-b border-(--border-light)">
@@ -254,7 +188,6 @@ const ProductCategoryPage = () => {
                     <ProductMasonryGrid
                         products={products}
                         showHeading={false}
-                        showFilter={false}
                         fullWidth={false}
                     />
                 )}

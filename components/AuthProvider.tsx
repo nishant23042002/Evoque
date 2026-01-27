@@ -23,6 +23,9 @@ interface AuthContextType {
     user: BackendUser | null;
     loading: boolean;
     isAuthenticated: boolean;
+    openLogin: () => void;
+    closeLogin: () => void;
+    showLogin: boolean
     syncUser: () => Promise<void>;
     logout: () => Promise<void>;
 }
@@ -39,6 +42,7 @@ export function AuthProvider({
     const [user, setUser] = useState<BackendUser | null>(null);
     const [loading, setLoading] = useState(true);
     const mounted = useRef(true);
+    const [showLogin, setShowLogin] = useState(false);
     const dispatch = useAppDispatch();
 
     const syncUser = async () => {
@@ -106,6 +110,9 @@ export function AuthProvider({
                 user,
                 loading,
                 isAuthenticated: !!user,
+                showLogin,
+                openLogin: () => setShowLogin(true),
+                closeLogin: () => setShowLogin(false),
                 syncUser,
                 logout
             }}

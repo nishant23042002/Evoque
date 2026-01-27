@@ -12,24 +12,25 @@ import {
 import { MdFiberNew } from "react-icons/md";
 import { Flame } from "lucide-react";
 import { cn } from "@/lib/utils";
-import { Menu } from "lucide-react";
+import { IoClose } from "react-icons/io5";
+import { Category } from "@/types/ProductTypes";
 
 const MOBILE_BREAKPOINT = 550;
 
 /* ---------------- TYPES ---------------- */
-interface Category {
-    _id: string;
-    name: string;
-    slug: string;
-    isTrending: boolean;
-    leftMenuCategoryImage: string;
-}
+
 
 interface StaticItem {
     title: string;
     href: string;
     icon: React.ElementType;
 }
+
+interface LeftMenuProps {
+    isOpen: boolean;
+    setIsOpen: React.Dispatch<React.SetStateAction<boolean>>;
+}
+
 
 /* ---------------- STATIC NAV ---------------- */
 const PRIMARY_ITEMS: StaticItem[] = [
@@ -43,12 +44,11 @@ const SECONDARY_ITEMS: StaticItem[] = [
     { title: "Account", href: "/account", icon: HiOutlineUser },
 ];
 
-const LeftMenu = () => {
+const LeftMenu = ({ isOpen, setIsOpen }: LeftMenuProps) => {
+
     const pathname = usePathname();
     const sidebarRef = useRef<HTMLDivElement | null>(null);
-
     const [categories, setCategories] = useState<Category[]>([]);
-    const [isOpen, setIsOpen] = useState(false);
     const [isMobile, setIsMobile] = useState(false);
 
     /* ---------- FETCH CATEGORIES ---------- */
@@ -112,37 +112,7 @@ const LeftMenu = () => {
     const SIDEBAR_WIDTH = isMobile ? "w-70" : "w-90";
 
     return (
-        <>
-            {/* MENU BUTTON */}
-            <button
-                data-menu-btn
-                onClick={() => setIsOpen(v => !v)}
-                className={"fixed max-[550px]:left-1.5 left-3 top-5 z-50 cursor-pointer rounded-md text-foreground hover:text-primary transition-transform duration-300 ease-in-out"}
-            >
-                <span
-                    className={cn(
-                        "inline-block transition-transform duration-300",
-                        isOpen && "rotate-90"
-                    )}
-                >
-                    {isOpen ? (
-                        <svg
-                            width="20"
-                            height="20"
-                            viewBox="0 0 24 24"
-                            fill="none"
-                            stroke="currentColor"
-                            strokeWidth="2.2"
-                        >
-                            <path d="M18 6 6 18" />
-                            <path d="m6 6 12 12" />
-                        </svg>
-                    ) : (
-                        <Menu size={20} />
-                    )}
-                </span>
-            </button>
-
+        <div>
 
             {/* BACKDROP */}
             <div
@@ -170,6 +140,20 @@ const LeftMenu = () => {
                     isOpen ? "translate-x-0" : "-translate-x-full"
                 )}
             >
+                <button
+                    aria-label="Close menu"
+                    onClick={() => setIsOpen(false)}
+                    className="cursor-pointer text-[var(--linen-700)]
+                            absolute top-4 right-0
+                            z-50
+                            rounded-md
+                            p-2
+                            hover:text-primary
+                            transition-colors
+                        "
+                >
+                    <IoClose size={22} />
+                </button>
                 <nav className="flex flex-col mt-6 h-full min-[551px]:mx-2">
                     {/* ---------- TOP ---------- */}
                     <div className="space-y-1 mt-10">
@@ -223,21 +207,61 @@ const LeftMenu = () => {
                                             <span className="absolute left-0 top-1/2 -translate-y-1/2 h-6 w-1 bg-primary" />
                                         )}
 
-                                        <div className={`shadow-xs border border-(--border-strong) ${active ? "border border-primary" : ""} relative mx-1 w-full h-12 min-[551px]:h-14 rounded-md overflow-hidden`}>
+                                        <div
+                                            className={`
+                                                group
+                                                relative mx-1 w-full h-12 min-[551px]:h-14
+                                                rounded-md overflow-hidden
+                                                border border-(--border-strong)
+                                                shadow-xs
+                                                transition-all duration-300
+                                                ${active ? "border-primary" : "hover:border-primary/60"}
+                                            `}
+                                        >
+                                            {/* IMAGE */}
                                             <Image
                                                 src={category.leftMenuCategoryImage}
                                                 alt={category.name}
                                                 fill
+                                                sizes="(max-width: 550px) 280px, 360px"
                                                 loading={i === 0 ? "eager" : "lazy"}
-                                                className="object-cover object-center"
+                                                className="
+                                                        object-cover object-center
+                                                        transition-transform duration-500 ease-out
+                                                        group-hover:scale-105
+                                                        "
                                             />
-                                            {!active && (
-                                                <div className={`${isMobile ? "absolute inset-0 transition-all duration-300 bg-transparent" : "absolute inset-0 transition-all duration-300 bg-black/25 hover:bg-transparent"}`} />
-                                            )}
-                                            <p className="absolute truncate left-1 min-[551px]:left-3 bottom-2 text-[10px] min-[551px]:text-sm text-(--text-inverse) font-medium">
+
+                                            {/* OVERLAY */}
+                                            <div
+                                                className={`
+                                                        absolute inset-0
+                                                        transition-all duration-300
+                                                        ${active
+                                                        ? "bg-black/30"
+                                                        : isMobile
+                                                            ? "bg-transparent"
+                                                            : "bg-black/0 group-hover:bg-black/25"
+                                                    }
+                                                `}
+                                            />
+
+                                            {/* TEXT */}
+                                            <p
+                                                className="
+                                                    pointer-events-none
+                                                    absolute left-1 bottom-2
+                                                    text-[10px] min-[551px]:text-sm
+                                                    font-medium p-0.5 bg-[var(--linen-200)]/60
+                                                    text-(--linen-800) rounded-[3px]
+                                                    transition-all duration-300
+                                                    group-hover:-translate-y-0.5
+                                                    "
+                                            >
                                                 {category.name}
                                             </p>
                                         </div>
+
                                     </Link>
                                 );
                             })}
@@ -281,7 +305,7 @@ const LeftMenu = () => {
                     </div>
                 </nav>
             </aside>
-        </>
+        </div>
     );
 };
 

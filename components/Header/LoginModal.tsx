@@ -17,14 +17,9 @@ import { FirebaseError } from "firebase/app";
 import { useAuth } from "../AuthProvider";
 
 
-interface LoginModalUIProps {
-    open: boolean;
-    onClose: () => void;
-}
 
 
-
-export default function LoginModalUI({ open, onClose }: LoginModalUIProps) {
+export default function LoginModalUI() {
     const sliderRef = useRef<HTMLDivElement | null>(null);
     const router = useRouter();
     const [activeIndex, setActiveIndex] = useState(0);
@@ -32,6 +27,8 @@ export default function LoginModalUI({ open, onClose }: LoginModalUIProps) {
     const [otp, setOtp] = useState("");
     const [success, setSuccess] = useState("");
     const [error, setError] = useState("");
+    const { showLogin, closeLogin, syncUser } = useAuth();
+
     const [resendCountdown, setResendCountdown] = useState(0);
 
     const [confirmationResult, setConfirmationResult] =
@@ -41,7 +38,7 @@ export default function LoginModalUI({ open, onClose }: LoginModalUIProps) {
 
     const [step, setStep] = useState<"mobile" | "otp">("mobile");
     const SLIDES_COUNT = 3;
-    const { syncUser } = useAuth();
+ 
 
     /* ------------------ reCAPTCHA helpers ------------------ */
 
@@ -62,7 +59,7 @@ export default function LoginModalUI({ open, onClose }: LoginModalUIProps) {
     };
     /* ---------------- Slider ---------------- */
     useEffect(() => {
-        if (!open) return;
+        if (!showLogin) return;
 
         const slider = sliderRef.current;
         if (!slider) return;
@@ -79,7 +76,7 @@ export default function LoginModalUI({ open, onClose }: LoginModalUIProps) {
         }, 1500);
 
         return () => clearInterval(interval);
-    }, [open]);
+    }, [showLogin]);
 
     /* ---------------- Countdown ---------------- */
     useEffect(() => {
@@ -136,7 +133,7 @@ export default function LoginModalUI({ open, onClose }: LoginModalUIProps) {
             await syncUser();
 
             setTimeout(() => {
-                onClose();
+                closeLogin();
                 router.replace("/");
             }, 800);
 
@@ -216,10 +213,11 @@ export default function LoginModalUI({ open, onClose }: LoginModalUIProps) {
         setResendCountdown(0);
         setConfirmationResult(null);
         setStep("mobile");
-        onClose();
+        closeLogin();
     };
 
-    if (!open) return null;
+    if (!showLogin) return null;
+
 
     const Loader = (
         <div className="flex items-center justify-center">

@@ -5,13 +5,8 @@ import Link from "next/link";
 import { useEffect, useState } from "react";
 import Masonry from "react-masonry-css";
 import LayerLogoLoader from "../FlashLogo/LayerLogo";
-
-interface Category {
-    name: string;
-    image: string;
-    slug: string;
-    _id: string;
-}
+import axios from "axios";
+import { Category } from "@/types/ProductTypes";
 
 const FeaturedCategories = () => {
     const [categories, setCategories] = useState<Category[]>([]);
@@ -29,9 +24,8 @@ const FeaturedCategories = () => {
     useEffect(() => {
         async function fetchCategories() {
             try {
-                const res = await fetch("/api/categories");
-                const data = await res.json();
-                setCategories(data);
+                const res = await axios.get<Category[]>("/api/categories");
+                setCategories(res.data);
             } catch (err) {
                 console.error("Failed to fetch categories", err);
             } finally {
@@ -90,6 +84,13 @@ const FeaturedCategories = () => {
                                     src={item.image}
                                     alt={item.name}
                                     fill
+                                    sizes="
+                                        (max-width: 350px) 100vw,
+                                        (max-width: 550px) 50vw,
+                                        (max-width: 1000px) 33vw,
+                                        (max-width: 1300px) 25vw,
+                                        20vw
+                                    "
                                     className="
                                         w-full object-cover object-center
                                         transition-transform duration-500

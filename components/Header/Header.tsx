@@ -6,23 +6,54 @@ import SearchBar from "./SearchBar";
 import WishList from "./WishList";
 import LoginModalUI from "./LoginModal";
 import { useState } from "react";
-import { User } from "lucide-react";
+import { Menu, User } from "lucide-react";
 import { useAuth } from "../AuthProvider";
 import AccountDropdown from "./AccountDropdown";
 import { IoClose } from "react-icons/io5";
+import { cn } from "@/lib/utils";
+import LeftMenu from "../LeftMenu/LeftMenu";
 
 
 const Header = () => {
-    const [loginOpen, setLoginOpen] = useState(false);
     const [accountOpen, setAccountOpen] = useState(false);
-    const { user } = useAuth();
+    const { user, openLogin } = useAuth();
+    const [menuOpen, setMenuOpen] = useState(false);
 
     return (
-        <header className="sticky top-0 z-40 w-full bg-(--linen-200) border-b border-(--border-strong)">
+        <header className="sticky top-0 z-40 w-full bg-(--linen-200)">
             <div className="relative p-2 flex items-center justify-between px-2 md:px-4">
-
+                <div>                   
+                    <button
+                        data-menu-btn
+                        onClick={() => setMenuOpen(v => !v)}
+                        className={"z-9999 cursor-pointer rounded-md text-foreground hover:text-primary transition-transform duration-300 ease-in-out"}
+                    >
+                        <span
+                            className={cn(
+                                "inline-block transition-transform duration-300",
+                                menuOpen && "rotate-90"
+                            )}
+                        >
+                            {menuOpen ? (
+                                <svg
+                                    width="20"
+                                    height="20"
+                                    viewBox="0 0 24 24"
+                                    fill="none"
+                                    stroke="currentColor"
+                                    strokeWidth="2.2"
+                                >
+                                    <path d="M18 6 6 18" />
+                                    <path d="m6 6 12 12" />
+                                </svg>
+                            ) : (
+                                <Menu size={20} />
+                            )}
+                        </span>
+                    </button>
+                </div>
                 {/* Logo */}
-                <div className="w-full ml-11 flex items-center justify-center gap-2">
+                <div className="w-full flex items-center justify-center gap-2">
                     <Logo />
                 </div>
 
@@ -54,7 +85,7 @@ const Header = () => {
                         </div>
                     ) : (
                         <button
-                            onClick={() => setLoginOpen(true)}
+                            onClick={openLogin}
                             aria-label="Login"
                             className="cursor-pointer flex items-center justify-center"
                         >
@@ -66,11 +97,9 @@ const Header = () => {
                         </button>
                     )}
 
-                    <LoginModalUI
-                        open={loginOpen}
-                        onClose={() => setLoginOpen(false)}
-                    />
+                    <LoginModalUI />
                 </div>
+                <LeftMenu isOpen={menuOpen} setIsOpen={setMenuOpen} />
             </div>
         </header>
     );

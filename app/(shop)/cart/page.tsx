@@ -44,7 +44,7 @@ export default function CartPage() {
     /* EMPTY STATE */
     if (!cartItems.length) {
         return (
-            <div className="min-h-[60vh] flex items-center justify-center px-4">
+            <div className="min-h-[95vh] flex items-center justify-center px-4">
                 <div className="max-w-sm w-full text-center space-y-6">
                     <div className="flex justify-center">
                         <div className="mb-2 flex items-center justify-center w-20 h-20 rounded-full bg-(--earth-charcoal)/10">
@@ -106,7 +106,7 @@ export default function CartPage() {
                         {cartItems.map((item) => (
                             <Link
                                 href={`/products/${item.slug}`}
-                                key={item.productId}
+                                key={`${item.productId}/${item.color}`}
                                 className="block"
                             >
                                 <div
@@ -138,7 +138,7 @@ export default function CartPage() {
                                     <div className="flex flex-col justify-between flex-1 text-sm">
                                         <div>
                                             <div className="flex justify-between items-start">
-                                                <h3 className="max-[400px]:text-[11px] text-xs font-semibold text-(--linen-600)">
+                                                <h3 className="max-[400px]:text-[11px] text-xs font-semibold text-primary">
                                                     {item.brand ?? "Brand"}
                                                 </h3>
 
@@ -153,23 +153,32 @@ export default function CartPage() {
                                                 />
                                             </div>
 
-                                            <p className="font-medium max-[400px]:text-[11px] text-xs leading-tight mt-1">
+                                            <p className="font-semibold text-(--linen-700) max-[400px]:text-[11px] text-xs leading-tight mt-1">
                                                 {item.name}
                                             </p>
 
-                                            <div className="flex items-center gap-2 mt-1 text-xs">
-                                                <span className="font-semibold">
+                                            <div className="flex flex-col mt-1 text-xs">
+                                                <div className="font-semibold mb-2 flex gap-2 items-center text-sm">
                                                     ₹{item.price}
-                                                </span>
-                                                {item.originalPrice && (
-                                                    <span className="line-through text-[11px] text-(--linen-700)">
-                                                        ₹{item.originalPrice}
-                                                    </span>
-                                                )}
+                                                    {item.originalPrice && (
+                                                        <span className="line-through text-[11px] text-(--linen-700)">
+                                                            ₹{item.originalPrice}
+                                                        </span>
+                                                    )}
+                                                </div>
+                                                
+                                                <div>
+                                                    {item.color && (
+                                                        <p className="text-[11px] text-(var(--linen-500))">
+                                                            Color: {item.color}
+                                                        </p>
+                                                    )}
+                                                </div>
+
                                             </div>
 
                                             {item.size && (
-                                                <p className="text-xs text-slate-500 mt-1">
+                                                <p className="text-[11px] text-(var(--linen-500))">
                                                     Size: {item.size}
                                                 </p>
                                             )}

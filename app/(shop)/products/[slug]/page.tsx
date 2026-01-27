@@ -11,75 +11,9 @@ import { useAppDispatch, useAppSelector } from "@/store/hooks";
 import { RootState } from "@/store";
 import { addToCart } from "@/store/cart/cart.slice";
 import { addWishlistItem, removeWishlistItem } from "@/store/wishlist/wishlist.thunks";
-import { toggleWishlist } from "@/lib/wishlist";
+import { SizeVariant,Product } from "@/types/ProductTypes";
+import { sizeScaleMap } from "@/constants/productSizes";
 
-
-/* ====================
-   TYPES
-==================== */
-interface VariantImage {
-    url: string;
-    isPrimary?: boolean;
-}
-
-interface SizeVariant {
-    size: string;
-    variantSku: string;
-    stock: number;
-    isAvailable: boolean;
-}
-
-interface ColorVariant {
-    name: string;
-    slug: string;
-    hex?: string;
-    images: VariantImage[];
-}
-
-interface Variant {
-    color: ColorVariant;
-    sizes: SizeVariant[];
-    pricing?: {
-        price?: number;
-        originalPrice?: number;
-        discountPercentage?: number;
-    };
-    totalStock: number;
-}
-
-interface Category {
-    _id: string;
-    name: string;
-    slug: string;
-}
-
-interface Product {
-    _id: string;
-    productName: string;
-    slug: string;
-    brand: string;
-    rating: number;
-    category: Category;
-    pricing: {
-        price: number;
-        originalPrice?: number;
-        discountPercentage?: number;
-    };
-    variants: Variant[];
-    details: {
-        material: string;
-        fabricWeight: string;
-        stretch: string;
-        washCare: string[];
-        fitType: string;
-        rise: string;
-        closure: string;
-    };
-    sizeChart: string;
-    sku: string;
-    reviews: string[];
-    description?: string;
-}
 
 const DETAILS_LABELS: Record<keyof Product["details"], string> = {
     material: "Material",
@@ -91,15 +25,6 @@ const DETAILS_LABELS: Record<keyof Product["details"], string> = {
     closure: "Closure",
 };
 
-/* ====================
-   SIZE SCALES
-==================== */
-const sizeScaleMap: Record<string, string[]> = {
-    shirts: ["XS", "S", "M", "L", "XL", "XXL"],
-    tshirts: ["XS", "S", "M", "L", "XL"],
-    jeans: ["28", "30", "32", "34", "36"],
-    trousers: ["28", "30", "32", "34", "36"],
-};
 
 /* ====================
    COMPONENT
@@ -318,11 +243,20 @@ export default function ProductPage() {
                             >
                                 <Heart
                                     strokeWidth={0.9}
-                                    className={`h-5 w-5 transition-all ${isWishlisted
-                                        ? "fill-primary text-primary scale-110"
-                                        : "text-(--text-secondary) hover:text-primary"
-                                        }`}
+                                    className="h-5 w-5 transition-all duration-200"
+                                    style={
+                                        isWishlisted
+                                            ? {
+                                                fill: activeVariant?.color?.hex || "#000",
+                                                color: activeVariant?.color?.hex || "#000",
+                                                transform: "scale(1.1)",
+                                            }
+                                            : {
+                                                color: "var(--text-secondary)",
+                                            }
+                                    }
                                 />
+
                             </button>
 
 
@@ -390,7 +324,7 @@ export default function ProductPage() {
                                 <h3 className="font-bold mb-1 text-foreground">
                                     {product.category.slug === "jeans" ? "Choose Waist" : "Select Size"}
                                 </h3>
-                                <h1 className="text-sm font-medium text-[var(--linen-600)] hover:text-primary cursor-pointer underline">Size Chart</h1>
+                                <h1 className="text-sm font-medium text-(--linen-600) hover:text-primary cursor-pointer underline">Size Chart</h1>
                             </div>
                             <div className="flex flex-row flex-nowrap items-center gap-2 w-full overflow-x-auto scrollbar-hide">
                                 {sizes.map(s => {
@@ -460,7 +394,10 @@ export default function ProductPage() {
                                         price: product.pricing.price,
                                         originalPrice: product.pricing.originalPrice,
                                         quantity: 1,
-                                        brand: product.brand
+                                        size: selectedSize.size,
+                                        variantSku: selectedSize.variantSku,
+                                        brand: product.brand,
+                                        color: activeVariant?.color.name,
                                     })
                                 );
 

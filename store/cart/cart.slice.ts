@@ -21,20 +21,23 @@ const cartSlice = createSlice({
     initialState,
     reducers: {
         addToCart: (state, action: PayloadAction<CartItem>) => {
+            const item = action.payload;
+
             const existing = state.items.find(
-                (item) =>
-                    item.productId === action.payload.productId &&
-                    item.size === action.payload.size
+                i =>
+                    i.productId === item.productId &&
+                    i.variantSku === item.variantSku // 🔥 size-aware
             );
 
             if (existing) {
-                existing.quantity += action.payload.quantity;
+                existing.quantity += item.quantity;
             } else {
-                state.items.push(action.payload);
+                state.items.push(item);
             }
 
-            state.subtotal = calculateCartTotal(state.items);
+            state.subtotal += item.price * item.quantity;
         },
+
 
         removeFromCart: (state, action: PayloadAction<string>) => {
             state.items = state.items.filter(

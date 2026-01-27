@@ -159,10 +159,7 @@ export default function Home() {
         <section className="w-full">
           <ProductMasonryGrid products={items} />
         </section>
-        <LoginModalUI
-          open={loginOpen}
-          onClose={() => setLoginOpen(false)}
-        />
+        <LoginModalUI />
 
       </div>
     </Container>

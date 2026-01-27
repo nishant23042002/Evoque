@@ -1,11 +1,13 @@
+
 import type { Metadata } from "next";
 import "./globals.css";
 import Header from "@/components/Header/Header";
 import Footer from "@/components/Footer/Footer";
-import LeftMenu from "@/components/LeftMenu/LeftMenu";
 import { Inter, Poppins } from "next/font/google";
 import Providers from "./providers";
 import { AuthProvider } from "@/components/AuthProvider";
+import GlobalLoginModal from "./GlobalLoginModal";
+import ReactQueryProvider from "@/components/ReactQueryProvider";
 
 
 
@@ -28,27 +30,31 @@ export const metadata: Metadata = {
   description: "The Layer Co. offers premium men’s clothing including oversized t-shirts, casual shirts, linen shirts, overshirts and modern essentials. Elevate your everyday style with quality fits."
 };
 
+
 export default function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+
+
   return (
     <html lang="en" className={`${inter.variable} ${poppins.variable}`}>
       <body className="font-poppins antialiased bg-(--linen-100)">
         <Providers>
           <AuthProvider>
-            <div className="flex">
-              <div className="fixed top-0 z-99 h-full">
-                <LeftMenu />
-              </div>
-              <div className="w-full">
-                <Header />
+            <ReactQueryProvider>
+              <div className="flex">
+                <div className="w-full">
+                  <Header />
 
-                {children}
-                <Footer />
+                  {children}
+                  <GlobalLoginModal />
+
+                  <Footer />
+                </div>
               </div>
-            </div>
+            </ReactQueryProvider>
           </AuthProvider>
         </Providers>
       </body>

@@ -9,6 +9,7 @@ import { useAppDispatch, useAppSelector } from "@/store/hooks";
 import { addToCart } from "@/store/cart/cart.slice";
 import { Heart } from "lucide-react";
 import { removeWishlistItem } from "@/store/wishlist/wishlist.thunks";
+import { RootState } from "@/store";
 
 
 
@@ -18,8 +19,9 @@ export default function Wishlist() {
   const dispatch = useAppDispatch();
   const wishlistItems = useAppSelector((state) => state.wishlist.items);
   const [activeId, setActiveId] = useState<string | null>(null);
-
-
+  const selectWishlistCount = (state: RootState) =>
+    state.wishlist.items.length;
+  const count = useAppSelector(selectWishlistCount);
   const activeItem = useMemo(() => {
     if (!wishlistItems.length) return null;
 
@@ -78,7 +80,7 @@ export default function Wishlist() {
   ======================= */
   if (!wishlistItems.length) {
     return (
-      <div className="flex flex-col items-center justify-center min-h-[60vh] text-center px-6">
+      <div className="flex flex-col items-center justify-center h-[95vh] text-center px-6">
         {/* Icon */}
         <div className="mb-2 animate-float flex items-center justify-center w-20 h-20 rounded-full bg-(--earth-charcoal)/10">
           <Heart className="w-10 h-10 text-primary" />
@@ -109,73 +111,81 @@ export default function Wishlist() {
 
 
   return (
-    <div className="px-2 py-2 sm:py-4 bg-(--linen-100)">
-      <div className="flex flex-col lg:flex-row gap-6 justify-center">
-
-        {/* LEFT — BIG ITEM */}
-        {activeItem && (
-          <div className="hidden lg:block lg:w-[40%]">
-            <div className="sticky top-20 border border-(--border-light)">
-
-              {/* IMAGE */}
-              <div className="relative rounded-[3px] w-full h-165 overflow-hidden">
-                {activeItem.image ? (
-                  <Image
-                    src={activeItem.image}
-                    alt={activeItem.name}
-                    fill
-                    className="object-cover object-[50%_40%]"
-                  />
-                ) : (
-                  <div className="w-full h-full bg-(--surface-muted)" />
-                )}
+    <div className="w-full px-2 py-2 bg-(--linen-100) min-h-[95vh]">
+      <div className="w-full flex flex-col lg:flex-row gap-2">
+        <div className="flex flex-col w-[70%]">
+          <div className="text-5xl flex max-lg:flex-col pb-2  lg:justify-between lg:items-center text-(--linen-800) font-semibold tracking-tight">
+            <span>Favourites</span>
+            <span className="text-lg tracking-wide font-light">{count} ITEM</span>
+          </div>
 
 
-                {/* BRAND TAG */}
-                <span className="absolute top-2 left-2 text-xs font-semibold bg-(--surface)/80 text-foreground px-2 py-0.5 rounded">
-                  {activeItem.brand}
-                </span>
-              </div>
+          {/* LEFT — BIG ITEM */}
+          {activeItem && (
+            <div className="hidden lg:block">
+              <div className="sticky top-20 border border-(--border-light)">
 
-              {/* DETAILS */}
-              <div className="mt-3 py-3 mx-2">
-                <h2 className="text-lg font-medium text-foreground">
-                  {activeItem.name}
-                </h2>
+                {/* IMAGE */}
+                <div className="relative rounded-[3px] w-full h-135 overflow-hidden">
+                  <Link href={`/products/${activeItem.slug}`}>
+                    {activeItem.image ? (
+                      <Image
+                        src={activeItem.image}
+                        alt={activeItem.name}
+                        fill
+                        className="object-cover object-[50%_40%]"
+                      />
+                    ) : (
+                      <div className="w-full h-full bg-(--surface-muted)" />
+                    )}
+                  </Link>
 
-                <div className="flex items-center gap-3 mt-1">
-                  <span className="text-lg font-semibold text-primary">
-                    ₹{activeItem.price}
+
+                  {/* BRAND TAG */}
+                  <span className="absolute top-2 left-2 text-xs font-semibold text-foreground">
+                    {activeItem.brand}
                   </span>
-
-                  {activeItem.originalPrice && (
-                    <span className="line-through text-sm text-(--text-muted)">
-                      ₹{activeItem.originalPrice}
-                    </span>
-                  )}
                 </div>
 
-                <button onClick={(e) => {
-                  e.preventDefault();
-                  e.stopPropagation();
+                {/* DETAILS */}
+                <div className="mt-3 py-3 mx-2">
+                  <h2 className="text-lg font-medium text-foreground">
+                    {activeItem.name}
+                  </h2>
 
-                  dispatch(
-                    addToCart({
-                      productId: activeItem?.productId,
-                      name: activeItem?.name,
-                      slug: activeItem?.slug,
-                      image: activeItem?.image,
-                      price: activeItem?.price,
-                      originalPrice: activeItem?.originalPrice,
-                      quantity: 1,
-                      brand: activeItem?.brand
-                    })
-                  );
+                  <div className="flex items-center gap-3 mt-1">
+                    <span className="text-lg font-semibold text-primary">
+                      ₹{activeItem.price}
+                    </span>
 
-                  dispatch(removeWishlistItem(activeItem.productId));
+                    {activeItem.originalPrice && (
+                      <span className="line-through text-sm text-(--text-muted)">
+                        ₹{activeItem.originalPrice}
+                      </span>
+                    )}
+                  </div>
 
-                }}
-                  className="border border-(--border-light)
+                  <button onClick={(e) => {
+                    e.preventDefault();
+                    e.stopPropagation();
+
+                    dispatch(
+                      addToCart({
+                        productId: activeItem?.productId,
+                        name: activeItem?.name,
+                        slug: activeItem?.slug,
+                        image: activeItem?.image,
+                        price: activeItem?.price,
+                        originalPrice: activeItem?.originalPrice,
+                        quantity: 1,
+                        brand: activeItem?.brand
+                      })
+                    );
+
+                    dispatch(removeWishlistItem(activeItem.productId));
+
+                  }}
+                    className="border border-(--border-strong)
                             cursor-pointer mt-2 w-full
                             hover:bg-(--btn-primary-bg)
                             text-(--btn-primary-text)
@@ -185,20 +195,22 @@ export default function Wishlist() {
                             bg-(--btn-primary-hover)
                             transition-all duration-300
                           ">
-                  MOVE TO BAG
-                </button>
+                    MOVE TO BAG
+                  </button>
+                </div>
               </div>
             </div>
-          </div>
-        )}
+          )}
+        </div>
+
 
 
         {/* RIGHT — MASONRY */}
-        <div className="w-full lg:w-[55%]">
+        <div className="w-full">
           <Masonry
             breakpointCols={breakpoints}
-            className="flex gap-2 sm:gap-4"
-            columnClassName="space-y-2 sm:space-y-4"
+            className="flex gap-2 "
+            columnClassName="space-y-2"
           >
             {wishlistItems.map((item, index) => (
               <Link
@@ -247,7 +259,7 @@ export default function Wishlist() {
                     <div className="flex justify-between text-[11px]">
                       <span className="text-md">Price: {item.price}</span>
                       {item.originalPrice && (
-                        <span className="line-through text-muted-foreground text-[12px]">
+                        <span className="line-through text-muted/70 text-[12px]">
                           {item.originalPrice}
                         </span>
                       )}
@@ -256,7 +268,7 @@ export default function Wishlist() {
                     <button onClick={(e) => {
                       e.preventDefault();
                       e.stopPropagation();
-                     
+
                       dispatch(
                         addToCart({
                           productId: item.productId,
@@ -273,14 +285,14 @@ export default function Wishlist() {
                       dispatch(removeWishlistItem(item.productId));
 
                     }}
-                      className="border border-(--border-light)
+                      className="border border-(--border-strong)
                               cursor-pointer mt-2 w-full
                               hover:bg-primary
                               text-primary-foreground
                               font-semibold
                               text-[11px]
                               py-1.5
-                              rounded
+                              rounded-[3px]
                               bg-(--btn-primary-hover)
                               transition-all duration-300
                             ">

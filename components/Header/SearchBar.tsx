@@ -6,72 +6,9 @@ import { cn } from "@/lib/utils";
 import Link from "next/link";
 import Image from "next/image";
 import CometLogoLoader from "../FlashLogo/LayerLogo";
+import { Product,Variant,Category,SearchSubCategory } from "@/types/ProductTypes";
 
-/* =====================
-   TYPES
-===================== */
 
-interface VariantImage {
-  url: string;
-  isPrimary?: boolean;
-}
-
-interface Variant {
-  color: {
-    name: string;
-    slug: string;
-    hex?: string;
-    images: VariantImage[];
-  };
-  pricing: {
-    price: number;
-  };
-}
-
-interface Product {
-  _id: string;
-  productName: string;
-  slug: string;
-  category: { name: string; slug: string };
-  subCategory: { name: string; slug: string };
-  variants: Variant[];
-  tags?: string[];
-  search?: {
-    keywords?: string[];
-    synonyms?: string[];
-  };
-  attributes?: {
-    fabric?: string;
-    pattern?: string;
-    fitType?: string;
-  };
-}
-
-interface SearchSubCategory {
-  name: string;
-  slug: string;
-  isActive: boolean;
-  categorySlug: string;
-}
-
-interface Category {
-  _id: string;
-  name: string;
-  slug: string;
-  image: string;
-  isTrending: boolean;
-  isFeatured: boolean;
-  isActive: boolean;
-  subCategories: SubCategory[];
-}
-
-interface SubCategory {
-  name: string;
-  slug: string;
-  isActive: boolean;
-  priority?: number;
-  isFeatured?: boolean;
-}
 
 const getPrimaryImage = (variant: Variant) =>
   variant.color.images.find(i => i.isPrimary)?.url ||
