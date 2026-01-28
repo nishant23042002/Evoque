@@ -4,13 +4,6 @@ export interface VariantImage {
     isPrimary?: boolean;
 }
 
-export interface VariantColor {
-    name: string;
-    slug: string;
-    hex?: string;
-    images: VariantImage[];
-}
-
 export interface SizeVariant {
     size: string;
     variantSku: string;
@@ -18,7 +11,12 @@ export interface SizeVariant {
     isAvailable: boolean;
 }
 
-
+export interface ColorVariant {
+    name: string;
+    slug: string;
+    hex?: string;
+    images: VariantImage[];
+}
 export interface Pricing {
     price: number;
     originalPrice: number;
@@ -66,20 +64,30 @@ export interface Category {
     leftMenuCategoryImage: string;
 }
 
-export interface Product {
+export default interface Product {
     _id: string;
+    attributes?: {
+        sleeve?: string;
+        pattern?: string;
+        occasion: string[];
+        fabric?: string;
+        fitType?: string;
+        season?: string[];
+    };
     productName: string;
     slug: string;
+    sku: string;
     brand: string;
-    rating: number;
     category: Category;
     subCategory: { name: string, slug: string };
+    fit?: string;
+    variants: Variant[];
     pricing: {
         price: number;
         originalPrice?: number;
         discountPercentage?: number;
     };
-    variants: Variant[];
+    rating: number;
     details: {
         material: string;
         fabricWeight: string;
@@ -90,38 +98,52 @@ export interface Product {
         closure: string;
     };
     sizeChart: string;
-    sku: string;
     reviews: string[];
+    seo?: {
+        title?: string;
+        description?: string;
+        keywords?: string[];
+    };
+    shipping?: {
+        weight?: string;
+        dimensions?: string;
+        codAvailable?: boolean;
+        returnDays?: number;
+    }
     description?: string;
     tags?: string[];
+    badges?: string[];
+    merchandising?: {
+        priority?: number;
+        collection?: string;
+        displayOrder?: number;
+    };
     search?: {
         keywords?: string[];
         synonyms?: string[];
+        popularityScore?: number;
     };
-    attributes?: {
-        fabric?: string;
-        pattern?: string;
-        fitType?: string;
-    };
+    analytics?: {
+        views?: number;
+        cartAdds?: number;
+        purchases?: number;
+    },
+    isActive?: boolean,
+    isFeatured?: boolean,
+    isBestSeller?: boolean,
+    isNewArrival?: boolean,
+    launchDate?: string,
 }
-
-export interface ColorVariant {
-    name: string;
-    slug: string;
-    hex?: string;
-    images: VariantImage[];
-}
-
 
 export interface BannerImage {
-  url: string;
-  width: number;
+    url: string;
+    width: number;
 }
 
 export interface Banner {
-  _id: string;
-  title?: string;
-  desktopImages: BannerImage[];
-  mobileImages: BannerImage[];
-  redirectUrl: string;
+    _id: string;
+    title?: string;
+    desktopImages: BannerImage[];
+    mobileImages: BannerImage[];
+    redirectUrl: string;
 }

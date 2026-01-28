@@ -3,11 +3,14 @@ export interface CartItem {
   name: string;
   slug: string;
   image: string;
-  price: number;          
-  originalPrice?: number; 
+  price: number;
+  originalPrice?: number;
   quantity: number;
   size?: string;
   brand: string;
   variantSku?: string;
-  color?: string;
+  color: {
+    name: string,
+    slug?: string;
+  };
 }

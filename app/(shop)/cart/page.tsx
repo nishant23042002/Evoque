@@ -166,11 +166,11 @@ export default function CartPage() {
                                                         </span>
                                                     )}
                                                 </div>
-                                                
+
                                                 <div>
                                                     {item.color && (
                                                         <p className="text-[11px] text-(var(--linen-500))">
-                                                            Color: {item.color}
+                                                            Color: {item.color.name}
                                                         </p>
                                                     )}
                                                 </div>
@@ -211,13 +211,21 @@ export default function CartPage() {
                                             </div>
 
                                             <button
-                                                onClick={(e) => {
+                                                onClick={async (e) => {
                                                     e.preventDefault();
                                                     e.stopPropagation();
 
+                                                    // 1️⃣ Fetch full product
+                                                    const res = await fetch(`/api/products/by-id/${item.productId}`);
+                                                    if (!res.ok) return;
+
+                                                    const product = await res.json();
+
+                                                    // 2️⃣ Add to wishlist WITH product
                                                     dispatch(
                                                         addWishlistItem({
                                                             productId: item.productId,
+                                                            product, // ✅ REQUIRED
                                                             slug: item.slug,
                                                             name: item.name,
                                                             image: item.image,
@@ -227,8 +235,8 @@ export default function CartPage() {
                                                         })
                                                     );
 
+                                                    // 3️⃣ Remove from cart AFTER wishlist add
                                                     dispatch(removeFromCart(item.productId));
-
                                                 }}
                                                 className="max-[400px]:text-[11px] text-xs font-semibold cursor-pointer
                                                         text-primary border border-(--border-strong)

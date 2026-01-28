@@ -10,10 +10,10 @@ import { FaArrowLeftLong, FaArrowRightLong } from "react-icons/fa6";
 import { useAppDispatch, useAppSelector } from "@/store/hooks";
 import { RootState } from "@/store";
 import { addToCart } from "@/store/cart/cart.slice";
-import { addWishlistItem, removeWishlistItem } from "@/store/wishlist/wishlist.thunks";
-import { SizeVariant,Product } from "@/types/ProductTypes";
+import { addWishlistItem, removeWishlistItem } from "@/store/wishlist/wishlist.thunks"
 import { sizeScaleMap } from "@/constants/productSizes";
-
+import Product from "@/types/ProductTypes";
+import { SizeVariant } from "@/types/ProductTypes";
 
 const DETAILS_LABELS: Record<keyof Product["details"], string> = {
     material: "Material",
@@ -224,14 +224,12 @@ export default function ProductPage() {
                                         dispatch(
                                             addWishlistItem({
                                                 productId: product._id,
+                                                product: product,
                                                 slug: product.slug,
                                                 name: product.productName,
-                                                image:
-                                                    activeVariant?.color.images.find(img => img.isPrimary)?.url ||
-                                                    activeVariant?.color.images[0]?.url ||
-                                                    "",
-                                                price: activeVariant?.pricing?.price || 0,
-                                                originalPrice: activeVariant?.pricing?.originalPrice || 0,
+                                                image: cartImage,
+                                                price: product.pricing?.price ?? 0,
+                                                originalPrice: product.pricing?.originalPrice ?? 0,
                                                 brand: product.brand,
                                             })
                                         );
@@ -397,7 +395,10 @@ export default function ProductPage() {
                                         size: selectedSize.size,
                                         variantSku: selectedSize.variantSku,
                                         brand: product.brand,
-                                        color: activeVariant?.color.name,
+                                        color: {
+                                            name: activeVariant!.color.name,
+                                            slug: activeVariant!.color.slug,
+                                        },
                                     })
                                 );
 

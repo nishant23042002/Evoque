@@ -37,12 +37,13 @@ const wishlistSlice = createSlice({
 
             // ADD
             .addCase(addWishlistItem.fulfilled, (state, action) => {
+                console.log("ADDING TO WISHLIST:", action.payload);
                 const exists = state.items.some(
                     i => i.productId === action.payload.productId
                 );
 
                 if (!exists) {
-                    state.items.push(action.payload);
+                    state.items.unshift(action.payload);
                 }
             })
 

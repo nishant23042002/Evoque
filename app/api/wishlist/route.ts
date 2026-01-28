@@ -2,10 +2,10 @@ import { NextResponse } from "next/server";
 import connectDB from "@/lib/db";
 import Wishlist from "@/models/Wishlist";
 import { requireAuth } from "@/lib/reqiureAuth";
-import { Types } from "mongoose";
 import { cookies } from "next/headers";
+import { Types } from "mongoose";
+import { Variant } from "@/types/ProductTypes";
 export const dynamic = "force-dynamic";
-
 
 interface PopulatedProduct {
     _id: Types.ObjectId;
@@ -17,6 +17,10 @@ interface PopulatedProduct {
         price: number;
         originalPrice?: number;
     };
+    variants: Variant;
+    category?: {
+        slug: string;
+    };
 }
 
 interface PopulatedWishlistItem {
@@ -27,7 +31,6 @@ interface PopulatedWishlist {
     items: PopulatedWishlistItem[];
 }
 
-
 export async function GET() {
     try {
         const { userId } = await requireAuth();
@@ -36,14 +39,15 @@ export async function GET() {
         const wishlist = await Wishlist.findOne({ userId })
             .populate("items.productId")
             .lean<PopulatedWishlist | null>();
-            
+
         if (!wishlist) {
             return NextResponse.json([]);
         }
 
         return NextResponse.json(
-            wishlist.items.map(i => ({
+            wishlist.items.map((i: PopulatedWishlistItem) => ({
                 productId: i.productId._id.toString(),
+                product: i.productId,
                 name: i.productId.productName,
                 slug: i.productId.slug,
                 image: i.productId.thumbnail,

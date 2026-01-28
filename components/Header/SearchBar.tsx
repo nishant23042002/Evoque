@@ -190,7 +190,7 @@ const SearchBar = () => {
         </div>
 
         {/* Results */}
-        <div className="p-4 overflow-y-auto scrollbar-hide h-[calc(100%-128px)]">
+        <div className="p-2 overflow-y-auto scrollbar-hide h-[calc(100%-128px)]">
           {loading && (
             <div className="flex justify-center mt-10">
               <CometLogoLoader />
@@ -241,7 +241,7 @@ const SearchBar = () => {
               ))}
             </>
           ) : (
-            <div className="grid grid-cols-2 gap-4">
+            <div className="grid grid-cols-2 gap-2">
               {filteredProducts.map(p => {
                 const variant = p.variants[0];
                 const image = getPrimaryImage(variant);
@@ -251,14 +251,15 @@ const SearchBar = () => {
                     key={p._id}
                     href={`/products/${p.slug}`}
                     onClick={() => setOpen(false)}
+                    className="border border-(--border-strong) p-0.5 rounded-[3px]"
                   >
-                    <div className="relative aspect-3/4 rounded-md overflow-hidden bg-(--surface-muted)">
+                    <div className="relative aspect-3/4 rounded-[3px] overflow-hidden bg-(--surface-muted)">
                       {image && (
                         <Image
                           src={image}
                           alt={p.productName}
                           fill
-                          className="object-cover transition-transform duration-300 hover:scale-105"
+                          className="object-cover rounded-[3px] transition-transform duration-300 hover:scale-105"
                         />
                       )}
                       <div className="absolute inset-0 bg-[rgba(0,0,0,0.20)] hover:bg-[rgba(0,0,0,0.35)] transition-colors" />

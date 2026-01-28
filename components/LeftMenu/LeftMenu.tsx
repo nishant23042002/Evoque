@@ -143,8 +143,8 @@ const LeftMenu = ({ isOpen, setIsOpen }: LeftMenuProps) => {
                 <button
                     aria-label="Close menu"
                     onClick={() => setIsOpen(false)}
-                    className="cursor-pointer text-[var(--linen-700)]
-                            absolute top-4 right-0
+                    className="cursor-pointer text-(--linen-700)
+                            absolute top-2 left-2
                             z-50
                             rounded-md
                             p-2
@@ -154,9 +154,9 @@ const LeftMenu = ({ isOpen, setIsOpen }: LeftMenuProps) => {
                 >
                     <IoClose size={22} />
                 </button>
-                <nav className="flex flex-col mt-6 h-full min-[551px]:mx-2">
+                <nav className="flex flex-col overflow-y-auto scrollbar-hide my-8 h-185 ">
                     {/* ---------- TOP ---------- */}
-                    <div className="space-y-1 mt-10">
+                    <div className="space-y-1 mt-4">
                         {PRIMARY_ITEMS.map((item) => {
                             const active = pathname === item.href;
                             const Icon = item.icon;
@@ -166,13 +166,13 @@ const LeftMenu = ({ isOpen, setIsOpen }: LeftMenuProps) => {
                                     key={item.title}
                                     href={item.href}
                                     onClick={handleNavClick}
-                                    className="relative flex items-center rounded-sm hover:bg-(--earth-sand)/50 transition-all"
+                                    className="relative flex items-center rounded-[3px] hover:bg-(--earth-sand)/50 transition-all"
                                 >
                                     {active && (
                                         <span className="absolute left-0 top-1/2 -translate-y-1/2 h-6 w-1 bg-primary" />
                                     )}
 
-                                    <div className={`flex items-center gap-5 mx-1 px-3 py-2 w-full ${active ? "bg-(--primary)/20 rounded-sm" : ""}`}>
+                                    <div className={`flex items-center gap-5 mx-1 px-3 py-2 w-full ${active ? "bg-(--primary)/20 rounded-[3px]" : ""}`}>
                                         <Icon
                                             size={20}
                                             className={active ? "text-primary" : "text-(--text-secondary)"}
@@ -210,8 +210,8 @@ const LeftMenu = ({ isOpen, setIsOpen }: LeftMenuProps) => {
                                         <div
                                             className={`
                                                 group
-                                                relative mx-1 w-full h-12 min-[551px]:h-14
-                                                rounded-md overflow-hidden
+                                                relative mx-1 w-full h-12 min-[551px]:h-18
+                                                rounded-[3px] overflow-hidden
                                                 border border-(--border-strong)
                                                 shadow-xs
                                                 transition-all duration-300
@@ -252,7 +252,7 @@ const LeftMenu = ({ isOpen, setIsOpen }: LeftMenuProps) => {
                                                     pointer-events-none
                                                     absolute left-1 bottom-2
                                                     text-[10px] min-[551px]:text-sm
-                                                    font-medium p-0.5 bg-[var(--linen-200)]/60
+                                                    font-medium p-0.5 bg-(--linen-200)/60
                                                     text-(--linen-800) rounded-[3px]
                                                     transition-all duration-300
                                                     group-hover:-translate-y-0.5

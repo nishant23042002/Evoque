@@ -12,8 +12,8 @@ import { useAppDispatch, useAppSelector } from "@/store/hooks";
 import { selectWishlistIds } from "@/store/wishlist/wishlist.selector";
 import { addWishlistItem, removeWishlistItem } from "@/store/wishlist/wishlist.thunks";
 import { useAuth } from "../AuthProvider";
-import { Product, Variant, VariantImage } from "@/types/ProductTypes"
-
+import { Variant, VariantImage } from "@/types/ProductTypes"
+import Product from "@/types/ProductTypes";
 const Masonry = dynamic(() => import("react-masonry-css"), { ssr: false });
 
 
@@ -133,7 +133,7 @@ export default function ProductMasonryGrid({
                                                             [item._id]: v,
                                                         }));
                                                         setTransitioningProduct(null);
-                                                    }, 150);
+                                                    }, 200);
                                                 }}
                                                 onMouseLeave={() => {
                                                     setTransitioningProduct(item._id);
@@ -143,7 +143,7 @@ export default function ProductMasonryGrid({
                                                             return rest;
                                                         });
                                                         setTransitioningProduct(null);
-                                                    }, 150);
+                                                    }, 80);
                                                 }}
                                             />
                                         ))}
@@ -159,16 +159,17 @@ export default function ProductMasonryGrid({
                                                 dispatch(removeWishlistItem(item._id));
                                             } else {
                                                 dispatch(
-                                                    addWishlistItem({
-                                                        productId: item._id,
-                                                        slug: item.slug,
-                                                        name: item.productName,
-                                                        image: imageUrl,
-                                                        price: item.pricing?.price ?? 0,
-                                                        originalPrice: item.pricing?.originalPrice ?? 0,
-                                                        brand: item.brand,
-                                                    })
-                                                );
+                                            addWishlistItem({
+                                                productId: item._id,
+                                                product: item,
+                                                slug: item.slug,
+                                                name: item.productName,
+                                                image: imageUrl,
+                                                price: item.pricing?.price ?? 0,
+                                                originalPrice: item.pricing?.originalPrice ?? 0,
+                                                brand: item.brand,
+                                            })
+                                        );
                                             }
                                         }}
                                         className="p-1.5 border border-(--border-light) cursor-pointer rounded-full bg-(--surface) shadow z-30"
