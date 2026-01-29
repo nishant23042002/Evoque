@@ -9,11 +9,11 @@ import { useParams, useSearchParams, useRouter } from "next/navigation";
 import { FaArrowLeftLong, FaArrowRightLong } from "react-icons/fa6";
 import { useAppDispatch, useAppSelector } from "@/store/hooks";
 import { RootState } from "@/store";
-import { addToCart } from "@/store/cart/cart.slice";
 import { addWishlistItem, removeWishlistItem } from "@/store/wishlist/wishlist.thunks"
 import { sizeScaleMap } from "@/constants/productSizes";
 import Product from "@/types/ProductTypes";
 import { SizeVariant } from "@/types/ProductTypes";
+import { addCartItem } from "@/store/cart/cart.thunks";
 
 const DETAILS_LABELS: Record<keyof Product["details"], string> = {
     material: "Material",
@@ -383,28 +383,22 @@ export default function ProductPage() {
                                     return;
                                 }
 
-                                dispatch(
-                                    addToCart({
-                                        productId: product._id,
-                                        name: product.productName,
-                                        slug: product.slug,
-                                        image: cartImage,
-                                        price: product.pricing.price,
-                                        originalPrice: product.pricing.originalPrice,
-                                        quantity: 1,
-                                        size: selectedSize.size,
-                                        variantSku: selectedSize.variantSku,
-                                        brand: product.brand,
-                                        color: {
-                                            name: activeVariant!.color.name,
-                                            slug: activeVariant!.color.slug,
-                                        },
-                                    })
-                                );
-
-                                if (isWishlisted) {
-                                    dispatch(removeWishlistItem(product._id));
-                                }
+                                dispatch(addCartItem({
+                                    productId: product._id,
+                                    name: product.productName,
+                                    slug: product.slug,
+                                    image: cartImage,
+                                    price: product.pricing.price,
+                                    originalPrice: product.pricing.originalPrice ?? 0,
+                                    quantity: 1,
+                                    size: selectedSize.size,
+                                    variantSku: selectedSize.variantSku,
+                                    brand: product.brand,
+                                    color: {
+                                        name: activeVariant!.color.name,
+                                        slug: activeVariant!.color.slug,
+                                    },
+                                }));
                             }}
                                 className="
                                     cursor-pointer
@@ -448,7 +442,7 @@ export default function ProductPage() {
                                         border
                                         border-border                                      
                                         p-2
-                                        rounded-sm
+                                        rounded-[3px]
                                     "
                             >
                                 {product.description && (

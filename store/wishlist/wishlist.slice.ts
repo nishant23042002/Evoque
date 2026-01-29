@@ -1,5 +1,5 @@
 import { createSlice } from "@reduxjs/toolkit";
-import { WishlistItem } from "./wishlist.types";
+import { WishlistItem } from "@/types/WishlistTypes";
 import { fetchWishlist, addWishlistItem, removeWishlistItem } from "./wishlist.thunks";
 
 interface WishlistState {

@@ -6,7 +6,7 @@ import BannerSlider from "@/components/Main/Banner";
 import ProductMasonryGrid from "@/components/Main/ProductMasonryGrid";
 import { useEffect, useState } from "react";
 import LoginModalUI from "@/components/Header/LoginModal";
-
+import Product from "@/types/ProductTypes";
 
 
 /* ---------------- TYPES ---------------- */
@@ -26,58 +26,7 @@ interface Banner {
   isActive: boolean;
 }
 
-interface VariantImage {
-  url: string;
-  isPrimary?: boolean;
-}
 
-interface VariantColor {
-  name: string;
-  slug: string;
-  hex?: string;
-  images: VariantImage[];
-}
-
-interface SizeVariant {
-  size: string;
-  stock: number;
-  isAvailable?: boolean;
-}
-
-interface Variant {
-  color: VariantColor;
-  sizes?: SizeVariant[];
-  pricing?: {
-    price?: number;
-    originalPrice?: number;
-    discountPercentage?: number;
-  };
-  totalStock?: number;
-}
-
-interface Pricing {
-  price: number;
-  originalPrice: number;
-  discountPercentage: number;
-  currency: string;
-}
-
-export interface Product {
-  _id: string;
-  productName: string;
-  slug: string;
-  brand: string;
-  pricing: Pricing;
-  rating: number;
-  variants: Variant[];
-  subCategory?: {
-    slug: string;
-  };
-  isActive: string,
-  isFeatured: string,
-  isBestSeller: string,
-  isNewArrival: string
-}
 
 
 

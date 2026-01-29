@@ -2,7 +2,7 @@
 
 import Image from "next/image";
 import { X } from "lucide-react";
-import { useEffect, useMemo, useState } from "react";
+import { useMemo, useState } from "react";
 import clsx from "clsx";
 
 import { Variant, SizeVariant } from "@/types/ProductTypes";
@@ -43,39 +43,28 @@ export default function SelectedVariantModal({
     onClose,
     onConfirm,
 }: Props) {
-    const [selectedColor, setSelectedColor] = useState<string | null>(null);
+    const [selectedColor, setSelectedColor] = useState(
+        product.variants[0].color.slug
+    );
     const [selectedSize, setSelectedSize] = useState<SizeVariant | null>(null);
     const [error, setError] = useState(false);
     const [activeImage, setActiveImage] = useState<string | null>(null);
     const [previewImage, setPreviewImage] = useState<string | null>(null);
 
-    /* =========================
-       INIT STATE ON OPEN (SAFE)
-    ========================= */
-    useEffect(() => {
-        if (!open) return;
-        if (!product?.variants?.length) return;
-
-        setSelectedColor(prev =>
-            prev ?? product.variants[0].color.slug
-        );
-
-        setSelectedSize(null);
-        setError(false);
-        setActiveImage(null);
-    }, [open, product]);
+    const effectiveColor =
+        selectedColor ?? product.variants[0].color.slug;
 
     /* =========================
        ACTIVE VARIANT
     ========================= */
     const activeVariant = useMemo<Variant | null>(() => {
-        if (!selectedColor) return null;
+        if (!effectiveColor) return null;
 
         return (
-            product.variants.find(v => v.color.slug === selectedColor) ??
+            product.variants.find(v => v.color.slug === effectiveColor) ??
             product.variants[0]
         );
-    }, [product, selectedColor]);
+    }, [product, effectiveColor]);
 
     console.log("CATEGORY SLUG:", product.category.slug);
     console.log("AVAILABLE SIZE MAP KEYS:", Object.keys(sizeScaleMap));
@@ -121,7 +110,7 @@ export default function SelectedVariantModal({
             };
         });
     }, [activeVariant, product]);
-    
+
 
 
 

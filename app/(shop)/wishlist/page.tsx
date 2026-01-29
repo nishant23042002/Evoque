@@ -4,15 +4,14 @@ import Image from "next/image";
 import { useEffect, useMemo, useState } from "react";
 import dynamic from "next/dynamic";
 import Link from "next/link";
-import { MdDeleteOutline } from "react-icons/md";
 import { useAppDispatch, useAppSelector } from "@/store/hooks";
-import { addToCart } from "@/store/cart/cart.slice";
 import { Heart } from "lucide-react";
 import { fetchWishlist, removeWishlistItem } from "@/store/wishlist/wishlist.thunks";
 import { RootState } from "@/store";
 import { WishlistItem } from "@/types/WishlistTypes";
 import SelectedVariantModal from "./SelectVariantModal";
 import { selectWishlistIds } from "@/store/wishlist/wishlist.selector";
+import { addCartItem } from "@/store/cart/cart.thunks";
 
 
 
@@ -152,6 +151,7 @@ export default function Wishlist() {
     <>
       {selectedProduct && (
         <SelectedVariantModal
+          key={selectedProduct?.productId}
           open={openVariantModal}
           product={selectedProduct.product} // ✅ FULL PRODUCT
           onClose={closeModal}
@@ -160,24 +160,23 @@ export default function Wishlist() {
               return; // ⛔ impossible cart state
             }
 
-            dispatch(
-              addToCart({
-                productId: product._id,
-                name: product.productName,
-                slug: product.slug,
-                image,
-                price: variant.pricing.price,
-                originalPrice: variant.pricing.originalPrice,
-                quantity: 1,
-                size: size.size,
-                variantSku: size.variantSku,
-                color: {
-                  name: variant.color.name,
-                  slug: variant.color.slug,
-                },
-                brand: product.brand,
-              })
-            );
+            dispatch(addCartItem({
+              productId: product._id.toString(),
+              name: product.productName,
+              slug: product.slug,
+              image,
+              price: variant.pricing.price,
+              originalPrice: variant.pricing.originalPrice ?? 0,
+              quantity: 1,
+              size: size.size,
+              variantSku: size.variantSku,
+              color: {
+                name: variant.color.name,
+                slug: variant.color.slug,
+              },
+              brand: product.brand,
+            }));
+
 
             dispatch(removeWishlistItem(selectedProduct.productId));
             closeModal();

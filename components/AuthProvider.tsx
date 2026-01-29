@@ -12,6 +12,8 @@ import {
 import { useAppDispatch } from "@/store/hooks";
 import { fetchWishlist } from "@/store/wishlist/wishlist.thunks";
 import { clearWishlist } from "@/store/wishlist/wishlist.slice";
+import { fetchCart } from "@/store/cart/cart.thunks";
+import { clearCart } from "@/store/cart/cart.slice";
 export const dynamic = "force-dynamic";
 
 interface BackendUser {
@@ -57,13 +59,15 @@ export function AuthProvider({
 
             if (mounted.current) {
                 setUser(data.user);
-                dispatch(fetchWishlist()); // ✅ FETCH WISHLIST
+                dispatch(fetchWishlist());
+                dispatch(fetchCart());
             }
         } catch (err) {
             console.warn("Auth sync failed", err);
             if (mounted.current) {
                 setUser(null);
-                dispatch(clearWishlist()); // ✅ CLEAR WISHLIST
+                dispatch(clearWishlist());
+                dispatch(clearCart());
             }
         }
     };
@@ -101,6 +105,7 @@ export function AuthProvider({
         await auth.signOut();
         await fetch("/api/auth/logout", { method: "POST" });
         dispatch(clearWishlist()); // ✅ CLEAR REDUX
+        dispatch(clearCart());
         setUser(null);
     };
 

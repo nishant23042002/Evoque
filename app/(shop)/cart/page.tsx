@@ -5,14 +5,11 @@ import Link from "next/link";
 import Masonry from "react-masonry-css";
 import { MdDeleteOutline } from "react-icons/md";
 import { useAppDispatch, useAppSelector } from "@/store/hooks";
-import {
-    removeFromCart,
-    increaseQuantity,
-    decreaseQuantity,
-} from "@/store/cart/cart.slice";
-
 import { ShoppingBag } from "lucide-react";
+import { increaseQuantity, decreaseQuantity } from "@/store/cart/cart.slice";
 import { addWishlistItem } from "@/store/wishlist/wishlist.thunks";
+import { removeCartItem } from "@/store/cart/cart.thunks";
+
 
 export default function CartPage() {
     const dispatch = useAppDispatch();
@@ -106,7 +103,7 @@ export default function CartPage() {
                         {cartItems.map((item) => (
                             <Link
                                 href={`/products/${item.slug}`}
-                                key={`${item.productId}/${item.color}`}
+                                key={`${item.productId}/${item.variantSku}`}
                                 className="block"
                             >
                                 <div
@@ -146,7 +143,12 @@ export default function CartPage() {
                                                     onClick={(e) => {
                                                         e.preventDefault();
                                                         e.stopPropagation();
-                                                        dispatch(removeFromCart(item.productId));
+                                                        dispatch(
+                                                            removeCartItem({
+                                                                productId: item.productId,
+                                                                variantSku: item.variantSku,
+                                                            })
+                                                        );
                                                     }}
                                                     className="cursor-pointer  hover:text-red-600 duration-200"
                                                     size={16}
@@ -191,7 +193,12 @@ export default function CartPage() {
                                                     onClick={(e) => {
                                                         e.preventDefault();
                                                         e.stopPropagation();
-                                                        dispatch(decreaseQuantity(item.productId));
+                                                        dispatch(
+                                                            decreaseQuantity({
+                                                                productId: item.productId,
+                                                                variantSku: item.variantSku,
+                                                            })
+                                                        );
                                                     }}
                                                     className="font-bold hover:text-red-500 cursor-pointer"
                                                 >
@@ -202,7 +209,12 @@ export default function CartPage() {
                                                     onClick={(e) => {
                                                         e.preventDefault();
                                                         e.stopPropagation();
-                                                        dispatch(increaseQuantity(item.productId));
+                                                        dispatch(
+                                                            increaseQuantity({
+                                                                productId: item.productId,
+                                                                variantSku: item.variantSku,
+                                                            })
+                                                        );
                                                     }}
                                                     className="font-bold hover:text-green-500 cursor-pointer"
                                                 >
@@ -236,7 +248,13 @@ export default function CartPage() {
                                                     );
 
                                                     // 3️⃣ Remove from cart AFTER wishlist add
-                                                    dispatch(removeFromCart(item.productId));
+                                                    dispatch(
+                                                        removeCartItem({
+                                                            productId: item.productId,
+                                                            variantSku: item.variantSku,
+                                                        })
+                                                    );
+
                                                 }}
                                                 className="max-[400px]:text-[11px] text-xs font-semibold cursor-pointer
                                                         text-primary border border-(--border-strong)

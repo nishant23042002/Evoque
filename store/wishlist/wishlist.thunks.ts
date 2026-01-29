@@ -1,5 +1,5 @@
 import { createAsyncThunk } from "@reduxjs/toolkit";
-import { WishlistItem } from "./wishlist.types";
+import { WishlistItem } from "@/types/WishlistTypes";
 import api from "@/lib/axios";
 export const dynamic = "force-dynamic";
 

@@ -35,8 +35,8 @@ export async function GET() {
     try {
         const { userId } = await requireAuth();
         await connectDB();
-
-        const wishlist = await Wishlist.findOne({ userId })
+        const userObjectId = new Types.ObjectId(userId);
+        const wishlist = await Wishlist.findOne({ userId: userObjectId })
             .populate("items.productId")
             .lean<PopulatedWishlist | null>();
 
@@ -82,11 +82,13 @@ export async function POST(req: Request) {
                 { status: 400 }
             );
         }
+
+        const userObjectId = new Types.ObjectId(userId);
         const wishlist = await Wishlist.findOneAndUpdate(
-            { userId },
+            { userId: userObjectId },
             {
                 $addToSet: {
-                    items: { productId }
+                    items: { productId: new Types.ObjectId(productId) }
                 }
             },
             { upsert: true, new: true }
@@ -102,4 +104,3 @@ export async function POST(req: Request) {
         );
     }
 }
-

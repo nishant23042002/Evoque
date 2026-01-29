@@ -8,7 +8,7 @@ interface BannerSliderProps {
   banners: Banner[];
 }
 
-const AUTO_SLIDE_DELAY = 3500;
+const AUTO_SLIDE_DELAY = 2500;
 const DESKTOP_BREAKPOINT = 1000;
 
 const BannerSlider = ({ banners }: BannerSliderProps) => {
