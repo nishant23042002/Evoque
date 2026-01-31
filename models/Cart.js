@@ -1,5 +1,6 @@
 import mongoose from "mongoose";
 
+
 const CartItemSchema = new mongoose.Schema(
     {
         productId: {
@@ -16,6 +17,10 @@ const CartItemSchema = new mongoose.Schema(
         size: {
             type: String,
             required: true,
+        },
+
+        image: {
+            type: String
         },
 
         variantSku: {
@@ -40,6 +45,10 @@ const CartSchema = new mongoose.Schema(
         },
 
         items: [CartItemSchema],
+        updatedAt: {
+            type: Date,
+            default: Date.now,
+        },
     },
     { timestamps: true }
 );

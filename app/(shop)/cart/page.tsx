@@ -9,13 +9,13 @@ import { ShoppingBag } from "lucide-react";
 import { increaseQuantity, decreaseQuantity } from "@/store/cart/cart.slice";
 import { addWishlistItem } from "@/store/wishlist/wishlist.thunks";
 import { removeCartItem } from "@/store/cart/cart.thunks";
+import { useMemo, useState } from "react";
 
 
 export default function CartPage() {
     const dispatch = useAppDispatch();
     const cartItems = useAppSelector((state) => state.cart.items);
-    const subtotal = useAppSelector((state) => state.cart.subtotal);
-
+    const [loading, setLoading] = useState(false);
     /* Masonry: fewer columns → horizontal feel */
     const breakpoints = {
         default: 2,
@@ -25,19 +25,34 @@ export default function CartPage() {
         650: 1,
     };
 
-    const itemCount = cartItems.reduce(
-        (sum, item) => sum + item.quantity,
-        0
+    /* ---------- DERIVED VALUES (UI ONLY) ---------- */
+    const itemCount = useMemo(
+        () => cartItems.reduce((sum, item) => sum + item.quantity, 0),
+        [cartItems]
     );
 
-    const discount =
-        cartItems.reduce((sum, item) => {
-            if (!item.originalPrice) return sum;
-            return sum + (item.originalPrice - item.price) * item.quantity;
-        }, 0) || 0;
+    const bagTotal = useMemo(
+        () =>
+            cartItems.reduce(
+                (sum, item) => sum + item.price * item.quantity,
+                0
+            ),
+        [cartItems]
+    );
 
-    const grandTotal = subtotal;
+    const discount = useMemo(
+        () =>
+            cartItems.reduce((sum, item) => {
+                if (!item.originalPrice) return sum;
+                return (
+                    sum +
+                    (item.originalPrice - item.price) * item.quantity
+                );
+            }, 0),
+        [cartItems]
+    );
 
+    const grandTotal = bagTotal
     /* EMPTY STATE */
     if (!cartItems.length) {
         return (
@@ -72,14 +87,15 @@ export default function CartPage() {
     return (
         <div>
             {/* HEADER */}
-            <div className="px-2 w-full py-3 text-primary text-lg sm:text-xl font-semibold z-20 bg-(--linen-100)">
-                My Bag ({itemCount} items)
+            <div className="text-3xl sm:text-5xl mx-2 flex py-2 justify-between items-center text-(--linen-800) font-semibold tracking-tight">
+                <span>SHOPPING BAG </span>
+                <span className="text-sm sm:text-lg">ITEMS {itemCount}</span>
             </div>
 
             <div className="mb-20
                     relative bg-(--linen-100)
                     h-[calc(100vh-72px)]
-                    px-2 lg:px-4 mx-auto
+                    px-2 mx-auto
                     flex flex-col lg:flex-row
                     gap-6
                     ">
@@ -90,19 +106,17 @@ export default function CartPage() {
                         order-2 lg:order-1
                         overflow-y-auto
                         scrollbar-hide
-                        min-h-[60vh]
-                        lg:mt-2
+                        min-h-[60vh]     
                     "
                 >
 
                     <Masonry
                         breakpointCols={breakpoints}
-                        className="flex gap-2 lg:gap-4 w-full"
+                        className="flex gap-2 w-full"
                         columnClassName="masonry-column"
                     >
                         {cartItems.map((item) => (
-                            <Link
-                                href={`/products/${item.slug}`}
+                            <div
                                 key={`${item.productId}/${item.variantSku}`}
                                 className="block"
                             >
@@ -113,23 +127,26 @@ export default function CartPage() {
                                                 rounded-[3px]
                                                 shadow-xs
                                                 p-1
-                                                flex gap-3
+                                                flex gap-2
                                                 hover:shadow-sm
-                                                transition mb-2 lg:mb-4
+                                                transition mb-2
                                             "
                                 >
                                     {/* IMAGE */}
-                                    <div className="group relative w-28 h-36 shrink-0 rounded-[3px] overflow-hidden">
-                                        {item.image && (
-                                            <Image
-                                                src={item.image}
-                                                alt={item.name}
-                                                fill
-                                                className="object-cover"
-                                            />
-                                        )}
-                                        <div className="pointer-events-none absolute inset-0 bg-black/20 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
-                                    </div>
+                                    <Link href={`/products/${item.slug}`}
+                                        className="block">
+                                        <div className="group relative w-28 h-36 shrink-0 rounded-[3px] overflow-hidden">
+                                            {item.image && (
+                                                <Image
+                                                    src={item.image}
+                                                    alt={item.name}
+                                                    fill
+                                                    className="object-cover"
+                                                />
+                                            )}
+                                            <div className="pointer-events-none absolute inset-0 bg-black/20 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+                                        </div>
+                                    </Link>
 
                                     {/* CONTENT */}
                                     <div className="flex flex-col justify-between flex-1 text-sm">
@@ -155,11 +172,11 @@ export default function CartPage() {
                                                 />
                                             </div>
 
-                                            <p className="font-semibold text-(--linen-700) max-[400px]:text-[11px] text-xs leading-tight mt-1">
+                                            <p className="font-semibold text-(--linen-700) max-[400px]:text-[11px] text-xs leading-tight">
                                                 {item.name}
                                             </p>
 
-                                            <div className="flex flex-col mt-1 text-xs">
+                                            <div className="flex flex-col text-xs">
                                                 <div className="font-semibold mb-2 flex gap-2 items-center text-sm">
                                                     ₹{item.price}
                                                     {item.originalPrice && (
@@ -184,6 +201,7 @@ export default function CartPage() {
                                                     Size: {item.size}
                                                 </p>
                                             )}
+                                            <p className="text-[11px]">VariantSku: {item.variantSku}</p>
                                         </div>
 
                                         {/* ACTIONS */}
@@ -265,15 +283,15 @@ export default function CartPage() {
                                         </div>
                                     </div>
                                 </div>
-                            </Link>
+                            </div>
                         ))}
                     </Masonry>
                 </div>
 
                 {/* RIGHT – SUMMARY (UNCHANGED) */}
-                <div className="w-full lg:w-[35%] order-1 lg:order-2">
+                <div className="w-full select-none lg:w-[35%] order-1 lg:order-2">
 
-                    <div className="lg:sticky lg:top-30 border border-(--border-strong) rounded-[3px] p-3 space-y-4 bg-(--linen-200)">
+                    <div className="lg:sticky lg:top-28 border border-(--border-strong) rounded-[3px] p-3 space-y-4 bg-(--linen-200)">
 
                         <div className="flex justify-between gap-3">
                             <div>
@@ -287,7 +305,7 @@ export default function CartPage() {
 
                         <div className="flex justify-between text-sm">
                             <span>Bag Total</span>
-                            <span>₹{subtotal}</span>
+                            <span>₹{bagTotal}</span>
                         </div>
 
                         {discount > 0 && (
@@ -304,9 +322,21 @@ export default function CartPage() {
                             <span>₹{grandTotal}</span>
                         </div>
 
-                        <button className="w-full bg-(--linen-900) text-white py-3 rounded-md font-semibold hover:bg-(--linen-800)">
+                        <button onClick={() => {
+                            setLoading(true)
+                            setTimeout(() => {
+                                setLoading(false)
+                                window.location.href = "/checkout"
+                            }, 2000)
+                        }} className="w-full bg-(--linen-900) text-white py-3 rounded-[3px] duration-300 cursor-pointer font-semibold hover:bg-(--linen-800)">
                             PAY ₹{grandTotal}
                         </button>
+                        {
+                            loading &&
+                            <>
+                                <p>Please wait confirming prices</p>
+                            </>
+                        }
                     </div>
                 </div>
             </div>

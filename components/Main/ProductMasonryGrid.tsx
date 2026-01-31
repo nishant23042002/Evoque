@@ -68,7 +68,7 @@ export default function ProductMasonryGrid({
     }, [products]);
 
     return (
-        <div className={`my-4 md:my-10 ${fullWidth ? "px-2 mx-auto" : "w-full"}`}>
+        <div className={`my-2 ${fullWidth ? "px-2 mx-auto" : "w-full"}`}>
             {showHeading && (
                 <h2 className="text-center py-3 text-md tracking-widest font-semibold font-poppins text-foreground">
                     Everything You Need

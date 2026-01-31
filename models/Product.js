@@ -192,6 +192,10 @@ const productSchema = new mongoose.Schema(
             purchases: { type: Number, default: 0 },
         },
 
+        isAvailable: {
+            type: Boolean,
+            default: true,
+        },
         // ⚙ Admin Controls
         isActive: { type: Boolean, default: true },
         isFeatured: { type: Boolean, default: false },
@@ -201,6 +205,32 @@ const productSchema = new mongoose.Schema(
     },
     { timestamps: true }
 );
+
+productSchema.index(
+    {
+        productName: "text",
+        brand: "text",
+        tags: "text",
+        "search.keywords": "text",
+        "search.synonyms": "text",
+        "attributes.fabric": "text",
+        "attributes.pattern": "text",
+        "attributes.fitType": "text",
+    },
+    {
+        weights: {
+            productName: 10,
+            brand: 8,
+            "search.keywords": 7,
+            tags: 6,
+            "attributes.fabric": 5,
+            "attributes.pattern": 4,
+            "search.synonyms": 3,
+        },
+        name: "ProductTextSearch",
+    }
+);
+
 
 productSchema.index({
     category: 1,

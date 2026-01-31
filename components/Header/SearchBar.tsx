@@ -1,18 +1,14 @@
 "use client";
 
 import { Search, X } from "lucide-react";
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useState } from "react";
 import { cn } from "@/lib/utils";
 import Link from "next/link";
 import Image from "next/image";
 import CometLogoLoader from "../FlashLogo/LayerLogo";
-import { Product,Variant,Category,SearchSubCategory } from "@/types/ProductTypes";
+import { Category, SearchSubCategory } from "@/types/ProductTypes";
+import { useProductSearch } from "@/lib/useProductSearch";
 
-
-
-const getPrimaryImage = (variant: Variant) =>
-  variant.color.images.find(i => i.isPrimary)?.url ||
-  variant.color.images[0]?.url;
 
 /* =====================
    COMPONENT
@@ -21,9 +17,10 @@ const getPrimaryImage = (variant: Variant) =>
 const SearchBar = () => {
   const [open, setOpen] = useState(false);
   const [query, setQuery] = useState("");
-  const [products, setProducts] = useState<Product[]>([]);
   const [popularCategory, setPopularCategory] = useState<SearchSubCategory[]>([]);
   const [loading, setLoading] = useState(false);
+  const { products } = useProductSearch(query);
+
 
   useEffect(() => {
     async function fetchCategories() {
@@ -55,52 +52,6 @@ const SearchBar = () => {
     fetchCategories();
   }, []);
 
-  useEffect(() => {
-    if (!query.trim()) {
-      setProducts([]);
-      return;
-    }
-
-    const timer = setTimeout(async () => {
-      setLoading(true);
-      try {
-        const res = await fetch(`/api/products?search=${query}`);
-        const data = await res.json();
-        setProducts(data.products || []);
-      } catch (err) {
-        console.error("Search failed", err);
-      } finally {
-        setLoading(false);
-      }
-    }, 350);
-
-    return () => clearTimeout(timer);
-  }, [query]);
-
-  const filteredProducts = useMemo(() => {
-    if (!query) return [];
-
-    const searchText = query.toLowerCase();
-
-    return products.filter(p => {
-      const searchableText = [
-        p.productName,
-        p.category?.name,
-        p.subCategory?.name,
-        ...(p.tags || []),
-        ...(p.search?.keywords || []),
-        ...(p.search?.synonyms || []),
-        p.attributes?.fabric,
-        p.attributes?.pattern,
-        p.attributes?.fitType,
-      ]
-        .filter(Boolean)
-        .join(" ")
-        .toLowerCase();
-
-      return searchableText.includes(searchText);
-    });
-  }, [products, query]);
 
   useEffect(() => {
     document.body.style.overflow = open ? "hidden" : "";
@@ -167,8 +118,8 @@ const SearchBar = () => {
             placeholder="Search shirts, fabric, style..."
             className="
               w-full px-3 py-1.25 rounded-[3px]
-              bg-(--linen-100)
-              border border-(--input-border)
+              bg-(--linen-200)
+              border-2 border-(--border-strong)
               text-foreground
               placeholder:text-(--input-placeholder)
               outline-none
@@ -178,7 +129,7 @@ const SearchBar = () => {
           <button
             onClick={() => setOpen(false)}
             aria-label="Close search"
-            className="
+            className="cursor-pointer
               p-2
               text-(--text-secondary)
               hover:text-primary
@@ -190,18 +141,27 @@ const SearchBar = () => {
         </div>
 
         {/* Results */}
-        <div className="p-2 overflow-y-auto scrollbar-hide h-[calc(100%-128px)]">
+        <div className="px-2 overflow-y-auto scrollbar-hide h-[calc(100%-128px)]">
+          {
+            query && products.length > 0 && (
+              <div className="py-1 flex justify-between">
+                <p>Products</p>
+                <p>{products?.length}</p>
+              </div>
+            )
+          }
           {loading && (
             <div className="flex justify-center mt-10">
               <CometLogoLoader />
             </div>
           )}
 
-          {!loading && query && filteredProducts.length === 0 && (
+          {!loading && query && products.length === 0 && (
             <p className="text-center text-sm text-(--text-muted)">
-              Dropping Soon. Stay Tune...
+              No results found for “{query}”
             </p>
           )}
+
 
           {!query ? (
             <>
@@ -242,9 +202,13 @@ const SearchBar = () => {
             </>
           ) : (
             <div className="grid grid-cols-2 gap-2">
-              {filteredProducts.map(p => {
-                const variant = p.variants[0];
-                const image = getPrimaryImage(variant);
+
+              {products.map(p => {
+                const variant = p.variants?.[0];
+                const image =
+                  variant?.color?.images?.find(i => i.isPrimary)?.url ||
+                  variant?.color?.images?.[0]?.url ||
+                  p.thumbnail;
 
                 return (
                   <Link
@@ -253,7 +217,7 @@ const SearchBar = () => {
                     onClick={() => setOpen(false)}
                     className="border border-(--border-strong) p-0.5 rounded-[3px]"
                   >
-                    <div className="relative aspect-3/4 rounded-[3px] overflow-hidden bg-(--surface-muted)">
+                    <div className="relative aspect-3/4 rounded-[3px] overflow-hidden">
                       {image && (
                         <Image
                           src={image}
@@ -261,13 +225,15 @@ const SearchBar = () => {
                           fill
                           className="object-cover rounded-[3px] transition-transform duration-300 hover:scale-105"
                         />
+
                       )}
                       <div className="absolute inset-0 bg-[rgba(0,0,0,0.20)] hover:bg-[rgba(0,0,0,0.35)] transition-colors" />
                     </div>
 
-                    <p className="mt-1 text-xs font-medium text-foreground line-clamp-1">
+                    <p className="mt-1 text-xs font-medium line-clamp-1">
                       {p.productName}
                     </p>
+
                     <p className="text-xs font-semibold text-(--text-secondary)">
                       ₹{variant?.pricing?.price}
                     </p>

@@ -15,8 +15,7 @@ const BannerSlider = ({ banners }: BannerSliderProps) => {
   const intervalRef = useRef<NodeJS.Timeout | null>(null);
 
   const [index, setIndex] = useState(0);
-  const [direction, setDirection] =
-    useState<"forward" | "backward">("forward");
+  const [direction, setDirection] = useState<"forward" | "backward">("forward");
   const [isMobile, setIsMobile] = useState(false);
 
   const total = banners.length;
@@ -70,21 +69,7 @@ const BannerSlider = ({ banners }: BannerSliderProps) => {
     return stopAutoSlide;
   }, [direction, total]);
 
-  /* -------------------------------
-   * Pause on tab inactive
-   * ------------------------------- */
-  useEffect(() => {
-    const onVisibilityChange = () => {
-      document.hidden ? stopAutoSlide() : startAutoSlide();
-    };
 
-    document.addEventListener("visibilitychange", onVisibilityChange);
-    return () =>
-      document.removeEventListener(
-        "visibilitychange",
-        onVisibilityChange
-      );
-  }, []);
 
   /* -------------------------------
    * Helpers

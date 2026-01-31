@@ -1,4 +1,29 @@
+"use client"
+
+import Link from "next/link";
 import { CiLinkedin, CiInstagram } from "react-icons/ci";
+
+
+
+
+
+const navItems = [
+    { label: "Home", href: "/" },
+    { label: "Order Tracking", href: "/order-tracking" },
+    { label: "Returns & Exchange", href: "/pages/shipping-returns" },
+    { label: "About Us", href: "/pages/about-us" },
+    { label: "Contact", href: "/pages/contact" },
+];
+
+const layerItem = [
+    { category: "Shirts", href: "/categories/shirts" },
+    { category: "T-Shirts", href: "/categories/t-shirts" },
+    { category: "Jackets", href: "/categories/jackets" },
+    { category: "Trousers", href: "/categories/trousers" },
+    { category: "Jeans", href: "/categories/jeans" },
+    { category: "Sweatshirts", href: "/categories/sweatshirts" },
+    { category: "Footwear", href: "/categories/footwear" },
+]
 
 export default function Footer() {
     return (
@@ -46,19 +71,13 @@ export default function Footer() {
                             The Layer
                         </span>
 
-                        {[
-                            "Home",
-                            "Order Tracking",
-                            "Returns & Exchange",
-                            "About Us",
-                            "Contact",
-                        ].map((item) => (
-                            <div key={item} className="relative mb-2 group w-fit">
-                                <p
+                        {navItems.map((item) => (
+                            <div key={item.label} className="relative mb-2 group w-fit">
+                                <Link href={item.href}
                                     className="cursor-pointer text-(--linen-100) hover:text-(--linen-200)/50 transition"
                                 >
-                                    {item}
-                                </p>
+                                    {item.label}
+                                </Link>
 
                                 <span
                                     className="
@@ -89,22 +108,13 @@ export default function Footer() {
                                 text-sm
                             "
                         >
-                            {[
-                                "Shirts",
-                                "T-Shirts",
-                                "Overshirts",
-                                "Jackets",
-                                "Trousers",
-                                "Denim",
-                                "Sweatshirts",
-                                "Accessories",
-                            ].map((item) => (
-                                <div className="relative group w-fit" key={item}>
-                                    <p
+                            {layerItem.map((item) => (
+                                <div className="relative group w-fit" key={item.category}>
+                                    <Link href={item.href} 
                                         className="cursor-pointer text-(--linen-100) hover:text-(--linen-200)/50 transition"
                                     >
-                                        {item}
-                                    </p>
+                                        {item.category}
+                                    </Link>
                                     <span
                                         className="
                                             absolute left-0 bottom-px
@@ -140,11 +150,11 @@ export default function Footer() {
                             </div>
                         </div>
 
-                        <div className="space-y-1 text-[11px] text-(--text-muted) font-serif tracking-wider">
-                            <p className="cursor-pointer hover:text-(--linen-100)">Privacy Policy</p>
-                            <p className="cursor-pointer hover:text-(--linen-100)">Terms & Conditions</p>
-                            <p className="cursor-pointer hover:text-(--linen-100)">Shipping & Returns</p>
-                            <p className="cursor-pointer hover:text-(--linen-100)">Help</p>
+                        <div className="space-y-1 flex flex-col text-[11px] text-(--text-muted) font-serif tracking-wider">
+                            <a href="/pages/privacy-policy" className="cursor-pointer hover:text-(--linen-100)">Privacy Policy</a>
+                            <a href="/pages/terms-conditions" className="cursor-pointer hover:text-(--linen-100)">Terms & Conditions</a>
+                            <a href="/pages/shipping-returns" className="cursor-pointer hover:text-(--linen-100)">Shipping & Returns</a>
+                            <a href="/pages/help" className="cursor-pointer hover:text-(--linen-100)">Help</a>
                         </div>
                     </div>
                 </div>

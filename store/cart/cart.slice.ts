@@ -5,18 +5,14 @@ import { removeCartItem } from "./cart.thunks";
 
 interface CartState {
     items: CartItem[];
-    subtotal: number;
     loading: boolean;
 }
 
 const initialState: CartState = {
     items: [],
-    subtotal: 0,
     loading: false,
 };
 
-const calculateCartTotal = (items: CartItem[]) =>
-    items.reduce((sum, item) => sum + item.price * item.quantity, 0);
 
 const cartSlice = createSlice({
     name: "cart",
@@ -33,7 +29,6 @@ const cartSlice = createSlice({
                         i.variantSku === action.payload.variantSku
                     )
             );
-            state.subtotal = calculateCartTotal(state.items);
         },
 
         increaseQuantity(
@@ -46,7 +41,6 @@ const cartSlice = createSlice({
                     i.variantSku === action.payload.variantSku
             );
             if (item) item.quantity += 1;
-            state.subtotal = calculateCartTotal(state.items);
         },
 
         decreaseQuantity(
@@ -72,13 +66,10 @@ const cartSlice = createSlice({
                         )
                 );
             }
-
-            state.subtotal = calculateCartTotal(state.items);
         },
 
         clearCart(state) {
             state.items = [];
-            state.subtotal = 0;
         },
     },
 
@@ -90,7 +81,6 @@ const cartSlice = createSlice({
             })
             .addCase(fetchCart.fulfilled, (state, action) => {
                 state.items = action.payload;
-                state.subtotal = calculateCartTotal(action.payload);
                 state.loading = false;
             })
             .addCase(fetchCart.rejected, state => {
@@ -104,7 +94,6 @@ const cartSlice = createSlice({
                             i.variantSku === action.payload.variantSku
                         )
                 );
-                state.subtotal = calculateCartTotal(state.items);
             })
             .addCase(addCartItem.fulfilled, (state, action) => {
                 const item = action.payload;
@@ -120,10 +109,8 @@ const cartSlice = createSlice({
                 } else {
                     state.items.push(item);
                 }
-
-                state.subtotal = calculateCartTotal(state.items);
             });
-},
+    },
 });
 
 export const {

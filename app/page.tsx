@@ -34,7 +34,7 @@ export default function Home() {
   const [items, setItems] = useState<Product[]>([]);
   const [topBanners, setTopBanners] = useState<Banner[]>([]);
   const [bottomBanners, setBottomBanners] = useState<Banner[]>([]);
-  const [loginOpen, setLoginOpen] = useState(false);
+
 
 
   useEffect(() => {

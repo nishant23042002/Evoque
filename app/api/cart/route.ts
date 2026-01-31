@@ -12,6 +12,7 @@ interface PopulatedProduct {
   slug: string;
   brand: string;
   thumbnail?: string;
+  image: string;
   pricing: {
     price: number;
     originalPrice?: number;
@@ -23,6 +24,7 @@ interface PopulatedCartItem {
   quantity: number;
   size: string;
   variantSku: string;
+  image: string;
   color: {
     name: string;
     slug: string;
@@ -53,7 +55,7 @@ export async function GET() {
         productId: item.productId._id.toString(),
         name: item.productId.productName,
         slug: item.productId.slug,
-        image: item.productId.thumbnail ?? "",
+        image: item.image,
         price: item.productId.pricing.price,
         originalPrice: item.productId.pricing.originalPrice ?? 0,
         brand: item.productId.brand,
@@ -93,40 +95,41 @@ export async function POST(req: Request) {
     );
 
     // 2️⃣ ATOMIC UPSERT CART ITEM
-    await Cart.updateOne(
+    const result = await Cart.updateOne(
       {
         userId: userObjectId,
         "items.variantSku": item.variantSku,
       },
       {
+        $inc: { "items.$.quantity": item.quantity ?? 1 },
         $set: {
-          "items.$.quantity": item.quantity ?? 1,
           "items.$.size": item.size,
           "items.$.color": item.color,
+          "items.$.image": item.image,
         },
       },
       { upsert: false }
     );
 
-    // 3️⃣ If variant NOT FOUND → push new
-    await Cart.updateOne(
-      {
-        userId: userObjectId,
-        "items.variantSku": { $ne: item.variantSku },
-      },
-      {
-        $push: {
-          items: {
-            productId: productObjectId,
-            quantity: item.quantity ?? 1,
-            size: item.size,
-            variantSku: item.variantSku,
-            color: item.color,
+    // variant not found → push new
+    if (result.matchedCount === 0) {
+      await Cart.updateOne(
+        { userId },
+        {
+          $push: {
+            items: {
+              productId: item.productId,
+              variantSku: item.variantSku,
+              quantity: item.quantity ?? 1,
+              image: item.image,
+              size: item.size,
+              color: item.color,
+            },
           },
         },
-      },
-      { upsert: true }
-    );
+        { upsert: true }
+      );
+    }
 
     return NextResponse.json(item);
   } catch (err) {

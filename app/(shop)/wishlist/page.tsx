@@ -267,7 +267,7 @@ export default function Wishlist() {
 
 
           {/* RIGHT — MASONRY */}
-          <div className="w-full lg:h-[95vh] lg:overflow-y-auto scrollbar-hide">
+          <div className="w-full mb-12 lg:h-[90vh] lg:overflow-y-auto scrollbar-hide">
             <Masonry
               breakpointCols={breakpoints}
               className="flex gap-2 "

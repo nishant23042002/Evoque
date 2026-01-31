@@ -9,6 +9,12 @@ module.exports = {
     ],
     theme: {
         extend: {
+            height: {
+                banner: "60vh",
+            },
+            maxHeight: {
+                banner: "60vh",
+            },
             colors: {
                 /* -------------------------------- */
                 /* BRAND                            */

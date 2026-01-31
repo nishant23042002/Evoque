@@ -26,7 +26,7 @@ const Header = () => {
                     <button
                         data-menu-btn
                         onClick={() => setMenuOpen(v => !v)}
-                        className={"z-9999 cursor-pointer rounded-md text-foreground hover:text-primary transition-transform duration-300 ease-in-out"}
+                        className={"cursor-pointer mt-1 rounded-md text-foreground hover:text-primary transition-transform duration-300 ease-in-out"}
                     >
                         <span
                             className={cn(
@@ -37,7 +37,7 @@ const Header = () => {
                             {menuOpen ? (
                                 <svg
                                     width="20"
-                                    height="20"
+                                    height="24"
                                     viewBox="0 0 24 24"
                                     fill="none"
                                     stroke="currentColor"
@@ -58,7 +58,7 @@ const Header = () => {
                 </div>
 
                 {/* Actions */}
-                <div className="flex items-center gap-4 relative">
+                <div className="flex items-center gap-4 max-[350px]:gap-2 relative">
                     <SearchBar />
                     <WishList />
                     <Cart />
