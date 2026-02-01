@@ -5,6 +5,7 @@ import crypto from "crypto";
 import connectDB from "@/lib/db";
 import { requireAuth } from "@/lib/reqiureAuth";
 import Cart from "@/models/Cart";
+import Address from "@/models/Address";
 
 
 interface PopulatedProduct {
@@ -41,6 +42,18 @@ export async function POST() {
             );
         }
 
+        // 2️⃣ Fetch default address
+        const address = await Address.findOne({
+            userId: userObjectId,
+            isDefault: true,
+        }).lean();
+
+        if (!address) {
+            return NextResponse.json(
+                { message: "No default address found" },
+                { status: 400 }
+            );
+        }
         let subtotal = 0;
         const checkoutItems = [];
 
@@ -82,15 +95,21 @@ export async function POST() {
             .update(`${userId}:${totalAmount}:${Date.now()}`)
             .digest("hex");
 
+        const checkoutToken = crypto.randomUUID();
+
         // 5️⃣ Return checkout snapshot
         return NextResponse.json({
             items: checkoutItems,
-            subtotal,
-            discount,
-            shipping,
-            tax,
-            totalAmount,
+            address,
+            summary: {
+                subtotal,
+                shipping,
+                tax,
+                discount,
+                totalAmount,
+            },
             priceHash,
+            checkoutToken,
         });
     } catch (err) {
         console.error("CHECKOUT PREPARE ERROR:", err);

@@ -38,7 +38,7 @@ export default function HelpPage() {
                     <Link
                         key={link.title}
                         href={link.href}
-                        className="rounded-[3px] border bg-[var(--linen-200)] border-neutral-200 p-4 text-sm font-medium hover:border-[var(--border-strong)] transition"
+                        className="rounded-[3px] border bg-(--linen-200) border-neutral-200 p-4 text-sm font-medium hover:border-(--border-strong) transition"
                     >
                         {link.title}
                     </Link>

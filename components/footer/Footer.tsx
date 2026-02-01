@@ -28,7 +28,7 @@ const layerItem = [
 export default function Footer() {
     return (
         <footer>
-            <div className="relative bg-(--linen-900) text-(--linen-200) overflow-hidden">
+            <div className="relative bg-(--linen-200) text-(--linen-700) overflow-hidden">
 
                 {/* MAIN GRID */}
                 <div
@@ -52,10 +52,10 @@ export default function Footer() {
                             piece is built for everyday wear beyond trends.
                         </p>
 
-                        <div className="text-sm space-y-1 text-(--linen-200)">
+                        <div className="text-sm space-y-1 text-(--text-secondary)">
                             <a
                                 href="https://thelayerco.co.in/"
-                                className="hover:text-(--linen-400)/30 transition"
+                                className="hover:text-(--linen-600)/30 transition"
                             >
                                 thelayerco.co.in
                             </a>
@@ -74,7 +74,7 @@ export default function Footer() {
                         {navItems.map((item) => (
                             <div key={item.label} className="relative mb-2 group w-fit">
                                 <Link href={item.href}
-                                    className="cursor-pointer text-(--linen-100) hover:text-(--linen-200)/50 transition"
+                                    className="cursor-pointer text-(--text-secondary) hover:text-(--linen-600)/30 transition"
                                 >
                                     {item.label}
                                 </Link>
@@ -111,7 +111,7 @@ export default function Footer() {
                             {layerItem.map((item) => (
                                 <div className="relative group w-fit" key={item.category}>
                                     <Link href={item.href} 
-                                        className="cursor-pointer text-(--linen-100) hover:text-(--linen-200)/50 transition"
+                                        className="cursor-pointer text-(--text-secondary) hover:text-(--linen-600)/30 transition"
                                     >
                                         {item.category}
                                     </Link>
@@ -141,20 +141,20 @@ export default function Footer() {
                             </span>
 
                             <div className="space-y-2 text-sm">
-                                <p className="flex items-center gap-2 cursor-pointer text-(--linen-200) hover:text-(--linen-200)/30 transition">
+                                <p className="flex items-center gap-2 cursor-pointer text-(--text-secondary) hover:text-(--linen-600)/30 transition">
                                     <CiInstagram /> Instagram
                                 </p>
-                                <p className="flex items-center gap-2 cursor-pointer text-(--linen-200) hover:text-(--linen-200)/30 transition">
+                                <p className="flex items-center gap-2 cursor-pointer text-(--text-secondary) hover:text-(--linen-600)/30 transition">
                                     <CiLinkedin /> LinkedIn
                                 </p>
                             </div>
                         </div>
 
-                        <div className="space-y-1 flex flex-col text-[11px] text-(--text-muted) font-serif tracking-wider">
-                            <a href="/pages/privacy-policy" className="cursor-pointer hover:text-(--linen-100)">Privacy Policy</a>
-                            <a href="/pages/terms-conditions" className="cursor-pointer hover:text-(--linen-100)">Terms & Conditions</a>
-                            <a href="/pages/shipping-returns" className="cursor-pointer hover:text-(--linen-100)">Shipping & Returns</a>
-                            <a href="/pages/help" className="cursor-pointer hover:text-(--linen-100)">Help</a>
+                        <div className="space-y-1 flex flex-col text-[11px] text-(--text-secondary) font-serif tracking-wider">
+                            <a href="/pages/privacy-policy" className="cursor-pointer hover:underline">Privacy Policy</a>
+                            <a href="/pages/terms-conditions" className="cursor-pointer hover:underline">Terms & Conditions</a>
+                            <a href="/pages/shipping-returns" className="cursor-pointer hover:underline">Shipping & Returns</a>
+                            <a href="/pages/help" className="cursor-pointer hover:underline">Help</a>
                         </div>
                     </div>
                 </div>
@@ -169,7 +169,7 @@ export default function Footer() {
                     <h1
                         className="
                             font-extrabold tracking-tight leading-none
-                            text-(--linen-700)
+                            text-(--linen-100)
                             text-[27vw] sm:text-[20vw] md:text-[14vw]
                         "
                     >
@@ -183,7 +183,7 @@ export default function Footer() {
                         relative z-10
                         py-3 text-center
                         text-[10px] uppercase tracking-widest font-serif
-                        text-(--text-inverse)
+                        text-(--text-secondary)
                     "
                 >
                     © {new Date().getFullYear()} The Layer Co. · All rights reserved

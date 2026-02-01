@@ -326,7 +326,7 @@ export default function CartPage() {
                             setLoading(true)
                             setTimeout(() => {
                                 setLoading(false)
-                                window.location.href = "/checkout"
+                                window.location.href = "/checkout/address";
                             }, 2000)
                         }} className="w-full bg-(--linen-900) text-white py-3 rounded-[3px] duration-300 cursor-pointer font-semibold hover:bg-(--linen-800)">
                             PAY ₹{grandTotal}

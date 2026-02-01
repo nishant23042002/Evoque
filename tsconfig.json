@@ -38,6 +38,7 @@
     ".next/types/**/*.ts",
     "**/*.mts",
     "scripts/cloudinaryUpload.mjs",
+    "types/**/*.d.ts",
     ".next/dev/types/**/*.ts"
 , "tailwind.config.mjs"  ],
   "exclude": [
