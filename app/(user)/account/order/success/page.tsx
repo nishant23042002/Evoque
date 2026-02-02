@@ -29,7 +29,7 @@ export default function OrderSuccessPage() {
             </p>
 
             <Link
-                href="/"
+                href="/account/order"
                 className="mt-4 px-6 py-3 bg-black text-white rounded"
             >
                 Continue Shopping

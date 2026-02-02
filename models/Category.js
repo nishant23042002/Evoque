@@ -1,7 +1,6 @@
 import mongoose from "mongoose";
 
 
-
 /* ---------------- SUB CATEGORY ---------------- */
 
 const subCategorySchema = new mongoose.Schema(
@@ -70,6 +69,13 @@ const categorySchema = new mongoose.Schema(
             lowercase: true,
             unique: true,
             index: true,
+        },
+
+        sizeType: {
+            type: { type: String },
+            label: { type: String },
+            chartImage: { type: String },
+            order: { type: Number, default: 0 }
         },
 
         image: {

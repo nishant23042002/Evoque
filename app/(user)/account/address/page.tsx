@@ -41,26 +41,6 @@ export default function AddressPage() {
         };
     }, []);
 
-    // Cart validation
-    useEffect(() => {
-        let active = true;
-
-        const validateCart = async () => {
-            const res = await fetch("/api/cart");
-            if (!res.ok && active) {
-                window.location.replace("/cart");
-            }
-        };
-
-        validateCart();
-
-        return () => {
-            active = false;
-        };
-    }, []);
-
-    const hasDefaultAddress = addresses.some(a => a.isDefault);
-
     if (loading) return <AddressSkeleton />;
 
     return (
@@ -76,7 +56,7 @@ export default function AddressPage() {
                     borderBottom: "1px solid var(--border)",
                 }}
             >
-                <div className="max-w-3xl mx-auto px-4 py-5 flex justify-between items-center">
+                <div className="max-w-5xl mx-auto py-5 flex justify-between items-center">
                     <h1 className="text-xl font-semibold text-foreground tracking-wide">
                         Delivery Address
                     </h1>
@@ -96,7 +76,7 @@ export default function AddressPage() {
 
             {/* CONTENT */}
             <div className="flex-1 overflow-y-auto">
-                <div className="max-w-3xl mx-auto px-4 py-6 space-y-6">
+                <div className="max-w-5xl mx-auto py-6 space-y-6">
                     {addresses.length === 0 ? (
                         <EmptyState
                             onAdd={() => {
@@ -116,38 +96,6 @@ export default function AddressPage() {
                                 }}
                             />
                         ))
-                    )}
-                </div>
-            </div>
-
-            {/* BOTTOM CTA BAR */}
-            <div
-                className="sticky bottom-0 backdrop-blur-md"
-                style={{
-                    background: "rgba(250,248,244,0.9)",
-                    borderTop: "1px solid var(--border)",
-                }}
-            >
-                <div className="max-w-3xl mx-auto px-4 py-4 space-y-2">
-                    <button
-                        disabled={!hasDefaultAddress}
-                        onClick={() => (window.location.href = "/checkout/review")}
-                        className="w-full py-3 rounded-md text-sm font-medium transition"
-                        style={{
-                            background: hasDefaultAddress
-                                ? "var(--btn-primary-bg)"
-                                : "var(--linen-300)",
-                            color: "var(--btn-primary-text)",
-                            opacity: hasDefaultAddress ? 1 : 0.6,
-                        }}
-                    >
-                        Deliver to this address
-                    </button>
-
-                    {!hasDefaultAddress && addresses.length > 0 && (
-                        <p className="text-xs text-center text-destructive">
-                            Select a default address to continue
-                        </p>
                     )}
                 </div>
             </div>

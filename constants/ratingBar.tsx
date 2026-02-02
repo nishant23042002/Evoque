@@ -43,7 +43,7 @@ export default function RatingBar({
 
         {/* HALF STAR */}
         {hasHalfStar && (
-          <div className="relative w-[14px] h-[14px]">
+          <div className="relative w-3.5 h-3.5">
             <Star
               size={14}
               className="absolute inset-0 fill-(--linen-300) stroke-primary"
@@ -73,11 +73,11 @@ export default function RatingBar({
       </div>
 
       {/* PROGRESS BAR */}
-      <div className="relative h-1.5 w-full rounded-full bg-(--linen-200) overflow-hidden">
+      <div className="relative h-1.5 w-full rounded-[3px] bg-(--linen-200) overflow-hidden">
         <div
           className="
             absolute left-0 top-0 h-full
-            rounded-full
+            rounded-[3px]
             bg-primary
             transition-[width] duration-700 ease-[cubic-bezier(0.22,1,0.36,1)]
           "

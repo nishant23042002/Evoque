@@ -27,7 +27,7 @@ export async function POST(req) {
 
         const body = await req.json();
 
-        const { name, slug, image, leftMenuCategoryImage, description, attribute, badge, merchandising, seo, isTrending, categoryPageBanner, subCategories = [], isActive, isFeatured } = body;
+        const { name, slug, image, sizeType, leftMenuCategoryImage, description, attribute, badge, merchandising, seo, isTrending, categoryPageBanner, subCategories = [], isActive, isFeatured } = body;
 
         if (!name || !slug || !image || !leftMenuCategoryImage || !categoryPageBanner) {
             return NextResponse.json(
@@ -89,6 +89,7 @@ export async function POST(req) {
             leftMenuCategoryImage: leftMenuImg.secure_url,
             categoryPageBanner: categoryPageBannerImg.secure_url,
             description,
+            sizeType,
             seo,
             attribute,
             badge,

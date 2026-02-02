@@ -22,7 +22,7 @@ export async function GET(
     const product = await Product.findOne({
         slug: decodedSlug,
         isActive: true,
-    }).populate("category", "name slug")
+    }).populate("category", "name slug sizeType")
         .lean();
 
     if (!product) {

@@ -205,7 +205,7 @@ export default function ProductMasonryGrid({
                                         <p className="my-1">{item.productName}</p>
                                         <p className="font-bold text-sm">
                                             ₹{variant.pricing?.price}
-                                            <span className="ml-2 text-xs line-through text-(--linen-300)">
+                                            <span className="ml-2 text-xs font-extralight line-through text-(--linen-300)">
                                                 ₹{variant.pricing?.originalPrice}
                                             </span>
                                         </p>
@@ -215,10 +215,10 @@ export default function ProductMasonryGrid({
 
                                 {!isOpen && (
                                     <div className="bg-black/30 py-1 absolute bottom-5.75 md:bottom-0 text-white flex flex-col justify-center items-center w-full transition-all duration-200 opacity-100 translate-y-0 md:group-hover:opacity-0 md:group-hover:translate-y-2 pointer-events-none">
-                                        <p className="text-sm truncate text-nowrap font-medium">{item.productName}</p>
+                                        <p className="text-xs sm:text-sm font-medium">{item.productName}</p>
                                         <div className="flex gap-3 text-sm w-full justify-evenly z-999">
                                             <span>₹{variant.pricing?.price}</span>
-                                            <span className="line-through text-gray-300">₹{variant.pricing?.originalPrice}</span>
+                                            <span className="line-through font-extralight text-gray-300">₹{variant.pricing?.originalPrice}</span>
                                         </div>
                                     </div>
                                 )}

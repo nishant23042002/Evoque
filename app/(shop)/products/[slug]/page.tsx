@@ -14,6 +14,9 @@ import { sizeScaleMap } from "@/constants/productSizes";
 import Product from "@/types/ProductTypes";
 import { SizeVariant } from "@/types/ProductTypes";
 import { addCartItem } from "@/store/cart/cart.thunks";
+import SizeChartModal from "@/components/SizeChartModal";
+
+
 
 const DETAILS_LABELS: Record<keyof Product["details"], string> = {
     material: "Material",
@@ -36,6 +39,7 @@ export default function ProductPage() {
     const searchParams = useSearchParams();
     const colorFromUrl = searchParams.get("color");
     const [sizeError, setSizeError] = useState(false);
+    const [openSizeChart, setOpenSizeChart] = useState(false);
 
     const [product, setProduct] = useState<Product | null>(null);
     const [loading, setLoading] = useState(true);
@@ -93,20 +97,28 @@ export default function ProductPage() {
     const sizes = useMemo(() => {
         if (!product || !activeVariant) return [];
 
-        const scale = sizeScaleMap[product.category.slug] || sizeScaleMap["shirts"];
-        const sizeMap = new Map(activeVariant.sizes.map(s => [s.size, s]));
+        // 🔑 size scale comes from CATEGORY
+        const sizeType = product.category.sizeType.type;
+        const scale = sizeScaleMap[sizeType] || [];
+
+        // 🔑 actual sellable sizes come from VARIANT
+        const variantMap = new Map(
+            activeVariant.sizes.map(s => [s.size, s])
+        );
 
         return scale.map(size => {
-            const variant = sizeMap.get(size);
+            const variant = variantMap.get(size);
+
             return {
                 size,
-                variant, // <-- keep original object
+                variant,                 // undefined if not exists
                 exists: !!variant,
-                inStock: variant?.stock ? true : false,
-                isAvailable: variant?.isAvailable ?? false,
+                inStock: variant ? variant.stock > 0 : false,
+                isAvailable: variant ? variant.isAvailable : false,
             };
         });
-    }, [activeVariant, product]);
+    }, [product, activeVariant]);
+
 
     const cartImage =
         activeVariant?.color.images.find(img => img.isPrimary)?.url ||
@@ -322,7 +334,13 @@ export default function ProductPage() {
                                 <h3 className="font-bold mb-1 text-foreground">
                                     {product.category.slug === "jeans" ? "Choose Waist" : "Select Size"}
                                 </h3>
-                                <h1 className="text-sm font-medium text-(--linen-600) hover:text-primary cursor-pointer underline">Size Chart</h1>
+                                <h1
+                                    onClick={() => setOpenSizeChart(true)}
+                                    className="text-sm font-medium text-(--linen-600) hover:text-primary cursor-pointer underline"
+                                >
+                                    Size Chart
+                                </h1>
+
                             </div>
                             <div className="flex flex-row flex-nowrap items-center gap-2 w-full overflow-x-auto scrollbar-hide">
                                 {sizes.map(s => {
@@ -527,6 +545,16 @@ export default function ProductPage() {
                         </div>
                     </div>
                 </div>
+                {product?.category?.sizeType && (
+                    <SizeChartModal
+                        open={openSizeChart}
+                        onClose={() => setOpenSizeChart(false)}
+                        label={product.category.sizeType.label}
+                        image={product.category.sizeType.chartImage}
+                        productName={product.productName}
+                    />
+                )}
+
             </div>
         </Container>
     );

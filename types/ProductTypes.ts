@@ -56,6 +56,11 @@ export interface Category {
     name: string;
     slug: string;
     image: string;
+    sizeType: {
+        type: string;  
+        label: string;     
+        chartImage: string; 
+    };
     categoryPageBanner?: string;
     isTrending: boolean;
     isFeatured: boolean;

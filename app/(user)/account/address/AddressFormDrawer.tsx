@@ -45,7 +45,7 @@ export default function AddressFormDrawer({
                 className="w-full max-w-md h-full p-6 space-y-5"
                 style={{ background: "var(--surface)" }}
             >
-                <h2 className="text-lg font-semibold text-foreground">
+                <h2 className="text-lg font-semibold text-[var(--foreground)]">
                     {address ? "Edit Address" : "Add New Address"}
                 </h2>
 
@@ -68,14 +68,14 @@ export default function AddressFormDrawer({
                     ) : null
                 )}
 
-                <label className="flex items-center gap-2 text-sm text-(--text-secondary)">
+                <label className="flex items-center gap-2 text-sm text-[var(--text-secondary)]">
                     <input
                         type="checkbox"
                         checked={form.isDefault}
                         onChange={e =>
                             setForm({ ...form, isDefault: e.target.checked })
                         }
-                        className="accent-primary"
+                        className="accent-[var(--primary)]"
                     />
                     Set as default address
                 </label>

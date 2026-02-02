@@ -26,7 +26,7 @@ export default function AddressCard({ address, onRefresh, onEdit }: Props) {
 
     return (
         <label
-            className="block rounded-xl p-5 cursor-pointer transition"
+            className="block rounded-[3px] p-5 cursor-pointer transition"
             style={{
                 background: "var(--card-bg)",
                 border: "1px solid var(--card-border)",
@@ -38,16 +38,16 @@ export default function AddressCard({ address, onRefresh, onEdit }: Props) {
                     type="radio"
                     checked={address.isDefault}
                     onChange={setDefault}
-                    className="mt-1 accent-[var(--primary)]"
+                    className="mt-1 accent-primary"
                 />
 
                 <div className="flex-1">
                     <div className="flex justify-between items-center">
-                        <p className="font-semibold text-[var(--foreground)]">
+                        <p className="font-semibold text-foreground">
                             {address.name}
                             {address.isDefault && (
                                 <span
-                                    className="ml-3 text-xs px-2.5 py-1 rounded-full"
+                                    className="ml-3 text-xs px-2.5 py-1 rounded-[3px]"
                                     style={{
                                         background: "var(--earth-sand)",
                                         color: "var(--earth-olive)",
@@ -60,27 +60,27 @@ export default function AddressCard({ address, onRefresh, onEdit }: Props) {
                         </p>
                     </div>
 
-                    <p className="text-sm mt-2 text-[var(--text-secondary)] leading-relaxed">
+                    <p className="text-sm mt-2 text-(--text-secondary) leading-relaxed">
                         {address.addressLine1}
                         {address.addressLine2 && `, ${address.addressLine2}`}
                         <br />
                         {address.city}, {address.state} – {address.pincode}
                     </p>
 
-                    <p className="text-sm mt-2 text-[var(--text-muted)]">
+                    <p className="text-sm mt-2 text-(--text-muted)">
                         📞 {address.phone}
                     </p>
 
                     <div className="flex gap-6 text-sm mt-4">
                         <button
                             onClick={onEdit}
-                            className="underline text-[var(--primary)]"
+                            className="underline text-primary"
                         >
                             Edit
                         </button>
                         <button
                             onClick={remove}
-                            className="underline text-[var(--destructive)]"
+                            className="underline text-destructive"
                         >
                             Delete
                         </button>

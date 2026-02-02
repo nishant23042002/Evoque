@@ -117,7 +117,7 @@ export default function CheckoutReviewPage() {
 
                 handler: () => {
                     dispatch(clearCart());
-                    window.location.replace("/order/success");
+                    window.location.replace("/account/order/success");
                 },
 
                 modal: {
