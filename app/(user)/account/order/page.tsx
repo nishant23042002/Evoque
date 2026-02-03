@@ -4,38 +4,17 @@ import { useAuth } from "@/components/AuthProvider";
 import { useEffect, useState } from "react";
 import Image from "next/image";
 import clsx from "clsx";
+import { Order } from "@/types/OrderTypes";
 
-
-type OrderItem = {
-  productId: string;
-  name: string;
-  image: string;
-  size?: string;
-  color?: string;
-  sku: string;
-  quantity: number;
-  price: number;
+const statusColorMap: Record<string, string> = {
+  pending: "bg-yellow-500",
+  processing: "bg-blue-500",
+  shipped: "bg-purple-500",
+  delivered: "bg-green-600",
+  cancelled: "bg-red-600",
+  returned: "bg-gray-600",
 };
 
-type Order = {
-  _id: string;
-  orderNumber: string;
-  orderStatus: "confirmed" | "processing" | "shipped" | "delivered" | "cancelled";
-  items: OrderItem[];
-  grandTotal: number;
-  createdAt: string;
-  shippingAddress: {
-    name: string;
-    city: string;
-    state: string;
-    pincode: string;
-  };
-  paymentInfo: {
-    method: string;
-    orderId: string;
-    status: string;
-  }
-};
 
 export default function MyOrdersPage() {
   const [orders, setOrders] = useState<Order[]>([]);
@@ -111,7 +90,7 @@ export default function MyOrdersPage() {
 
                 {/* DETAILS */}
                 <div className="flex-1 space-y-1">
-                  
+
                   <p className="font-medium text-gray-900 line-clamp-1">
                     {firstItem?.name}
                   </p>
@@ -127,10 +106,22 @@ export default function MyOrdersPage() {
                   </div>
 
                   <div className="mt-2">
-                    <span className="inline-block bg-green-600 text-white text-xs px-3 py-1 rounded">
+                    <span
+                      className={clsx(
+                        "inline-block text-white text-xs px-3 py-1 rounded",
+                        {
+                          "bg-yellow-500": order.orderStatus === "confirmed",
+                          "bg-blue-500": order.orderStatus === "processing",
+                          "bg-purple-500": order.orderStatus === "shipped",
+                          "bg-green-600": order.orderStatus === "delivered",
+                          "bg-red-600": order.orderStatus === "cancelled",
+                        }
+                      )}
+                    >
                       {order.orderStatus.toUpperCase()}
                     </span>
                   </div>
+
                 </div>
 
                 {/* PRICE */}

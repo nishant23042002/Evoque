@@ -5,14 +5,14 @@ import dynamic from "next/dynamic";
 import Image from "next/image";
 import { TbMenu } from "react-icons/tb";
 import { FaAnglesDown } from "react-icons/fa6";
-import { useMemo, useState } from "react";
+import { useMemo, useRef, useState } from "react";
 import RatingBar from "@/constants/ratingBar";
 import Link from "next/link";
 import { useAppDispatch, useAppSelector } from "@/store/hooks";
 import { selectWishlistIds } from "@/store/wishlist/wishlist.selector";
 import { addWishlistItem, removeWishlistItem } from "@/store/wishlist/wishlist.thunks";
 import { useAuth } from "../AuthProvider";
-import { Variant, VariantImage } from "@/types/ProductTypes"
+import { Variant } from "@/types/ProductTypes"
 import Product from "@/types/ProductTypes";
 const Masonry = dynamic(() => import("react-masonry-css"), { ssr: false });
 
@@ -26,6 +26,23 @@ interface ProductMasonryGridProps {
     fullWidth?: boolean;
 }
 
+function getPrimaryVariantImage(variant: Variant): string {
+    return (
+        variant.color.images.find(img => img.isPrimary)?.url ||
+        variant.color.images[0]?.url ||
+        ""
+    );
+}
+
+function getSecondaryVariantImage(variant: Variant): string {
+    return (
+        variant.color.images.find(img => !img.isPrimary)?.url ||
+        variant.color.images[1]?.url ||
+        ""
+    );
+}
+
+
 /* =======================
    COMPONENT
 ======================= */
@@ -37,8 +54,10 @@ export default function ProductMasonryGrid({
 }: ProductMasonryGridProps) {
     const [activeIndex, setActiveIndex] = useState<number | null>(null);
     const [hoverVariants, setHoverVariants] = useState<Record<string, Variant>>({});
-    const [transitioningProduct, setTransitioningProduct] = useState<string | null>(null);
+    const [hoveredCard, setHoveredCard] = useState<string | null>(null);
 
+    const [transitioningProduct, setTransitioningProduct] = useState<string | null>(null);
+    const hoverTimeoutRef = useRef<Record<string, NodeJS.Timeout | null>>({});
     const { isAuthenticated, loading, openLogin } = useAuth();
     const wishlistIds = useAppSelector(selectWishlistIds);
     const dispatch = useAppDispatch();
@@ -67,6 +86,28 @@ export default function ProductMasonryGrid({
         });
     }, [products]);
 
+    const handleVariantHover = (productId: string, variant?: Variant) => {
+        // clear previous timer
+        if (hoverTimeoutRef.current[productId]) {
+            clearTimeout(hoverTimeoutRef.current[productId]!);
+        }
+
+        setTransitioningProduct(productId);
+
+        hoverTimeoutRef.current[productId] = setTimeout(() => {
+            setHoverVariants((prev) => {
+                if (!variant) {
+                    const { [productId]: _, ...rest } = prev;
+                    return rest;
+                }
+                return { ...prev, [productId]: variant };
+            });
+
+            setTransitioningProduct(null);
+        }, 120); // smaller delay = snappier UI
+    };
+
+
     return (
         <div className={`my-2 ${fullWidth ? "px-2 mx-auto" : "w-full"}`}>
             {showHeading && (
@@ -84,17 +125,15 @@ export default function ProductMasonryGrid({
                     const isOpen = activeIndex === index;
                     const variant = hoverVariants[item._id] ?? item.variants[0];
                     const isWishlisted = wishlistIds.has(item._id);
-                    const primaryImage: VariantImage | undefined = variant.color.images.find(
-                        (i: VariantImage) => i.isPrimary
-                    );
-
-                    const imageUrl = primaryImage?.url ?? variant.color.images[0]?.url ?? "";
-
-
+                    const imageUrl = getPrimaryVariantImage(variant);
+                    const secondaryImage = getSecondaryVariantImage(variant);
+                    const isColorHovering = !!hoverVariants[item._id];
 
                     return (
                         <div key={item._id}>
                             <div
+                                onMouseEnter={() => setHoveredCard(item._id)}
+                                onMouseLeave={() => setHoveredCard(null)}
                                 className="border border-(--border-light) relative mb-2 drop-shadow-xs fade-in-75 transition-all duration-300 rounded-[2px] overflow-hidden group cursor-pointer bg-(--card-bg)"
                                 style={{ height: heights[index] }}
                             >
@@ -103,14 +142,33 @@ export default function ProductMasonryGrid({
                                     className={`absolute inset-0 transition-opacity duration-300 ${transitioningProduct === item._id ? "opacity-0" : "opacity-100"
                                         }`}
                                 >
+                                    {/* PRIMARY IMAGE — ALWAYS */}
                                     <Image
                                         src={imageUrl}
                                         alt={item.productName}
                                         fill
                                         sizes="(max-width: 400px) 100vw, (max-width: 700px) 50vw, (max-width: 1000px) 33vw, (max-width: 1300px) 25vw, 20vw"
-                                        className="object-cover object-center duration-300 group-hover:scale-105"
+                                        className={`object-cover duration-500 object-center transition-opacity ${hoveredCard === item._id && secondaryImage && !isColorHovering
+                                            ? "opacity-0"
+                                            : "opacity-100"
+                                            }`}
+
                                     />
+
+                                    {/* SECONDARY IMAGE — ONLY ON CARD HOVER */}
+                                    {secondaryImage &&
+                                        hoveredCard === item._id &&
+                                        !isColorHovering && (
+                                            <Image
+                                                src={secondaryImage}
+                                                alt={`${item.productName} secondary`}
+                                                fill
+                                                sizes="(max-width: 400px) 100vw, (max-width: 700px) 50vw, (max-width: 1000px) 33vw, (max-width: 1300px) 25vw, 20vw"
+                                                className="object-cover object-center  opacity-100 transition-opacity duration-300"
+                                            />
+                                        )}
                                 </div>
+
 
                                 <div className="absolute inset-0 bg-(--earth-charcoal)/15 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
 
@@ -120,31 +178,13 @@ export default function ProductMasonryGrid({
                                         {item.variants.map((v) => (
                                             <span
                                                 key={v.color.slug}
-                                                className={`w-5 h-4 rounded-[2px] border cursor-pointer ${v.color.slug === variant.color.slug
+                                                className={`w-5 h-4 rounded-[2px] border border-(--border-strong) cursor-pointer ${v.color.slug === variant.color.slug
                                                     ? "ring-1 ring-ring border-primary"
                                                     : "border-(--border-light)"
                                                     }`}
                                                 style={{ backgroundColor: v.color.hex }}
-                                                onMouseEnter={() => {
-                                                    setTransitioningProduct(item._id);
-                                                    setTimeout(() => {
-                                                        setHoverVariants((prev) => ({
-                                                            ...prev,
-                                                            [item._id]: v,
-                                                        }));
-                                                        setTransitioningProduct(null);
-                                                    }, 200);
-                                                }}
-                                                onMouseLeave={() => {
-                                                    setTransitioningProduct(item._id);
-                                                    setTimeout(() => {
-                                                        setHoverVariants((prev) => {
-                                                            const { [item._id]: _, ...rest } = prev;
-                                                            return rest;
-                                                        });
-                                                        setTransitioningProduct(null);
-                                                    }, 80);
-                                                }}
+                                                onMouseEnter={() => handleVariantHover(item._id, v)}
+                                                onMouseLeave={() => handleVariantHover(item._id, undefined)}
                                             />
                                         ))}
                                     </div>
@@ -159,17 +199,17 @@ export default function ProductMasonryGrid({
                                                 dispatch(removeWishlistItem(item._id));
                                             } else {
                                                 dispatch(
-                                            addWishlistItem({
-                                                productId: item._id,
-                                                product: item,
-                                                slug: item.slug,
-                                                name: item.productName,
-                                                image: imageUrl,
-                                                price: item.pricing?.price ?? 0,
-                                                originalPrice: item.pricing?.originalPrice ?? 0,
-                                                brand: item.brand,
-                                            })
-                                        );
+                                                    addWishlistItem({
+                                                        productId: item._id,
+                                                        product: item,
+                                                        slug: item.slug,
+                                                        name: item.productName,
+                                                        image: imageUrl,
+                                                        price: item.pricing?.price ?? 0,
+                                                        originalPrice: item.pricing?.originalPrice ?? 0,
+                                                        brand: item.brand,
+                                                    })
+                                                );
                                             }
                                         }}
                                         className="p-1.5 border border-(--border-light) cursor-pointer rounded-full bg-(--surface) shadow z-30"
@@ -231,4 +271,4 @@ export default function ProductMasonryGrid({
             </Masonry>
         </div>
     );
-}
+}  

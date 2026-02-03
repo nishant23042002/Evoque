@@ -41,6 +41,10 @@ export default function AccountLayout({
                     borderColor: "var(--border-strong)",
                 }}
             >
+                <Link href="/account" className={tabStyle("/account")}>
+                    Account
+                </Link>
+
                 <Link href="/account/order" className={tabStyle("/account/order")}>
                     Orders
                 </Link>

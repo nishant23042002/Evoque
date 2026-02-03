@@ -133,7 +133,7 @@ const LeftMenu = ({ isOpen, setIsOpen }: LeftMenuProps) => {
                 ref={sidebarRef}
                 className={cn(
                     "fixed top-0 left-0 z-40 h-dvh py-1",
-                    "bg-(--linen-200) border-r border-(--border-strong)",
+                    "bg-(--surface-elevated) border-r border-(--border-strong)",
                     SIDEBAR_WIDTH,
                     "will-change-transform transform-gpu",
                     "transition-transform duration-500 ease-in-out",
@@ -166,7 +166,7 @@ const LeftMenu = ({ isOpen, setIsOpen }: LeftMenuProps) => {
                                     key={item.title}
                                     href={item.href}
                                     onClick={handleNavClick}
-                                    className="relative flex items-center rounded-[3px] hover:bg-(--earth-sand)/50 transition-all"
+                                    className="relative flex items-center rounded-[3px] hover:bg-primary/15 transition-all"
                                 >
                                     {active && (
                                         <span className="absolute left-0 top-1/2 -translate-y-1/2 h-6 w-1 bg-primary" />
@@ -283,7 +283,7 @@ const LeftMenu = ({ isOpen, setIsOpen }: LeftMenuProps) => {
                                     key={item.title}
                                     href={item.href}
                                     onClick={handleNavClick}
-                                    className="relative flex items-center rounded-sm hover:bg-(--earth-sand)/50 transition-all"
+                                    className="relative flex items-center rounded-sm hover:bg-primary/15 transition-all"
                                 >
                                     {active && (
                                         <span className="absolute left-0 top-5.5 -translate-y-1/2 h-6 w-1 bg-primary" />

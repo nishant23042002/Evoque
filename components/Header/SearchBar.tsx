@@ -101,7 +101,7 @@ const SearchBar = () => {
       <div
         className={cn(
           "fixed inset-y-0 right-0 z-50",
-          "bg-(--linen-200) shadow-xl",
+          "bg-(--surface-elevated) shadow-xl",
           "w-[80vw] sm:w-105",
           "transform-gpu will-change-transform",
           "transition-transform duration-700 ease-in-out",
@@ -118,7 +118,7 @@ const SearchBar = () => {
             placeholder="Search shirts, fabric, style..."
             className="
               w-full px-3 py-1.25 rounded-[3px]
-              bg-(--linen-200)
+              bg-(--surface-elevated)
               border-2 border-(--border-strong)
               text-foreground
               placeholder:text-(--input-placeholder)
@@ -144,7 +144,7 @@ const SearchBar = () => {
         <div className="px-2 overflow-y-auto scrollbar-hide h-[calc(100%-128px)]">
           {
             query && products.length > 0 && (
-              <div className="py-1 flex justify-between">
+              <div className="pt-2 flex justify-between">
                 <p>Products</p>
                 <p>{products?.length}</p>
               </div>
@@ -201,7 +201,7 @@ const SearchBar = () => {
               ))}
             </>
           ) : (
-            <div className="grid grid-cols-2 gap-2">
+            <div className="grid grid-cols-2 my-2 gap-2">
 
               {products.map(p => {
                 const variant = p.variants?.[0];
@@ -215,7 +215,7 @@ const SearchBar = () => {
                     key={p._id}
                     href={`/products/${p.slug}`}
                     onClick={() => setOpen(false)}
-                    className="border border-(--border-strong) p-0.5 rounded-[3px]"
+                    className="border border-(--border-strong) rounded-[3px]"
                   >
                     <div className="relative aspect-3/4 rounded-[3px] overflow-hidden">
                       {image && (
@@ -227,14 +227,14 @@ const SearchBar = () => {
                         />
 
                       )}
-                      <div className="absolute inset-0 bg-[rgba(0,0,0,0.20)] hover:bg-[rgba(0,0,0,0.35)] transition-colors" />
+                      <div className="absolute inset-0 hover:bg-black/20 transition-colors" />
                     </div>
 
-                    <p className="mt-1 text-xs font-medium line-clamp-1">
+                    <p className="m-1 text-xs font-medium line-clamp-1">
                       {p.productName}
                     </p>
 
-                    <p className="text-xs font-semibold text-(--text-secondary)">
+                    <p className="m-1 text-xs font-semibold text-(--text-secondary)">
                       ₹{variant?.pricing?.price}
                     </p>
                   </Link>
@@ -245,14 +245,14 @@ const SearchBar = () => {
         </div>
 
         {/* Announcement Bar */}
-        <div className="fixed bottom-0 w-full overflow-hidden bg-(--linen-800)">
+        <div className="fixed bottom-0 w-full border-t overflow-hidden bg-(--linen-200)">
           <div className="marquee flex w-max items-center gap-6 py-1.75">
             {repeatedAnnouncements.map((text, i) => (
               <span
                 key={i}
                 className="
                   whitespace-nowrap
-                  text-(--text-inverse)
+                  text-(--text-primary)
                   font-poppins tracking-wider
                   px-2 text-sm
                 "

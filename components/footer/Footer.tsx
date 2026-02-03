@@ -28,7 +28,7 @@ const layerItem = [
 export default function Footer() {
     return (
         <footer>
-            <div className="relative bg-(--linen-200) text-(--linen-700) overflow-hidden">
+            <div className="relative bg-inverse border-t text-(--linen-700) overflow-hidden">
 
                 {/* MAIN GRID */}
                 <div
@@ -169,7 +169,7 @@ export default function Footer() {
                     <h1
                         className="
                             font-extrabold tracking-tight leading-none
-                            text-(--linen-100)
+                            text-(--linen-200)
                             text-[27vw] sm:text-[20vw] md:text-[14vw]
                         "
                     >

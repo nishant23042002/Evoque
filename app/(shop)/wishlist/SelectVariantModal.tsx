@@ -22,16 +22,16 @@ interface Props {
     }) => void;
 }
 
-function inferSizeScale(activeVariant: Variant) {
+function inferSizeScale(activeVariant: Variant): string[] {
     const sizes = activeVariant.sizes.map(s => s.size);
 
-    // Waist-based sizes → bottomwear
+    // numeric sizes → bottoms
     if (sizes.some(s => /^\d+$/.test(s))) {
         return sizeScaleMap["jeans"];
     }
 
-    // Alpha sizes → tops
-    return sizeScaleMap["shirts"];
+    // alpha sizes → tops
+    return sizeScaleMap["shirt"];
 }
 
 
@@ -76,6 +76,10 @@ export default function SelectedVariantModal({
     const images = useMemo(() => {
         return activeVariant?.color.images ?? [];
     }, [activeVariant]);
+    const primaryImageForCart =
+        images.find(i => i.isPrimary)?.url ??
+        images[0]?.url ??
+        null;
 
     const image =
         activeImage ??
@@ -90,26 +94,32 @@ export default function SelectedVariantModal({
     const sizes = useMemo(() => {
         if (!activeVariant) return [];
 
-        const scale = product.category?.slug
-            ? sizeScaleMap[product.category.slug]
-            : inferSizeScale(activeVariant);
+        const sizeType = product.category?.sizeType?.type;
 
-        const sizeMap = new Map(
+        const scale: string[] =
+            sizeType && sizeScaleMap[sizeType]
+                ? sizeScaleMap[sizeType]
+                : inferSizeScale(activeVariant);
+
+        const sizeMap = new Map<string, SizeVariant>(
             activeVariant.sizes.map(s => [s.size, s])
         );
 
-        return scale.map(size => {
+        return scale.map((size: string) => {
             const variant = sizeMap.get(size);
 
             return {
                 size,
                 variant,
-                exists: !!variant,
-                inStock: !!variant?.stock,
-                isAvailable: variant?.isAvailable ?? true,
+                exists: Boolean(variant),
+                inStock: Boolean(variant && variant.stock > 0),
+                isAvailable: Boolean(variant && variant.isAvailable),
             };
         });
-    }, [activeVariant, product]);
+    }, [activeVariant, product.category]);
+
+
+
 
 
 
@@ -263,7 +273,7 @@ export default function SelectedVariantModal({
                                 product,
                                 variant: activeVariant,
                                 size: selectedSize,
-                                image: image!,
+                                image: primaryImageForCart!,
                             });
 
                             onClose();

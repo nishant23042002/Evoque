@@ -119,7 +119,7 @@ const ProductCategoryPage = () => {
 
 
             {/* ---------------- SUB CATEGORY BAR ---------------- */}
-            <div className="md:w-full mx-auto sticky top-15 z-30 border border-b-(--border-strong) bg-(--linen-200) border-b border-(--border-light)">
+            <div className="md:w-full mx-auto sticky top-15 z-30 border-b-(--border-strong) bg-(--surface-elevated) border-b border-(--border-light)">
                 <div className="relative mx-2 h-40 flex flex-nowrap overflow-auto items-center sm:justify-center gap-2 scrollbar-hide">
                     {/* ALL */}
                     <Link href={`/categories/${categorySlug}`} scroll={false} className="flex flex-col items-center min-w-20">
