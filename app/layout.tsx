@@ -40,20 +40,23 @@ export default function RootLayout({
 
   return (
     <html lang="en" className={`${inter.variable} ${poppins.variable}`}>
-      <body className="font-poppins antialiased bg-(--linen-100)">
+      <body className="font-poppins antialiased bg-(--linen-50)">
         <Providers>
           <AuthProvider>
             <ReactQueryProvider>
-              <div className="flex">
-                <div className="w-full">
-                  <Header />
+              {/* PAGE SHELL */}
+              <Header />
 
-                  {children}
-                  <GlobalLoginModal />
+              {/* MAIN CONTENT */}
+              <main className="min-h-screen">
+                {children}
+              </main>
 
-                  <Footer />
-                </div>
-              </div>
+              {/* GLOBAL UI */}
+              <GlobalLoginModal />
+
+              {/* FOOTER */}
+              <Footer />
             </ReactQueryProvider>
           </AuthProvider>
         </Providers>

@@ -21,8 +21,8 @@ export default function SizeChartModal({
     if (!open) return null;
 
     return (
-        <div className="fixed inset-0 z-50 bg-black/50 flex items-center justify-center px-4">
-            <div className="relative bg-[#edecebfb] w-full max-w-lg rounded-[3px] overflow-hidden">
+        <div className="fixed inset-0 z-50 bg-black/50 flex items-center justify-center px-2">
+            <div className="relative  bg-[#edecebfb] w-full max-w-4xl rounded-[3px] overflow-hidden">
 
                 {/* HEADER */}
                 <div className="flex justify-between items-center p-3 border-b">
@@ -33,7 +33,7 @@ export default function SizeChartModal({
                 </div>
 
                 {/* IMAGE */}
-                <div className="relative w-full aspect-4/3 my-4 bg-gray-50">
+                <div className="relative w-full aspect-2/2 sm:aspect-3/2 md:aspect-5/3 bg-gray-50">
                     <Image
                         src={image}
                         alt={label}

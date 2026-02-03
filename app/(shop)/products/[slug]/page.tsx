@@ -15,6 +15,77 @@ import Product from "@/types/ProductTypes";
 import { SizeVariant } from "@/types/ProductTypes";
 import { addCartItem } from "@/store/cart/cart.thunks";
 import SizeChartModal from "@/components/SizeChartModal";
+import { useRef } from "react";
+import { useMediaQuery } from "@/src/useMediaQuery";
+
+function MobileImageSlider({
+    images,
+    activeColor,
+}: {
+    images: string[];
+    activeColor?: string;
+}) {
+    const [active, setActive] = useState(0);
+    const sliderRef = useRef<HTMLDivElement>(null);
+
+    const scrollTo = (index: number) => {
+        if (!sliderRef.current) return;
+        const width = sliderRef.current.clientWidth;
+        sliderRef.current.scrollTo({
+            left: width * index,
+            behavior: "smooth",
+        });
+        setActive(index);
+    };
+
+    return (
+        <div className="relative w-full">
+            {/* SLIDER */}
+            <div
+                ref={sliderRef}
+                className="flex overflow-x-auto snap-x snap-mandatory scrollbar-hide"
+                onScroll={(e) => {
+                    const el = e.currentTarget;
+                    const index = Math.round(el.scrollLeft / el.clientWidth);
+                    setActive(index);
+                }}
+            >
+                {images.map((img, i) => (
+                    <div
+                        key={i}
+                        className="min-w-full snap-center relative aspect-4/5"
+                    >
+                        <Image
+                            src={img}
+                            alt=""
+                            fill
+                            className="object-cover"
+                        />
+                    </div>
+                ))}
+            </div>
+
+            {/* DOTS */}
+            <div className="absolute bottom-5 left-1/2 -translate-x-1/2 flex gap-2">
+                {images.map((_, i) => (
+                    <button
+                        key={i}
+                        onClick={() => scrollTo(i)}
+                        className="h-2 w-2 border border-(--border-strong) transition-all duration-300"
+                        style={{
+                            backgroundColor:
+                                active === i
+                                    ? activeColor || "#000"
+                                    : "rgba(0,0,0,0.25)",
+                            transform: active === i ? "scale(1.2)" : "scale(1)",
+                        }}
+                    />
+                ))}
+            </div>
+
+        </div>
+    );
+}
 
 
 
@@ -40,6 +111,9 @@ export default function ProductPage() {
     const colorFromUrl = searchParams.get("color");
     const [sizeError, setSizeError] = useState(false);
     const [openSizeChart, setOpenSizeChart] = useState(false);
+    const imageRefs = useRef<(HTMLDivElement | null)[]>([]);
+    const galleryRef = useRef<HTMLDivElement | null>(null);
+    const isDesktop = useMediaQuery("(min-width: 1024px)");
 
     const [product, setProduct] = useState<Product | null>(null);
     const [loading, setLoading] = useState(true);
@@ -125,9 +199,34 @@ export default function ProductPage() {
         activeVariant?.color.images[0]?.url ||
         "";
 
+    const scrollToImage = (index: number) => {
+        setActiveImageIndex(index);
+
+        const container = galleryRef.current;
+        const el = imageRefs.current[index];
+
+        if (!container || !el) return;
+
+        const offsetTop = el.offsetTop;
+
+        container.scrollTo({
+            top: offsetTop,
+            behavior: "smooth",
+        });
+    };
+
+
+
+
     /* ---------------- IMAGE ARROWS ---------------- */
-    const handlePrevImage = () => setActiveImageIndex(prev => prev === 0 ? images.length - 1 : prev - 1);
-    const handleNextImage = () => setActiveImageIndex(prev => prev === images.length - 1 ? 0 : prev + 1);
+    const handlePrevImage = () => {
+        const newIndex = activeImageIndex === 0 ? images.length - 1 : activeImageIndex - 1;
+        scrollToImage(newIndex);
+    };
+    const handleNextImage = () => {
+        const newIndex = activeImageIndex === images.length - 1 ? 0 : activeImageIndex + 1;
+        scrollToImage(newIndex);
+    };
     const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
         const rect = e.currentTarget.getBoundingClientRect();
         const isLeft = e.clientX < rect.left + rect.width / 2;
@@ -151,75 +250,116 @@ export default function ProductPage() {
         );
     return (
         <Container>
-            <div className="flex md:w-[90%] bg-(--linen-100) mx-auto flex-col w-full pb-14">
-                <div className=" w-full mx-auto lg:flex gap-2 justify-between">
+            <div className="relative w-full mx-auto min-h-screen lg:h-screen">
+                <div
+                    className="
+                        flex
+                        flex-col
+                        lg:flex-row
+                        lg:h-screen
+                    "
+                >
+
 
                     {/* LEFT: IMAGES */}
-                    <div className="w-full flex gap-2 relative">
+                    {isDesktop ? (
+                        <div
+                            ref={galleryRef}
+                            className="relative                  
+                                
+                                md:w-[60%]
+                                lg:w-[50%]
+                                aspect-4/5
+                                h-full
+                                mx-auto
+                                overflow-y-auto
+                                overscroll-contain
+                                scrollbar-hide
+                                "
+                        >
+                            {/* THUMBNAILS */}
+                            <div className="fixed z-30 left-0 lg:left-2 flex flex-col gap-2">
+                                {images.map((img, i) => {
+                                    const isActive = activeImageIndex === i;
 
-                        {/* THUMBNAILS */}
-                        <div className="absolute left-0 z-30 flex flex-col gap-2">
-                            {images.map((img, i) => {
-                                const isActive = activeImageIndex === i;
-
-                                return (
-                                    <button
-                                        key={i}
-                                        onClick={() => setActiveImageIndex(i)}
-                                        className={`cursor-pointer
-                                                        relative w-25 h-25 border transition-all duration-200
-                                                        ${isActive ? "" : "border-border hover:border-(--border-strong)"}
-                                                        `}
-                                        style={
-                                            isActive
-                                                ? {
-                                                    borderColor:
-                                                        activeVariant?.color?.hex || "#000000",
-                                                    borderWidth: "2px",
-                                                }
-                                                : undefined
-                                        }
-                                    >
+                                    return (
+                                        <button
+                                            key={i}
+                                            onClick={() => scrollToImage(i)}
+                                            className={`cursor-pointer
+                                                            relative w-22 h-28 border transition-all duration-200
+                                                            ${isActive ? "" : "border-border hover:border-(--border-strong)"}
+                                                            `}
+                                            style={
+                                                isActive
+                                                    ? {
+                                                        borderColor:
+                                                            activeVariant?.color?.hex || "#000000",
+                                                        borderWidth: "2px",
+                                                    }
+                                                    : undefined
+                                            }
+                                        >
+                                            <Image
+                                                src={img}
+                                                alt={product.productName}
+                                                fill
+                                                sizes="(max-width: 640px) 100vw,
+                                                            (max-width: 1024px) 50vw,
+                                                            33vw"
+                                                className="object-cover w-auto h-auto"
+                                            />
+                                        </button>
+                                    );
+                                })}
+                            </div>
+                            <div className="flex flex-col gap-4">
+                                {images.map((img, i) => (
+                                    <div key={i} ref={(el) => {
+                                        imageRefs.current[i] = el;
+                                    }}
+                                        className="relative w-full aspect-4/5">
                                         <Image
+                                            onMouseMove={handleMouseMove}
+                                            onMouseLeave={handleMouseLeave}
+                                            onClick={handleClick}
                                             src={img}
                                             alt={product.productName}
                                             fill
-                                            sizes="(max-width: 640px) 100vw,
-                                                        (max-width: 1024px) 50vw,
-                                                        33vw"
-                                            className="object-cover w-auto h-auto"
+                                            className="cursor-none object-cover object-center"
                                         />
-                                    </button>
-                                );
-                            })}
-                        </div>
-
-                        {/* MAIN IMAGE */}
-                        <div className="relative w-full flex flex-col gap-4 overflow-y-auto max-h-[90vh] scrollbar-hide">
-                            <div className="relative w-full overflow-y-auto h-125 md:h-195 flex justify-items-start group">
-                                <Image
-                                    onMouseMove={handleMouseMove}
-                                    onMouseLeave={handleMouseLeave}
-                                    onClick={handleClick}
-                                    src={images[activeImageIndex]}
-                                    alt={product.productName}
-                                    width={800}
-                                    height={800}
-                                    className="cursor-none object-[50%_30%] object-cover transition-all duration-300"
-                                />
-                                {cursor.direction && (
-                                    <div className="fixed z-50 pointer-events-none" style={{ left: cursor.x, top: cursor.y, transform: "translate(-50%, -50%)" }}>
-                                        <div className="w-9 h-9 rounded-sm backdrop-blur-md bg-black/55 flex items-center justify-center transition-all duration-200">
-                                            {cursor.direction === "left" ? <FaArrowLeftLong className="text-xl" style={{ color: activeVariant?.color?.hex || "#000" }} /> : <FaArrowRightLong className="text-xl" style={{ color: activeVariant?.color?.hex || "#000" }} />}
-                                        </div>
+                                        {cursor.direction && (
+                                            <div className="fixed z-50 pointer-events-none" style={{ left: cursor.x, top: cursor.y, transform: "translate(-50%, -50%)" }}>
+                                                <div className="w-7 h-7 rounded-[3px] backdrop-blur-md border border-(--border-strong) bg-secondary flex items-center justify-center transition-all duration-200">
+                                                    {cursor.direction === "left" ? <FaArrowLeftLong className="text-xl" style={{ color: activeVariant?.color?.hex || "#000" }} /> : <FaArrowRightLong className="text-xl" style={{ color: activeVariant?.color?.hex || "#000" }} />}
+                                                </div>
+                                            </div>
+                                        )}
                                     </div>
-                                )}
+                                ))}
                             </div>
                         </div>
-                    </div>
+                    ) : (
+                        <MobileImageSlider
+                            images={images}
+                            activeColor={activeVariant?.color?.hex}
+                        />
+                    )}
+
 
                     {/* RIGHT: DETAILS */}
-                    <div className="lg:w-4xl w-full flex flex-col p-3 lg:py-7">
+                    <div
+                        className="
+                        
+                            lg:w-[40%]
+                            w-full
+                            lg:sticky
+                            lg:top-0
+                            h-fit
+                            self-start
+                            p-2
+                            "
+                    >
                         <div className="flex justify-between items-center">
                             <h1 className="text-sm md:text-lg font-bold text-(--earth-charcoal)">
                                 {product.productName.toUpperCase()}
@@ -292,7 +432,7 @@ export default function ProductPage() {
                         {/* COLORS */}
                         <div className="py-2 flex flex-col">
                             <h1 className="font-extrabold mb-1 text-foreground">Colors</h1>
-                            <div className="flex flex-row flex-nowrap items-center gap-2 w-full overflow-x-auto scrollbar-hide">
+                            <div className="flex flex-row flex-nowrap mx-1 items-center gap-2 w-full overflow-x-auto scrollbar-hide">
                                 {colorVariants.map((color) => {
                                     const isActive = selectedColor === color.slug;
 
@@ -315,8 +455,10 @@ export default function ProductPage() {
                                                     : undefined
                                             }
                                         >
-                                            <div className="w-18 h-31.5 flex flex-col justify-between items-center">
-                                                <Image src={color.image} className="rounded-[3px] object-cover h-full w-full" alt={color.name} width={70} height={70} />
+                                            <div className="flex flex-col justify-between items-center">
+                                                <div className="aspect-2/3 ">
+                                                    <Image src={color.image} className="rounded-[3px] object-cover aspect-2/3" alt={color.name} width={70} height={70} />
+                                                </div>
                                                 <span className="text-[10px] text-(--text-secondary)">
                                                     {color.name}
                                                 </span>
@@ -431,22 +573,6 @@ export default function ProductPage() {
                                 "
                             >
                                 ADD TO BAG
-                            </button>
-
-                            <button
-                                className="
-                                                cursor-pointer
-                                                w-full
-                                                rounded-[3px]
-                                                p-3
-                                                font-bold
-                                                transition-colors duration-200
-                                                hover:bg-(--accent)/90
-                                                text-accent-foreground
-                                                bg-(--earth-clay)
-                                            "
-                            >
-                                BUY NOW
                             </button>
                         </div>
 

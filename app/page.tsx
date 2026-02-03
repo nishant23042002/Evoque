@@ -83,7 +83,7 @@ export default function Home() {
 
 
   return (
-    <Container className="bg-(--linen-100)">
+    <Container className="bg-(--linen-50)">
       <div className="flex flex-col">
         {/* 🔥 Top Hero Banner Section */}
         {topBanners.length > 0 && (
