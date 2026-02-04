@@ -5,26 +5,41 @@ import ProductMasonryGrid from "@/components/Main/ProductMasonryGrid";
 import clsx from "clsx";
 import Image from "next/image";
 import Link from "next/link";
-import { Eye, EyeOff } from "lucide-react";
+import { Eye, EyeOff, Plus } from "lucide-react";
 import { usePathname, useSearchParams } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
 import axios from "axios";
 import { Category, SubCategory } from "@/types/ProductTypes";
 import Product from "@/types/ProductTypes";
 import { useQuery } from "@tanstack/react-query";
+import { useRouter } from "next/navigation";
+type SortOption = "newest" | "low-high" | "high-low";
 
 interface CategoryProductsResponse {
     category: Category;
     products: Product[];
 }
 
-export async function fetchCategoryWithProducts(slug: string, sub?: string) {
-    const { data } = await axios.get<{ category: Category; products: Product[] }>(
-        `/api/categories/${slug}`,
-        { params: sub ? { sub } : undefined }
-    );
+export async function fetchCategoryWithProducts(
+    slug: string,
+    sub?: string,
+    sort?: SortOption | null
+) {
+    const { data } = await axios.get(`/api/categories/${slug}`, {
+        params: {
+            ...(sub && { sub }),
+            ...(sort && { sort }),
+        },
+    });
+
     return data;
 }
+
+const SORT_OPTIONS: { label: string; value: SortOption }[] = [
+    { label: "Newest", value: "newest" },
+    { label: "Price: Low to High", value: "low-high" },
+    { label: "Price: High to Low", value: "high-low" },
+];
 
 
 const ProductCategoryPage = () => {
@@ -36,25 +51,33 @@ const ProductCategoryPage = () => {
     const categorySlug = pathname.split("/").pop() ?? "";
     const activeSub = searchParams.get("sub") || "";
     const showBannerToggle = !activeSub;
+    const [sortOpen, setSortOpen] = useState(false);
+    const sortValue = searchParams.get("sort") as SortOption | null;
+    const router = useRouter();
 
 
-    const [isBannerEnabled, setIsBannerEnabled] = useState(() => {
-        if (typeof window === "undefined" || !categorySlug) return true;
-        const saved = localStorage.getItem(`categoryBannerVisible:${categorySlug}`);
+    const [isBannerEnabled, setIsBannerEnabled] = useState<boolean>(() => {
+        if (typeof window === "undefined") return true;
+
+        const saved = localStorage.getItem(
+            `categoryBannerVisible:${categorySlug}`
+        );
+
         return saved !== null ? saved === "true" : true;
     });
     const [animateBanner, setAnimateBanner] = useState(false);
 
     useEffect(() => {
-        const timeout = setTimeout(() => setAnimateBanner(true), 1500); // small delay to trigger transition
+        const timeout = setTimeout(() => setAnimateBanner(true), 1500);
         return () => clearTimeout(timeout);
     }, []);
 
 
     /* ---------- FETCH DATA ---------- */
     const { data, isLoading } = useQuery<CategoryProductsResponse>({
-        queryKey: ["categoryProducts", categorySlug, activeSub],
-        queryFn: () => fetchCategoryWithProducts(categorySlug, activeSub),
+        queryKey: ["categoryProducts", categorySlug, activeSub, sortValue],
+        queryFn: () =>
+            fetchCategoryWithProducts(categorySlug, activeSub, sortValue),
         enabled: !!categorySlug,
         staleTime: 1000 * 60 * 5,
     });
@@ -63,7 +86,6 @@ const ProductCategoryPage = () => {
     const subCategories = (data?.category?.subCategories ?? []).filter((s: SubCategory) => s.isActive);
     const products = data?.products ?? [];
 
-    const isBannerVisible = Boolean(bannerImage && !activeSub && isBannerEnabled);
 
     useEffect(() => {
         const timeout = setTimeout(() => setAnimatePage(true), 50); // delay to trigger transition
@@ -71,16 +93,31 @@ const ProductCategoryPage = () => {
     }, []);
 
     /* ---------- LOCAL STORAGE PERSISTENCE ---------- */
-    useEffect(() => {
-        if (!categorySlug) return;
-        const saved = localStorage.getItem(`categoryBannerVisible:${categorySlug}`);
-        setIsBannerEnabled(saved !== null ? saved === "true" : true);
-    }, [categorySlug]);
+    const toggleBanner = () => {
+        setIsBannerEnabled(prev => {
+            const next = !prev;
 
-    useEffect(() => {
-        if (!categorySlug) return;
-        localStorage.setItem(`categoryBannerVisible:${categorySlug}`, String(isBannerEnabled));
-    }, [isBannerEnabled, categorySlug]);
+            if (typeof window !== "undefined") {
+                localStorage.setItem(
+                    `categoryBannerVisible:${categorySlug}`,
+                    String(next)
+                );
+            }
+
+            return next;
+        });
+    };
+
+
+    const handleSortChange = (value: SortOption) => {
+        const params = new URLSearchParams(searchParams.toString());
+        params.set("sort", value);
+
+        router.replace(`?${params.toString()}`);
+        setSortOpen(false);
+    };
+
+
 
     if (isLoading) return (
         <div className="min-h-screen flex justify-center items-center">
@@ -97,9 +134,9 @@ const ProductCategoryPage = () => {
                     "relative overflow-hidden transition-all duration-500 ease-[cubic-bezier(0.22,1,0.36,1)]",
                     isBannerEnabled ? "opacity-100 translate-y-0" : "opacity-0"
                 )}
-                
+
             >
-                {isBannerVisible && (
+                {isBannerEnabled && animateBanner && (
                     <div
                         ref={bannerRef}
                         className="relative aspect-16/8 md:aspect-21/7 overflow-hidden"
@@ -143,7 +180,7 @@ const ProductCategoryPage = () => {
                             <button
                                 role="switch"
                                 aria-checked={isBannerEnabled}
-                                onClick={() => setIsBannerEnabled(prev => !prev)}
+                                onClick={toggleBanner}
                                 className={clsx(
                                     "cursor-pointer border-(--border-strong) relative inline-flex h-4 w-6 items-center justify-center rounded-[3px] border transition-all",
                                     isBannerEnabled
@@ -195,10 +232,67 @@ const ProductCategoryPage = () => {
             {/* ---------------- PRODUCTS ---------------- */}
             <div
                 className={clsx(
-                    "py-2 transition-all duration-700 ease-out",
+                    "transition-all duration-700 ease-out",
                     animatePage ? "opacity-100 translate-y-0" : "opacity-0 translate-y-10"
                 )}
             >
+                <div className="relative select-none flex justify-between pt-4 pb-2 px-4 mx-1 sm:mx-2">
+                    <div onClick={() => setSortOpen((prev) => !prev)} className="flex cursor-pointer items-center justify-center gap-2">
+                        <div className="font-medium hover:text-black/70 duration-300 tracking-wider uppercase text-sm">
+                            Sort
+                        </div>
+
+                        <div
+                            className="cursor-pointer hover:rotate-90 transition duration-300"
+                        >
+                            <Plus size={18} />
+                        </div>
+
+                        {sortOpen && (
+                            <div
+                                className="
+                                    absolute top-12 left-4 z-40
+                                    w-56 h-35
+                                    bg-white
+                                    border border-neutral-300
+                                    shadow-xl
+                                    p-4
+                                    animate-in fade-in zoom-in-95 duration-150
+                                    "
+                            >
+                                <div className="flex flex-col justify-center gap-3 text-sm">
+                                    {SORT_OPTIONS.map((item) => (
+                                        <label
+                                            key={item.value}
+                                            className="flex items-center justify-between cursor-pointer select-none"
+                                            onClick={() => handleSortChange(item.value)}
+                                        >
+                                            <span className="text-lg">{item.label}</span>
+
+                                            <input
+                                                type="radio"
+                                                checked={sortValue === item.value}
+                                                readOnly
+                                                className="w-4 h-4 accent-black pointer-events-none"
+                                            />
+                                        </label>
+                                    ))}
+                                </div>
+
+                            </div>
+                        )}
+                    </div>
+                    <div className="flex cursor-pointer justify-center items-center gap-2">
+                        <div className="font-medium hover:text-black/70 duration-300 tracking-wider uppercase text-sm">
+                            FILTERS
+                        </div>
+                        <div>
+                            <svg role="img" aria-hidden="true" focusable="false" viewBox="0 0 16 16" xmlns="http://www.w3.org/2000/svg" height="16" width="16"><path d="M9 2.25h4v4H9zM3 9.75h4v4H3z"></path><path d="M16 11v1.5H0V11zM16 3.5V5H0V3.5z"></path></svg>
+                        </div>
+                    </div>
+                </div>
+
+
                 {products.length === 0 ? (
                     <div className="flex w-full items-center justify-center h-[40vh] text-sm font-semibold text-(--text-muted)">
                         Nothing Dropped Here Yet...

@@ -2,21 +2,23 @@
 import Container from "@/components/Container";
 import Image from "next/image";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
-import { useEffect, useMemo, useState } from "react";
-import EvoqueLogoLoader from "@/components/FlashLogo/LayerLogo";
+import { useState } from "react";
 import { Heart } from "lucide-react";
-import { useParams, useSearchParams, useRouter } from "next/navigation";
+import { useParams, useRouter } from "next/navigation";
 import { FaArrowLeftLong, FaArrowRightLong } from "react-icons/fa6";
 import { useAppDispatch, useAppSelector } from "@/store/hooks";
 import { RootState } from "@/store";
 import { addWishlistItem, removeWishlistItem } from "@/store/wishlist/wishlist.thunks"
-import { sizeScaleMap } from "@/constants/productSizes";
 import Product from "@/types/ProductTypes";
 import { SizeVariant } from "@/types/ProductTypes";
 import { addCartItem } from "@/store/cart/cart.thunks";
 import SizeChartModal from "@/components/SizeChartModal";
 import { useRef } from "react";
 import { useMediaQuery } from "@/src/useMediaQuery";
+import ProductHorizontalScroller from "@/components/Main/ProductHorizontalScroller";
+import { useProductPageData } from "@/src/useProductPageData";
+import LayerLogo from "@/components/FlashLogo/LayerLogo";
+import { useProductVariants } from "@/src/useProductVariants";
 
 function MobileImageSlider({
     images,
@@ -107,91 +109,45 @@ export default function ProductPage() {
     const params = useParams<{ slug: string }>();
     const slug = params.slug;
     const router = useRouter();
-    const searchParams = useSearchParams();
-    const colorFromUrl = searchParams.get("color");
-    const [sizeError, setSizeError] = useState(false);
-    const [openSizeChart, setOpenSizeChart] = useState(false);
     const imageRefs = useRef<(HTMLDivElement | null)[]>([]);
     const galleryRef = useRef<HTMLDivElement | null>(null);
     const isDesktop = useMediaQuery("(min-width: 1024px)");
 
-    const [product, setProduct] = useState<Product | null>(null);
-    const [loading, setLoading] = useState(true);
+    // UI state
+    const [openSizeChart, setOpenSizeChart] = useState(false);
+    const [sizeError, setSizeError] = useState(false);
+
+    // Selection state
     const [selectedColor, setSelectedColor] = useState<string | null>(null);
     const [selectedSize, setSelectedSize] = useState<SizeVariant | null>(null);
+
+    // Gallery state
     const [activeImageIndex, setActiveImageIndex] = useState(0);
-    const [cursor, setCursor] = useState<{ x: number; y: number; direction: "left" | "right" | null }>({ x: 0, y: 0, direction: null });
+    const [cursor, setCursor] = useState<{
+        x: number;
+        y: number;
+        direction: "left" | "right" | null;
+    }>({ x: 0, y: 0, direction: null });
+
     const dispatch = useAppDispatch();
+
+    const {
+        product,
+        recommendations,
+        sameCategory,
+        loading
+    } = useProductPageData(slug);
+    const {
+        activeVariant,
+        images,
+        colorVariants,
+        sizes
+    } = useProductVariants(product, selectedColor);
 
     const selectWishlistIds = (state: RootState) =>
         new Set(state.wishlist.items.map(i => i.productId));
     const wishlistIds = useAppSelector(selectWishlistIds);
     const isWishlisted = product && wishlistIds.has(product._id);
-    /* ---------------- FETCH PRODUCT ---------------- */
-    useEffect(() => {
-        let timer: NodeJS.Timeout;
-        const fetchData = async () => {
-            try {
-                const res = await fetch(`/api/products/${slug}`);
-                if (!res.ok) throw new Error("Product not found");
-                const productData = await res.json();
-                setProduct(productData);
-            } catch (err) {
-                console.error(err);
-            } finally {
-                timer = setTimeout(() => setLoading(false), 800);
-            }
-        };
-        fetchData();
-        return () => clearTimeout(timer);
-    }, [slug]);
-
-    /* ---------------- COLOR & SIZE SELECTION ---------------- */
-    useEffect(() => {
-        if (!product) return;
-        const validColor = product.variants.find(v => v.color.slug === colorFromUrl);
-        setSelectedColor(validColor?.color.slug || product.variants[0].color.slug);
-    }, [product, colorFromUrl]);
-
-    useEffect(() => setActiveImageIndex(0), [selectedColor]);
-    useEffect(() => setSelectedSize(null), [selectedColor]);
-    useEffect(() => {
-        if (selectedSize) setSizeError(false);
-    }, [selectedSize]);
-
-    /* ---------------- DERIVED DATA ---------------- */
-    const activeVariant = useMemo(() => product?.variants.find(v => v.color.slug === selectedColor) ?? product?.variants[0], [product, selectedColor]);
-    const images = activeVariant?.color.images.map(img => img.url) ?? [];
-    const colorVariants = useMemo(() => product?.variants.map(v => ({
-        slug: v.color.slug,
-        name: v.color.name,
-        image: v.color.images.find(img => img.isPrimary)?.url || v.color.images[0]?.url,
-    })) ?? [], [product]);
-
-    const sizes = useMemo(() => {
-        if (!product || !activeVariant) return [];
-
-        // 🔑 size scale comes from CATEGORY
-        const sizeType = product.category.sizeType.type;
-        const scale = sizeScaleMap[sizeType] || [];
-
-        // 🔑 actual sellable sizes come from VARIANT
-        const variantMap = new Map(
-            activeVariant.sizes.map(s => [s.size, s])
-        );
-
-        return scale.map(size => {
-            const variant = variantMap.get(size);
-
-            return {
-                size,
-                variant,                 // undefined if not exists
-                exists: !!variant,
-                inStock: variant ? variant.stock > 0 : false,
-                isAvailable: variant ? variant.isAvailable : false,
-            };
-        });
-    }, [product, activeVariant]);
 
 
     const cartImage =
@@ -217,7 +173,6 @@ export default function ProductPage() {
 
 
 
-
     /* ---------------- IMAGE ARROWS ---------------- */
     const handlePrevImage = () => {
         const newIndex = activeImageIndex === 0 ? images.length - 1 : activeImageIndex - 1;
@@ -235,10 +190,61 @@ export default function ProductPage() {
     const handleMouseLeave = () => setCursor(prev => ({ ...prev, direction: null }));
     const handleClick = () => { if (cursor.direction === "left") handlePrevImage(); else handleNextImage(); };
 
+
+
+    const handleAddToCart = () => {
+        if (!selectedSize) {
+            setSizeError(true);
+            setTimeout(() => setSizeError(false), 2000);
+            return;
+        }
+
+        dispatch(
+            addCartItem({
+                productId: product!._id,
+                name: product!.productName,
+                slug: product!.slug,
+                image: cartImage,
+                price: product!.pricing.price,
+                originalPrice: product!.pricing.originalPrice ?? 0,
+                quantity: 1,
+                size: selectedSize.size,
+                variantSku: selectedSize.variantSku,
+                brand: product!.brand,
+                color: {
+                    name: activeVariant!.color.name,
+                    slug: activeVariant!.color.slug,
+                },
+            })
+        );
+    };
+    const handleWishlistToggle = () => {
+        if (!product) return;
+
+        if (isWishlisted) {
+            dispatch(removeWishlistItem(product._id));
+        } else {
+            dispatch(
+                addWishlistItem({
+                    productId: product._id,
+                    product,
+                    slug: product.slug,
+                    name: product.productName,
+                    image: cartImage,
+                    price: product.pricing?.price ?? 0,
+                    originalPrice: product.pricing?.originalPrice ?? 0,
+                    brand: product.brand,
+                })
+            );
+        }
+    };
+
+
+
     if (loading)
         return (
             <div className="flex items-center justify-center h-[70vh] bg-background">
-                <EvoqueLogoLoader />
+                <LayerLogo />
             </div>
         );
 
@@ -248,9 +254,12 @@ export default function ProductPage() {
                 Fresh styles coming your way
             </p>
         );
+
+
+
     return (
         <Container>
-            <div className="relative w-full mx-auto min-h-screen lg:h-screen">
+            <div className="relative w-full mx-auto mb-30 min-h-screen lg:h-screen">
                 <div
                     className="
                         flex
@@ -278,41 +287,33 @@ export default function ProductPage() {
                                 "
                         >
                             {/* THUMBNAILS */}
-                            <div className="fixed z-30 left-0 lg:left-2 flex flex-col gap-2">
-                                {images.map((img, i) => {
-                                    const isActive = activeImageIndex === i;
+                            <div className="absolute left-2 top-0 h-full z-30 pointer-events-none">
+                                <div className="sticky top-2 flex flex-col gap-2 w-22.5 pointer-events-auto">
+                                    {images.map((img, i) => {
+                                        const isActive = activeImageIndex === i;
 
-                                    return (
-                                        <button
-                                            key={i}
-                                            onClick={() => scrollToImage(i)}
-                                            className={`cursor-pointer
-                                                            relative w-22 h-28 border transition-all duration-200
-                                                            ${isActive ? "" : "border-border hover:border-(--border-strong)"}
-                                                            `}
-                                            style={
-                                                isActive
-                                                    ? {
-                                                        borderColor:
-                                                            activeVariant?.color?.hex || "#000000",
-                                                        borderWidth: "2px",
-                                                    }
-                                                    : undefined
-                                            }
-                                        >
-                                            <Image
-                                                src={img}
-                                                alt={product.productName}
-                                                fill
-                                                sizes="(max-width: 640px) 100vw,
-                                                            (max-width: 1024px) 50vw,
-                                                            33vw"
-                                                className="object-cover w-auto h-auto"
-                                            />
-                                        </button>
-                                    );
-                                })}
+                                        return (
+                                            <button
+                                                key={i}
+                                                onClick={() => scrollToImage(i)}
+                                                className={`relative w-22 h-28 border transition-all duration-200
+                                                    ${isActive ? "" : "border-border hover:border-(--border-strong)"}`}
+                                                style={
+                                                    isActive
+                                                        ? {
+                                                            borderColor: activeVariant?.color?.hex || "#000",
+                                                            borderWidth: "2px",
+                                                        }
+                                                        : undefined
+                                                }
+                                            >
+                                                <Image src={img} alt={product.productName} fill className="object-cover" />
+                                            </button>
+                                        );
+                                    })}
+                                </div>
                             </div>
+
                             <div className="flex flex-col gap-4">
                                 {images.map((img, i) => (
                                     <div key={i} ref={(el) => {
@@ -366,29 +367,7 @@ export default function ProductPage() {
                             </h1>
 
                             <button
-                                onClick={(e) => {
-                                    e.stopPropagation();
-                                    if (!product) return;
-
-                                    if (isWishlisted) {
-                                        dispatch(removeWishlistItem(product._id));
-                                    } else {
-                                        dispatch(
-                                            addWishlistItem({
-                                                productId: product._id,
-                                                product: product,
-                                                slug: product.slug,
-                                                name: product.productName,
-                                                image: cartImage,
-                                                price: product.pricing?.price ?? 0,
-                                                originalPrice: product.pricing?.originalPrice ?? 0,
-                                                brand: product.brand,
-                                            })
-                                        );
-                                    }
-
-
-                                }}
+                                onClick={handleWishlistToggle}
                                 className="p-1.5 border border-(--border-light) cursor-pointer rounded-full bg-(--surface) shadow"
                             >
                                 <Heart
@@ -406,11 +385,7 @@ export default function ProductPage() {
                                             }
                                     }
                                 />
-
                             </button>
-
-
-
                         </div>
 
                         <div className="flex gap-3 items-center justify-between">
@@ -435,7 +410,6 @@ export default function ProductPage() {
                             <div className="flex flex-row flex-nowrap mx-1 items-center gap-2 w-full overflow-x-auto scrollbar-hide">
                                 {colorVariants.map((color) => {
                                     const isActive = selectedColor === color.slug;
-
                                     return (
                                         <button
                                             key={color.slug}
@@ -474,7 +448,7 @@ export default function ProductPage() {
                         <div className="py-2">
                             <div className="flex justify-between">
                                 <h3 className="font-bold mb-1 text-foreground">
-                                    {product.category.slug === "jeans" ? "Choose Waist" : "Select Size"}
+                                    Select Size
                                 </h3>
                                 <h1
                                     onClick={() => setOpenSizeChart(true)}
@@ -530,36 +504,7 @@ export default function ProductPage() {
                         )}
                         {/* ADD TO CART */}
                         <div className="flex justify-between gap-2 text-sm w-full my-4">
-                            <button onClick={(e) => {
-                                e.preventDefault();
-                                e.stopPropagation();
-                                console.log("Item added to cart");
-                                console.log(`ProductId: ${product._id}`);
-                                if (!selectedSize) {
-                                    setSizeError(true);
-
-                                    // auto-hide error after 2s (nice UX)
-                                    setTimeout(() => setSizeError(false), 2000);
-                                    return;
-                                }
-
-                                dispatch(addCartItem({
-                                    productId: product._id,
-                                    name: product.productName,
-                                    slug: product.slug,
-                                    image: cartImage,
-                                    price: product.pricing.price,
-                                    originalPrice: product.pricing.originalPrice ?? 0,
-                                    quantity: 1,
-                                    size: selectedSize.size,
-                                    variantSku: selectedSize.variantSku,
-                                    brand: product.brand,
-                                    color: {
-                                        name: activeVariant!.color.name,
-                                        slug: activeVariant!.color.slug,
-                                    },
-                                }));
-                            }}
+                            <button onClick={handleAddToCart}
                                 className="
                                     cursor-pointer
                                     w-full
@@ -578,7 +523,7 @@ export default function ProductPage() {
 
 
                         {/* ACCORDION */}
-                        <div className="max-h-75 overflow-y-auto scrollbar-hide my-4">
+                        <div className="max-h-95 overflow-y-auto scrollbar-hide my-4">
                             <Accordion
                                 type="single"
                                 collapsible
@@ -669,6 +614,7 @@ export default function ProductPage() {
                                 </AccordionItem>
                             </Accordion>
                         </div>
+
                     </div>
                 </div>
                 {product?.category?.sizeType && (
@@ -681,6 +627,20 @@ export default function ProductPage() {
                     />
                 )}
 
+            </div>
+            <div className="text-xl mx-2 mb-30">
+                {recommendations.length > 0 && (
+                    <ProductHorizontalScroller
+                        title="STYLE WITH"
+                        products={recommendations}
+                    />
+                )}
+                {sameCategory.length > 0 && (
+                    <ProductHorizontalScroller
+                        title="SIMILAR ITEMS"
+                        products={sameCategory}
+                    />
+                )}
             </div>
         </Container>
     );

@@ -57,9 +57,9 @@ export interface Category {
     slug: string;
     image: string;
     sizeType: {
-        type: string;  
-        label: string;     
-        chartImage: string; 
+        type: string;
+        label: string;
+        chartImage: string;
     };
     categoryPageBanner?: string;
     isTrending: boolean;
@@ -88,6 +88,10 @@ export default interface Product {
     subCategory: { name: string, slug: string };
     fit?: string;
     variants: Variant[];
+    styleTags?: string[];
+    stylePairs?: Product[];
+    relatedProducts?: Product[];
+
     pricing: {
         price: number;
         originalPrice?: number;
@@ -139,6 +143,7 @@ export default interface Product {
     isBestSeller?: boolean,
     isNewArrival?: boolean,
     launchDate?: string,
+    createdAt: string
 }
 
 export interface BannerImage {

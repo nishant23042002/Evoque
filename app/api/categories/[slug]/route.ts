@@ -4,7 +4,7 @@ import Category from "@/models/Category";
 import Product from "@/models/Product";
 import mongoose from "mongoose";
 
-
+type SortOption = "newest" | "low-high" | "high-low";
 
 export async function GET(
     request: Request,
@@ -16,6 +16,7 @@ export async function GET(
 
         const { searchParams } = new URL(request.url);
         const sub = searchParams.get("sub");
+        const sort = searchParams.get("sort") as SortOption | null;
 
         if (!slug) {
             return NextResponse.json(
@@ -52,8 +53,15 @@ export async function GET(
             productQuery["subCategory.slug"] = sub;
         }
 
+        /* ---------------- SORT MAP ---------------- */
+        const sortMap: Record<SortOption, Record<string, 1 | -1>> = {
+            newest: { createdAt: -1 },
+            "low-high": { "pricing.price": 1 },
+            "high-low": { "pricing.price": -1 },
+        };
+        const sortQuery = sort ? sortMap[sort] : sortMap["newest"];
         const products = await Product.find(productQuery)
-            .sort({ createdAt: -1 })
+            .sort(sortQuery)
             .lean();
 
         return NextResponse.json(

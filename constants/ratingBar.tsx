@@ -29,7 +29,7 @@ export default function RatingBar({
   const emptyStars = max - fullStars - (hasHalfStar ? 1 : 0);
 
   return (
-    <div className="mt-2 space-y-2">
+    <div className="mt-0.5">
       {/* STAR ROW */}
       <div className="flex items-center gap-1">
         {/* FULL STARS */}
@@ -43,7 +43,7 @@ export default function RatingBar({
 
         {/* HALF STAR */}
         {hasHalfStar && (
-          <div className="relative w-3.5 h-3.5">
+          <div className="relative mb-1 w-3.5 h-3.5">
             <Star
               size={14}
               className="absolute inset-0 fill-(--linen-300) stroke-primary"
@@ -86,7 +86,7 @@ export default function RatingBar({
       </div>
 
       {/* LABEL */}
-      <p className="text-[8px] tracking-wide font-medium uppercase text-secondary">
+      <p className="text-[8px] mt-1 tracking-wide font-medium uppercase text-secondary">
         Customer Rating
       </p>
     </div>

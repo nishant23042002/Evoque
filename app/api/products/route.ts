@@ -87,6 +87,9 @@ type ProductPOSTBody = {
         rise?: string;
         closure?: string;
     };
+    styleTags?: string[];
+    stylePairs?: string[]; // ObjectId strings
+
     attributes?: {
         sleeve?: string;
         pattern?: string;
@@ -233,6 +236,8 @@ export async function POST(req: Request) {
             attributes,
             thumbnail,
             description,
+            styleTags,
+            stylePairs,
             fit,
             sizeChart,
             details,
@@ -371,6 +376,8 @@ export async function POST(req: Request) {
             },
             fit,
             attributes,
+            styleTags,
+            stylePairs: stylePairs?.map(id => new mongoose.Types.ObjectId(id)),
             variants: uploadedVariants,
             pricing,
             thumbnail,

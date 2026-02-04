@@ -1,6 +1,6 @@
 import { useQuery } from "@tanstack/react-query";
 import axios from "axios";
-import { Product } from "@/types/ProductTypes";
+import Product from "@/types/ProductTypes";
 
 interface ProductsResponse {
     products: Product[];

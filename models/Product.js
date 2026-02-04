@@ -173,6 +173,25 @@ const productSchema = new mongoose.Schema(
             default: [],
         },
 
+        /* -------- STYLING INTELLIGENCE -------- */
+        styleTags: {
+            type: [String],
+            index: true
+        },
+
+        stylePairs: [{
+            type: mongoose.Schema.Types.ObjectId,
+            ref: "Category"
+        }],
+
+        relatedProducts: [{
+            type: mongoose.Schema.Types.ObjectId,
+            ref: "Product"
+        }],
+
+        lookIds: [String],
+
+
 
         merchandising: {
             priority: { type: Number, default: 0 },
@@ -259,6 +278,8 @@ productSchema.pre("save", function () {
     }
 });
 
+productSchema.index({ styleTags: 1 });
+productSchema.index({ stylePairs: 1 });
 
 productSchema.virtual("primaryImage").get(function () {
     const img =

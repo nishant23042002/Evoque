@@ -3,17 +3,16 @@
 import { Heart } from "lucide-react";
 import dynamic from "next/dynamic";
 import Image from "next/image";
-import { TbMenu } from "react-icons/tb";
-import { FaAnglesDown } from "react-icons/fa6";
-import { useMemo, useRef, useState } from "react";
+import { useMemo } from "react";
 import RatingBar from "@/constants/ratingBar";
 import Link from "next/link";
 import { useAppDispatch, useAppSelector } from "@/store/hooks";
 import { selectWishlistIds } from "@/store/wishlist/wishlist.selector";
 import { addWishlistItem, removeWishlistItem } from "@/store/wishlist/wishlist.thunks";
 import { useAuth } from "../AuthProvider";
-import { Variant } from "@/types/ProductTypes"
 import Product from "@/types/ProductTypes";
+import { useProductHoverImage } from "@/src/useProductHoverImage";
+import { getPrimaryImageFromVariant, getSecondaryImageFromVariant } from "@/lib/productImage";
 const Masonry = dynamic(() => import("react-masonry-css"), { ssr: false });
 
 
@@ -26,21 +25,6 @@ interface ProductMasonryGridProps {
     fullWidth?: boolean;
 }
 
-function getPrimaryVariantImage(variant: Variant): string {
-    return (
-        variant.color.images.find(img => img.isPrimary)?.url ||
-        variant.color.images[0]?.url ||
-        ""
-    );
-}
-
-function getSecondaryVariantImage(variant: Variant): string {
-    return (
-        variant.color.images.find(img => !img.isPrimary)?.url ||
-        variant.color.images[1]?.url ||
-        ""
-    );
-}
 
 
 /* =======================
@@ -52,12 +36,15 @@ export default function ProductMasonryGrid({
     showHeading = true,
     fullWidth = true,
 }: ProductMasonryGridProps) {
-    const [activeIndex, setActiveIndex] = useState<number | null>(null);
-    const [hoverVariants, setHoverVariants] = useState<Record<string, Variant>>({});
-    const [hoveredCard, setHoveredCard] = useState<string | null>(null);
+    const {
+        hoveredCard,
+        hoverVariants,
+        transitioning,
+        onCardEnter,
+        onCardLeave,
+        onVariantHover,
+    } = useProductHoverImage();
 
-    const [transitioningProduct, setTransitioningProduct] = useState<string | null>(null);
-    const hoverTimeoutRef = useRef<Record<string, NodeJS.Timeout | null>>({});
     const { isAuthenticated, loading, openLogin } = useAuth();
     const wishlistIds = useAppSelector(selectWishlistIds);
     const dispatch = useAppDispatch();
@@ -65,7 +52,7 @@ export default function ProductMasonryGrid({
     /* -------------------------
        MASONRY BREAKPOINTS
     ------------------------- */
-    const breakpoints = { default: 5, 1300: 4, 1000: 3, 700: 2, 400: 1 };
+    const breakpoints = { default: 5, 1600: 4, 1200: 3, 750: 2, 400: 1 };
 
     /* -------------------------
        DYNAMIC HEIGHTS
@@ -86,30 +73,9 @@ export default function ProductMasonryGrid({
         });
     }, [products]);
 
-    const handleVariantHover = (productId: string, variant?: Variant) => {
-        // clear previous timer
-        if (hoverTimeoutRef.current[productId]) {
-            clearTimeout(hoverTimeoutRef.current[productId]!);
-        }
-
-        setTransitioningProduct(productId);
-
-        hoverTimeoutRef.current[productId] = setTimeout(() => {
-            setHoverVariants((prev) => {
-                if (!variant) {
-                    const { [productId]: _, ...rest } = prev;
-                    return rest;
-                }
-                return { ...prev, [productId]: variant };
-            });
-
-            setTransitioningProduct(null);
-        }, 120); // smaller delay = snappier UI
-    };
-
 
     return (
-        <div className={`my-2 ${fullWidth ? "px-2 mx-auto" : "w-full"}`}>
+        <div className={`my-2 ${fullWidth ? "px-1 sm:px-2 mx-auto" : "w-full"}`}>
             {showHeading && (
                 <h2 className="text-center py-3 text-md tracking-widest font-semibold font-poppins text-foreground">
                     Everything You Need
@@ -118,37 +84,36 @@ export default function ProductMasonryGrid({
 
             <Masonry
                 breakpointCols={breakpoints}
-                className={`flex gap-2 ${!fullWidth ? "mx-2" : "mx-0"}`}
+                className={`flex gap-1 sm:gap-2 ${!fullWidth ? "mx-1 sm:mx-2" : "mx-0"}`}
                 columnClassName="masonry-column"
             >
                 {products.map((item, index) => {
-                    const isOpen = activeIndex === index;
                     const variant = hoverVariants[item._id] ?? item.variants[0];
+                    const primary = getPrimaryImageFromVariant(variant);
+                    const secondary = getSecondaryImageFromVariant(variant);
                     const isWishlisted = wishlistIds.has(item._id);
-                    const imageUrl = getPrimaryVariantImage(variant);
-                    const secondaryImage = getSecondaryVariantImage(variant);
                     const isColorHovering = !!hoverVariants[item._id];
 
                     return (
                         <div key={item._id}>
                             <div
-                                onMouseEnter={() => setHoveredCard(item._id)}
-                                onMouseLeave={() => setHoveredCard(null)}
-                                className="border border-(--border-light) relative mb-2 drop-shadow-xs fade-in-75 transition-all duration-300 rounded-[2px] overflow-hidden group cursor-pointer bg-(--card-bg)"
+                                onMouseEnter={() => onCardEnter(item._id)}
+                                onMouseLeave={() => onCardLeave(item._id)}
+                                className="border border-(--border-light) relative mb-1 sm:mb-2 drop-shadow-xs fade-in-75 transition-all duration-300 rounded-[2px] overflow-hidden group cursor-pointer bg-(--card-bg)"
                                 style={{ height: heights[index] }}
                             >
                                 {/* IMAGE */}
                                 <div
-                                    className={`absolute inset-0 transition-opacity duration-300 ${transitioningProduct === item._id ? "opacity-0" : "opacity-100"
+                                    className={`absolute inset-0 transition-opacity duration-300 ${transitioning === item._id ? "opacity-0" : "opacity-100"
                                         }`}
                                 >
                                     {/* PRIMARY IMAGE — ALWAYS */}
                                     <Image
-                                        src={imageUrl}
+                                        src={primary}
                                         alt={item.productName}
                                         fill
                                         sizes="(max-width: 400px) 100vw, (max-width: 700px) 50vw, (max-width: 1000px) 33vw, (max-width: 1300px) 25vw, 20vw"
-                                        className={`object-cover duration-500 object-center transition-opacity ${hoveredCard === item._id && secondaryImage && !isColorHovering
+                                        className={`object-cover duration-500 object-center transition-opacity ${hoveredCard === item._id && secondary && !isColorHovering
                                             ? "opacity-0"
                                             : "opacity-100"
                                             }`}
@@ -156,17 +121,14 @@ export default function ProductMasonryGrid({
                                     />
 
                                     {/* SECONDARY IMAGE — ONLY ON CARD HOVER */}
-                                    {secondaryImage &&
-                                        hoveredCard === item._id &&
-                                        !isColorHovering && (
-                                            <Image
-                                                src={secondaryImage}
-                                                alt={`${item.productName} secondary`}
-                                                fill
-                                                sizes="(max-width: 400px) 100vw, (max-width: 700px) 50vw, (max-width: 1000px) 33vw, (max-width: 1300px) 25vw, 20vw"
-                                                className="object-cover object-center  opacity-100 transition-opacity duration-300"
-                                            />
-                                        )}
+                                    {secondary && hoveredCard === item._id && !isColorHovering && (
+                                        <Image
+                                            src={secondary}
+                                            alt="secondary"
+                                            fill
+                                            className="object-cover"
+                                        />
+                                    )}
                                 </div>
 
 
@@ -183,8 +145,8 @@ export default function ProductMasonryGrid({
                                                     : "border-(--border-light)"
                                                     }`}
                                                 style={{ backgroundColor: v.color.hex }}
-                                                onMouseEnter={() => handleVariantHover(item._id, v)}
-                                                onMouseLeave={() => handleVariantHover(item._id, undefined)}
+                                                onMouseEnter={() => onVariantHover(item._id, v)}
+                                                onMouseLeave={() => onVariantHover(item._id, undefined)}
                                             />
                                         ))}
                                     </div>
@@ -204,7 +166,7 @@ export default function ProductMasonryGrid({
                                                         product: item,
                                                         slug: item.slug,
                                                         name: item.productName,
-                                                        image: imageUrl,
+                                                        image: primary,
                                                         price: item.pricing?.price ?? 0,
                                                         originalPrice: item.pricing?.originalPrice ?? 0,
                                                         brand: item.brand,
@@ -224,44 +186,19 @@ export default function ProductMasonryGrid({
                                     </button>
                                 </div>
 
-                                {/* MOBILE TOGGLE */}
-                                <button
-                                    onClick={(e) => {
-                                        e.stopPropagation();
-                                        setActiveIndex(isOpen ? null : index);
-                                    }}
-                                    className="md:hidden absolute bottom-0 w-full z-20 bg-(--earth-charcoal)/30 p-1 flex justify-center"
-                                >
-                                    {isOpen ? <FaAnglesDown className="text-white" /> : <TbMenu className="text-white" />}
-                                </button>
 
                                 {/* DETAILS */}
-                                <div
-                                    className={`absolute inset-0 max-md:bottom-6 flex flex-col justify-end text-white transition-transform duration-300 ease-out md:opacity-0 md:translate-y-0 md:group-hover:opacity-100 ${isOpen ? "opacity-100 translate-y-0" : "opacity-0 translate-y-6 pointer-events-none"
-                                        }`}
-                                >
-                                    <div className="bg-(--earth-charcoal)/40 backdrop-blur-xs px-2 py-3 text-xs text-(--text-inverse) will-change-transform">
-                                        <p className="font-semibold">{item.brand}</p>
-                                        <p className="my-1">{item.productName}</p>
-                                        <p className="font-bold text-sm">
-                                            ₹{variant.pricing?.price}
-                                            <span className="ml-2 text-xs font-extralight line-through text-(--linen-300)">
-                                                ₹{variant.pricing?.originalPrice}
-                                            </span>
-                                        </p>
-                                        <RatingBar value={item.rating ?? 0} />
+                                <div className="bg-black/30 py-2 absolute bottom-0 text-white flex flex-col justify-center w-full pointer-events-none">
+                                    <div className="mx-2">
+                                        <p className="text-xs sm:text-sm font-light">{item.brand}</p>
+                                        <p className="text-xs sm:text-sm font-medium">{item.productName}</p>
+                                        <div className="flex gap-3 items-center text-sm w-full">
+                                            <span className="font-medium">₹ {variant.pricing?.price}</span>
+                                            <span className="line-through text-xs font-extralight text-gray-300">₹{variant.pricing?.originalPrice}</span>
+                                        </div>
                                     </div>
                                 </div>
 
-                                {!isOpen && (
-                                    <div className="bg-black/30 py-1 absolute bottom-5.75 md:bottom-0 text-white flex flex-col justify-center items-center w-full transition-all duration-200 opacity-100 translate-y-0 md:group-hover:opacity-0 md:group-hover:translate-y-2 pointer-events-none">
-                                        <p className="text-xs sm:text-sm font-medium">{item.productName}</p>
-                                        <div className="flex gap-3 text-sm w-full justify-evenly z-999">
-                                            <span>₹{variant.pricing?.price}</span>
-                                            <span className="line-through font-extralight text-gray-300">₹{variant.pricing?.originalPrice}</span>
-                                        </div>
-                                    </div>
-                                )}
 
                                 <Link href={`/products/${item.slug}`} className="absolute inset-0 z-10" />
                             </div>
