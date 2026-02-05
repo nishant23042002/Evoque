@@ -75,42 +75,10 @@ export default function Wishlist() {
 
   const breakpoints = {
     default: 3,
-    1400: 2,
     1024: 4,
     950: 3,
-    700: 2,
-    350: 1,
+    640: 2,
   };
-
-  /* =======================
-     STABLE HEIGHTS (NO JITTER)
-  ======================= */
-  const heights = useMemo(() => {
-    if (!wishlistItems.length) return [];
-
-    const buckets =
-      typeof window !== "undefined" && window.innerWidth < 640
-        ? [280, 300, 320, 340]
-        : [350, 370, 390, 420, 450, 480, 510];
-
-    return wishlistItems.map((product) => {
-      const id = product?.productId;
-
-      // 🔒 SAFETY GUARD
-      if (!id) return buckets[0];
-
-      let seed = 0;
-      for (let i = 0; i < id.length; i++) {
-        seed = (seed << 5) - seed + id.charCodeAt(i);
-      }
-
-      const index = Math.abs(seed) % buckets.length;
-      const jitter = (Math.abs(seed) % 30) - 15;
-
-      return buckets[index] + jitter;
-    });
-  }, [wishlistItems]);
-
 
   /* =======================
      EMPTY STATE
@@ -184,7 +152,7 @@ export default function Wishlist() {
         />
       )}
 
-      <div className="w-full px-2 py-2 bg-(--linen-100) min-h-[95vh] overflow-hidden">
+      <div className="w-full px-1 sm:px-2 py-2 bg-(--linen-100) min-h-[95vh] overflow-hidden">
         <div className="w-full flex flex-col lg:flex-row gap-2">
           <div className="flex flex-col w-[70%] lg:sticky top-0 scrollbar-hide self-start h-fit">
 
@@ -200,35 +168,29 @@ export default function Wishlist() {
                 <div className="sticky top-20 border border-(--border-light)">
 
                   {/* IMAGE */}
-                  <div className="relative rounded-[3px] w-full h-135 overflow-hidden">
+                  <div className="relative rounded-[3px] aspect-3/4 overflow-hidden">
                     <Link href={`/products/${activeItem.slug}`}>
                       {activeItem.image ? (
                         <Image
                           src={activeItem.image}
                           alt={activeItem.name}
                           fill
-                          className="object-cover object-[50%_40%]"
+                          className="object-cover aspect-4/3"
                         />
                       ) : (
                         <div className="w-full h-full bg-(--surface-muted)" />
                       )}
                     </Link>
-
-
-                    {/* BRAND TAG */}
-                    <span className="absolute top-2 left-2 text-xs font-semibold text-foreground">
-                      {activeItem.brand}
-                    </span>
                   </div>
 
                   {/* DETAILS */}
-                  <div className="mt-3 py-3 mx-2">
-                    <h2 className="text-lg font-medium text-foreground">
-                      {activeItem.name}
-                    </h2>
-
-                    <div className="flex items-center gap-3 mt-1">
-                      <span className="text-lg font-semibold text-primary">
+                  <div className="mt-3">
+                    <div className="mx-1 mt-1">
+                      <h2 className="font-light text-xs">{activeItem.brand}</h2>
+                      <h2 className="text-lg font-medium text-foreground">
+                        {activeItem.name}
+                      </h2>
+                      <span className="text-lg mr-2 font-semibold text-primary">
                         ₹{activeItem.price}
                       </span>
 
@@ -248,14 +210,12 @@ export default function Wishlist() {
                     }}
                       className="border border-(--border-strong)
                             cursor-pointer mt-2 w-full
-                            hover:bg-(--btn-primary-bg)
-                            text-(--btn-primary-text)
+                            text-(--text-inverse)
                             font-semibold
-                            py-3
-                            rounded-[3px]                         
-                            bg-(--btn-primary-hover)
-                            transition-all duration-300
-                          ">
+                            py-1.5                       
+                            bg-(--earth-olive)
+                            transition-all duration-300                         
+                            ">
                       MOVE TO BAG
                     </button>
                   </div>
@@ -267,11 +227,11 @@ export default function Wishlist() {
 
 
           {/* RIGHT — MASONRY */}
-          <div className="w-full mb-12 lg:h-[90vh] lg:overflow-y-auto scrollbar-hide">
+          <div className="w-full mb-12 lg:h-[95vh] lg:overflow-y-auto scrollbar-hide">
             <Masonry
               breakpointCols={breakpoints}
-              className="flex gap-2 "
-              columnClassName="space-y-2"
+              className="flex gap-1 sm:gap-2"
+              columnClassName="space-y-1 sm:space-y-2"
             >
               {wishlistItems.map((item, index) => {
                 const isWishlisted = wishlistIds.has(item.productId);
@@ -284,9 +244,9 @@ export default function Wishlist() {
                     className="block cursor-pointer border border-(--border-light) rounded-[3px]"
                   >
                     <div
-                      className="group relative w-full rounded-[3px] overflow-hidden bg-(--surface-muted)"
-                      style={{ height: heights[index] ?? 350 }}
+                      className="group relative w-full aspect-4/6 rounded-[3px] overflow-hidden bg-(--surface-muted)"
                     >
+
                       {item.image && (
                         <Image
                           src={item.image}
@@ -300,11 +260,10 @@ export default function Wishlist() {
                       <div className="pointer-events-none absolute inset-0 bg-black/20 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
 
                       {/* TOP BAR */}
-                      <div className="absolute flex justify-between top-2 left-2 right-2">
-                        <h3 className="text-[11px] text-foreground font-semibold">
+                      <div className="flex justify-between left-1 absolute top-2 right-2">
+                        <h3 className="font-medium text-[12px]">
                           {item?.brand}
                         </h3>
-
                         <button
                           onClick={(e) => {
                             e.preventDefault();
@@ -324,18 +283,18 @@ export default function Wishlist() {
                       </div>
 
                       {/* BOTTOM INFO */}
-                      <div className="absolute bottom-0 w-full bg-(--earth-charcoal)/30 p-1.5 text-(--text-inverse)">
-                        <p className="text-sm mb-1">{item.name}</p>
-
-                        <div className="flex justify-between text-[11px]">
-                          <span className="text-md">Price: {item.price}</span>
-                          {item.originalPrice && (
-                            <span className="line-through text-muted/70 text-[12px]">
-                              {item.originalPrice}
-                            </span>
-                          )}
+                      <div className="absolute bottom-0 w-full h-20 bg-(--earth-charcoal)/30 text-(--text-inverse)">
+                        <div className="mx-1 py-1 flex flex-col text-xs max-[450px]:text-[11px]">
+                          <p className="text-sm w-full truncate">{item.name}</p>
+                          <div className="flex">
+                            <span className="font-semibold mr-2">Price: {item.price}</span>
+                            {item.originalPrice && (
+                              <span className="line-through text-muted/70">
+                                {item.originalPrice}
+                              </span>
+                            )}
+                          </div>
                         </div>
-
                         <button onClick={(e) => {
                           e.preventDefault();
                           e.stopPropagation();
@@ -343,18 +302,16 @@ export default function Wishlist() {
                           handleMoveToBag(item);
                         }}
                           className="border border-(--border-strong)
-                              cursor-pointer mt-2 w-full
-                              hover:bg-primary
-                              text-primary-foreground
-                              font-semibold
-                              text-[11px]
-                              py-1.5
-                              rounded-[3px]
-                              bg-(--btn-primary-hover)
-                              transition-all duration-300
+                            cursor-pointer absolute bottom-0 w-full
+                            text-(--text-inverse)
+                            font-medium
+                            py-1.5                       
+                            bg-primary text-xs
+                            transition-all duration-300                         
                             ">
                           Move to Bag
                         </button>
+
                       </div>
                     </div>
                   </Link>

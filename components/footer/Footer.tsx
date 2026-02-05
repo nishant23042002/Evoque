@@ -34,14 +34,16 @@ export default function Footer() {
                 <div
                     className="
                         relative z-10
-                        mx-auto
+                        mx-auto w-full
                         px-5 sm:px-6 md:px-10
-                        py-10
-                        grid grid-cols-1
-                        gap-12 sm:gap-14 md:grid-cols-4 md:gap-16
+                        py-12
+                        grid grid-cols-1 
+                        sm:grid-cols-2 
+                        lg:grid-cols-3
+                        gap-12 sm:gap-14 lg:gap-16
                     "
                 >
-                    {/* BRAND / PHILOSOPHY */}
+                    {/* BRAND */}
                     <div className="space-y-6">
                         <p className="text-sm leading-relaxed text-(--text-linen-300) max-w-sm">
                             <span className="block text-xs uppercase font-serif tracking-wider text-(--earth-clay)">
@@ -65,76 +67,52 @@ export default function Footer() {
                         </div>
                     </div>
 
-                    {/* PRIMARY NAV */}
-                    <nav className="flex flex-col text-sm">
-                        <span className="text-xs uppercase font-serif tracking-wider text-(--earth-clay)">
-                            The Layer
-                        </span>
+                    {/* NAV + WARDROBE */}
+                    <div className="flex flex-col sm:flex-row gap-12 sm:gap-16">
+                        {/* PRIMARY NAV */}
+                        <nav className="flex flex-col text-sm">
+                            <span className="text-xs uppercase font-serif tracking-wider text-(--earth-clay)">
+                                The Layer
+                            </span>
 
-                        {navItems.map((item) => (
-                            <div key={item.label} className="relative mb-2 group w-fit">
-                                <Link href={item.href}
-                                    className="cursor-pointer text-(--text-secondary) hover:text-(--linen-600)/30 transition"
-                                >
-                                    {item.label}
-                                </Link>
-
-                                <span
-                                    className="
-                                        absolute left-0 bottom-0.5
-                                        h-0.5
-                                        w-1/2
-                                        bg-(--earth-clay)
-                                        scale-x-0
-                                        origin-left
-                                        transition-transform duration-500 ease-out
-                                        group-hover:scale-x-100
-                                    "
-                                />
-                            </div>
-                        ))}
-                    </nav>
-
-                    {/* CATEGORY NAV */}
-                    <div className="space-y-4">
-                        <span className="text-xs uppercase font-serif tracking-wider text-(--earth-clay)">
-                            The Wardrobe
-                        </span>
-
-                        <div
-                            className="
-                                grid grid-cols-2 gap-y-2 gap-x-6
-                                sm:block sm:space-y-2
-                                text-sm
-                            "
-                        >
-                            {layerItem.map((item) => (
-                                <div className="relative group w-fit" key={item.category}>
-                                    <Link href={item.href} 
+                            {navItems.map((item) => (
+                                <div key={item.label} className="relative mb-2 group w-fit">
+                                    <Link
+                                        href={item.href}
                                         className="cursor-pointer text-(--text-secondary) hover:text-(--linen-600)/30 transition"
                                     >
-                                        {item.category}
+                                        {item.label}
                                     </Link>
-                                    <span
-                                        className="
-                                            absolute left-0 bottom-px
-                                            h-0.5
-                                            w-1/2
-                                            bg-(--earth-clay)
-                                            scale-x-0
-                                            origin-left
-                                            transition-transform duration-500 ease-out
-                                            group-hover:scale-x-100
-                                        "
-                                    />
+
+                                    <span className="absolute left-0 bottom-0.5 h-0.5 w-1/2 bg-(--earth-clay) scale-x-0 origin-left transition-transform duration-500 ease-out group-hover:scale-x-100" />
                                 </div>
                             ))}
+                        </nav>
+
+                        {/* CATEGORY NAV */}
+                        <div className="space-y-4">
+                            <span className="text-xs uppercase font-serif tracking-wider text-(--earth-clay)">
+                                The Wardrobe
+                            </span>
+
+                            <div className="grid grid-cols-2 sm:grid-cols-1 gap-y-2 gap-x-6 text-sm">
+                                {layerItem.map((item) => (
+                                    <div className="relative group w-fit" key={item.category}>
+                                        <Link
+                                            href={item.href}
+                                            className="cursor-pointer text-(--text-secondary) hover:text-(--linen-600)/30 transition"
+                                        >
+                                            {item.category}
+                                        </Link>
+                                        <span className="absolute left-0 bottom-px h-0.5 w-1/2 bg-(--earth-clay) scale-x-0 origin-left transition-transform duration-500 ease-out group-hover:scale-x-100" />
+                                    </div>
+                                ))}
+                            </div>
                         </div>
                     </div>
 
                     {/* SOCIAL + LEGAL */}
-                    <div className="flex flex-col justify-between gap-10">
-
+                    <div className="flex justify-between gap-10">
                         <div className="space-y-4">
                             <span className="text-xs uppercase font-serif tracking-wider text-(--earth-clay)">
                                 Social Layer
@@ -151,44 +129,28 @@ export default function Footer() {
                         </div>
 
                         <div className="space-y-1 flex flex-col text-[11px] text-(--text-secondary) font-serif tracking-wider">
-                            <a href="/pages/privacy-policy" className="cursor-pointer hover:underline">Privacy Policy</a>
-                            <a href="/pages/terms-conditions" className="cursor-pointer hover:underline">Terms & Conditions</a>
-                            <a href="/pages/shipping-returns" className="cursor-pointer hover:underline">Shipping & Returns</a>
-                            <a href="/pages/help" className="cursor-pointer hover:underline">Help</a>
+                            <a href="/pages/privacy-policy" className="hover:underline">Privacy Policy</a>
+                            <a href="/pages/terms-conditions" className="hover:underline">Terms & Conditions</a>
+                            <a href="/pages/shipping-returns" className="hover:underline">Shipping & Returns</a>
+                            <a href="/pages/help" className="hover:underline">Help</a>
                         </div>
                     </div>
                 </div>
 
-                {/* OVERSIZED WORDMARK */}
-                <div
-                    className="
-                        absolute left-0 w-full text-center pointer-events-none select-none
-                        -bottom-2 sm:-bottom-3 md:-bottom-5
-                    "
-                >
-                    <h1
-                        className="
-                            font-extrabold tracking-tight leading-none
-                            text-(--linen-200)
-                            text-[27vw] sm:text-[20vw] md:text-[14vw]
-                        "
-                    >
+                {/* WORDMARK */}
+                <div className="absolute left-0 w-full text-center pointer-events-none select-none -bottom-1 sm:-bottom-3 md:-bottom-5">
+                    <h1 className="font-extrabold tracking-tight leading-none text-(--linen-200)
+        text-[32vw] sm:text-[20vw] md:text-[14vw]">
                         THE LAYER CO.
                     </h1>
                 </div>
 
                 {/* BASE BAR */}
-                <div
-                    className="
-                        relative z-10
-                        py-3 text-center
-                        text-[10px] uppercase tracking-widest font-serif
-                        text-(--text-secondary)
-                    "
-                >
+                <div className="relative z-10 py-3 text-center text-[10px] uppercase tracking-widest font-serif text-(--text-secondary)">
                     © {new Date().getFullYear()} The Layer Co. · All rights reserved
                 </div>
             </div>
         </footer>
+
     );
 }

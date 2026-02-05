@@ -8,6 +8,8 @@ import LayerLogoLoader from "../FlashLogo/LayerLogo";
 import axios from "axios";
 import { Category } from "@/types/ProductTypes";
 
+
+
 const FeaturedCategories = () => {
     const [categories, setCategories] = useState<Category[]>([]);
     const [loading, setLoading] = useState(true);
@@ -52,6 +54,8 @@ const FeaturedCategories = () => {
             </h2>
 
             {/* Fallback */}
+
+
             {categories.length === 0 ? (
                 <div className="flex items-center justify-center h-64">
                     <h2 className="text-center text-sm tracking-widest font-semibold font-poppins text-(--text-muted)">
@@ -59,75 +63,89 @@ const FeaturedCategories = () => {
                     </h2>
                 </div>
             ) : (
-                <Masonry
-                    breakpointCols={breakpoints}
-                    className="flex gap-1 sm:gap-2 w-full"
-                    columnClassName="masonry-column"
-                >
-                    {categories.map((item) => (
-                        <Link
-                            href={`/categories/${item.slug}`}
-                            key={item._id}
-                            className="mb-1 sm:mb-2 block break-inside-avoid"
-                        >
-                            <div
-                                className="border border-(--border-light)
-                                    group h-80 relative
-                                    rounded-[3px]
-                                    overflow-hidden
-                                    bg-(--linen-100)                        
-                                    transition-all duration-300
-                                "
+                <>
+                    {/* MOBILE — HORIZONTAL SCROLL */}
+                    <div className="md:hidden flex gap-1 sm:gap-2 overflow-x-auto pb-1 custom-scrollbar">
+                        {categories.map((item) => (
+                            <Link
+                                href={`/categories/${item.slug}`}
+                                key={item._id}
+                                className="min-w-[49.5%] shrink-0"
                             >
-                                {/* Image */}
-                                <Image
-                                    src={item.image}
-                                    alt={item.name}
-                                    fill
-                                    sizes="
-                                        (max-width: 350px) 100vw,
-                                        (max-width: 550px) 50vw,
-                                        (max-width: 1000px) 33vw,
-                                        (max-width: 1300px) 25vw,
-                                        20vw
-                                    "
-                                    className="
-                                        w-full object-cover object-center
-                                        transition-transform duration-500
-                                        group-hover:scale-105
-                                    "
-                                />
-
-                                {/* Linen overlay */}
                                 <div
                                     className="
-                                        absolute inset-0
-                                        bg-(--earth-charcoal)
-                                        opacity-0
-                                        group-hover:opacity-15
-                                        transition-opacity duration-300
-                                    "
-                                />
-
-                                {/* Category label */}
-                                <div
-                                    className="
-                                        absolute -bottom-px z-10 w-full
-                                        bg-primary
-                                        backdrop-blur-[1px]
-                                        border-t border-(--border-strong)
-                                        text-center px-2 py-1
-                                    "
+                                        border border-(--border-light)
+                                        group relative aspect-3/5 min-[470px]:aspect-4/6
+                                        rounded-[3px]
+                                        overflow-hidden
+                                        bg-(--linen-100)
+                                        transition-all duration-300
+                                        "
                                 >
-                                    <span className="text-xs font-semibold tracking-wide text-primary-foreground">
-                                        {item.name}
-                                    </span>
+                                    <Image
+                                        src={item.image}
+                                        alt={item.name}
+                                        fill
+                                        className="object-cover object-center transition-transform duration-500 group-hover:scale-105"
+                                    />
+
+                                    <div className="absolute inset-0 bg-(--earth-charcoal) opacity-0 group-hover:opacity-15 transition-opacity duration-300" />
+
+                                    <div className="absolute -bottom-px z-10 w-full bg-primary border-t border-(--border-strong) text-center px-2 py-1">
+                                        <span className="text-xs font-semibold tracking-wide text-primary-foreground">
+                                            {item.name}
+                                        </span>
+                                    </div>
                                 </div>
-                            </div>
-                        </Link>
-                    ))}
-                </Masonry>
+                            </Link>
+                        ))}
+                    </div>
+
+                    {/* DESKTOP — MASONRY */}
+                    <div className="hidden md:block">
+                        <Masonry
+                            breakpointCols={breakpoints}
+                            className="flex gap-1 sm:gap-2 w-full"
+                            columnClassName="masonry-column"
+                        >
+                            {categories.map((item) => (
+                                <Link
+                                    href={`/categories/${item.slug}`}
+                                    key={item._id}
+                                    className="mb-1 sm:mb-2 block break-inside-avoid"
+                                >
+                                    <div
+                                        className="
+                                            border border-(--border-light)
+                                            group relative aspect-4/5
+                                            rounded-[3px]
+                                            overflow-hidden
+                                            bg-(--linen-100)
+                                            transition-all duration-300
+                                            "
+                                    >
+                                        <Image
+                                            src={item.image}
+                                            alt={item.name}
+                                            fill
+                                            className="object-cover object-center transition-transform duration-500 group-hover:scale-105"
+                                        />
+
+                                        <div className="absolute inset-0 bg-(--earth-charcoal) opacity-0 group-hover:opacity-15 transition-opacity duration-300" />
+
+                                        <div className="absolute -bottom-px z-10 w-full bg-primary border-t border-(--border-strong) text-center px-2 py-1">
+                                            <span className="text-xs font-semibold tracking-wide text-primary-foreground">
+                                                {item.name}
+                                            </span>
+                                        </div>
+                                    </div>
+                                </Link>
+                            ))}
+                        </Masonry>
+                    </div>
+                </>
             )}
+
         </section>
     );
 };

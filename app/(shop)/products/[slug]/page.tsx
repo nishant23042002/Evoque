@@ -2,7 +2,7 @@
 import Container from "@/components/Container";
 import Image from "next/image";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Heart } from "lucide-react";
 import { useParams, useRouter } from "next/navigation";
 import { FaArrowLeftLong, FaArrowRightLong } from "react-icons/fa6";
@@ -91,6 +91,10 @@ function MobileImageSlider({
 
 
 
+
+
+
+
 const DETAILS_LABELS: Record<keyof Product["details"], string> = {
     material: "Material",
     fabricWeight: "Fabric Weight",
@@ -130,7 +134,7 @@ export default function ProductPage() {
     }>({ x: 0, y: 0, direction: null });
 
     const dispatch = useAppDispatch();
-
+    const hasViewedRef = useRef(false);
     const {
         product,
         recommendations,
@@ -143,6 +147,17 @@ export default function ProductPage() {
         colorVariants,
         sizes
     } = useProductVariants(product, selectedColor);
+
+    useEffect(() => {
+        if (hasViewedRef.current) return;
+
+        hasViewedRef.current = true;
+
+        fetch(`/api/products/${slug}/view`, {
+            method: "POST",
+        });
+    }, [slug]);
+
 
     const selectWishlistIds = (state: RootState) =>
         new Set(state.wishlist.items.map(i => i.productId));
@@ -217,6 +232,13 @@ export default function ProductPage() {
                 },
             })
         );
+        // 2️⃣ Increment analytics.cartAdds
+        fetch(`/api/products/by-id/${product!._id}/cart-add`, {
+            method: "POST",
+        }).catch(() => {
+            // optional: silent fail, don’t block UX
+        });
+
     };
     const handleWishlistToggle = () => {
         if (!product) return;
@@ -259,7 +281,7 @@ export default function ProductPage() {
 
     return (
         <Container>
-            <div className="relative w-full mx-auto mb-30 min-h-screen lg:h-screen">
+            <div className="relative w-full mb-30 min-h-screen lg:h-screen">
                 <div
                     className="
                         flex
@@ -351,7 +373,7 @@ export default function ProductPage() {
                     {/* RIGHT: DETAILS */}
                     <div
                         className="
-                        
+                            
                             lg:w-[40%]
                             w-full
                             lg:sticky

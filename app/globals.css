@@ -361,8 +361,15 @@
 }
 
 @keyframes pulse-subtle {
-  0%, 100% { opacity: 1; }
-  50% { opacity: 0.85; }
+
+  0%,
+  100% {
+    opacity: 1;
+  }
+
+  50% {
+    opacity: 0.85;
+  }
 }
 
 
@@ -404,6 +411,8 @@
 }
 
 
+
+
 .loading-backdrop {
   backdrop-filter: blur(6px);
 }
@@ -413,29 +422,29 @@
 }
 
 
-/* Modern minimal horizontal scrollbar */
-.scrollbar-modern::-webkit-scrollbar {
-  height: 2px;
+/* WIDTH */
+::-webkit-scrollbar {
+  width: 5px;
+  height: 3px; /* for horizontal scroll */
 }
 
-.scrollbar-modern::-webkit-scrollbar-track {
+/* TRACK */
+::-webkit-scrollbar-track {
   background: transparent;
 }
 
-.scrollbar-modern::-webkit-scrollbar-thumb {
-  background-color: rgba(0, 0, 0, 0.25);
-  border-radius: 999px;
+/* THUMB */
+::-webkit-scrollbar-thumb {
+  background: var(--text-secondary);
+  
 }
 
-.scrollbar-modern::-webkit-scrollbar-thumb:hover {
-  background-color: rgba(0, 0, 0, 0.45);
+/* HOVER */
+::-webkit-scrollbar-thumb:hover {
+  background: var(--earth-olive);
 }
 
-/* Firefox */
-.scrollbar-modern {
-  scrollbar-width: 2px;
-  scrollbar-color: rgba(20, 15, 15, 0.322) transparent;
-}
+
 
 .animate-scale-in {
   animation: scale-in 0.2s ease-out;

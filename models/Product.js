@@ -218,8 +218,8 @@ const productSchema = new mongoose.Schema(
         // ⚙ Admin Controls
         isActive: { type: Boolean, default: true },
         isFeatured: { type: Boolean, default: false },
-        isBestSeller: { type: Boolean, default: false },
-        isNewArrival: { type: Boolean, default: false },
+        isBestSeller: { type: Boolean},
+        isNewArrival: { type: Boolean },
         launchDate: Date,
     },
     { timestamps: true }

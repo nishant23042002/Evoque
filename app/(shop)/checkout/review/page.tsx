@@ -115,10 +115,30 @@ export default function CheckoutReviewPage() {
                 name: "The Layer Co",
                 description: "Order Payment",
 
-                handler: () => {
+                handler: async () => {
+                    try {
+                        // 1️⃣ Increment purchases analytics
+                        await fetch("/api/products/purchase", {
+                            method: "POST",
+                            headers: { "Content-Type": "application/json" },
+                            body: JSON.stringify({
+                                items: data.items.map(item => ({
+                                    productId: item.productId,
+                                    qty: item.quantity,
+                                })),
+                            }),
+                        });
+                    } catch {
+                        // Silent fail – analytics must never block order success
+                    }
+
+                    // 2️⃣ Clear cart
                     dispatch(clearCart());
+
+                    // 3️⃣ Redirect to success page
                     window.location.replace("/account/order/success");
                 },
+
 
                 modal: {
                     ondismiss: () => {

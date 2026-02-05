@@ -131,14 +131,9 @@ type ProductPOSTBody = {
         synonyms?: string[];
         popularityScore?: number;
     };
-    analytics?: {
-        views?: number;
-        cartAdds?: number;
-        purchases?: number;
-    };
+
     isActive?: boolean;
     isFeatured?: boolean;
-    isBestSeller?: boolean;
     isNewArrival?: boolean;
     launchDate?: string | Date;
 };
@@ -248,10 +243,8 @@ export async function POST(req: Request) {
             badges,
             merchandising,
             search,
-            analytics,
             isActive,
             isFeatured,
-            isBestSeller,
             isNewArrival,
             launchDate,
         } = body;
@@ -392,10 +385,8 @@ export async function POST(req: Request) {
             badges,
             merchandising,
             search,
-            analytics,
             isActive,
             isFeatured,
-            isBestSeller,
             isNewArrival,
             launchDate: launchDate ? new Date(launchDate) : undefined
         });

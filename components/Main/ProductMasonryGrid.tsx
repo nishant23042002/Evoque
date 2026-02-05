@@ -4,7 +4,6 @@ import { Heart } from "lucide-react";
 import dynamic from "next/dynamic";
 import Image from "next/image";
 import { useMemo } from "react";
-import RatingBar from "@/constants/ratingBar";
 import Link from "next/link";
 import { useAppDispatch, useAppSelector } from "@/store/hooks";
 import { selectWishlistIds } from "@/store/wishlist/wishlist.selector";
@@ -52,14 +51,14 @@ export default function ProductMasonryGrid({
     /* -------------------------
        MASONRY BREAKPOINTS
     ------------------------- */
-    const breakpoints = { default: 5, 1600: 4, 1200: 3, 750: 2, 400: 1 };
+    const breakpoints = { default: 5, 1600: 4, 1200: 3, 750: 2, 370: 1 };
 
     /* -------------------------
        DYNAMIC HEIGHTS
     ------------------------- */
     const heights = useMemo(() => {
         if (!products.length) return [];
-        const buckets = [350, 365, 380, 400, 425, 450, 465, 480, 500, 525, 550];
+        const buckets = [400, 425, 450, 465, 480, 500, 515, 530, 545, 560, 575];
 
         return products.map((product) => {
             let seed = 0;
@@ -72,6 +71,7 @@ export default function ProductMasonryGrid({
             return buckets[index] + jitter;
         });
     }, [products]);
+
 
 
     return (
@@ -174,14 +174,23 @@ export default function ProductMasonryGrid({
                                                 );
                                             }
                                         }}
-                                        className="p-1.5 border border-(--border-light) cursor-pointer rounded-full bg-(--surface) shadow z-30"
+                                        className="p-1.5 border border-(--border-light) cursor-pointer rounded-full bg-secondary/50 shadow z-30"
                                     >
                                         <Heart
                                             strokeWidth={0.9}
-                                            className={`h-5 w-5 transition ${isWishlisted
-                                                ? "fill-primary text-primary scale-110"
-                                                : "text-(--text-secondary) hover:text-primary"
-                                                }`}
+                                            className="h-5 w-5 transition-all duration-200"
+                                            style={
+                                                isWishlisted
+                                                    ? {
+                                                        fill: variant?.color?.hex || "#000", // inside color
+                                                        stroke: "var(--border-strong)", // border color (always visible)
+                                                        transform: "scale(1.1)",
+                                                    }
+                                                    : {
+                                                        fill: "transparent",
+                                                        stroke: "var(--border-strong)",
+                                                    }
+                                            }
                                         />
                                     </button>
                                 </div>

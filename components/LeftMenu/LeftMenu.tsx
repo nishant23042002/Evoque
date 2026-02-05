@@ -58,7 +58,7 @@ const LeftMenu = ({ isOpen, setIsOpen }: LeftMenuProps) => {
                 const res = await fetch("/api/categories");
                 const data = await res.json();
                 const isTrendingCategory = data.filter(
-                    (cat: Category) => cat?.isTrending
+                    (cat: Category) => cat?.isFeatured
                 );
                 setCategories(isTrendingCategory);
             } catch (err) {
@@ -154,7 +154,7 @@ const LeftMenu = ({ isOpen, setIsOpen }: LeftMenuProps) => {
                 >
                     <IoClose size={22} />
                 </button>
-                <nav className="flex flex-col overflow-y-auto scrollbar-hide my-8 h-185 ">
+                <nav className="flex flex-col scrollbar-hide my-8">
                     {/* ---------- TOP ---------- */}
                     <div className="space-y-1 mt-4">
                         {PRIMARY_ITEMS.map((item) => {
@@ -187,13 +187,13 @@ const LeftMenu = ({ isOpen, setIsOpen }: LeftMenuProps) => {
                     </div>
 
                     {/* ---------- MIDDLE ---------- */}
-                    <div className="mt-4">
-                        <h2 className="text-center mx-1 text-sm tracking-widest font-semibold font-poppins text-primary mb-1.5">
+                    <div className="mt-4 ">
+                        <h2 className="text-center text-sm tracking-widest font-semibold font-poppins text-primary mb-1.5">
                             Trending Layer
                         </h2>
 
-                        <div className="space-y-1">
-                            {categories.slice(0, 5).map((category, i) => {
+                        <div className="space-y-1 h-89 custom-scrollbar [@media(max-height:720px)]:h-59 overflow-y-auto">
+                            {categories.map((category, i) => {
                                 const active = pathname === `/categories/${category.slug}`;
 
                                 return (
@@ -208,29 +208,30 @@ const LeftMenu = ({ isOpen, setIsOpen }: LeftMenuProps) => {
                                         )}
 
                                         <div
-                                            className={`
-                                                group
-                                                relative mx-1 w-full h-12 min-[551px]:h-18
-                                                rounded-[3px] overflow-hidden
-                                                border border-(--border-strong)
-                                                shadow-xs
-                                                transition-all duration-300
-                                                ${active ? "border-primary" : "hover:border-primary/60"}
-                                            `}
+                                            className={cn(
+                                                "group relative mx-1 w-full",
+                                                "aspect-6/2",
+                                                "rounded-[3px] overflow-hidden",
+                                                "border border-(--border-strong)",
+                                                "shadow-xs transition-all duration-300",
+                                                active ? "border-primary" : "hover:border-primary/60"
+                                            )}
                                         >
+
                                             {/* IMAGE */}
                                             <Image
                                                 src={category.leftMenuCategoryImage}
                                                 alt={category.name}
                                                 fill
                                                 sizes="(max-width: 550px) 280px, 360px"
-                                                loading={i === 0 ? "eager" : "lazy"}
+                                                priority={i === 0}
                                                 className="
-                                                        object-cover object-center
+                                                        object-cover object-[50%_25%]
                                                         transition-transform duration-500 ease-out
                                                         group-hover:scale-105
-                                                        "
+                                                    "
                                             />
+
 
                                             {/* OVERLAY */}
                                             <div
@@ -250,16 +251,19 @@ const LeftMenu = ({ isOpen, setIsOpen }: LeftMenuProps) => {
                                             <p
                                                 className="
                                                     pointer-events-none
-                                                    absolute left-1 bottom-2
-                                                    text-[10px] min-[551px]:text-sm
-                                                    font-medium p-0.5 bg-(--linen-200)/60
-                                                    text-(--linen-800) rounded-[3px]
-                                                    transition-all duration-300
-                                                    group-hover:-translate-y-0.5
-                                                    "
+                                                    absolute left-2 bottom-2
+                                                    text-[10px] sm:text-xs
+                                                    font-medium
+                                                    px-1 py-0.5
+                                                    bg-(--linen-200)/70
+                                                    text-(--linen-800)
+                                                    rounded-[3px]
+                                                    backdrop-blur-sm
+                                                "
                                             >
                                                 {category.name}
                                             </p>
+
                                         </div>
 
                                     </Link>
