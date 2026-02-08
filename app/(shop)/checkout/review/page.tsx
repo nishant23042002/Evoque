@@ -112,7 +112,7 @@ export default function CheckoutReviewPage() {
                 amount: payment.amount,
                 currency: payment.currency,
                 order_id: payment.orderId,
-                name: "The Layer Co",
+                name: "THE LAYER CO.",
                 description: "Order Payment",
 
                 handler: async () => {

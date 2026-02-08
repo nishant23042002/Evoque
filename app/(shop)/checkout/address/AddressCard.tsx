@@ -1,12 +1,14 @@
 import { Address } from "@/types/AddressTypes";
 
-interface Props {
+export default function AddressCard({
+    address,
+    onSelect,
+    onRefresh,
+}: {
     address: Address;
+    onSelect: () => void;
     onRefresh: () => void;
-    onEdit: () => void;
-}
-
-export default function AddressCard({ address, onRefresh, onEdit }: Props) {
+}) {
     const setDefault = async () => {
         if (address.isDefault) return;
 
@@ -17,74 +19,24 @@ export default function AddressCard({ address, onRefresh, onEdit }: Props) {
         });
 
         onRefresh();
-    };
-
-    const remove = async () => {
-        await fetch(`/api/address/${address._id}`, { method: "DELETE" });
-        onRefresh();
+        onSelect();
     };
 
     return (
-        <label
-            className="block rounded-xl p-5 cursor-pointer transition"
-            style={{
-                background: "var(--card-bg)",
-                border: "1px solid var(--card-border)",
-                boxShadow: "var(--card-shadow)",
-            }}
-        >
-            <div className="flex items-start gap-4">
+        <label className="block py-4 border-b cursor-pointer">
+            <div className="flex gap-4">
                 <input
                     type="radio"
                     checked={address.isDefault}
                     onChange={setDefault}
-                    className="mt-1 accent-primary"
+                    className="mt-1 accent-black"
                 />
 
-                <div className="flex-1">
-                    <div className="flex justify-between items-center">
-                        <p className="font-semibold text-foreground">
-                            {address.name}
-                            {address.isDefault && (
-                                <span
-                                    className="ml-3 text-xs px-2.5 py-1 rounded-full"
-                                    style={{
-                                        background: "var(--earth-sand)",
-                                        color: "var(--earth-olive)",
-                                        border: "1px solid var(--earth-olive)",
-                                    }}
-                                >
-                                    DEFAULT
-                                </span>
-                            )}
-                        </p>
-                    </div>
-
-                    <p className="text-sm mt-2 text-(--text-secondary) leading-relaxed">
-                        {address.addressLine1}
-                        {address.addressLine2 && `, ${address.addressLine2}`}
-                        <br />
-                        {address.city}, {address.state} – {address.pincode}
+                <div>
+                    <p className="font-medium capitalize">{address.name}</p>
+                    <p className="text-sm text-gray-600">
+                        {address.addressLine1}, {address.city}
                     </p>
-
-                    <p className="text-sm mt-2 text-(--text-muted)">
-                        📞 {address.phone}
-                    </p>
-
-                    <div className="flex gap-6 text-sm mt-4">
-                        <button
-                            onClick={onEdit}
-                            className="underline text-primary"
-                        >
-                            Edit
-                        </button>
-                        <button
-                            onClick={remove}
-                            className="underline text-destructive"
-                        >
-                            Delete
-                        </button>
-                    </div>
                 </div>
             </div>
         </label>
