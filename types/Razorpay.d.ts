@@ -18,4 +18,20 @@ export interface RazorpayOptions {
     theme?: {
         color?: string;
     };
+    config?: {
+    display?: {
+      blocks?: {
+        preferred?: {
+          name?: string;
+          instruments?: {
+            method: string;
+          }[];
+        };
+      };
+      sequence?: string[];
+      preferences?: {
+        show_default_blocks?: boolean;
+      };
+    };
+  };
 }

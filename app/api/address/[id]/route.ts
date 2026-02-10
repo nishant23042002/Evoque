@@ -24,10 +24,12 @@ export async function PUT(
     }
 
     const address = await Address.findOneAndUpdate(
-        { _id: id, userId: userObjectId },
-        updates,
-        { new: true }
-    );
+  { _id: id, userId: userObjectId },
+  {
+    ...updates,
+  },
+  { new: true }
+);
 
     if (!address) {
         return NextResponse.json(

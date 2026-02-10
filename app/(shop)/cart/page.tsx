@@ -8,12 +8,35 @@ import { useAppDispatch, useAppSelector } from "@/store/hooks";
 import { increaseQuantity, decreaseQuantity } from "@/store/cart/cart.slice";
 import { addWishlistItem } from "@/store/wishlist/wishlist.thunks";
 import { removeCartItem } from "@/store/cart/cart.thunks";
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
+
+
+interface CheckoutSummary {
+    subtotal: number;
+    shipping: number;
+    tax: number;
+    discount: number;
+    totalAmount: number;
+}
+
+interface CheckoutResponse {
+    summary: CheckoutSummary;
+}
+
 
 export default function CartPage() {
     const dispatch = useAppDispatch();
     const cartItems = useAppSelector((state) => state.cart.items);
+    const [summaryData, setSummaryData] = useState<CheckoutResponse | null>(null);
     const [loading, setLoading] = useState(false);
+
+    useEffect(() => {
+        fetch("/api/checkout/prepare", { method: "POST" })
+            .then((r) => r.json())
+            .then((data: CheckoutResponse) => setSummaryData(data))
+            .catch(() => setSummaryData(null));
+    }, []);
+
 
     /* ---------- DERIVED VALUES ---------- */
     const itemCount = useMemo(
@@ -204,6 +227,12 @@ export default function CartPage() {
                             <span>Rs. {bagTotal}</span>
                         </div>
 
+                        <div className="flex justify-between text-sm">
+                            <span>Tax</span>
+                            <span>₹{summaryData?.summary.tax ?? 0}</span>
+                        </div>
+
+
                         {discount > 0 && (
                             <div className="flex justify-between text-red-600 text-sm">
                                 <span>Discount</span>
@@ -212,14 +241,14 @@ export default function CartPage() {
                         )}
                         <div className="flex justify-between text-sm">
                             <span>Delivery Charges</span>
-                            <span>FREE</span>
+                            <span>₹{summaryData?.summary.shipping ?? 0}</span>
                         </div>
 
                         <hr />
 
                         <div className="flex justify-between font-medium text-lg">
                             <span>Total</span>
-                            <span>Rs. {grandTotal}</span>
+                            <span>Rs. {summaryData?.summary.totalAmount ?? grandTotal}</span>
                         </div>
 
                         <div className="space-y-3">
@@ -241,7 +270,7 @@ export default function CartPage() {
                                         transition-all duration-150 ease-out
                                         hover:opacity-90 active:scale-[0.97]
                                         disabled:opacity-60 disabled:cursor-not-allowed"
-                                                    >
+                        >
                             {loading && (
                                 <span className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
                             )}
@@ -263,7 +292,8 @@ export default function CartPage() {
                 {/* Top Row */}
                 <div className="flex w-full justify-between font-semibold text-lg">
                     <span>Total</span>
-                    <span>Rs. {grandTotal}</span>
+                    <span>Rs. {summaryData?.summary.totalAmount ?? grandTotal}</span>
+
                 </div>
 
                 {/* Button */}
@@ -281,7 +311,7 @@ export default function CartPage() {
                                 transition-all duration-150 ease-out
                                 hover:opacity-90 active:scale-[0.97]
                                 disabled:opacity-60 disabled:cursor-not-allowed"
-                                    >
+                >
                     {loading && (
                         <span className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
                     )}

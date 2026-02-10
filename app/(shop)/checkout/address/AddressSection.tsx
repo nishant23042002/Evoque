@@ -14,7 +14,8 @@ export default function AddressSection({
     const [openForm, setOpenForm] = useState(false);
     const [editAddress, setEditAddress] = useState<Address | null>(null);
 
-    const loadAddresses = async () => {
+    // reusable fetch
+    const fetchAddresses = async () => {
         const res = await fetch("/api/address");
         const data: Address[] = await res.json();
         setAddresses(data);
@@ -23,8 +24,9 @@ export default function AddressSection({
         if (defaultAddr) onSelect(defaultAddr);
     };
 
+    // INITIAL LOAD (inline fetch, not calling setter function)
     useEffect(() => {
-        const init = async () => {
+        const load = async () => {
             const res = await fetch("/api/address");
             const data: Address[] = await res.json();
             setAddresses(data);
@@ -33,37 +35,48 @@ export default function AddressSection({
             if (defaultAddr) onSelect(defaultAddr);
         };
 
-        init();
+        load();
     }, [onSelect]);
 
     return (
-        <section className="border-b pb-6">
-            <h2 className="font-semibold mb-4">BILLING ADDRESS</h2>
+        <section className="pb-3 border-b">
+            <h2 className="font-semibold">BILLING ADDRESS</h2>
+            <div className="h-60 overflow-y-auto px-2">
 
-            {addresses.map((address) => (
-                <AddressCard
-                    key={address._id}
-                    address={address}
-                    onSelect={() => onSelect(address)}
-                    onRefresh={loadAddresses}
-                />
-            ))}
+                {addresses.map((address) => (
+                    <AddressCard
+                        key={address._id}
+                        address={address}
+                        onSelect={() => onSelect(address)}
+                        onEdit={() => {
+                            setEditAddress(address);
+                            setOpenForm(true);
+                        }}
+                        onRefresh={fetchAddresses}
+                    />
+                ))}
+                <button
+                    onClick={() => {
+                        setEditAddress(null);
+                        setOpenForm(true);
+                    }}
+                    className="hover:underline border border-[var(--border-light)] py-1 px-3 hover:text-black/70 cursor-pointer text-sm mt-3"
+                >
+                ADDRESS +
+                </button>
+            </div>
 
-            <button
-                onClick={() => {
-                    setEditAddress(null);
-                    setOpenForm(true);
-                }}
-                className="underline text-sm mt-3"
-            >
-                ADD
-            </button>
 
             {openForm && (
                 <AddressFormDrawer
                     address={editAddress}
-                    onClose={() => setOpenForm(false)}
-                    onSuccess={loadAddresses}
+                    onClose={() => {
+                        setOpenForm(false);
+                        setEditAddress(null);
+                    }}
+                    onSuccess={async () => {
+                        await fetchAddresses();
+                    }}
                 />
             )}
         </section>

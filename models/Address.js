@@ -2,6 +2,7 @@ import { Schema, model, models, Types } from "mongoose";
 
 
 
+
 const AddressSchema = new Schema(
     {
         userId: {
@@ -14,6 +15,13 @@ const AddressSchema = new Schema(
             type: String,
             required: true,
             trim: true,
+        },
+
+        email: {
+            type: String,
+            trim: true,
+            lowercase: true,
+            default: "",
         },
 
         phone: {

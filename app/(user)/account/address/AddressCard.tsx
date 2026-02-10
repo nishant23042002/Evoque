@@ -43,8 +43,14 @@ export default function AddressCard({ address, onRefresh, onEdit }: Props) {
 
                 <div className="flex-1">
                     <div className="flex justify-between items-center">
-                        <p className="font-semibold text-foreground">
+                        <div className="flex justify-center gap-4 items-center font-semibold text-foreground">
                             {address.name}
+                            {address.email && (
+                                <div className="text-sm text-(--text-muted)">
+                                    ✉ {address.email}
+                                </div>
+                            )}
+
                             {address.isDefault && (
                                 <span
                                     className="ml-3 text-xs px-2.5 py-1 rounded-[3px]"
@@ -57,7 +63,7 @@ export default function AddressCard({ address, onRefresh, onEdit }: Props) {
                                     DEFAULT
                                 </span>
                             )}
-                        </p>
+                        </div>
                     </div>
 
                     <p className="text-sm mt-2 text-(--text-secondary) leading-relaxed">

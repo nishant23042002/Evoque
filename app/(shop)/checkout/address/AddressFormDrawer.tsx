@@ -6,7 +6,7 @@ import { useState } from "react";
 interface Props {
     address: Address | null;
     onClose: () => void;
-    onSuccess: () => void;
+    onSuccess: (addr: Address) => void;
 }
 
 export default function AddressFormDrawer({
@@ -25,85 +25,173 @@ export default function AddressFormDrawer({
         isDefault: address?.isDefault ?? false,
     });
 
+    const [loading, setLoading] = useState(false);
+    const [error, setError] = useState("");
+
+    const updateField = (key: keyof typeof form, value: string | boolean) => {
+        setForm((prev) => ({ ...prev, [key]: value }));
+    };
+
+    const validate = () => {
+        if (!form.name.trim()) return "Name is required";   
+        if (!form.phone.trim()) return "Phone is required";
+        if (!form.addressLine1.trim()) return "Address is required";
+        if (!form.city.trim()) return "City is required";
+        if (!form.state.trim()) return "State is required";
+        if (!form.pincode.trim()) return "Pincode is required";
+        return "";
+    };
+
     const submit = async () => {
-        const url = address ? `/api/address/${address._id}` : "/api/address";
-        const method = address ? "PUT" : "POST";
+        const validationError = validate();
+        if (validationError) {
+            setError(validationError);
+            return;
+        }
 
-        await fetch(url, {
-            method,
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify(form),
-        });
+        try {
+            setLoading(true);
+            setError("");
 
-        onSuccess();
-        onClose();
+            const url = address ? `/api/address/${address._id}` : "/api/address";
+            const method = address ? "PUT" : "POST";
+
+            const res = await fetch(url, {
+                method,
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify(form),
+            });
+
+            if (!res.ok) throw new Error("Failed to save address");
+
+            const data = await res.json();
+            onSuccess(data);
+            onClose();
+        } catch (err) {
+            setError("Something went wrong. Please try again.");
+        } finally {
+            setLoading(false);
+        }
     };
 
     return (
-        <div className="fixed inset-0 bg-black/30 flex justify-end z-100">
-            <div
-                className="w-full max-w-md h-full p-6 space-y-5"
-                style={{ background: "var(--surface)" }}
-            >
-                <h2 className="text-lg font-semibold text-[var(--foreground)]">
-                    {address ? "Edit Address" : "Add New Address"}
+        <div className="fixed inset-0 bg-black/40 flex justify-end z-50">
+            <div className="w-full max-w-md h-full p-6 space-y-4 bg-white overflow-y-auto">
+                <h2 className="text-lg font-semibold">
+                    {address ? "Edit Address" : "Add Address"}
                 </h2>
 
-                {Object.entries(form).map(([key, value]) =>
-                    key !== "isDefault" ? (
-                        <input
-                            key={key}
-                            placeholder={key}
-                            value={value as string}
-                            onChange={e =>
-                                setForm({ ...form, [key]: e.target.value })
-                            }
-                            className="w-full p-3 rounded-md text-sm"
-                            style={{
-                                background: "var(--input-bg)",
-                                border: "1px solid var(--input-border)",
-                                color: "var(--foreground)",
-                            }}
-                        />
-                    ) : null
+                {error && (
+                    <p className="text-sm text-red-600 bg-red-50 p-2 rounded">
+                        {error}
+                    </p>
                 )}
 
-                <label className="flex items-center gap-2 text-sm text-[var(--text-secondary)]">
+                {/* NAME */}
+                <Input
+                    label="Full Name"
+                    value={form.name}
+                    onChange={(v) => updateField("name", v)}
+                />             
+
+                {/* PHONE */}
+                <Input
+                    label="Phone"
+                    type="tel"
+                    value={form.phone}
+                    onChange={(v) => updateField("phone", v)}
+                />
+
+                {/* ADDRESS 1 */}
+                <Input
+                    label="Address Line 1"
+                    value={form.addressLine1}
+                    onChange={(v) => updateField("addressLine1", v)}
+                />
+
+                {/* ADDRESS 2 */}
+                <Input
+                    label="Address Line 2"
+                    value={form.addressLine2}
+                    onChange={(v) => updateField("addressLine2", v)}
+                />
+
+                {/* CITY */}
+                <Input
+                    label="City"
+                    value={form.city}
+                    onChange={(v) => updateField("city", v)}
+                />
+
+                {/* STATE */}
+                <Input
+                    label="State"
+                    value={form.state}
+                    onChange={(v) => updateField("state", v)}
+                />
+
+                {/* PINCODE */}
+                <Input
+                    label="Pincode"
+                    type="number"
+                    value={form.pincode}
+                    onChange={(v) => updateField("pincode", v)}
+                />
+
+                {/* DEFAULT */}
+                <label className="flex gap-2 text-sm items-center">
                     <input
                         type="checkbox"
                         checked={form.isDefault}
-                        onChange={e =>
-                            setForm({ ...form, isDefault: e.target.checked })
-                        }
-                        className="accent-[var(--primary)]"
+                        onChange={(e) => updateField("isDefault", e.target.checked)}
                     />
-                    Set as default address
+                    Set as default
                 </label>
 
-                <div className="flex gap-3 pt-4">
+                <div className="flex gap-3 pt-2">
                     <button
                         onClick={submit}
-                        className="flex-1 py-3 rounded-md text-sm font-medium"
-                        style={{
-                            background: "var(--btn-primary-bg)",
-                            color: "var(--btn-primary-text)",
-                        }}
+                        disabled={loading}
+                        className="flex-1 py-3 bg-black text-white rounded disabled:opacity-60"
                     >
-                        Save
+                        {loading ? "Saving..." : "Save"}
                     </button>
 
                     <button
                         onClick={onClose}
-                        className="flex-1 py-3 rounded-md text-sm border"
-                        style={{
-                            borderColor: "var(--btn-outline-border)",
-                            background: "transparent",
-                        }}
+                        disabled={loading}
+                        className="flex-1 py-3 border rounded"
                     >
                         Cancel
                     </button>
                 </div>
             </div>
+        </div>
+    );
+}
+
+/* ---------- REUSABLE INPUT ---------- */
+
+function Input({
+    label,
+    value,
+    onChange,
+    type = "text",
+}: {
+    label: string;
+    value: string;
+    onChange: (v: string) => void;
+    type?: string;
+}) {
+    return (
+        <div className="space-y-1">
+            <label className="text-sm font-medium">{label}</label>
+            <input
+                type={type}
+                value={value}
+                onChange={(e) => onChange(e.target.value)}
+                className="w-full p-3 border rounded text-sm focus:outline-none focus:ring-1 focus:ring-black"
+            />
         </div>
     );
 }
