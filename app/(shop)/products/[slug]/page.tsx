@@ -19,6 +19,8 @@ import ProductHorizontalScroller from "@/components/Main/ProductHorizontalScroll
 import { useProductPageData } from "@/src/useProductPageData";
 import LayerLogo from "@/components/FlashLogo/LayerLogo";
 import { useProductVariants } from "@/src/useProductVariants";
+import Footer from "@/components/Footer/Footer";
+import { addRecentlyViewed } from "@/store/recentlyViewed/recentlyViewed.slice";
 
 function MobileImageSlider({
     images,
@@ -157,6 +159,23 @@ export default function ProductPage() {
             method: "POST",
         });
     }, [slug]);
+    useEffect(() => {
+        if (!product || !activeVariant) return;
+
+        dispatch(
+            addRecentlyViewed({
+                productId: product._id,
+                slug: product.slug,
+                name: product.productName,
+                image:
+                    activeVariant.color.images.find(i => i.isPrimary)?.url ||
+                    activeVariant.color.images[0]?.url,
+                price: product.pricing.price,
+                brand: product.brand,
+                viewedAt: Date.now(),
+            })
+        );
+    }, [product?._id, selectedColor]);
 
 
     const selectWishlistIds = (state: RootState) =>
@@ -654,16 +673,38 @@ export default function ProductPage() {
                 {recommendations.length > 0 && (
                     <ProductHorizontalScroller
                         title="STYLE WITH"
-                        products={recommendations}
+                        products={recommendations.map(p => ({
+                            _id: p._id,
+                            slug: p.slug,
+                            productName: p.productName,
+                            price: p.pricing.price,
+                            image:
+                                p.thumbnail ||
+                                p.variants?.[0]?.color.images?.[0]?.url ||
+                                "",
+                            variants: p.variants,
+                        }))}
                     />
                 )}
                 {sameCategory.length > 0 && (
                     <ProductHorizontalScroller
                         title="SIMILAR ITEMS"
-                        products={sameCategory}
+                        products={sameCategory.map(p => ({
+                            _id: p._id,
+                            slug: p.slug,
+                            productName: p.productName,
+                            price: p.pricing.price,
+                            image:
+                                p.thumbnail ||
+                                p.variants?.[0]?.color.images?.[0]?.url ||
+                                "",
+                            variants: p.variants,
+                        }))}
                     />
                 )}
+
             </div>
+            <Footer />
         </Container>
     );
 }

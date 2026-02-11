@@ -84,7 +84,7 @@ export default interface Product {
     sku: string;
     brand: string;
     category: Category;
-    thumbnail?: string;
+    thumbnail: string;
     subCategory: { name: string, slug: string };
     fit?: string;
     variants: Variant[];

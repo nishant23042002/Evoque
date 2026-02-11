@@ -13,6 +13,7 @@ import { Category, SubCategory } from "@/types/ProductTypes";
 import Product from "@/types/ProductTypes";
 import { useQuery } from "@tanstack/react-query";
 import { useRouter } from "next/navigation";
+import Footer from "@/components/Footer/Footer";
 type SortOption = "newest" | "low-high" | "high-low";
 
 interface CategoryProductsResponse {
@@ -301,6 +302,7 @@ const ProductCategoryPage = () => {
                     <ProductMasonryGrid products={products} showHeading={false} fullWidth={false} />
                 )}
             </div>
+            <Footer />
         </section>
     );
 };

@@ -12,6 +12,7 @@ import { WishlistItem } from "@/types/WishlistTypes";
 import SelectedVariantModal from "./SelectVariantModal";
 import { selectWishlistIds } from "@/store/wishlist/wishlist.selector";
 import { addCartItem } from "@/store/cart/cart.thunks";
+import Footer from "@/components/Footer/Footer";
 
 
 
@@ -320,6 +321,7 @@ export default function Wishlist() {
             </Masonry>
           </div>
         </div>
+        <Footer />
       </div>
     </>
   );

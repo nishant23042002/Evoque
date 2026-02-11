@@ -39,7 +39,7 @@ export default function AddressSection({
     }, [onSelect]);
 
     return (
-        <section className="pb-3 border-b">
+        <section className="pb-3 border-b mx-2 md:mx-4">
             <h2 className="font-semibold">BILLING ADDRESS</h2>
             <div className="h-60 overflow-y-auto px-2">
 

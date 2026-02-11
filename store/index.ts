@@ -1,11 +1,13 @@
 import { configureStore } from "@reduxjs/toolkit";
 import wishlistReducer from "./wishlist/wishlist.slice";
 import cartReducer from "./cart/cart.slice";
+import recentlyViewed from "./recentlyViewed/recentlyViewed.slice"
 
 export const store = configureStore({
     reducer: {
         wishlist: wishlistReducer,
-        cart: cartReducer
+        cart: cartReducer,
+        recentlyViewed: recentlyViewed
     },
     middleware: getDefaultMiddleware =>
         getDefaultMiddleware({

@@ -424,7 +424,7 @@
 
 /* WIDTH */
 ::-webkit-scrollbar {
-  width: 8px;
+  width: 5px;
   height: 3px; /* for horizontal scroll */
 }
 

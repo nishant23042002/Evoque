@@ -9,6 +9,8 @@ import { increaseQuantity, decreaseQuantity } from "@/store/cart/cart.slice";
 import { addWishlistItem } from "@/store/wishlist/wishlist.thunks";
 import { removeCartItem } from "@/store/cart/cart.thunks";
 import { useEffect, useMemo, useState } from "react";
+import Footer from "@/components/Footer/Footer";
+import ProductHorizontalScroller from "@/components/Main/ProductHorizontalScroller";
 
 
 interface CheckoutSummary {
@@ -29,6 +31,9 @@ export default function CartPage() {
     const cartItems = useAppSelector((state) => state.cart.items);
     const [summaryData, setSummaryData] = useState<CheckoutResponse | null>(null);
     const [loading, setLoading] = useState(false);
+    const recentlyViewed = useAppSelector(
+        state => state.recentlyViewed.items
+    );
 
     useEffect(() => {
         fetch("/api/checkout/prepare", { method: "POST" })
@@ -58,6 +63,7 @@ export default function CartPage() {
         [cartItems]
     );
 
+
     const grandTotal = bagTotal;
 
     /* EMPTY */
@@ -78,10 +84,11 @@ export default function CartPage() {
         );
     }
 
+
     return (
         <div className="relative w-full ">
             {/* HEADER */}
-            <div className="sticky mx-2 top-15 flex justify-between items-center py-3 bg-(--linen-100) z-20">
+            <div className="sticky border-b mx-2 top-15 flex justify-between items-center py-3 bg-(--linen-100) z-20">
                 <h1 className="text-3xl font-semibold">SHOPPING BAG</h1>
                 <span className="text-sm">ITEMS {itemCount}</span>
             </div>
@@ -218,7 +225,7 @@ export default function CartPage() {
                 </div>
 
                 {/* RIGHT – SUMMARY */}
-                <div className="w-full md:w-[35%] lg:w-[30%]">
+                <div className="w-full md:w-[35%] lg:w-[30%] mb-12">
                     <div className="md:py-5 space-y-4 md:sticky md:top-24 mx-2">
                         <h3 className="font-medium text-lg">SUMMARY</h3>
 
@@ -265,7 +272,7 @@ export default function CartPage() {
                                     window.location.href = "/checkout";
                                 }, 1500);
                             }}
-                            className="hidden md:flex items-center justify-center gap-2 w-full
+                            className="cursor-pointer hidden md:flex items-center justify-center gap-2 w-full
                                         bg-black text-white py-4 mt-4 font-extralight
                                         transition-all duration-150 ease-out
                                         hover:opacity-90 active:scale-[0.97]
@@ -306,7 +313,7 @@ export default function CartPage() {
                             window.location.href = "/checkout";
                         }, 1500);
                     }}
-                    className="p-4 bg-black w-full text-white mx-auto
+                    className="cursor-pointer p-4 bg-black w-full text-white mx-auto
                                 flex items-center justify-center gap-2
                                 transition-all duration-150 ease-out
                                 hover:opacity-90 active:scale-[0.97]
@@ -318,8 +325,22 @@ export default function CartPage() {
                     {loading ? "PROCESSING..." : "CONTINUE TO CHECKOUT"}
                 </button>
 
-
             </div>
+
+
+            <ProductHorizontalScroller
+                title="RECENTLY VIEWED"
+                products={recentlyViewed.map(item => ({
+                    _id: item.productId,
+                    slug: item.slug,
+                    productName: item.name,
+                    image: item.image,
+                    price: item.price,
+                }))}
+            />
+
+
+            <Footer />
         </div>
     );
 }

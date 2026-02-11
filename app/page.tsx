@@ -7,6 +7,7 @@ import ProductMasonryGrid from "@/components/Main/ProductMasonryGrid";
 import { useEffect, useState } from "react";
 import LoginModalUI from "@/components/Header/LoginModal";
 import Product from "@/types/ProductTypes";
+import Footer from "@/components/Footer/Footer";
 
 
 /* ---------------- TYPES ---------------- */
@@ -111,6 +112,7 @@ export default function Home() {
         <LoginModalUI />
 
       </div>
+      <Footer /> 
     </Container>
   );
 

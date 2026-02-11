@@ -2,7 +2,6 @@
 import type { Metadata } from "next";
 import "./globals.css";
 import Header from "@/components/Header/Header";
-import Footer from "@/components/Footer/Footer";
 import { Inter, Poppins } from "next/font/google";
 import Providers from "./providers";
 import { AuthProvider } from "@/components/AuthProvider";
@@ -55,8 +54,6 @@ export default function RootLayout({
               {/* GLOBAL UI */}
               <GlobalLoginModal />
 
-              {/* FOOTER */}
-              <Footer />
             </ReactQueryProvider>
           </AuthProvider>
         </Providers>

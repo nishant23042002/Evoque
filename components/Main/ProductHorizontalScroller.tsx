@@ -3,14 +3,24 @@
 import { useEffect, useRef, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
-import Product from "@/types/ProductTypes";
+import { Variant } from "@/types/ProductTypes";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import { useProductHoverImage } from "@/src/useProductHoverImage";
 import { getPrimaryImageFromVariant, getSecondaryImageFromVariant } from "@/lib/productImage";
 
+
+export type ProductCard = {
+    _id: string;
+    slug: string;
+    productName: string;
+    price: number;
+    image: string;
+    variants?: Variant[]; // optional → recently viewed won’t have this
+};
+
 interface Props {
     title?: string;
-    products: Product[];
+    products: ProductCard[];
 }
 
 
@@ -61,7 +71,7 @@ export default function ProductHorizontalScroller({
     if (!products?.length) return null;
 
     return (
-        <section className="relative w-full my-6">
+        <section className="relative w-full my-12 px-2">
             {/* HEADER */}
             <div className="flex items-center justify-between">
                 {title && (
@@ -107,9 +117,20 @@ export default function ProductHorizontalScroller({
                             "
             >
                 {products.map((item) => {
-                    const variant = hoverVariants[item._id] ?? item.variants[0];
-                    const primary = getPrimaryImageFromVariant(variant);
-                    const secondary = getSecondaryImageFromVariant(variant);
+                    const hasVariants = item.variants && item.variants.length > 0;
+
+                    const variant = hasVariants
+                        ? hoverVariants[item._id] ?? item.variants![0]
+                        : null;
+
+                    const primary = variant
+                        ? getPrimaryImageFromVariant(variant)
+                        : item.image;
+
+                    const secondary = variant
+                        ? getSecondaryImageFromVariant(variant)
+                        : null;
+
 
                     return (
                         <Link
@@ -127,8 +148,10 @@ export default function ProductHorizontalScroller({
                         >
 
                             {/* IMAGE */}
-                            <div onMouseEnter={() => onCardEnter(item._id)}
-                                onMouseLeave={() => onCardLeave(item._id)} className="relative aspect-3/4 sm:aspect-2/3 md:aspect-3/4 lg:aspect-4/6 overflow-hidden rounded-[3px] border bg-card">
+                            <div
+                                onMouseEnter={() => hasVariants && onCardEnter(item._id)}
+                                onMouseLeave={() => hasVariants && onCardLeave(item._id)}
+                                className="relative aspect-3/4 sm:aspect-2/3 md:aspect-3/4 lg:aspect-4/6 overflow-hidden rounded-[3px] border bg-card">
                                 <Image
                                     src={primary}
                                     alt={item.productName}
@@ -152,7 +175,7 @@ export default function ProductHorizontalScroller({
                                     {item.productName}
                                 </p>
                                 <p className="text-primary font-semibold">
-                                    ₹{item.pricing?.price}
+                                    ₹{item.price}
                                 </p>
                             </div>
                         </Link>
