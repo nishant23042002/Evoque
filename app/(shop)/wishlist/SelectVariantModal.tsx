@@ -8,6 +8,8 @@ import clsx from "clsx";
 import { Variant, SizeVariant } from "@/types/ProductTypes";
 import { sizeScaleMap } from "@/constants/productSizes";
 import Product from "@/types/ProductTypes";
+import { showProductToast } from "@/store/ui/ui.slice";
+import { useAppDispatch } from "@/store/hooks";
 
 
 interface Props {
@@ -50,7 +52,7 @@ export default function SelectedVariantModal({
     const [error, setError] = useState(false);
     const [activeImage, setActiveImage] = useState<string | null>(null);
     const [previewImage, setPreviewImage] = useState<string | null>(null);
-
+    const dispatch = useAppDispatch();
     const effectiveColor =
         selectedColor ?? product.variants[0].color.slug;
 
@@ -275,6 +277,13 @@ export default function SelectedVariantModal({
                                 size: selectedSize,
                                 image: primaryImageForCart!,
                             });
+                            dispatch(showProductToast({
+                                name: product!.productName,
+                                image: primaryImageForCart,
+                                price: product!.pricing.price,
+                                size: selectedSize.size,
+                                type: "cart"
+                            }));
 
                             onClose();
                         }}

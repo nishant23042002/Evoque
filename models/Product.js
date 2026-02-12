@@ -6,12 +6,14 @@ import mongoose from "mongoose";
 const reviewSchema = new mongoose.Schema(
     {
         userId: mongoose.Schema.Types.ObjectId,
+        userName: String,
         rating: Number,
         comment: String,
         createdAt: { type: Date, default: Date.now },
     },
-    { _id: false }
+    { _id: true }
 );
+
 
 // 🎨 Variant schema
 const sizeVariantSchema = new mongoose.Schema(
@@ -218,7 +220,7 @@ const productSchema = new mongoose.Schema(
         // ⚙ Admin Controls
         isActive: { type: Boolean, default: true },
         isFeatured: { type: Boolean, default: false },
-        isBestSeller: { type: Boolean},
+        isBestSeller: { type: Boolean },
         isNewArrival: { type: Boolean },
         launchDate: Date,
     },

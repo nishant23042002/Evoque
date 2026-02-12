@@ -11,6 +11,7 @@ import { removeCartItem } from "@/store/cart/cart.thunks";
 import { useEffect, useMemo, useState } from "react";
 import Footer from "@/components/Footer/Footer";
 import ProductHorizontalScroller from "@/components/Main/ProductHorizontalScroller";
+import { showProductToast } from "@/store/ui/ui.slice";
 
 
 interface CheckoutSummary {
@@ -34,6 +35,7 @@ export default function CartPage() {
     const recentlyViewed = useAppSelector(
         state => state.recentlyViewed.items
     );
+
 
     useEffect(() => {
         fetch("/api/checkout/prepare", { method: "POST" })
@@ -95,11 +97,11 @@ export default function CartPage() {
 
             <div className="flex flex-col md:flex-row justify-between gap-10 mx-2">
                 {/* LEFT – ITEMS */}
-                <div className="w-full md:w-[55%] lg:w-[60%] space-y-8 mt-7">
+                <div className="w-full md:w-[55%] lg:w-[60%] space-y-2 my-2">
                     {cartItems.map((item) => (
                         <div
                             key={`${item.productId}/${item.variantSku}`}
-                            className="flex gap-5 pb-6 border-b"
+                            className="flex gap-5 pb-2 border-b"
                         >
                             {/* IMAGE */}
                             <Link href={`/products/${item.slug}`}>
@@ -126,13 +128,21 @@ export default function CartPage() {
                                         <MdDeleteOutline
                                             size={18}
                                             className="cursor-pointer hover:text-red-600"
-                                            onClick={() =>
+                                            onClick={() => {
                                                 dispatch(
                                                     removeCartItem({
                                                         productId: item.productId,
                                                         variantSku: item.variantSku,
                                                     })
                                                 )
+                                                dispatch(showProductToast({
+                                                    name: item!.name,
+                                                    image: item.image,
+                                                    price: item!.price,
+                                                    size: item.size,
+                                                    type: "cart-remove"
+                                                }));
+                                            }
                                             }
                                         />
                                     </div>
@@ -206,6 +216,11 @@ export default function CartPage() {
                                                     brand: item.brand,
                                                 })
                                             );
+                                            dispatch(showProductToast({
+                                                name: item.name,
+                                                image: item.image,
+                                                type: "wishlist"
+                                            }));
 
                                             dispatch(
                                                 removeCartItem({
@@ -226,7 +241,7 @@ export default function CartPage() {
 
                 {/* RIGHT – SUMMARY */}
                 <div className="w-full md:w-[35%] lg:w-[30%] mb-12">
-                    <div className="md:py-5 space-y-4 md:sticky md:top-24 mx-2">
+                    <div className="py-2 space-y-4 md:sticky md:top-24 mx-2">
                         <h3 className="font-medium text-lg">SUMMARY</h3>
 
                         <div className="flex justify-between text-sm">

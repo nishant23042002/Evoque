@@ -12,6 +12,7 @@ import { useAuth } from "../AuthProvider";
 import Product from "@/types/ProductTypes";
 import { useProductHoverImage } from "@/src/useProductHoverImage";
 import { getPrimaryImageFromVariant, getSecondaryImageFromVariant } from "@/lib/productImage";
+import { showProductToast } from "@/store/ui/ui.slice";
 const Masonry = dynamic(() => import("react-masonry-css"), { ssr: false });
 
 
@@ -159,6 +160,11 @@ export default function ProductMasonryGrid({
 
                                             if (isWishlisted) {
                                                 dispatch(removeWishlistItem(item._id));
+                                                dispatch(showProductToast({
+                                                    name: item.productName,
+                                                    image: primary,
+                                                    type: "wishlist-remove"
+                                                }));
                                             } else {
                                                 dispatch(
                                                     addWishlistItem({
@@ -172,6 +178,11 @@ export default function ProductMasonryGrid({
                                                         brand: item.brand,
                                                     })
                                                 );
+                                                dispatch(showProductToast({
+                                                    name: item.productName,
+                                                    image: primary,
+                                                    type: "wishlist"
+                                                }));
                                             }
                                         }}
                                         className="p-1.5 border border-(--border-light) cursor-pointer rounded-full bg-secondary/50 shadow z-30"

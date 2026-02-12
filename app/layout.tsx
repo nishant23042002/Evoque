@@ -7,6 +7,8 @@ import Providers from "./providers";
 import { AuthProvider } from "@/components/AuthProvider";
 import GlobalLoginModal from "./GlobalLoginModal";
 import ReactQueryProvider from "@/components/ReactQueryProvider";
+import CartToast from "@/components/ProductToast";
+import ProductToast from "@/components/ProductToast";
 
 
 
@@ -49,6 +51,7 @@ export default function RootLayout({
               {/* MAIN CONTENT */}
               <main className="min-h-screen">
                 {children}
+                <ProductToast />
               </main>
 
               {/* GLOBAL UI */}

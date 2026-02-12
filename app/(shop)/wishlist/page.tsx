@@ -13,6 +13,7 @@ import SelectedVariantModal from "./SelectVariantModal";
 import { selectWishlistIds } from "@/store/wishlist/wishlist.selector";
 import { addCartItem } from "@/store/cart/cart.thunks";
 import Footer from "@/components/Footer/Footer";
+import { showProductToast } from "@/store/ui/ui.slice";
 
 
 
@@ -234,7 +235,7 @@ export default function Wishlist() {
               className="flex gap-1 sm:gap-2"
               columnClassName="space-y-1 sm:space-y-2"
             >
-              {wishlistItems.map((item, index) => {
+              {wishlistItems.map((item: WishlistItem, index) => {
                 const isWishlisted = wishlistIds.has(item.productId);
 
                 return (
@@ -270,6 +271,11 @@ export default function Wishlist() {
                             e.preventDefault();
                             e.stopPropagation();
                             dispatch(removeWishlistItem(item.productId));
+                            dispatch(showProductToast({
+                              name: item.name,
+                              image: item.image,
+                              type: "wishlist-remove"
+                            }));
                           }}
                           className="p-1.5 border border-(--border-light) cursor-pointer rounded-full bg-(--surface) shadow z-30"
                         >

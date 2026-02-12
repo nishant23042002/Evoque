@@ -69,6 +69,15 @@ export interface Category {
     leftMenuCategoryImage: string;
 }
 
+export interface Review {
+  _id?: string;
+  userId: string;
+  userName: string;
+  rating: number;
+  comment: string;
+  createdAt: string | Date;
+}
+
 export default interface Product {
     _id: string;
     attributes?: {
@@ -91,7 +100,6 @@ export default interface Product {
     styleTags?: string[];
     stylePairs?: Product[];
     relatedProducts?: Product[];
-
     pricing: {
         price: number;
         originalPrice?: number;
@@ -108,7 +116,7 @@ export default interface Product {
         closure: string;
     };
     sizeChart: string;
-    reviews: string[];
+    reviews: Review[];
     seo?: {
         title?: string;
         description?: string;

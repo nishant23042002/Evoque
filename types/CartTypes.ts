@@ -1,4 +1,4 @@
-import { Variant } from "./ProductTypes";
+
 
 export interface CartItem {
     productId: string; // ✅ STRING ONLY

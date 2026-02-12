@@ -233,7 +233,7 @@ const ProductCategoryPage = () => {
             {/* ---------------- PRODUCTS ---------------- */}
             <div
                 className={clsx(
-                    "transition-all duration-700 ease-out",
+                    "transition-all duration-700 ease-out mb-24",
                     animatePage ? "opacity-100 translate-y-0" : "opacity-0 translate-y-10"
                 )}
             >
