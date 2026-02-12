@@ -3,16 +3,15 @@
 import Image from "next/image";
 import Link from "next/link";
 import { MdDeleteOutline } from "react-icons/md";
-import { Lock, ShoppingBag } from "lucide-react";
+import { Lock } from "lucide-react";
 import { useAppDispatch, useAppSelector } from "@/store/hooks";
-import { increaseQuantity, decreaseQuantity } from "@/store/cart/cart.slice";
 import { addWishlistItem } from "@/store/wishlist/wishlist.thunks";
-import { removeCartItem } from "@/store/cart/cart.thunks";
+import { fetchCart, removeCartItem, updateCartQuantity } from "@/store/cart/cart.thunks";
 import { useEffect, useMemo, useState } from "react";
 import Footer from "@/components/Footer/Footer";
 import ProductHorizontalScroller from "@/components/Main/ProductHorizontalScroller";
 import { showProductToast } from "@/store/ui/ui.slice";
-
+import { updateQuantityLocal } from "@/store/cart/cart.slice";
 
 interface CheckoutSummary {
     subtotal: number;
@@ -32,17 +31,44 @@ export default function CartPage() {
     const cartItems = useAppSelector((state) => state.cart.items);
     const [summaryData, setSummaryData] = useState<CheckoutResponse | null>(null);
     const [loading, setLoading] = useState(false);
+    const [qtyWarning, setQtyWarning] = useState<string | null>(null);
+    function useHasMounted() {
+        const [hasMounted, setHasMounted] = useState(false);
+        useEffect(() => {
+            setHasMounted(true);
+        }, []);
+        return hasMounted;
+    }
+
+    const hasMounted = useHasMounted();
+
+
+
+
     const recentlyViewed = useAppSelector(
         state => state.recentlyViewed.items
     );
 
+    useEffect(() => {
+        dispatch(fetchCart());
+    }, [dispatch]);
 
     useEffect(() => {
-        fetch("/api/checkout/prepare", { method: "POST" })
-            .then((r) => r.json())
-            .then((data: CheckoutResponse) => setSummaryData(data))
-            .catch(() => setSummaryData(null));
-    }, []);
+        if (!cartItems.length) {
+            setSummaryData(null);   // 🔥 IMPORTANT
+            return;
+        }
+
+        const t = setTimeout(() => {
+            fetch("/api/checkout/prepare", { method: "POST" })
+                .then((r) => r.json())
+                .then((data: CheckoutResponse) => setSummaryData(data))
+                .catch(() => setSummaryData(null));
+        }, 300); // 300ms debounce
+
+        return () => clearTimeout(t);
+    }, [cartItems]);
+
 
 
     /* ---------- DERIVED VALUES ---------- */
@@ -68,34 +94,25 @@ export default function CartPage() {
 
     const grandTotal = bagTotal;
 
-    /* EMPTY */
-    if (!cartItems.length) {
-        return (
-            <div className="min-h-[90vh] flex items-center justify-center">
-                <div className="text-center space-y-4">
-                    <ShoppingBag className="mx-auto w-12 h-12 text-gray-400" />
-                    <h2 className="text-lg font-semibold">Your cart is empty</h2>
-                    <Link
-                        href="/"
-                        className="inline-block bg-black text-white px-6 py-2 text-sm"
-                    >
-                        Continue Shopping
-                    </Link>
-                </div>
-            </div>
-        );
-    }
+
+    if (!hasMounted) return null;
 
 
     return (
-        <div className="relative w-full ">
+        <div className="relative w-full">
             {/* HEADER */}
-            <div className="sticky border-b mx-2 top-15 flex justify-between items-center py-3 bg-(--linen-100) z-20">
-                <h1 className="text-3xl font-semibold">SHOPPING BAG</h1>
+            <div className="mx-2 flex justify-between items-center py-12 z-20">
+                <h1 className="text-5xl tracking-wider font-bold">SHOPPING BAG</h1>
                 <span className="text-sm">ITEMS {itemCount}</span>
             </div>
 
-            <div className="flex flex-col md:flex-row justify-between gap-10 mx-2">
+            <div className="mx-2">
+                {cartItems.length == 0 && (
+                    <h1 className="font-semibold text-xl">Your shopping bag is empty.</h1>
+                )}
+            </div>
+
+            <div className="flex flex-col mb-30 md:flex-row justify-between gap-10 mx-2">
                 {/* LEFT – ITEMS */}
                 <div className="w-full md:w-[55%] lg:w-[60%] space-y-2 my-2">
                     {cartItems.map((item) => (
@@ -168,32 +185,53 @@ export default function CartPage() {
                                 <div className="flex justify-between items-center mt-3">
                                     {/* QUANTITY */}
                                     <div className="flex items-center border px-3 py-1 gap-3">
+
                                         <button className="cursor-pointer"
-                                            onClick={() =>
-                                                dispatch(
-                                                    decreaseQuantity({
-                                                        productId: item.productId,
-                                                        variantSku: item.variantSku,
-                                                    })
-                                                )
-                                            }
+                                            onClick={() => {
+                                                if (item.quantity <= 1) {
+                                                    setQtyWarning("Minimum quantity is 1");
+
+                                                    setTimeout(() => {
+                                                        setQtyWarning(null);
+                                                    }, 1200);
+
+                                                    return;
+                                                }
+
+                                                dispatch(updateCartQuantity({
+                                                    productId: item.productId,
+                                                    variantSku: item.variantSku,
+                                                    quantity: item.quantity - 1
+                                                }));
+                                            }}
+
                                         >
                                             −
                                         </button>
                                         <span>{item.quantity}</span>
                                         <button className="cursor-pointer"
-                                            onClick={() =>
-                                                dispatch(
-                                                    increaseQuantity({
-                                                        productId: item.productId,
-                                                        variantSku: item.variantSku,
-                                                    })
-                                                )
+                                            onClick={() => {
+                                                dispatch(updateQuantityLocal({
+                                                    variantSku: item.variantSku,
+                                                    quantity: item.quantity + 1
+                                                }));
+                                                dispatch(updateCartQuantity({
+                                                    productId: item.productId,
+                                                    variantSku: item.variantSku,
+                                                    quantity: item.quantity + 1
+                                                }));
+                                            }
                                             }
                                         >
                                             +
                                         </button>
                                     </div>
+                                    {qtyWarning && (
+                                        <div className=" text-red-600 px-4 py-1 text-xs z-50">
+                                            {qtyWarning}
+                                        </div>
+                                    )}
+
 
                                     {/* WISHLIST */}
                                     <button
@@ -279,7 +317,7 @@ export default function CartPage() {
                         </div>
 
                         <button
-                            disabled={loading}
+                            disabled={loading || cartItems.length === 0}
                             onClick={() => {
                                 setLoading(true);
                                 setTimeout(() => {
@@ -320,7 +358,7 @@ export default function CartPage() {
 
                 {/* Button */}
                 <button
-                    disabled={loading}
+                    disabled={loading || cartItems.length === 0}
                     onClick={() => {
                         setLoading(true);
                         setTimeout(() => {
@@ -343,16 +381,20 @@ export default function CartPage() {
             </div>
 
 
-            <ProductHorizontalScroller
-                title="RECENTLY VIEWED"
-                products={recentlyViewed.map(item => ({
-                    _id: item.productId,
-                    slug: item.slug,
-                    productName: item.name,
-                    image: item.image,
-                    price: item.price,
-                }))}
-            />
+            {hasMounted && recentlyViewed.length > 0 && (
+                <ProductHorizontalScroller
+                    title="RECENTLY VIEWED"
+                    products={recentlyViewed.map(item => ({
+                        _id: item.productId,
+                        slug: item.slug,
+                        productName: item.name,
+                        image: item.image,
+                        price: item.price,
+                    }))}
+                />
+
+            )}
+
 
 
             <Footer />

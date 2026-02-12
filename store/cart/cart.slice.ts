@@ -1,6 +1,6 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 import { CartItem } from "@/types/CartTypes";
-import { fetchCart, addCartItem } from "./cart.thunks";
+import { fetchCart, addCartItem, updateCartQuantity } from "./cart.thunks";
 import { removeCartItem } from "./cart.thunks";
 
 interface CartState {
@@ -31,42 +31,12 @@ const cartSlice = createSlice({
             );
         },
 
-        increaseQuantity(
-            state,
-            action: PayloadAction<{ productId: string; variantSku: string }>
-        ) {
-            const item = state.items.find(
-                i =>
-                    i.productId === action.payload.productId &&
-                    i.variantSku === action.payload.variantSku
-            );
-            if (item) item.quantity += 1;
+        updateQuantityLocal(state, action) {
+            const { variantSku, quantity } = action.payload;
+            const item = state.items.find(i => i.variantSku === variantSku);
+            if (item) item.quantity = quantity;
         },
 
-        decreaseQuantity(
-            state,
-            action: PayloadAction<{ productId: string; variantSku: string }>
-        ) {
-            const item = state.items.find(
-                i =>
-                    i.productId === action.payload.productId &&
-                    i.variantSku === action.payload.variantSku
-            );
-
-            if (!item) return;
-
-            if (item.quantity > 1) {
-                item.quantity -= 1;
-            } else {
-                state.items = state.items.filter(
-                    i =>
-                        !(
-                            i.productId === action.payload.productId &&
-                            i.variantSku === action.payload.variantSku
-                        )
-                );
-            }
-        },
 
         clearCart(state) {
             state.items = [];
@@ -109,15 +79,22 @@ const cartSlice = createSlice({
                 } else {
                     state.items.push(item);
                 }
-            });
+            })
+        builder.addCase(updateCartQuantity.fulfilled, (state, action) => {
+            const { variantSku, quantity } = action.payload;
+
+            const item = state.items.find(i => i.variantSku === variantSku);
+            if (item) {
+                item.quantity = Math.max(1, quantity);
+            }
+        });
     },
 });
 
 export const {
     removeFromCart,
-    increaseQuantity,
-    decreaseQuantity,
     clearCart,
+    updateQuantityLocal
 } = cartSlice.actions;
 
 export default cartSlice.reducer;

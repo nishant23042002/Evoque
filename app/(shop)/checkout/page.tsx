@@ -4,7 +4,7 @@ import Image from "next/image";
 import { useEffect, useMemo, useState } from "react";
 import AddressSection from "./address/AddressSection";
 import { CartItem } from "@/types/CartTypes";
-import { Link, Lock, ShoppingBag } from "lucide-react";
+import { Lock, ShoppingBag } from "lucide-react";
 import { Address } from "@/types/AddressTypes";
 import { RazorpayOptions } from "@/types/Razorpay";
 import { useDispatch } from "react-redux";
@@ -59,46 +59,15 @@ interface CheckoutResponse {
 /* ================= PAGE ================= */
 
 export default function CheckoutPage() {
-    const cartItems = useAppSelector((s) => s.cart.items);
+
     const [selectedAddress, setSelectedAddress] = useState<Address | null>(null);
     const [paymentProvider, setPaymentProvider] =
         useState<PaymentProvider>("razorpay");
     const [paymentMethod, setPaymentMethod] = useState<PaymentMethod>("upi");
-    const router = useRouter();
 
 
-    if (!cartItems.length) {
-        return (
-            <div className="flex flex-col items-center justify-center h-[95vh] text-center px-6">
-                {/* Icon */}
-                <div className="mb-2 animate-float flex items-center justify-center w-20 h-20 rounded-full bg-(--earth-charcoal)/10">
-                    <ShoppingBag className="w-10 h-10 text-primary" />
-                </div>
 
-                {/* Text */}
-                <h2 className="text-xl font-semibold text-primary">
-                    Your Cart is empty
-                </h2>
-                <p className="mt-2 text-sm font-medium text-(--linen-800)/70 max-w-sm">
-                    Your bag is waiting to be filled. Explore our collection or add your
-                    favorites from the wishlist to continue.
-                </p>
 
-                {/* CTA */}
-                <button
-                    onClick={() => {
-                        router.push("/wishlist")
-                    }}
-                    className="mt-6 inline-flex items-center justify-center rounded-full px-6 py-2 text-sm font-medium
-                          bg-primary text-black hover:opacity-90 transition"
-                >
-                    <span className="text-white cursor-pointer">
-                        Explore Products
-                    </span>
-                </button>
-            </div>
-        );
-    }
     return (
         <div className="py-10 z-999">
             <h1 className="mx-2 md:mx-4 text-5xl font-extrabold mb-4 tracking-wider">CHECKOUT</h1>
@@ -163,7 +132,7 @@ function ParcelSection() {
             >
 
                 {cartItems.map((item: CartItem) => (
-                    <div key={item.variantSku} className="w-24 h-32 relative flex-shrink-0">
+                    <div key={item.variantSku} className="w-24 h-32 relative shrink-0">
 
                         <Image src={item.image} alt="" fill className="object-cover" />
                         <div className="absolute bottom-0 right-0">
@@ -208,13 +177,6 @@ type PaymentOption = {
     provider: PaymentProvider;
 };
 
-
-const PAYMENT_OPTIONS = [
-    { value: "upi", label: "UPI", img: "/images/upi-icon.svg" },
-    { value: "card", label: "CARD", img: "/images/visa-icon.svg" },
-    { value: "netbanking", label: "NET BANKING", img: "/images/net-banking-icon.svg" },
-    { value: "cod", label: "COD", img: "/images/cod.svg" },
-];
 
 function PaymentOptions({
     paymentMethod,
@@ -276,6 +238,7 @@ function OrderSummary({
     const [data, setData] = useState<CheckoutResponse | null>(null);
     const [loading, setLoading] = useState(false);
     const dispatch = useDispatch();
+    const router = useRouter();
 
     /* FIX 1 — SINGLE FETCH */
     useEffect(() => {
@@ -356,6 +319,26 @@ function OrderSummary({
 
         razorpay.open();
     };
+
+    if (cartItems.length === 0) {
+        return (
+            <div className="w-full sticky top-20 mb-20">
+                <div className="mx-2 md:mx-4 border p-8 text-center space-y-6">
+                    <h2 className="text-2xl font-semibold">Your cart is empty</h2>
+                    <p className="text-sm text-gray-600">
+                        Looks like you haven’t added anything yet.
+                    </p>
+
+                    <button
+                        onClick={() => router.push("/")}
+                        className="bg-black cursor-pointer text-white px-6 py-3 hover:opacity-90 transition"
+                    >
+                        Continue Shopping
+                    </button>
+                </div>
+            </div>
+        );
+    }
 
     if (!data) return null;
 

@@ -42,3 +42,18 @@ export const removeCartItem = createAsyncThunk<
         }
     }
 );
+
+export const updateCartQuantity = createAsyncThunk<
+    { productId: string; variantSku: string; quantity: number },
+    { productId: string; variantSku: string; quantity: number }
+>(
+    "cart/updateQuantity",
+    async ({ productId, variantSku, quantity }, { rejectWithValue }) => {
+        try {
+            await api.patch(`/cart/${variantSku}`, { quantity });
+            return { productId, variantSku, quantity };
+        } catch {
+            return rejectWithValue("Failed to update quantity");
+        }
+    }
+);

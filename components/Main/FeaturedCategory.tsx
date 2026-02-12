@@ -133,8 +133,8 @@ const FeaturedCategories = () => {
 
                                         <div className="absolute inset-0 bg-(--earth-charcoal) opacity-0 group-hover:opacity-15 transition-opacity duration-300" />
 
-                                        <div className="absolute -bottom-px z-10 w-full bg-primary border-t border-(--border-strong) text-center px-2 py-1">
-                                            <span className="text-xs font-semibold tracking-wide text-primary-foreground">
+                                        <div className="absolute bottom-0 z-10 w-full bg-(--linen-100) text-center px-2 py-1">
+                                            <span className="text-xs font-semibold tracking-wide text-primary">
                                                 {item.name}
                                             </span>
                                         </div>

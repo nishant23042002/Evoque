@@ -4,7 +4,7 @@ import Category from "@/models/Category";
 import Product from "@/models/Product";
 import mongoose from "mongoose";
 
-type SortOption = "newest" | "low-high" | "high-low";
+type SortOption = "recommended" | "newest" | "low-high" | "high-low";
 
 export async function GET(
     request: Request,
@@ -55,6 +55,7 @@ export async function GET(
 
         /* ---------------- SORT MAP ---------------- */
         const sortMap: Record<SortOption, Record<string, 1 | -1>> = {
+            "recommended": { "analytics.purchases": 1 },
             newest: { createdAt: -1 },
             "low-high": { "pricing.price": 1 },
             "high-low": { "pricing.price": -1 },

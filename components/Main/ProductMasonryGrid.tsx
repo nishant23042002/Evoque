@@ -3,7 +3,6 @@
 import { Heart } from "lucide-react";
 import dynamic from "next/dynamic";
 import Image from "next/image";
-import { useMemo } from "react";
 import Link from "next/link";
 import { useAppDispatch, useAppSelector } from "@/store/hooks";
 import { selectWishlistIds } from "@/store/wishlist/wishlist.selector";
@@ -24,8 +23,23 @@ interface ProductMasonryGridProps {
     showHeading?: boolean;
     fullWidth?: boolean;
 }
+const RATIOS = [
+    "4/5",
+    "3/4",
+    "2/3",
+    "5/6",
+    "9/10",
+    "3/5"];
+function getAspectRatio(seed: string) {
+    let hash = 0;
 
+    for (let i = 0; i < seed.length; i++) {
+        hash = seed.charCodeAt(i) + ((hash << 5) - hash);
+        hash |= 0; // convert to 32bit int
+    }
 
+    return RATIOS[Math.abs(hash) % RATIOS.length];
+}
 
 /* =======================
    COMPONENT
@@ -48,30 +62,13 @@ export default function ProductMasonryGrid({
     const { isAuthenticated, loading, openLogin } = useAuth();
     const wishlistIds = useAppSelector(selectWishlistIds);
     const dispatch = useAppDispatch();
+    
 
     /* -------------------------
        MASONRY BREAKPOINTS
     ------------------------- */
     const breakpoints = { default: 5, 1600: 4, 1200: 3, 750: 2, 370: 1 };
 
-    /* -------------------------
-       DYNAMIC HEIGHTS
-    ------------------------- */
-    const heights = useMemo(() => {
-        if (!products.length) return [];
-        const buckets = [400, 425, 450, 465, 480, 500, 515, 530, 545, 560, 575];
-
-        return products.map((product) => {
-            let seed = 0;
-            const id = product._id;
-            for (let i = 0; i < id.length; i++) {
-                seed = (seed << 5) - seed + id.charCodeAt(i);
-            }
-            const index = Math.abs(seed) % buckets.length;
-            const jitter = (Math.abs(seed) % 40) - 20;
-            return buckets[index] + jitter;
-        });
-    }, [products]);
 
 
 
@@ -88,20 +85,21 @@ export default function ProductMasonryGrid({
                 className={`flex gap-1 sm:gap-2 ${!fullWidth ? "mx-1 sm:mx-2" : "mx-0"}`}
                 columnClassName="masonry-column"
             >
-                {products.map((item, index) => {
+                {products.map((item) => {
                     const variant = hoverVariants[item._id] ?? item.variants[0];
                     const primary = getPrimaryImageFromVariant(variant);
                     const secondary = getSecondaryImageFromVariant(variant);
                     const isWishlisted = wishlistIds.has(item._id);
                     const isColorHovering = !!hoverVariants[item._id];
+                    const ratio = getAspectRatio(item._id);
 
                     return (
                         <div key={item._id}>
                             <div
                                 onMouseEnter={() => onCardEnter(item._id)}
                                 onMouseLeave={() => onCardLeave(item._id)}
-                                className="border border-(--border-light) relative mb-1 sm:mb-2 drop-shadow-xs fade-in-75 transition-all duration-300 rounded-[2px] overflow-hidden group cursor-pointer bg-(--card-bg)"
-                                style={{ height: heights[index] }}
+                                className="relative mb-2 w-full overflow-hidden rounded-[2px] group bg-(--card-bg)"
+                                style={{ aspectRatio: ratio }}
                             >
                                 {/* IMAGE */}
                                 <div
@@ -118,7 +116,6 @@ export default function ProductMasonryGrid({
                                             ? "opacity-0"
                                             : "opacity-100"
                                             }`}
-
                                     />
 
                                     {/* SECONDARY IMAGE — ONLY ON CARD HOVER */}
@@ -211,7 +208,7 @@ export default function ProductMasonryGrid({
                                 <div className="bg-black/30 py-2 absolute bottom-0 text-white flex flex-col justify-center w-full pointer-events-none">
                                     <div className="mx-2">
                                         <p className="text-xs sm:text-sm font-light">{item.brand}</p>
-                                        <p className="text-xs sm:text-sm font-medium">{item.productName}</p>
+                                        <p className="text-xs truncate sm:text-sm font-medium">{item.productName}</p>
                                         <div className="flex gap-3 items-center text-sm w-full">
                                             <span className="font-medium">₹ {variant.pricing?.price}</span>
                                             <span className="line-through text-xs font-extralight text-gray-300">₹{variant.pricing?.originalPrice}</span>

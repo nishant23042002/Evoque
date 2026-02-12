@@ -5,13 +5,12 @@ import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/
 import { useEffect, useState } from "react";
 import { Heart } from "lucide-react";
 import { useParams, useRouter } from "next/navigation";
-import { FaArrowLeftLong, FaArrowRightLong } from "react-icons/fa6";
 import { useAppDispatch, useAppSelector } from "@/store/hooks";
 import { RootState } from "@/store";
 import { addWishlistItem, removeWishlistItem } from "@/store/wishlist/wishlist.thunks"
 import Product from "@/types/ProductTypes";
 import { SizeVariant } from "@/types/ProductTypes";
-import { addCartItem } from "@/store/cart/cart.thunks";
+import { addCartItem, updateCartQuantity } from "@/store/cart/cart.thunks";
 import SizeChartModal from "@/components/SizeChartModal";
 import { useRef } from "react";
 import { useMediaQuery } from "@/src/useMediaQuery";
@@ -22,14 +21,19 @@ import { useProductVariants } from "@/src/useProductVariants";
 import Footer from "@/components/Footer/Footer";
 import { addRecentlyViewed } from "@/store/recentlyViewed/recentlyViewed.slice";
 import { showProductToast } from "@/store/ui/ui.slice";
+import ImagePreviewModal from "@/components/ImagePreviewModal";
+import { updateQuantityLocal } from "@/store/cart/cart.slice";
 
 function MobileImageSlider({
     images,
     activeColor,
+    onImageClick,
 }: {
     images: string[];
     activeColor?: string;
+    onImageClick: (index: number) => void;
 }) {
+
     const [active, setActive] = useState(0);
     const sliderRef = useRef<HTMLDivElement>(null);
 
@@ -64,6 +68,7 @@ function MobileImageSlider({
                             src={img}
                             alt=""
                             fill
+                            onClick={() => onImageClick(i)}
                             className="object-cover"
                         />
                     </div>
@@ -121,7 +126,13 @@ export default function ProductPage() {
     const slug = params.slug;
     const router = useRouter();
     const imageRefs = useRef<(HTMLDivElement | null)[]>([]);
+    const [quantity, setQuantity] = useState(1);
+    const [qtyWarning, setQtyWarning] = useState<string | null>(null);
+
     const galleryRef = useRef<HTMLDivElement | null>(null);
+
+
+
     const isDesktop = useMediaQuery("(min-width: 1024px)");
 
     // UI state
@@ -134,10 +145,25 @@ export default function ProductPage() {
 
     // Gallery state
     const [activeImageIndex, setActiveImageIndex] = useState(0);
-    const [cursorDirection, setCursorDirection] = useState<"left" | "right" | null>(null);
-    const cursorElRef = useRef<HTMLDivElement | null>(null);
+    const [previewOpen, setPreviewOpen] = useState(false);
+    const [previewIndex, setPreviewIndex] = useState(0);
+
     const [showBottomBar, setShowBottomBar] = useState(false);
 
+    const openPreview = (i: number) => {
+        setPreviewIndex(i);
+        setPreviewOpen(true);
+    };
+
+    const nextPreview = () => {
+        setPreviewIndex((p) => (p + 1) % images.length);
+    };
+
+    const prevPreview = () => {
+        setPreviewIndex((p) =>
+            p === 0 ? images.length - 1 : p - 1
+        );
+    };
 
     const dispatch = useAppDispatch();
     const hasViewedRef = useRef(false);
@@ -195,6 +221,55 @@ export default function ProductPage() {
         return () => window.removeEventListener("scroll", handleScroll);
     }, []);
 
+    const activeIndexRef = useRef(0);
+
+    useEffect(() => {
+        const container = galleryRef.current;
+        if (!container) return;
+
+        let rafId: number | null = null;
+
+        const handleScroll = () => {
+            if (rafId) return;
+
+            rafId = requestAnimationFrame(() => {
+                const scrollTop = container.scrollTop;
+
+                let closestIndex = 0;
+                let minDiff = Infinity;
+
+                imageRefs.current.forEach((el, i) => {
+                    if (!el) return;
+
+                    const diff = Math.abs(el.offsetTop - scrollTop);
+                    if (diff < minDiff) {
+                        minDiff = diff;
+                        closestIndex = i;
+                    }
+                });
+
+                // ONLY update if changed
+                if (activeIndexRef.current !== closestIndex) {
+                    activeIndexRef.current = closestIndex;
+                    setActiveImageIndex(closestIndex);
+                }
+
+                rafId = null;
+            });
+        };
+
+        container.addEventListener("scroll", handleScroll, { passive: true });
+
+        return () => {
+            container.removeEventListener("scroll", handleScroll);
+            if (rafId) cancelAnimationFrame(rafId);
+        };
+    }, []);
+
+
+
+
+
 
 
     const selectWishlistIds = (state: RootState) =>
@@ -226,40 +301,6 @@ export default function ProductPage() {
 
 
 
-    /* ---------------- IMAGE ARROWS ---------------- */
-    const handlePrevImage = () => {
-        const newIndex = activeImageIndex === 0 ? images.length - 1 : activeImageIndex - 1;
-        scrollToImage(newIndex);
-    };
-    const handleNextImage = () => {
-        const newIndex = activeImageIndex === images.length - 1 ? 0 : activeImageIndex + 1;
-        scrollToImage(newIndex);
-    };
-    const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
-        // Move DOM directly (no React render)
-        if (cursorElRef.current) {
-            cursorElRef.current.style.transform =
-                `translate(${e.clientX}px, ${e.clientY}px) translate(-50%, -50%)`;
-        }
-
-        const rect = e.currentTarget.getBoundingClientRect();
-        const newDir =
-            e.clientX < rect.left + rect.width / 2 ? "left" : "right";
-
-        setCursorDirection(prev => (prev === newDir ? prev : newDir));
-    };
-
-    const handleMouseLeave = () => {
-        setCursorDirection(null);
-    };
-
-    const handleClick = () => {
-        if (cursorDirection === "left") handlePrevImage();
-        else handleNextImage();
-    };
-
-
-
     const handleAddToCart = () => {
         if (!selectedSize) {
             setSizeError(true);
@@ -275,7 +316,7 @@ export default function ProductPage() {
                 image: cartImage,
                 price: product!.pricing.price,
                 originalPrice: product!.pricing.originalPrice ?? 0,
-                quantity: 1,
+                quantity: quantity,
                 size: selectedSize.size,
                 variantSku: selectedSize.variantSku,
                 brand: product!.brand,
@@ -301,6 +342,8 @@ export default function ProductPage() {
         }).catch(() => {
             // optional: silent fail, don’t block UX
         });
+
+        setQuantity(1);
 
     };
     const handleWishlistToggle = () => {
@@ -364,14 +407,12 @@ export default function ProductPage() {
                         lg:h-screen
                     "
                 >
-
-
                     {/* LEFT: IMAGES */}
                     {isDesktop ? (
                         <div
                             ref={galleryRef}
-                            className="relative                  
-                                
+                            className="
+                                relative
                                 md:w-[60%]
                                 lg:w-[50%]
                                 aspect-4/5
@@ -380,11 +421,11 @@ export default function ProductPage() {
                                 overflow-y-auto
                                 overscroll-contain
                                 scrollbar-hide
-                                "
+                            "
                         >
-                            {/* THUMBNAILS */}
-                            <div className="absolute left-2 top-0 h-full z-30 pointer-events-none">
-                                <div className="sticky top-2 flex flex-col gap-2 w-22.5 pointer-events-auto">
+                            {/* THUMBNAILS OVERLAY */}
+                            <div className="sticky top-0 left-0 z-30 w-fit">
+                                <div className="absolute left-0 top-0 flex flex-col gap-1 w-22.5">
                                     {images.map((img, i) => {
                                         const isActive = activeImageIndex === i;
 
@@ -392,8 +433,8 @@ export default function ProductPage() {
                                             <button
                                                 key={i}
                                                 onClick={() => scrollToImage(i)}
-                                                className={`relative w-22 h-28 border transition-all duration-200
-                                                    ${isActive ? "" : "border-border hover:border-(--border-strong)"}`}
+                                                className={`relative w-22 h-28 border transition-all duration-200 bg-white/70 backdrop-blur
+                                                   ${isActive ? "" : "border-border hover:border-(--border-strong)"}`}
                                                 style={
                                                     isActive
                                                         ? {
@@ -403,62 +444,47 @@ export default function ProductPage() {
                                                         : undefined
                                                 }
                                             >
-                                                <Image src={img} alt={product.productName} fill className="object-cover" />
+                                                <Image
+                                                    src={img}
+                                                    alt={product.productName}
+                                                    fill
+                                                    className="object-cover"
+                                                />
                                             </button>
                                         );
                                     })}
                                 </div>
                             </div>
 
+                            {/* MAIN IMAGES */}
                             <div className="flex flex-col gap-4">
                                 {images.map((img, i) => (
-                                    <div key={i} ref={(el) => {
-                                        imageRefs.current[i] = el;
-                                    }}
-                                        className="relative w-full aspect-4/5">
+                                    <div
+                                        key={i}
+                                        ref={(el) => {
+                                            imageRefs.current[i] = el;
+                                        }}
+
+                                        className="relative w-full aspect-4/5"
+                                    >
                                         <Image
-                                            onMouseMove={handleMouseMove}
-                                            onMouseLeave={handleMouseLeave}
-                                            onClick={handleClick}
                                             src={img}
                                             alt={product.productName}
                                             fill
-                                            className="cursor-none object-cover object-center"
+                                            onClick={() => openPreview(i)}
+                                            className="cursor-pointer object-cover"
                                         />
-                                        {cursorDirection && (
-                                            <div
-                                                ref={cursorElRef}
-                                                className="fixed z-50 pointer-events-none"
-                                                style={{
-                                                    left: 0,
-                                                    top: 0,
-                                                    transform: "translate(-9999px, -9999px)", // hidden initially
-                                                }}
-                                            >
-                                                <div className="w-7 h-7 rounded-[3px] backdrop-blur-md border border-(--border-strong) bg-secondary flex items-center justify-center transition-all duration-200">
-                                                    {cursorDirection === "left" ? (
-                                                        <FaArrowLeftLong
-                                                            className="text-xl"
-                                                            style={{ color: activeVariant?.color?.hex || "#000" }}
-                                                        />
-                                                    ) : (
-                                                        <FaArrowRightLong
-                                                            className="text-xl"
-                                                            style={{ color: activeVariant?.color?.hex || "#000" }}
-                                                        />
-                                                    )}
-                                                </div>
-                                            </div>
-                                        )}
-
                                     </div>
                                 ))}
                             </div>
                         </div>
+
+
                     ) : (
                         <MobileImageSlider
                             images={images}
                             activeColor={activeVariant?.color?.hex}
+                            onImageClick={openPreview}
                         />
                     )}
 
@@ -617,6 +643,44 @@ export default function ProductPage() {
                                 Please select a size before adding to bag
                             </p>
                         )}
+
+                        <div className="py-2">
+
+                            <h3 className="font-bold mb-1 text-foreground">
+                                Quantity
+                            </h3>
+                        <div className="flex w-20 items-center justify-center border px-5 py-3 gap-3">
+                            <button
+                                className="cursor-pointer"
+                                onClick={() => {
+                                    if (quantity <= 1) {
+                                        setQtyWarning("Minimum quantity is 1");
+                                        setTimeout(() => setQtyWarning(null), 1200);
+                                        return;
+                                    }
+                                    setQuantity(q => q - 1);
+                                }}
+                            >
+                                −
+                            </button>
+
+                            <span>{quantity}</span>
+
+                            <button
+                                className="cursor-pointer"
+                                onClick={() => setQuantity(q => q + 1)}
+                            >
+                                +
+                            </button>
+                        </div>
+                            {qtyWarning && (
+                                <div className=" text-red-600 text-xs z-50 mt-2">
+                                    {qtyWarning}
+                                </div>
+                            )}
+                        </div>
+
+
                         {/* ADD TO CART */}
                         <div className="flex justify-between gap-2 text-sm w-full my-4">
                             <button onClick={handleAddToCart}
@@ -749,7 +813,7 @@ export default function ProductPage() {
                                     product?.reviews?.map((review, index) => (
                                         <div
                                             key={index}
-                                            className="border p-4 bg-gray-50"
+                                            className="border p-2 bg-gray-50"
                                         >
                                             <Stars value={review.rating} />
 
@@ -898,6 +962,15 @@ export default function ProductPage() {
             </div>
 
 
+            {previewOpen && (
+                <ImagePreviewModal
+                    images={images}
+                    index={previewIndex}
+                    onClose={() => setPreviewOpen(false)}
+                    onNext={nextPreview}
+                    onPrev={prevPreview}
+                />
+            )}
 
             <Footer />
         </Container>

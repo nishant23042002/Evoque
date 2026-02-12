@@ -290,13 +290,13 @@ export default function Wishlist() {
                       </div>
 
                       {/* BOTTOM INFO */}
-                      <div className="absolute bottom-0 w-full h-20 bg-(--earth-charcoal)/30 text-(--text-inverse)">
+                      <div className="absolute bottom-0 w-full h-20 bg-(--linen-100) text-(--text-secondary)">
                         <div className="mx-1 py-1 flex flex-col text-xs max-[450px]:text-[11px]">
                           <p className="text-sm w-full truncate">{item.name}</p>
                           <div className="flex">
                             <span className="font-semibold mr-2">Price: {item.price}</span>
                             {item.originalPrice && (
-                              <span className="line-through text-muted/70">
+                              <span className="line-through text-(--text-secondary)">
                                 {item.originalPrice}
                               </span>
                             )}
@@ -305,15 +305,13 @@ export default function Wishlist() {
                         <button onClick={(e) => {
                           e.preventDefault();
                           e.stopPropagation();
-
                           handleMoveToBag(item);
                         }}
-                          className="border border-(--border-strong)
+                          className="
                             cursor-pointer absolute bottom-0 w-full
-                            text-(--text-inverse)
-                            font-medium
-                            py-1.5                       
-                            bg-primary text-xs
+                            bg-(--linen-200) hover:bg-(--linen-200)/50
+                            py-1.5 text-primary font-bold                      
+                            text-xs
                             transition-all duration-300                         
                             ">
                           Move to Bag

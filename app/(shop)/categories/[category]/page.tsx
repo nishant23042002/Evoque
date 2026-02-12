@@ -14,7 +14,7 @@ import Product from "@/types/ProductTypes";
 import { useQuery } from "@tanstack/react-query";
 import { useRouter } from "next/navigation";
 import Footer from "@/components/Footer/Footer";
-type SortOption = "newest" | "low-high" | "high-low";
+type SortOption = "recommended" | "newest" | "low-high" | "high-low";
 
 interface CategoryProductsResponse {
     category: Category;
@@ -37,6 +37,7 @@ export async function fetchCategoryWithProducts(
 }
 
 const SORT_OPTIONS: { label: string; value: SortOption }[] = [
+    { label: "Recommended", value: "recommended" },
     { label: "Newest", value: "newest" },
     { label: "Price: Low to High", value: "low-high" },
     { label: "Price: High to Low", value: "high-low" },
@@ -111,11 +112,11 @@ const ProductCategoryPage = () => {
 
 
     const handleSortChange = (value: SortOption) => {
+        setSortOpen(false);
         const params = new URLSearchParams(searchParams.toString());
         params.set("sort", value);
 
         router.replace(`?${params.toString()}`);
-        setSortOpen(false);
     };
 
 
@@ -158,11 +159,11 @@ const ProductCategoryPage = () => {
 
             {/* ---------------- SUB CATEGORY BAR ---------------- */}
             <div className="md:w-full mx-auto sticky top-15 z-30 border-b-(--border-strong) bg-(--surface-elevated) border-b border-(--border-light)">
-                <div className="relative mx-2 h-40 flex flex-nowrap overflow-auto items-center sm:justify-center gap-2 scrollbar-hide">
+                <div className="relative mx-2 h-40 flex flex-nowrap overflow-auto items-center sm:justify-center gap-1 scrollbar-hide">
                     {/* ALL */}
                     <Link href={`/categories/${categorySlug}`} scroll={false} className="flex flex-col items-center min-w-20">
                         <div className={clsx(
-                            "flex justify-center items-center mb-3.75 w-20 h-25 mx-1 rounded-sm overflow-hidden border transition-all",
+                            "flex justify-center items-center mb-5 w-20 h-25 mx-1 overflow-hidden border transition-all",
                             !activeSub ? "bg-primary border-primary ring-1 ring-accent" : "bg-(--surface-muted) hover:ring-accent"
                         )}>
                             <p className={clsx(
@@ -205,7 +206,7 @@ const ProductCategoryPage = () => {
                                 className="flex flex-col items-center min-w-20"
                             >
                                 <div className={clsx(
-                                    "overflow-hidden bg-(--linen-100) rounded-[3px] border transition-all",
+                                    "overflow-hidden bg-(--linen-100) border transition-all",
                                     isActive ? "border-primary ring-1 ring-primary" : "border-border hover:border-primary"
                                 )}>
                                     <Image
@@ -213,7 +214,7 @@ const ProductCategoryPage = () => {
                                         alt={item.name}
                                         width={80}
                                         height={80}
-                                        className="object-cover h-24.75 rounded-[3px]"
+                                        className="object-cover h-24.75"
                                     />
                                 </div>
                                 <div className="w-20 flex items-center justify-center">
@@ -237,7 +238,7 @@ const ProductCategoryPage = () => {
                     animatePage ? "opacity-100 translate-y-0" : "opacity-0 translate-y-10"
                 )}
             >
-                <div className="relative select-none flex justify-between pt-4 pb-2 px-4 mx-1 sm:mx-2">
+                <div className="relative select-none flex justify-between pt-4 pb-2  mx-1 sm:mx-2">
                     <div onClick={() => setSortOpen((prev) => !prev)} className="flex cursor-pointer items-center justify-center gap-2">
                         <div className="font-medium hover:text-black/70 duration-300 tracking-wider uppercase text-sm">
                             Sort
@@ -253,10 +254,9 @@ const ProductCategoryPage = () => {
                             <div
                                 className="
                                     absolute top-12 left-4 z-40
-                                    w-56 h-35
+                                    w-56 h-45
                                     bg-white
-                                    border border-neutral-300
-                                    shadow-xl
+                                    border border-(--border-strong)
                                     p-4
                                     animate-in fade-in zoom-in-95 duration-150
                                     "
@@ -266,16 +266,16 @@ const ProductCategoryPage = () => {
                                         <label
                                             key={item.value}
                                             className="flex items-center justify-between cursor-pointer select-none"
-                                            onClick={() => handleSortChange(item.value)}
                                         >
                                             <span className="text-lg">{item.label}</span>
 
                                             <input
                                                 type="radio"
                                                 checked={sortValue === item.value}
-                                                readOnly
-                                                className="w-4 h-4 accent-black pointer-events-none"
+                                                onChange={() => handleSortChange(item.value)}
+                                                className="w-4 h-4 accent-black cursor-pointer"
                                             />
+
                                         </label>
                                     ))}
                                 </div>
@@ -287,7 +287,7 @@ const ProductCategoryPage = () => {
                         <div className="font-medium hover:text-black/70 duration-300 tracking-wider uppercase text-sm">
                             FILTERS
                         </div>
-                        <div>
+                        <div className="cursor-pointer hover:rotate-90 transition duration-300">
                             <svg role="img" aria-hidden="true" focusable="false" viewBox="0 0 16 16" xmlns="http://www.w3.org/2000/svg" height="16" width="16"><path d="M9 2.25h4v4H9zM3 9.75h4v4H3z"></path><path d="M16 11v1.5H0V11zM16 3.5V5H0V3.5z"></path></svg>
                         </div>
                     </div>

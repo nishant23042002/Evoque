@@ -39,3 +39,34 @@ export async function DELETE(
         return NextResponse.json({ message: "Unauthorized" }, { status: 401 });
     }
 }
+
+
+export async function PATCH(
+    req: Request,
+    context: { params: Promise<{ variantSku: string }> }
+) {
+    try {
+        const { quantity } = await req.json();
+        const { variantSku } = await context.params;
+
+        const { userId } = await requireAuth();
+        await connectDB();
+
+        const userObjectId = new Types.ObjectId(userId);
+
+        const result = await Cart.updateOne(
+            {
+                userId: userObjectId,
+                "items.variantSku": variantSku,
+            },
+            {
+                $set: { "items.$.quantity": quantity },
+            }
+        );
+
+        return NextResponse.json({ success: true, result });
+    } catch (err) {
+        console.error("PATCH ERROR:", err);
+        return NextResponse.json({ message: "Error" }, { status: 500 });
+    }
+}
