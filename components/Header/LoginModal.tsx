@@ -241,9 +241,7 @@ export default function LoginModalUI() {
                 className="
                     relative w-225 max-w-[95vw] overflow-hidden rounded-[3px]
                     bg-linear-to-b
-                    from-(--linen-800)
-                    to-primary
-                    shadow-xl
+                    bg-(--linen-800)
                 "
             >
                 {/* Close */}
@@ -325,7 +323,7 @@ export default function LoginModalUI() {
 
 
                     {/* RIGHT */}
-                    <div className="bg-(--surface) md:mb-6 md:rounded-b-sm p-5 flex flex-col justify-center">
+                    <div className="bg-(--linen-200) md:mb-6 md:rounded-b-sm p-5 flex flex-col justify-center">
                         {step === "mobile" ? (
                             <div className="w-full max-w-sm mx-auto px-2 sm:px-0">
                                 <h3 className="text-base sm:text-lg font-semibold text-(--linen-800) mb-4 text-center">
@@ -368,9 +366,9 @@ export default function LoginModalUI() {
                                     onClick={sendOtp}
                                     disabled={!phoneNumber || isPending || resendCountdown > 0}
                                     className="
-                                        w-full mt-4 py-2 rounded-md
+                                        w-full mt-4 py-2
                                         text-sm sm:text-base font-medium
-                                        bg-primary text-primary-foreground
+                                        bg-(--linen-400) text-primary-foreground
                                        hover:bg-(--btn-primary-hover)
                                         hover:disabled:opacity-80 disabled:cursor-not-allowed
                                         transition

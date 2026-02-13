@@ -14,6 +14,7 @@ import { fetchWishlist } from "@/store/wishlist/wishlist.thunks";
 import { clearWishlist } from "@/store/wishlist/wishlist.slice";
 import { fetchCart } from "@/store/cart/cart.thunks";
 import { clearCart } from "@/store/cart/cart.slice";
+import { clearRecentlyViewed } from "@/store/recentlyViewed/recentlyViewed.slice";
 export const dynamic = "force-dynamic";
 
 interface BackendUser {
@@ -68,6 +69,7 @@ export function AuthProvider({
                 setUser(null);
                 dispatch(clearWishlist());
                 dispatch(clearCart());
+                dispatch(clearRecentlyViewed());
             }
         }
     };

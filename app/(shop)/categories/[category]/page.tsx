@@ -265,6 +265,7 @@ const ProductCategoryPage = () => {
                                     {SORT_OPTIONS.map((item) => (
                                         <label
                                             key={item.value}
+                                            onClick={() => handleSortChange(item.value)}
                                             className="flex items-center justify-between cursor-pointer select-none"
                                         >
                                             <span className="text-lg">{item.label}</span>

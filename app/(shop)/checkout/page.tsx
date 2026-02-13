@@ -4,13 +4,14 @@ import Image from "next/image";
 import { useEffect, useMemo, useState } from "react";
 import AddressSection from "./address/AddressSection";
 import { CartItem } from "@/types/CartTypes";
-import { Lock, ShoppingBag } from "lucide-react";
+import { Lock } from "lucide-react";
 import { Address } from "@/types/AddressTypes";
 import { RazorpayOptions } from "@/types/Razorpay";
 import { useDispatch } from "react-redux";
 import { clearCart } from "@/store/cart/cart.slice";
 import { MdDeleteOutline } from "react-icons/md";
 import { removeCartItem } from "@/store/cart/cart.thunks";
+import useAnimatedNumber from "@/lib/useAnimateNumber";
 import { useRouter } from "next/navigation";
 /* ---------------- TYPES ---------------- */
 
@@ -268,6 +269,17 @@ function OrderSummary({
         [cartItems]
     );
 
+    const animateDiscount = useAnimatedNumber(discount);
+
+    const subTotal = data?.summary.subtotal ?? 0
+    const animatedSubTotal = useAnimatedNumber(subTotal)
+
+    const tax = data?.summary.tax ?? 0
+    const animatedTax = useAnimatedNumber(tax);
+
+    const grandTotal = data?.summary.totalAmount ?? 0
+    const animatedGrandTotal = useAnimatedNumber(grandTotal)
+
     const handlePayment = async () => {
         if (!data) return;
         if (!address) return alert("Select address");
@@ -350,31 +362,31 @@ function OrderSummary({
 
                 <div className="flex justify-between text-sm">
                     <span>Bag Total</span>
-                    <span>Rs. {data.summary.subtotal}</span>
+                    <span>Rs. {animatedSubTotal}</span>
                 </div>
 
                 {discount > 0 && (
                     <div className="flex justify-between text-red-600 text-sm">
                         <span>Discount</span>
-                        <span>-Rs. {discount}</span>
+                        <span>-Rs. {animateDiscount}</span>
                     </div>
                 )}
 
                 <div className="flex justify-between text-sm">
                     <span>Tax</span>
-                    <span>Rs. {data.summary.tax}</span>
+                    <span>Rs. {animatedTax}</span>
                 </div>
 
                 <div className="flex justify-between text-sm">
                     <span>Shipping</span>
-                    <span>₹{data.summary.shipping}</span>
+                    <span>₹{data.summary.shipping ?? 0}</span>
                 </div>
 
                 <hr />
 
                 <div className="flex justify-between font-medium text-lg">
                     <span>Total</span>
-                    <span>Rs. {data.summary.totalAmount}</span>
+                    <span>Rs. {animatedGrandTotal}</span>
                 </div>
 
                 <button
@@ -395,7 +407,7 @@ function OrderSummary({
             <div className="w-full md:hidden fixed bottom-0 h-35 bg-white flex flex-col justify-between p-4">
                 <div className="flex justify-between font-medium text-lg">
                     <span>Total</span>
-                    <span>Rs. {data.summary.totalAmount}</span>
+                    <span>Rs. {animatedGrandTotal}</span>
                 </div>
                 <button
                     disabled={loading || cartItems.length === 0}

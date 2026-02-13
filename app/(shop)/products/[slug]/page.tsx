@@ -10,7 +10,7 @@ import { RootState } from "@/store";
 import { addWishlistItem, removeWishlistItem } from "@/store/wishlist/wishlist.thunks"
 import Product from "@/types/ProductTypes";
 import { SizeVariant } from "@/types/ProductTypes";
-import { addCartItem, updateCartQuantity } from "@/store/cart/cart.thunks";
+import { addCartItem } from "@/store/cart/cart.thunks";
 import SizeChartModal from "@/components/SizeChartModal";
 import { useRef } from "react";
 import { useMediaQuery } from "@/src/useMediaQuery";
@@ -22,7 +22,7 @@ import Footer from "@/components/Footer/Footer";
 import { addRecentlyViewed } from "@/store/recentlyViewed/recentlyViewed.slice";
 import { showProductToast } from "@/store/ui/ui.slice";
 import ImagePreviewModal from "@/components/ImagePreviewModal";
-import { updateQuantityLocal } from "@/store/cart/cart.slice";
+
 
 function MobileImageSlider({
     images,

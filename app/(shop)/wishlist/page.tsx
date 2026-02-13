@@ -87,33 +87,45 @@ export default function Wishlist() {
   ======================= */
   if (!loading && !wishlistItems.length) {
     return (
-      <div className="flex flex-col items-center justify-center h-[95vh] text-center px-6">
-        {/* Icon */}
-        <div className="mb-2 animate-float flex items-center justify-center w-20 h-20 rounded-full bg-(--earth-charcoal)/10">
-          <Heart className="w-10 h-10 text-primary" />
+      <>
+        <div className="min-h-[90vh] bg-[#f3f3f3] px-4 py-6">
+
+          {/* TITLE */}
+          <h1 className="text-5xl tracking-wider font-bold">
+            FAVOURITES
+          </h1>
+
+          {/* ITEM COUNT */}
+          <p className="mt-8 text-sm tracking-wide font-medium">
+            0 ITEMS
+          </p>
+
+          {/* DESCRIPTION */}
+          <p className="mt-2 text-sm text-black/70">
+            Tap the heart icon on items to save them here.
+          </p>
+
+          {/* BUTTON */}
+          <Link
+            href="/"
+            className="
+            inline-block mt-6
+            border border-black
+            px-14 py-4
+            text-sm tracking-wide
+            hover:bg-black hover:text-white
+            transition-colors duration-200
+          "
+          >
+            EXPLORE PRODUCTS
+          </Link>
+
         </div>
-
-        {/* Text */}
-        <h2 className="text-xl font-semibold text-primary">
-          Your wishlist is empty
-        </h2>
-        <p className="mt-2 text-sm font-medium text-(--linen-800)/70 max-w-sm">
-          Save your favourite items here and come back anytime to find them quickly.
-        </p>
-
-        {/* CTA */}
-        <Link
-          href="/"
-          className="mt-6 inline-flex items-center justify-center rounded-full px-6 py-2 text-sm font-medium
-                          bg-primary text-black hover:opacity-90 transition"
-        >
-          <span className="text-(--linen-100)">
-            Explore Products
-          </span>
-        </Link>
-      </div>
+        <Footer />
+      </>
     );
   }
+
 
 
 
@@ -159,14 +171,16 @@ export default function Wishlist() {
           <div className="flex flex-col w-[70%] lg:sticky top-0 scrollbar-hide self-start h-fit">
 
             <div className="text-5xl flex max-lg:flex-col pb-2  lg:justify-between lg:items-center text-(--linen-800) font-semibold tracking-tight">
-              <span>Favourites</span>
+              <h1 className="text-2xl sm:text-5xl tracking-wider font-bold">
+                FAVOURITES
+              </h1>
               <span className="text-lg tracking-wide font-light">{count} ITEM</span>
             </div>
 
 
             {/* LEFT — BIG ITEM */}
             {activeItem && (
-              <div className="hidden lg:block">
+              <div className="hidden lg:block mb-12">
                 <div className="sticky top-20 border border-(--border-light)">
 
                   {/* IMAGE */}
@@ -203,6 +217,7 @@ export default function Wishlist() {
                       )}
                     </div>
 
+                  </div>
                     <button onClick={(e) => {
                       e.preventDefault();
                       e.stopPropagation();
@@ -210,17 +225,14 @@ export default function Wishlist() {
                       handleMoveToBag(activeItem);
 
                     }}
-                      className="border border-(--border-strong)
-                            cursor-pointer mt-2 w-full
-                            text-(--text-inverse)
-                            font-semibold
-                            py-1.5                       
-                            bg-(--earth-olive)
-                            transition-all duration-300                         
+                      className="cursor-pointer w-full
+                            bg-primary text-white hover:bg-(--linen-200)
+                            py-2 hover:text-primary font-bold                      
+                            text-xs
+                            transition-all duration-300                           
                             ">
                       MOVE TO BAG
                     </button>
-                  </div>
                 </div>
               </div>
             )}
@@ -309,8 +321,8 @@ export default function Wishlist() {
                         }}
                           className="
                             cursor-pointer absolute bottom-0 w-full
-                            bg-(--linen-200) hover:bg-(--linen-200)/50
-                            py-1.5 text-primary font-bold                      
+                            bg-primary text-white hover:bg-(--linen-200)
+                            py-2 hover:text-primary font-bold                      
                             text-xs
                             transition-all duration-300                         
                             ">

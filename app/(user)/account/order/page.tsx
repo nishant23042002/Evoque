@@ -1,28 +1,26 @@
 "use client";
 
-import { useAuth } from "@/components/AuthProvider";
 import { useEffect, useState } from "react";
 import Image from "next/image";
 import clsx from "clsx";
 import { Order } from "@/types/OrderTypes";
 
-const statusColorMap: Record<string, string> = {
-  pending: "bg-yellow-500",
-  processing: "bg-blue-500",
-  shipped: "bg-purple-500",
-  delivered: "bg-green-600",
-  cancelled: "bg-red-600",
-  returned: "bg-gray-600",
-};
 
+const statusStyle: Record<string, string> = {
+  confirmed: "border-yellow-500 text-yellow-600",
+  processing: "border-blue-500 text-blue-600",
+  shipped: "border-purple-500 text-purple-600",
+  delivered: "border-green-600 text-green-600",
+  cancelled: "border-red-600 text-red-600",
+  returned: "border-gray-500 text-gray-600",
+};
 
 export default function MyOrdersPage() {
   const [orders, setOrders] = useState<Order[]>([]);
   const [loading, setLoading] = useState(true);
   const [openOrder, setOpenOrder] = useState<string | null>(null);
-  const [showLogoutConfirm, setShowLogoutConfirm] = useState(false);
 
-  const { logout } = useAuth();
+
 
   useEffect(() => {
     fetch("/api/orders/my")
@@ -31,16 +29,12 @@ export default function MyOrdersPage() {
       .finally(() => setLoading(false));
   }, []);
 
-  const handleLogout = async () => {
-    await logout();
-    window.location.reload(); // hard clear state
-  };
 
   if (loading) {
     return (
-      <div className="max-w-4xl mx-auto p-6 space-y-6">
+      <div className="max-w-5xl mx-auto px-6 py-10 space-y-6">
         {[...Array(4)].map((_, i) => (
-          <div key={i} className="h-40 rounded-lg bg-gray-100 animate-pulse" />
+          <div key={i} className="h-40 border animate-pulse" />
         ))}
       </div>
     );
@@ -49,10 +43,12 @@ export default function MyOrdersPage() {
   if (!orders.length) {
     return (
       <div className="min-h-[70vh] flex items-center justify-center text-center">
-        <div>
-          <h2 className="text-xl font-semibold">No orders yet</h2>
-          <p className="text-sm text-gray-500 mt-2">
-            Your orders will appear here once you make a purchase.
+        <div className="space-y-3">
+          <h2 className="text-lg font-semibold tracking-wide uppercase">
+            No Orders Yet
+          </h2>
+          <p className="text-sm text-gray-500">
+            Your purchases will appear here.
           </p>
         </div>
       </div>
@@ -60,8 +56,8 @@ export default function MyOrdersPage() {
   }
 
   return (
-    <div className="max-w-5xl h-[95vh] overflow-auto scrollbar-hide mx-auto space-y-2">
-      <div className="space-y-4 py-2 h-165 overflow-auto scrollbar-hide">
+    <div>
+      <div className="px-2 sm:px-4 py-2 space-y-4 sm:space-y-6">
         {orders.map(order => {
           const isOpen = openOrder === order._id;
           const firstItem = order.items[0];
@@ -69,68 +65,74 @@ export default function MyOrdersPage() {
           return (
             <div
               key={order._id}
-              className="border rounded-[3px] overflow-hidden transition"
+              className="border border-gray-200 transition hover:border-black"
             >
-              {/* ===== HEADER ROW (MYNTRA STYLE) ===== */}
+              {/* HEADER */}
               <button
                 onClick={() => setOpenOrder(isOpen ? null : order._id)}
-                className="w-full text-left p-2 flex gap-4 cursor-pointer duration-300 hover:bg-(--linen-200) transition"
+                className="
+                w-full text-left
+                flex flex-col sm:flex-row
+                gap-4 
+                p-4
+                hover:bg-gray-50 transition
+              "
               >
-                {/* IMAGE */}
-                <div className="relative w-20 h-24 rounded-[3px] overflow-hidden bg-gray-100">
-                  {firstItem?.image && (
-                    <Image
-                      src={firstItem.image}
-                      alt={firstItem.name}
-                      fill
-                      className="object-cover"
-                    />
-                  )}
-                </div>
-
-                {/* DETAILS */}
-                <div className="flex-1 space-y-1">
-
-                  <p className="font-medium text-gray-900 line-clamp-1">
-                    {firstItem?.name}
-                  </p>
-
-                  <p className="text-xs text-gray-500">
-                    Size: {firstItem?.size || "-"}
-                  </p>
-                  <div>
-                    <p className="text-xs text-gray-400">
-                      Order-Id:  {order.paymentInfo.orderId}
-                    </p>
-                    <p className="text-xs text-gray-400">Payment Via: {order.paymentInfo.method}</p>
+                {/* TOP ROW MOBILE */}
+                <div className="flex gap-4 w-full">
+                  {/* IMAGE */}
+                  <div className="
+                  relative
+                  w-14 h-18
+                  sm:w-16 sm:h-20
+                  border overflow-hidden
+                ">
+                    {firstItem?.image && (
+                      <Image
+                        src={firstItem.image}
+                        alt={firstItem.name}
+                        fill
+                        className="object-cover"
+                      />
+                    )}
                   </div>
 
-                  <div className="mt-2">
+                  {/* DETAILS */}
+                  <div className="relative flex-1 space-y-1">
+                    <p className="text-sm font-medium tracking-wide line-clamp-1">
+                      {firstItem?.name}
+                    </p>
+
+                    <p className="text-[11px] sm:text-xs text-gray-500 uppercase tracking-widest">
+                      Size {firstItem?.size || "-"}
+                    </p>
+
+                    <div className="text-[10px] sm:text-[11px] text-gray-400 uppercase tracking-widest space-y-1">
+                      <p>Order ID {order.paymentInfo.orderId}</p>
+                      <p>{order.paymentInfo.method}</p>
+                    </div>
+
+                    {/* STATUS */}
                     <span
                       className={clsx(
-                        "inline-block text-white text-xs px-3 py-1 rounded",
-                        {
-                          "bg-yellow-500": order.orderStatus === "confirmed",
-                          "bg-blue-500": order.orderStatus === "processing",
-                          "bg-purple-500": order.orderStatus === "shipped",
-                          "bg-green-600": order.orderStatus === "delivered",
-                          "bg-red-600": order.orderStatus === "cancelled",
-                        }
+                        "inline-block mt-1 sm:mt-2 text-[9px] sm:text-[10px] px-2 sm:px-3 py-1 border uppercase tracking-widest",
+                        statusStyle[order.orderStatus]
                       )}
                     >
-                      {order.orderStatus.toUpperCase()}
+                      {order.orderStatus}
                     </span>
+                    <div className="
+                      absolute right-0 bottom-2 sm:ml-auto text-end
+                      text-sm font-semibold tracking-wide
+                      mt-2 sm:mt-0
+                    ">
+                      Rs. {order.grandTotal}
+                    </div>
                   </div>
-
-                </div>
-
-                {/* PRICE */}
-                <div className="text-right">
-                  <p className="font-semibold text-gray-900">₹{order.grandTotal}</p>
                 </div>
               </button>
 
-              {/* ===== EXPAND SECTION ===== */}
+              {/* EXPAND */}
               <div
                 className={clsx(
                   "grid transition-all duration-500",
@@ -138,54 +140,93 @@ export default function MyOrdersPage() {
                 )}
               >
                 <div className={`overflow-hidden ${isOpen && "border-t"}`}>
+                  <div className="
+                  p-4 sm:p-6 lg:p-8
+                  space-y-8 sm:space-y-10
+                  bg-gray-50
+                ">
 
-                  <div className="p-4 space-y-6">
-
-                    {/* ALL ITEMS */}
-                    <div className="space-y-4">
+                    {/* ITEMS */}
+                    <div className="space-y-6">
                       {order.items.map(item => (
-                        <div key={item.sku} className="flex flex-col justify-center items-center gap-4">
-                          <div className="relative w-16 h-20 rounded-md overflow-hidden bg-gray-100">
+                        <div
+                          key={item.sku}
+                          className="
+                          flex flex-col sm:flex-row
+                          gap-4 sm:gap-6
+                        "
+                        >
+                          <div className="
+                          relative
+                          w-14 h-18
+                          sm:w-16 sm:h-20
+                          border overflow-hidden
+                        ">
                             {item.image && (
-                              <Image src={item.image} alt={item.name} fill className="object-cover" />
+                              <Image
+                                src={item.image}
+                                alt={item.name}
+                                fill
+                                className="object-cover"
+                              />
                             )}
                           </div>
 
-                          <div className="flex flex-col justify-center flex-1 items-center text-sm">
-                            <p className="font-medium">{item.name}</p>
-                            <p className="text-gray-500">
-                              Qty {item.quantity} · ₹{item.price}
+                          <div className="text-sm space-y-1">
+                            <p className="font-medium tracking-wide">
+                              {item.name}
                             </p>
-                            <div className="text-xs text-gray-400 flex gap-3 mt-1">
-                              {item.size && <span>Size: {item.size}</span>}
-                              {item.color && <span>Color: {item.color}</span>}
+
+                            <p className="text-gray-500 text-[11px] sm:text-xs uppercase tracking-widest">
+                              Qty {item.quantity} · Rs. {item.price}
+                            </p>
+
+                            <div className="
+                            text-[10px] sm:text-[11px]
+                            text-gray-400 uppercase tracking-widest
+                            flex gap-3 sm:gap-4
+                          ">
+                              {item.size && <span>Size {item.size}</span>}
+                              {item.color && <span>{item.color}</span>}
                             </div>
                           </div>
                         </div>
                       ))}
                     </div>
 
-                    {/* RATE PRODUCT */}
-                    <div className="border rounded-md p-3">
-                      <p className="font-medium text-sm mb-2">Rate this product</p>
-                      <div className="flex gap-1 text-gray-300 text-xl">
+                    {/* RATE */}
+                    <div className="border p-4 sm:p-6 bg-white space-y-2">
+                      <p className="text-[11px] sm:text-xs uppercase tracking-widest font-medium">
+                        Rate Product
+                      </p>
+                      <div className="text-lg sm:text-xl text-gray-300">
                         ★★★★★
                       </div>
                     </div>
 
                     {/* ADDRESS */}
-                    <div className="border rounded-md p-3 text-sm">
-                      <p className="font-medium mb-1">Delivery Address</p>
-                      <p className="text-gray-600">
-                        {order.shippingAddress.name}, {order.shippingAddress.city},{" "}
-                        {order.shippingAddress.state} {order.shippingAddress.pincode}
+                    <div className="border p-4 sm:p-6 bg-white space-y-2 text-sm">
+                      <p className="text-[11px] sm:text-xs uppercase tracking-widest font-medium">
+                        Delivery Address
+                      </p>
+                      <p className="text-gray-600 text-sm leading-relaxed">
+                        {order.shippingAddress.name},{" "}
+                        {order.shippingAddress.city},{" "}
+                        {order.shippingAddress.state}{" "}
+                        {order.shippingAddress.pincode}
                       </p>
                     </div>
 
-                    {/* ORDER META */}
-                    <div className="text-xs text-gray-500 space-y-1">
-                      <p>Ordered on {new Date(order.createdAt).toDateString()}</p>
-                      <p>Total Paid: ₹{order.grandTotal}</p>
+                    {/* META */}
+                    <div className="
+                    text-[11px] sm:text-xs
+                    text-gray-500 uppercase tracking-widest
+                    space-y-1
+                  ">
+                      <p>
+                        Ordered {new Date(order.createdAt).toDateString()}
+                      </p>
+                      <p>Total Paid Rs. {order.grandTotal}</p>
                     </div>
 
                   </div>
@@ -195,33 +236,7 @@ export default function MyOrdersPage() {
           );
         })}
       </div>
-
-      {/* LOGOUT MODAL */}
-      {showLogoutConfirm && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center">
-          <div className="absolute inset-0 bg-black/30" />
-          <div className="relative w-[90%] max-w-sm p-6 rounded-[3px] border bg-white shadow-lg">
-            <h3 className="text-lg font-semibold">Confirm Logout</h3>
-            <p className="text-sm mt-2 text-gray-600">
-              Are you sure you want to logout?
-            </p>
-            <div className="flex justify-end gap-3 mt-6">
-              <button
-                onClick={() => setShowLogoutConfirm(false)}
-                className="px-4 py-2 text-sm border rounded"
-              >
-                Cancel
-              </button>
-              <button
-                onClick={handleLogout}
-                className="px-4 py-2 text-sm rounded bg-red-600 text-white"
-              >
-                Logout
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
     </div>
   );
+
 }

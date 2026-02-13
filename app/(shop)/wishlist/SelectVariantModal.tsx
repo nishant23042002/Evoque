@@ -4,7 +4,6 @@ import Image from "next/image";
 import { X } from "lucide-react";
 import { useMemo, useState } from "react";
 import clsx from "clsx";
-
 import { Variant, SizeVariant } from "@/types/ProductTypes";
 import { sizeScaleMap } from "@/constants/productSizes";
 import Product from "@/types/ProductTypes";
@@ -154,7 +153,7 @@ export default function SelectedVariantModal({
                                     setPreviewImage(img.url);
                                 }}
                                 className={clsx(
-                                    "relative aspect-square overflow-hidden rounded-[3px] border",
+                                    "relative cursor-pointer aspect-square overflow-hidden rounded-[3px] border",
                                     image === img.url
                                         ? "ring-2 ring-primary border-primary"
                                         : "border-gray-200"
@@ -178,9 +177,9 @@ export default function SelectedVariantModal({
                                 <button
                                     onClick={() => setPreviewImage(null)}
                                     className="
-                                        absolute top-3 right-3 z-30
+                                        absolute cursor-pointer top-3 right-3 z-30
                                         bg-black/40 text-white
-                                        p-1 rounded-[3px] cursor-pointer
+                                        p-1 rounded-[3px]
                                         hover:bg-black/80
                                         transition
                                     "
@@ -217,7 +216,7 @@ export default function SelectedVariantModal({
                                         setActiveImage(null);
                                     }}
                                     className={clsx(
-                                        "w-8 h-8 border rounded",
+                                        "w-8 h-8 rounded cursor-pointer",
                                         v.color.slug === selectedColor &&
                                         "ring-2 ring-primary"
                                     )}
@@ -241,7 +240,7 @@ export default function SelectedVariantModal({
                                         disabled={disabled}
                                         onClick={() => s.variant && setSelectedSize(s.variant)}
                                         className={clsx(
-                                            "px-3 py-1 rounded-[3px] text-sm border font-bold transition",
+                                            "px-3 cursor-pointer py-1 rounded-[3px] text-sm border font-bold transition",
                                             disabled
                                                 ? "opacity-40 line-through cursor-not-allowed border-border"
                                                 : selectedSize?.variantSku === s.variant?.variantSku
@@ -258,7 +257,7 @@ export default function SelectedVariantModal({
                     </div>
 
                     {error && (
-                        <p className="text-xs text-red-600">
+                        <p className=" text-xs text-red-600">
                             Please select a size
                         </p>
                     )}
@@ -287,7 +286,11 @@ export default function SelectedVariantModal({
 
                             onClose();
                         }}
-                        className="w-full py-2 bg-primary text-white font-semibold rounded"
+                        className="cursor-pointer w-full
+                            bg-primary text-white hover:bg-(--linen-200)
+                            py-3 hover:text-primary font-bold                      
+                            text-xs
+                            transition-all duration-300"
                     >
                         Add to Bag
                     </button>

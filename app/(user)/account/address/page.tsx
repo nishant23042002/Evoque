@@ -12,13 +12,35 @@ export default function AddressPage() {
     const [openForm, setOpenForm] = useState(false);
     const [editAddress, setEditAddress] = useState<Address | null>(null);
 
+
     const fetchAddresses = async () => {
-        setLoading(true);
-        const res = await fetch("/api/address");
-        const data = await res.json();
-        setAddresses(data);
-        setLoading(false);
+        try {
+            setLoading(true);
+
+            const res = await fetch("/api/address");
+
+            if (!res.ok) {
+                setAddresses([]);
+                return;
+            }
+
+            const data = await res.json();
+
+            // CRITICAL CHECK
+            if (!Array.isArray(data)) {
+                setAddresses([]);
+                return;
+            }
+
+            setAddresses(data);
+        } catch (err) {
+            console.error(err);
+            setAddresses([]);
+        } finally {
+            setLoading(false);
+        }
     };
+
 
     // Load addresses
     useEffect(() => {
@@ -43,48 +65,22 @@ export default function AddressPage() {
 
     if (loading) return <AddressSkeleton />;
 
+
     return (
-        <div
-            className="min-h-screen flex flex-col"
-            style={{ background: "var(--background)" }}
-        >
-            {/* HEADER */}
-            <div
-                className="sticky top-0 z-20 backdrop-blur-md"
-                style={{
-                    background: "rgba(250,248,244,0.85)",
-                    borderBottom: "1px solid var(--border)",
-                }}
-            >
-                <div className="max-w-5xl mx-auto py-5 flex justify-between items-center">
-                    <h1 className="text-xl font-semibold text-foreground tracking-wide">
-                        Delivery Address
-                    </h1>
-
-                    <button
-                        onClick={() => {
-                            setEditAddress(null);
-                            setOpenForm(true);
-                        }}
-                        className="text-sm font-medium underline"
-                        style={{ color: "var(--primary)" }}
-                    >
-                        + Add New
-                    </button>
-                </div>
-            </div>
-
+        <div className="relative min-h-screen flex flex-col">
             {/* CONTENT */}
-            <div className="flex-1 overflow-y-auto">
-                <div className="max-w-5xl mx-auto py-6 space-y-6">
-                    {addresses.length === 0 ? (
-                        <EmptyState
-                            onAdd={() => {
-                                setEditAddress(null);
-                                setOpenForm(true);
-                            }}
-                        />
-                    ) : (
+            <button
+                onClick={() => {
+                    setEditAddress(null);
+                    setOpenForm(true);
+                }}
+                className="absolute cursor-pointer -top-4 right-4 text-xs uppercase tracking-widest hover:underline underline-offset-2"
+            >
+                Add New
+            </button>
+            <div className="flex-1">
+                <div className="px-2 sm:px-4 py-2">
+                    {Array.isArray(addresses) && addresses.length > 0 ? (
                         addresses.map(address => (
                             <AddressCard
                                 key={address._id}
@@ -96,11 +92,18 @@ export default function AddressPage() {
                                 }}
                             />
                         ))
+                    ) : (
+                        <EmptyState
+                            onAdd={() => {
+                                setEditAddress(null);
+                                setOpenForm(true);
+                            }}
+                        />
                     )}
                 </div>
+
             </div>
 
-            {/* DRAWER */}
             {openForm && (
                 <AddressFormDrawer
                     address={editAddress}
@@ -110,33 +113,25 @@ export default function AddressPage() {
             )}
         </div>
     );
+
 }
 
 /* ---------------- EMPTY STATE ---------------- */
 
 function EmptyState({ onAdd }: { onAdd: () => void }) {
     return (
-        <div
-            className="rounded-xl h-[95vh] p-10 text-center space-y-4"
-            style={{
-                background: "var(--surface)",
-                border: "1px dashed var(--border)",
-            }}
-        >
-            <p className="text-sm text-(--text-secondary)">
-                No delivery address added yet.
+        <div className="border p-16 text-center space-y-4">
+            <p className="text-sm uppercase tracking-widest text-gray-500">
+                No Address Added
             </p>
 
             <button
                 onClick={onAdd}
-                className="px-5 py-2 rounded-md text-sm font-medium"
-                style={{
-                    background: "var(--btn-primary-bg)",
-                    color: "var(--btn-primary-text)",
-                }}
+                className="text-xs uppercase tracking-widest underline"
             >
                 Add Address
             </button>
         </div>
+
     );
 }

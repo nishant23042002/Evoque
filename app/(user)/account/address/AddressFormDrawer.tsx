@@ -72,12 +72,11 @@ export default function AddressFormDrawer({
     };
 
     return (
-        <div className="fixed inset-0 bg-black/30 flex justify-end z-50">
-            <div
-                className="w-full flex flex-col max-w-md h-full p-6 space-y-4 overflow-y-auto"
-                style={{ background: "var(--surface)" }}
-            >
-                <h2 className="text-lg font-semibold text-[var(--foreground)]">
+        <div className="fixed inset-0 bg-black/40 flex justify-end z-50">
+            <div className="w-full max-w-md h-full bg-white p-3 space-y-6 overflow-y-auto border-l">
+
+                <h2 className="text-lg font-semibold uppercase tracking-widest">
+
                     {address ? "Edit Address" : "Add New Address"}
                 </h2>
 
@@ -86,7 +85,7 @@ export default function AddressFormDrawer({
                     placeholder="Full Name *"
                     value={form.name}
                     onChange={e => handleChange("name", e.target.value)}
-                    className="input border border-[var(--border-strong)] p-3"
+                    className="input w-full border border-(--border-strong) p-3"
                 />
 
                 {/* EMAIL */}
@@ -95,7 +94,7 @@ export default function AddressFormDrawer({
                     type="email"
                     value={form.email}
                     onChange={e => handleChange("email", e.target.value)}
-                    className="input border border-[var(--border-strong)] p-3"
+                    className="input border w-full border-(--border-strong) p-3"
                 />
 
                 {/* PHONE */}
@@ -104,7 +103,7 @@ export default function AddressFormDrawer({
                     type="tel"
                     value={form.phone}
                     onChange={e => handleChange("phone", e.target.value)}
-                    className="input border border-[var(--border-strong)] p-3"
+                    className="input border w-full border-(--border-strong) p-3"
                 />
 
                 {/* ADDRESS */}
@@ -112,14 +111,14 @@ export default function AddressFormDrawer({
                     placeholder="Address Line 1 *"
                     value={form.addressLine1}
                     onChange={e => handleChange("addressLine1", e.target.value)}
-                    className="input border border-[var(--border-strong)] p-3"
+                    className="input border w-full border-(--border-strong) p-3"
                 />
 
                 <input
                     placeholder="Address Line 2"
                     value={form.addressLine2}
                     onChange={e => handleChange("addressLine2", e.target.value)}
-                    className="input border border-[var(--border-strong)] p-3"
+                    className="input border w-full border-(--border-strong) p-3"
                 />
 
                 {/* CITY */}
@@ -127,7 +126,7 @@ export default function AddressFormDrawer({
                     placeholder="City *"
                     value={form.city}
                     onChange={e => handleChange("city", e.target.value)}
-                    className="input border border-[var(--border-strong)] p-3"
+                    className="input border w-full border-(--border-strong) p-3"
                 />
 
                 {/* STATE */}
@@ -135,7 +134,7 @@ export default function AddressFormDrawer({
                     placeholder="State *"
                     value={form.state}
                     onChange={e => handleChange("state", e.target.value)}
-                    className="input border border-[var(--border-strong)] p-3"
+                    className="input border w-full border-(--border-strong) p-3"
                 />
 
                 {/* PINCODE */}
@@ -144,12 +143,13 @@ export default function AddressFormDrawer({
                     type="number"
                     value={form.pincode}
                     onChange={e => handleChange("pincode", e.target.value)}
-                    className="input border border-[var(--border-strong)] p-3"
+                    className="input border w-full border-(--border-strong) p-3"
                 />
 
                 {/* DEFAULT */}
-                <label className="flex items-center gap-2 text-sm">
-                    <input
+                <label className="flex gap-3 text-xs uppercase tracking-widest text-gray-600">
+
+                    <input className="cursor-pointer"
                         type="checkbox"
                         checked={form.isDefault}
                         onChange={e => handleChange("isDefault", e.target.checked)}
@@ -162,14 +162,14 @@ export default function AddressFormDrawer({
                     <button
                         onClick={submit}
                         disabled={loading}
-                        className="flex-1 py-3 rounded-md text-sm font-medium bg-black text-white disabled:opacity-60"
+                        className="cursor-pointer flex-1 py-3 bg-black text-white text-xs uppercase tracking-widest"
                     >
                         {loading ? "Saving..." : "Save"}
                     </button>
 
                     <button
                         onClick={onClose}
-                        className="flex-1 py-3 rounded-md text-sm border"
+                        className="cursor-pointer flex-1 py-3 border text-xs uppercase tracking-widest"
                     >
                         Cancel
                     </button>
