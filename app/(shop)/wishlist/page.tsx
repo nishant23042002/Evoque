@@ -184,7 +184,7 @@ export default function Wishlist() {
                 <div className="sticky top-20 border border-(--border-light)">
 
                   {/* IMAGE */}
-                  <div className="relative rounded-[3px] aspect-3/4 overflow-hidden">
+                  <div className="relative group  rounded-[3px] aspect-3/4 overflow-hidden">
                     <Link href={`/products/${activeItem.slug}`}>
                       {activeItem.image ? (
                         <Image
@@ -197,42 +197,44 @@ export default function Wishlist() {
                         <div className="w-full h-full bg-(--surface-muted)" />
                       )}
                     </Link>
+                     <div className="pointer-events-none absolute inset-0 bg-black/10 opacity-0 group-hover:opacity-100" />
                   </div>
 
                   {/* DETAILS */}
                   <div className="mt-3">
                     <div className="mx-1 mt-1">
-                      <h2 className="font-light text-xs">{activeItem.brand}</h2>
-                      <h2 className="text-lg font-medium text-foreground">
+                      <h2 className="font-semibold text-primary text-xs">{activeItem.brand}</h2>
+                      <h2 className="text-lg font-extralight text-foreground">
                         {activeItem.name}
                       </h2>
-                      <span className="text-lg mr-2 font-semibold text-primary">
-                        ₹{activeItem.price}
+                      <span className=" text-red-600 mr-2 font-semibold">
+                        Rs.{activeItem.price}
                       </span>
 
                       {activeItem.originalPrice && (
-                        <span className="line-through text-sm text-(--text-muted)">
+                        <span className="line-through text-sm">
                           ₹{activeItem.originalPrice}
                         </span>
                       )}
                     </div>
 
                   </div>
-                    <button onClick={(e) => {
-                      e.preventDefault();
-                      e.stopPropagation();
+                  <button onClick={(e) => {
+                    e.preventDefault();
+                    e.stopPropagation();
 
-                      handleMoveToBag(activeItem);
+                    handleMoveToBag(activeItem);
 
-                    }}
-                      className="cursor-pointer w-full
-                            bg-primary text-white hover:bg-(--linen-200)
-                            py-2 hover:text-primary font-bold                      
-                            text-xs
-                            transition-all duration-300                           
+                  }}
+                    className="
+                            cursor-pointer w-full
+                            border-(--border-light) hover:bg-white border-t
+                            py-2 hover:text-primary font-bold
+                            text-xs rounded-b-[3px]
+                            transition-all duration-300
                             ">
-                      MOVE TO BAG
-                    </button>
+                    MOVE TO BAG
+                  </button>
                 </div>
               </div>
             )}
@@ -255,83 +257,88 @@ export default function Wishlist() {
                     key={`wishlist-${item.productId}-${index}`}
                     href={`/products/${item.slug}`}
                     onClick={() => setActiveId(item.productId)}
-                    className="block cursor-pointer border border-(--border-light) rounded-[3px]"
+                    className="block border border-(--border-light) cursor-pointer rounded-[3px]"
                   >
-                    <div
-                      className="group relative w-full aspect-4/6 rounded-[3px] overflow-hidden bg-(--surface-muted)"
-                    >
+                    {/* COLUMN WRAPPER */}
+                    <div className="flex flex-col w-full">
 
-                      {item.image && (
-                        <Image
-                          src={item.image}
-                          alt={item.name}
-                          fill
-                          className="object-cover transition-transform duration-500 will-change-transform group-hover:scale-110"
-                        />
-                      )}
+                      {/* IMAGE CARD */}
+                      <div className="group relative w-full aspect-4/5 overflow-hidden bg-(--surface-muted)">
 
-
-                      <div className="pointer-events-none absolute inset-0 bg-black/20 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
-
-                      {/* TOP BAR */}
-                      <div className="flex justify-between left-1 absolute top-2 right-2">
-                        <h3 className="font-medium text-[12px]">
-                          {item?.brand}
-                        </h3>
-                        <button
-                          onClick={(e) => {
-                            e.preventDefault();
-                            e.stopPropagation();
-                            dispatch(removeWishlistItem(item.productId));
-                            dispatch(showProductToast({
-                              name: item.name,
-                              image: item.image,
-                              type: "wishlist-remove"
-                            }));
-                          }}
-                          className="p-1.5 border border-(--border-light) cursor-pointer rounded-full bg-(--surface) shadow z-30"
-                        >
-                          <Heart
-                            strokeWidth={0.9}
-                            className={`h-5 w-5 transition ${isWishlisted
-                              ? "fill-primary text-primary scale-110"
-                              : "text-(--text-secondary) hover:text-primary"
-                              }`}
+                        {item.image && (
+                          <Image
+                            src={item.image}
+                            alt={item.name}
+                            fill
+                            className="object-cover transition-transform duration-500"
                           />
-                        </button>
+                        )}
+
+                        <div className="hidden md:block pointer-events-none absolute inset-0 bg-black/10 opacity-0 group-hover:opacity-100" />
+
+                        {/* TOP BAR */}
+                        <div className="w-full">
+                          <button className="absolute right-2 top-2"
+                            onClick={(e) => {
+                              e.preventDefault();
+                              e.stopPropagation();
+                              dispatch(removeWishlistItem(item.productId));
+                              dispatch(showProductToast({
+                                name: item.name,
+                                image: item.image,
+                                type: "wishlist-remove"
+                              }));
+                            }}
+
+                          >
+                            <Heart
+                              strokeWidth={1.4}
+                              className={`h-5 w-5 cursor-pointer transition ${isWishlisted
+                                ? "fill-primary text-primary scale-110"
+                                : "text-(--text-secondary) hover:text-primary"
+                                }`}
+                              style={{ stroke: "var(--border-strong)" }}
+                            />
+                          </button>
+                        </div>
                       </div>
 
-                      {/* BOTTOM INFO */}
-                      <div className="absolute bottom-0 w-full h-20 bg-(--linen-100) text-(--text-secondary)">
-                        <div className="mx-1 py-1 flex flex-col text-xs max-[450px]:text-[11px]">
-                          <p className="text-sm w-full truncate">{item.name}</p>
+                      {/* BOTTOM INFO — OUTSIDE */}
+                      <div className="bg-(--linen-100) text-(--text-secondary)">
+                        <div className="mx-1 py-2 flex flex-col text-xs max-[450px]:text-[11px]">
+                          <p className="text-primary font-semibold">{item.brand}</p>
+                          <p className="text-sm w-full uppercase truncate">{item.name}</p>
                           <div className="flex">
-                            <span className="font-semibold mr-2">Price: {item.price}</span>
+                            <span className="text-red-600 font-semibold mr-2">Rs.{item.price}</span>
                             {item.originalPrice && (
                               <span className="line-through text-(--text-secondary)">
-                                {item.originalPrice}
+                                Rs.{item.originalPrice}
                               </span>
                             )}
                           </div>
                         </div>
-                        <button onClick={(e) => {
-                          e.preventDefault();
-                          e.stopPropagation();
-                          handleMoveToBag(item);
-                        }}
-                          className="
-                            cursor-pointer absolute bottom-0 w-full
-                            bg-primary text-white hover:bg-(--linen-200)
-                            py-2 hover:text-primary font-bold                      
-                            text-xs
-                            transition-all duration-300                         
-                            ">
-                          Move to Bag
-                        </button>
 
+                        <button
+                          onClick={(e) => {
+                            e.preventDefault();
+                            e.stopPropagation();
+                            handleMoveToBag(item);
+                          }}
+                          className="
+                            cursor-pointer w-full
+                            border-(--border-light) hover:bg-white border-t
+                            py-2 hover:text-primary font-bold
+                            text-xs rounded-b-[3px]
+                            transition-all duration-300
+                            "
+                        >
+                          ADD TO BAG
+                        </button>
                       </div>
+
                     </div>
                   </Link>
+
                 )
               })}
             </Masonry>

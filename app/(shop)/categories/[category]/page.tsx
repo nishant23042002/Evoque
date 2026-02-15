@@ -158,7 +158,7 @@ const ProductCategoryPage = () => {
 
 
             {/* ---------------- SUB CATEGORY BAR ---------------- */}
-            <div className="md:w-full mx-auto sticky top-15 z-30 border-b-(--border-strong) bg-(--surface-elevated) border-b border-(--border-light)">
+            <div className="md:w-full mx-auto  z-30 bg-(--surface-elevated)">
                 <div className="relative mx-2 h-40 flex flex-nowrap overflow-auto items-center sm:justify-center gap-1 scrollbar-hide">
                     {/* ALL */}
                     <Link href={`/categories/${categorySlug}`} scroll={false} className="flex flex-col items-center min-w-20">
@@ -176,7 +176,7 @@ const ProductCategoryPage = () => {
                     </Link>
                     {/* ---------------- BANNER TOGGLE ---------------- */}
                     {showBannerToggle && (
-                        <div className="absolute bottom-0 left-0 z-50 flex items-center justify-end gap-2 py-2">
+                        <div className="absolute bottom-0 left-0 flex items-center justify-end gap-2 py-2">
                             <span className="text-[11px] font-medium text-(--text-secondary)">Banner</span>
 
                             <button
@@ -238,8 +238,8 @@ const ProductCategoryPage = () => {
                     animatePage ? "opacity-100 translate-y-0" : "opacity-0 translate-y-10"
                 )}
             >
-                <div className="relative select-none flex justify-between pt-4 pb-2  mx-1 sm:mx-2">
-                    <div onClick={() => setSortOpen((prev) => !prev)} className="flex cursor-pointer items-center justify-center gap-2">
+                <div className="sticky top-14.75 z-50 bg-white mb-2 border-b select-none flex justify-between pt-2 pb-2">
+                    <div onClick={() => setSortOpen((prev) => !prev)} className="flex cursor-pointer  mx-1 sm:mx-2 items-center justify-center gap-2">
                         <div className="font-medium hover:text-black/70 duration-300 tracking-wider uppercase text-sm">
                             Sort
                         </div>
@@ -284,7 +284,7 @@ const ProductCategoryPage = () => {
                             </div>
                         )}
                     </div>
-                    <div className="flex cursor-pointer justify-center items-center gap-2">
+                    <div className="flex mx-2 cursor-pointer justify-center items-center gap-2">
                         <div className="font-medium hover:text-black/70 duration-300 tracking-wider uppercase text-sm">
                             FILTERS
                         </div>
@@ -300,7 +300,11 @@ const ProductCategoryPage = () => {
                         Nothing Dropped Here Yet...
                     </div>
                 ) : (
-                    <ProductMasonryGrid products={products} showHeading={false} fullWidth={false} />
+                    <ProductMasonryGrid
+                        products={products}
+                        showHeading={false}
+                    />
+
                 )}
             </div>
             <Footer />

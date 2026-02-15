@@ -9,6 +9,8 @@ import ProductType from "@/types/ProductTypes"; // Your Product interface
 import { extractHexFromBuffer } from "@/data/extractColorFromImage";
 import axios from "axios"
 
+
+
 interface VariantImage {
     url: string;
     publicId: string;
@@ -416,11 +418,38 @@ export async function GET(req: Request) {
         const pattern = searchParams.get("pattern") || undefined;
         const fabric = searchParams.get("fabric") || undefined;
         const tag = searchParams.get("tag") || undefined;
+        const sort = searchParams.get("sort") || "recommended";
 
         const page = Number(searchParams.get("page")) || 1;
         const limit = Number(searchParams.get("limit")) || 20;
 
         const filter: ProductFilter = { isActive: true };
+
+
+
+        let sortQuery: Record<string, 1 | -1>;
+
+        switch (sort) {
+            case "newest":
+                sortQuery = { createdAt: -1 };
+                break;
+
+            case "low-high":
+                sortQuery = { "pricing.price": 1 };
+                break;
+
+            case "high-low":
+                sortQuery = { "pricing.price": -1 };
+                break;
+
+            default:
+                sortQuery = {
+                    "merchandising.priority": -1,
+                    createdAt: -1,
+                };
+        }
+
+
 
         if (categorySlug) {
             const category = await Category.findOne({ slug: categorySlug }); // _id is ObjectId
@@ -438,7 +467,7 @@ export async function GET(req: Request) {
 
         const products = await Product.find(filter)
             .populate("category", "name slug")
-            .sort({ "merchandising.priority": -1, createdAt: -1 })
+            .sort(sortQuery)
             .skip((page - 1) * limit)
             .limit(limit)
             .lean();

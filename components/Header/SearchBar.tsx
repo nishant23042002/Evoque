@@ -33,7 +33,7 @@ const SearchBar = () => {
           .flatMap(category =>
             category.subCategories
               .filter(sub => sub.isActive)
-              .map(sub => ({
+             .map(sub => ({ 
                 name: sub.name,
                 slug: sub.slug,
                 isActive: sub.isActive,
@@ -110,7 +110,7 @@ const SearchBar = () => {
       >
 
         {/* Input */}
-        <div className="flex items-center p-3 border-b border-(--border-strong) ">
+        <div className="flex items-center p-3 border-b border-(--border-light) ">
           <input
             autoFocus
             value={query}
@@ -119,7 +119,7 @@ const SearchBar = () => {
             className="
               w-full px-3 py-1.25 rounded-[3px]
               bg-(--surface-elevated)
-              border-2 border-(--border-strong)
+              border border-(--border-light)
               text-foreground
               placeholder:text-(--input-placeholder)
               outline-none
@@ -141,7 +141,7 @@ const SearchBar = () => {
         </div>
 
         {/* Results */}
-        <div className="px-2 overflow-y-auto scrollbar-hide h-[calc(100%-128px)]">
+        <div className="px-1 overflow-y-auto scrollbar-hide h-[calc(100%-128px)]">
           {
             query && products.length > 0 && (
               <div className="pt-2 flex justify-between">
@@ -201,7 +201,7 @@ const SearchBar = () => {
               ))}
             </>
           ) : (
-            <div className="grid grid-cols-2 my-2 gap-2">
+            <div className="grid grid-cols-2 my-2 gap-1">
 
               {products.map(p => {
                 const variant = p.variants?.[0];
@@ -215,28 +215,33 @@ const SearchBar = () => {
                     key={p._id}
                     href={`/products/${p.slug}`}
                     onClick={() => setOpen(false)}
-                    className="border border-(--border-strong) rounded-[3px]"
+                    className="mb-1"
                   >
-                    <div className="relative aspect-3/4 rounded-[3px] overflow-hidden">
+                    <div className="relative aspect-3/4 overflow-hidden">
                       {image && (
                         <Image
                           src={image}
                           alt={p.productName}
                           fill
-                          className="object-cover rounded-[3px] transition-transform duration-300 hover:scale-105"
+                          className="object-cover border border-(--border-light) transition-transform duration-300 hover:scale-105"
                         />
 
                       )}
-                      <div className="absolute inset-0 hover:bg-black/20 transition-colors" />
+                      <div className="absolute inset-0 hover:bg-black/10 transition-colors" />
+                      <div className="text-xs bg-black text-white px-1 py-0.5 absolute bottom-0">
+                        -{variant.pricing?.discountPercentage}%
+                      </div>
                     </div>
 
-                    <p className="m-1 text-xs font-medium line-clamp-1">
+                    <p className="mt-1 text-xs uppercase font-light line-clamp-1">
                       {p.productName}
                     </p>
-
-                    <p className="m-1 text-xs font-semibold text-(--text-secondary)">
-                      ₹{variant?.pricing?.price}
-                    </p>
+                    <div className="flex gap-2 items-center">
+                      <p className="text-xs font-semibold text-red-600">
+                        Rs.{variant?.pricing?.price}
+                      </p>
+                      <span className="text-xs line-through">Rs.{variant.pricing?.originalPrice}</span>
+                    </div>
                   </Link>
                 );
               })}

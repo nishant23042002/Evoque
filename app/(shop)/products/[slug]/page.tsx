@@ -8,7 +8,7 @@ import { useParams, useRouter } from "next/navigation";
 import { useAppDispatch, useAppSelector } from "@/store/hooks";
 import { RootState } from "@/store";
 import { addWishlistItem, removeWishlistItem } from "@/store/wishlist/wishlist.thunks"
-import Product from "@/types/ProductTypes";
+import Product, { Review } from "@/types/ProductTypes";
 import { SizeVariant } from "@/types/ProductTypes";
 import { addCartItem } from "@/store/cart/cart.thunks";
 import SizeChartModal from "@/components/SizeChartModal";
@@ -142,6 +142,7 @@ export default function ProductPage() {
     // Selection state
     const [selectedColor, setSelectedColor] = useState<string | null>(null);
     const [selectedSize, setSelectedSize] = useState<SizeVariant | null>(null);
+    const [outOfStockMsg, setOutOfStockMsg] = useState(false);
 
     // Gallery state
     const [activeImageIndex, setActiveImageIndex] = useState(0);
@@ -205,16 +206,15 @@ export default function ProductPage() {
                 viewedAt: Date.now(),
             })
         );
-    }, [product?._id, selectedColor]);
+    }, [product?._id]);
 
     useEffect(() => {
         const handleScroll = () => {
             const scrollY = window.scrollY;
-            if (scrollY > 500) {
-                setShowBottomBar(true);
-            } else {
-                setShowBottomBar(false);
-            }
+            setShowBottomBar(prev => {
+                const next = scrollY > 500;
+                return prev === next ? prev : next;
+            });
         };
 
         window.addEventListener("scroll", handleScroll);
@@ -264,12 +264,7 @@ export default function ProductPage() {
             container.removeEventListener("scroll", handleScroll);
             if (rafId) cancelAnimationFrame(rafId);
         };
-    }, []);
-
-
-
-
-
+    }, [images.length]);
 
 
     const selectWishlistIds = (state: RootState) =>
@@ -378,6 +373,11 @@ export default function ProductPage() {
         }
     };
 
+    const activeColorObj = colorVariants.find(
+        (c) => c.slug === selectedColor
+    );
+
+
 
 
     if (loading)
@@ -398,12 +398,13 @@ export default function ProductPage() {
 
     return (
         <Container>
-            <div className="relative w-full mb-30 min-h-screen lg:h-screen">
+            <div className="relative w-full lg:mb-30 min-h-screen lg:h-screen">
                 <div
                     className="
                         flex
                         flex-col
                         lg:flex-row
+                        justify-evenly
                         lg:h-screen
                     "
                 >
@@ -417,7 +418,6 @@ export default function ProductPage() {
                                 lg:w-[50%]
                                 aspect-4/5
                                 h-full
-                                mx-auto
                                 overflow-y-auto
                                 overscroll-contain
                                 scrollbar-hide
@@ -492,63 +492,78 @@ export default function ProductPage() {
                     {/* RIGHT: DETAILS */}
                     <div
                         className="
-                            
+                            max-lg:px-3
                             lg:w-[40%]
                             w-full
                             lg:sticky
                             lg:top-0
                             h-fit
                             self-start
-                            p-2
+                            py-2
+                            lg:py-20
                             "
                     >
-                        <div className="flex justify-between items-center">
-                            <h1 className="text-sm md:text-lg font-bold text-(--earth-charcoal)">
-                                {product.productName.toUpperCase()}
-                            </h1>
+                        <div className="flex flex-col">
 
-                            <button
-                                onClick={handleWishlistToggle}
-                                className="p-1.5 border border-(--border-light) cursor-pointer rounded-full bg-(--surface) shadow"
-                            >
-                                <Heart
-                                    strokeWidth={0.9}
-                                    className="h-5 w-5 transition-all duration-200"
-                                    style={
-                                        isWishlisted
-                                            ? {
-                                                fill: activeVariant?.color?.hex || "#000",
-                                                color: activeVariant?.color?.hex || "#000",
-                                                transform: "scale(1.1)",
-                                            }
-                                            : {
-                                                color: "var(--text-secondary)",
-                                            }
-                                    }
-                                />
-                            </button>
-                        </div>
+                            <div className="flex justify-between items-center w-full">
+                                <h1 className="text-sm md:text-lg font-extralight text-(--earth-charcoal)">
+                                    {product.productName.toUpperCase()}
+                                </h1>
+                                <button
+                                    onClick={handleWishlistToggle}
 
-                        <div className="flex gap-3 items-center justify-between">
-                            <div className="flex items-center gap-3 my-1.5">
-                                <span className="text-primary text-lg font-semibold">
-                                    ₹ {activeVariant?.pricing?.price}
-                                </span>
-                                <span className="font-semibold text-[12px] text-(--text-muted) line-through">{activeVariant?.pricing?.originalPrice}</span>
+                                >
+                                    <Heart
+                                        strokeWidth={1.4}
+                                        className="h-6 w-6 cursor-pointer transition-all duration-200"
+                                        style={
+                                            isWishlisted
+                                                ? {
+                                                    fill: activeVariant?.color?.hex || "#000",
+                                                    color: activeVariant?.color?.hex || "#000",
+                                                    transform: "scale(1.1)",
+                                                    stroke: "var(--border-strong)"
+                                                }
+                                                : {
+                                                    color: "var(--text-secondary)",
+                                                    stroke: "var(--border-strong)"
+                                                }
+                                        }
+                                    />
+                                </button>
                             </div>
-                            <span className="text-white text-[10px] bg-[oklch(0.55_0.04_75)] p-1 font-semibold rounded-[3px]">
-                                - {product.pricing.discountPercentage}%
-                            </span>
+                            <div className="flex justify-between items-center w-full">
+                                <div className="flex flex-col">
+                                    <div className="flex gap-1 items-center">
+                                        <span className="text-red-600 font-semibold">
+                                            Rs.{activeVariant?.pricing?.price}
+                                        </span>
+                                        <span className="text-[12px] line-through">Rs.{activeVariant?.pricing?.originalPrice}</span>
+                                    </div>
+                                    <div className="text-xs">
+                                        <span>MRP excluding of taxes</span>
+                                    </div>
+                                </div>
+                                <div>
+                                    <span className="bg-black text-white text-[10px] p-1 font-semibold">
+                                        - {product.pricing.discountPercentage}%
+                                    </span>
+                                </div>
+                            </div>
+                            <div>
+                                <span className="text-xs font-medium">
+                                    SKU: {product.sku}</span>
+                            </div>
                         </div>
 
-                        <div><span className="text-[10px] font-semibold text-(--text-secondary)">
-                            SKU: {product.sku}</span>
-                        </div>
 
                         {/* COLORS */}
                         <div className="py-2 flex flex-col">
-                            <h1 className="font-extrabold mb-1 text-foreground">Colors</h1>
-                            <div className="flex flex-row flex-nowrap mx-1 items-center gap-1 w-full overflow-x-auto scrollbar-hide">
+                            <h1 className="font-light mb-1 text-md">
+                                Colors: <span className="font-light text-sm">{activeColorObj ? activeColorObj.name : ""}</span>
+                            </h1>
+
+                            <div className="flex flex-row flex-nowrap items-center gap-1 w-full overflow-x-auto scrollbar-hide">
                                 {colorVariants.map((color) => {
                                     const isActive = selectedColor === color.slug;
                                     return (
@@ -558,7 +573,7 @@ export default function ProductPage() {
                                                 setSelectedColor(color.slug);
                                                 router.replace(`/products/${product.slug}?color=${color.slug}`, { scroll: false });
                                             }}
-                                            className={`shrink-0 cursor-pointer border ${isActive ? "" : "border-border hover:border-(--border-strong)"
+                                            className={`shrink-0 cursor-pointer border ${isActive ? "" : "border-border hover:border-black"
                                                 }`}
                                             style={
                                                 isActive
@@ -571,12 +586,9 @@ export default function ProductPage() {
                                             }
                                         >
                                             <div className="flex flex-col justify-between items-center">
-                                                <div className="aspect-2/3 ">
-                                                    <Image src={color.image} className="rounded-[3px] object-cover aspect-2/3" alt={color.name} width={70} height={70} />
+                                                <div className="aspect-3/4 ">
+                                                    <Image src={color.image} className="object-cover aspect-3/4" alt={color.name} width={70} height={70} />
                                                 </div>
-                                                <span className="text-[10px] text-(--text-secondary)">
-                                                    {color.name}
-                                                </span>
                                             </div>
                                         </button>
                                     );
@@ -588,18 +600,28 @@ export default function ProductPage() {
                         {/* SIZES */}
                         <div className="py-2">
                             <div className="flex justify-between">
-                                <h3 className="font-bold mb-1 text-foreground">
-                                    Select Size
-                                </h3>
+                                <div className="flex gap-2 items-center justify-center">
+
+                                    <h3 className="font-light text-foreground">
+                                        Sizes:
+                                    </h3>
+                                    <div>{outOfStockMsg && (
+                                        <p className="text-xs text-red-500">
+                                            Out of Stock
+                                        </p>
+                                    )}</div>
+                                </div>
+
                                 <h1
                                     onClick={() => setOpenSizeChart(true)}
-                                    className="text-sm font-medium text-(--linen-600) hover:text-primary cursor-pointer underline"
+                                    className="text-sm font-medium hover:text-primary cursor-pointer hover:underline"
                                 >
                                     Size Chart
                                 </h1>
 
                             </div>
-                            <div className="flex flex-row flex-nowrap items-center gap-1 w-full overflow-x-auto scrollbar-hide">
+
+                            <div className="mt-1 flex flex-row flex-nowrap items-center gap-1 w-full overflow-x-auto scrollbar-hide">
                                 {sizes.map(s => {
                                     const isActive = selectedSize?.variantSku === s.variant?.variantSku;
                                     const disabled = !s.exists || !s.isAvailable || !s.inStock;
@@ -607,21 +629,27 @@ export default function ProductPage() {
                                     return (
                                         <button
                                             key={s.size}
-                                            disabled={disabled}
-                                            onClick={() => s.variant && setSelectedSize(s.variant)}
-                                            className={`
-                                                    relative
-                                                    border
-                                                    px-6 py-3
-                                                    text-sm font-bold
-                                                    cursor-pointer
-                                                    transition-colors duration-200 
+                                            onClick={() => {
+                                                if (disabled) {
+                                                    setOutOfStockMsg(true);
+                                                    setTimeout(() => setOutOfStockMsg(false), 1500);
+                                                    return;
+                                                }
 
-                                                ${disabled
-                                                    ? "opacity-40 line-through cursor-not-allowed border-border text-(--linen-800)"
+                                                setOutOfStockMsg(false);
+                                                if (s.variant) setSelectedSize(s.variant);
+                                            }}
+                                            className={`
+                                                        relative
+                                                        border
+                                                        w-14 h-10
+                                                        text-sm
+                                                        cursor-pointer
+                                                        ${disabled
+                                                    ? "line-through border hover:border-black opacity-60"
                                                     : isActive
                                                         ? "bg-primary text-primary-foreground border-primary"
-                                                        : "border-border text-(--text-secondary) hover:border-primary"
+                                                        : "border border-(--border-light) text-(--text-secondary) hover:border-primary"
                                                 }
                                            `}
                                         >
@@ -633,51 +661,55 @@ export default function ProductPage() {
                                                 </span>
                                             )}
                                         </button>
+
                                     );
                                 })}
                             </div>
-                        </div>
-
-                        {sizeError && (
-                            <p className="mt-1 text-[11px] font-semibold text-red-600">
-                                Please select a size before adding to bag
-                            </p>
-                        )}
-
-                        <div className="py-2">
-
-                            <h3 className="font-bold mb-1 text-foreground">
-                                Quantity
-                            </h3>
-                        <div className="flex w-20 items-center justify-center border px-5 py-3 gap-3">
-                            <button
-                                className="cursor-pointer"
-                                onClick={() => {
-                                    if (quantity <= 1) {
-                                        setQtyWarning("Minimum quantity is 1");
-                                        setTimeout(() => setQtyWarning(null), 1200);
-                                        return;
-                                    }
-                                    setQuantity(q => q - 1);
-                                }}
-                            >
-                                −
-                            </button>
-
-                            <span>{quantity}</span>
-
-                            <button
-                                className="cursor-pointer"
-                                onClick={() => setQuantity(q => q + 1)}
-                            >
-                                +
-                            </button>
-                        </div>
-                            {qtyWarning && (
-                                <div className=" text-red-600 text-xs z-50 mt-2">
-                                    {qtyWarning}
-                                </div>
+                            {sizeError && (
+                                <p className="text-[11px] font-semibold text-red-600">
+                                    Please select a size before adding to bag
+                                </p>
                             )}
+                        </div>
+
+                        {/* Quantity */}
+                        <div className="py-2">
+                            <h3 className="font-light mb-1 text-foreground">
+                                Quantity:
+                            </h3>
+                            <div className="flex gap-2 items-center">
+                                <div className="flex w-20 items-center justify-center border border-(--border-light) hover:border-black px-5 py-1.5 gap-3">
+                                    <button
+                                        className="cursor-pointer"
+                                        onClick={() => {
+                                            if (quantity <= 1) {
+                                                setQtyWarning("Minimum quantity is 1");
+                                                setTimeout(() => setQtyWarning(null), 1200);
+                                                return;
+                                            }
+                                            setQuantity(q => q - 1);
+                                        }}
+                                    >
+                                        −
+                                    </button>
+
+                                    <span>{quantity}</span>
+
+                                    <button
+                                        className="cursor-pointer"
+                                        onClick={() => setQuantity(q => q + 1)}
+                                    >
+                                        +
+                                    </button>
+                                </div>
+                                <div>
+                                    {qtyWarning && (
+                                        <div className=" text-red-600 text-xs z-50">
+                                            {qtyWarning}
+                                        </div>
+                                    )}
+                                </div>
+                            </div>
                         </div>
 
 
@@ -688,11 +720,10 @@ export default function ProductPage() {
                                     cursor-pointer
                                     w-full
                                     p-3
-                                    font-bold
                                     transition-colors duration-200
                                     hover:bg-(--btn-primary-bg)
                                     text-(--btn-primary-text)
-                                    bg-(--btn-primary-hover)
+                                    bg-black
                                 "
                             >
                                 ADD TO BAG
@@ -707,7 +738,7 @@ export default function ProductPage() {
                                 collapsible
                                 className="
                                         border
-                                        border-border                                      
+                                        border-(--border-light)                                 
                                         p-2
                                     "
                             >
@@ -716,7 +747,7 @@ export default function ProductPage() {
                                         <AccordionTrigger
                                             className="
                                                     text-foreground
-                                                    font-semibold
+                                                    font-light cursor-pointer
                                                     hover:text-primary
                                                 "
                                         >
@@ -734,7 +765,7 @@ export default function ProductPage() {
                                     <AccordionTrigger
                                         className="
                                                 text-foreground
-                                                    font-semibold
+                                                    font-light cursor-pointer
                                                    hover:text-primary
                                             "
                                     >
@@ -744,7 +775,7 @@ export default function ProductPage() {
                                         <ul className="text-sm text-(--text-secondary) space-y-2">
                                             {Object.entries(product.details).map(([key, value]) => (
                                                 <li key={key} className="flex gap-2">
-                                                    <span className="font-semibold min-w-30 text-foreground">
+                                                    <span className="font-medium min-w-30 text-foreground">
                                                         {DETAILS_LABELS[key as keyof Product["details"]]}
                                                     </span>
                                                     <span>
@@ -760,7 +791,7 @@ export default function ProductPage() {
                                     <AccordionTrigger
                                         className="
                                                 text-foreground
-                                                    font-semibold
+                                                    font-light cursor-pointer
                                                     hover:text-primary
                                             "
                                     >
@@ -777,7 +808,7 @@ export default function ProductPage() {
                                     <AccordionTrigger
                                         className="
                                                 text-foreground
-                                                    font-semibold
+                                                    font-light cursor-pointer
                                                     hover:text-primary
                                             "
                                     >
@@ -791,39 +822,51 @@ export default function ProductPage() {
                                 </AccordionItem>
                             </Accordion>
                         </div>
-                        <div>
 
-                            {/* SUMMARY */}
-                            <div className="flex justify-between items-center mb-2">
-                                <h2 className="text-lg font-semibold">Customer Reviews</h2>
-                                <div className="flex items-center gap-3 mb-2">
+                        {/* CUSTOMER REVIEW */}
+                        <div>
+                            <div className="flex justify-between items-center mb-1">
+                                <div className="flex items-center gap-1">
+                                    <h2 className="font-light">Reviews</h2>
+                                    <p>[ {product.reviews?.length || 0} ]</p>
+                                </div>
+                                <div className="flex items-center gap-2 mb-2">
                                     <Stars value={Math.round(product.rating || 0)} />
-                                    <span className="text-sm text-gray-600">
-                                        {product.rating?.toFixed(1) || "0.0"} / 5
-                                    </span>
-                                    <span className="text-sm text-gray-500">
-                                        ({product.reviews?.length || 0} reviews)
+                                    <span className="text-sm">
+                                        {product.rating?.toFixed(1) || "0.0"}
                                     </span>
                                 </div>
                             </div>
 
                             {/* REVIEW LIST */}
-                            <div className="flex flex-col gap-5 h-60 overflow-y-auto">
+                            <div className="flex flex-col gap-5 h-30 overflow-y-auto">
                                 {product.reviews?.length ? (
-                                    product?.reviews?.map((review, index) => (
-                                        <div
-                                            key={index}
-                                            className="border p-2 bg-gray-50"
-                                        >
-                                            <Stars value={review.rating} />
+                                    product?.reviews?.map((review: Review, index) => {
 
-                                            <p className="text-sm mt-2">{review.comment}</p>
+                                        return (
+                                            <div
+                                                key={index}
+                                                className="border border-(--border-light) p-2 bg-gray-50"
+                                            >
+                                                <Stars value={review.rating} />
 
-                                            <span className="text-xs text-gray-500 mt-1 block">
-                                                {new Date(review.createdAt).toLocaleDateString()}
-                                            </span>
-                                        </div>
-                                    ))
+                                                <p className="text-sm mt-2">{review.comment}</p>
+
+                                                <span className="text-xs text-gray-500 mt-1 block">
+                                                    {(() => {
+                                                        const d = new Date(review.createdAt);
+                                                        return isNaN(d.getTime())
+                                                            ? "—"
+                                                            : d.toLocaleDateString("en-IN", {
+                                                                day: "2-digit",
+                                                                month: "short",
+                                                                year: "numeric",
+                                                            });
+                                                    })()}
+                                                </span>
+                                            </div>
+                                        )
+                                    })
                                 ) : (
                                     <p className="text-gray-500">No reviews yet.</p>
                                 )}
@@ -843,7 +886,7 @@ export default function ProductPage() {
                 )}
 
             </div>
-            <div className="text-xl mb-30">
+            <div className="text-lg mb-30">
                 {recommendations.length > 0 && (
                     <ProductHorizontalScroller
                         title="STYLE WITH"
@@ -926,14 +969,17 @@ export default function ProductPage() {
                                 ">
                                 {product.productName}
                             </span>
-
-                            <span className="
+                            <div className="flex items-center gap-2">
+                                <span className="
                                 text-sm sm:text-base
                                 font-semibold
-                                text-primary
+                                text-red-600
                                 ">
-                                ₹ {activeVariant?.pricing?.price}
-                            </span>
+                                    Rs.{activeVariant?.pricing?.price}
+                                </span>
+                                <span className="line-through text-xs">Rs.{activeVariant?.pricing?.originalPrice}</span>
+                            </div>
+
                         </div>
                     </div>
 
@@ -945,12 +991,10 @@ export default function ProductPage() {
                             px-3 sm:px-6
                             py-2 sm:py-3
                             text-xs sm:text-sm
-                            font-bold
-                            rounded-[3px]
                             transition-colors duration-200
                             hover:bg-(--btn-primary-bg)
-                            text-(--btn-primary-text)
-                            bg-(--btn-primary-hover)
+                            text-white
+                            bg-black
                             whitespace-nowrap
                             shrink-0
                         "

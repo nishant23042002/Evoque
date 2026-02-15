@@ -166,7 +166,7 @@ export default function CartPage() {
                             </Link>
 
                             {/* DETAILS */}
-                            <div className="flex flex-col justify-between flex-1 text-sm">
+                            <div className="flex flex-col justify-evenly flex-1 text-sm">
                                 <div>
                                     <div className="flex justify-between">
                                         <p className="font-medium text-primary">
@@ -188,27 +188,27 @@ export default function CartPage() {
                                         />
                                     </div>
 
-                                    <p className="font-semibold">{item.name}</p>
+                                    <p className="font-light uppercase">{item.name}</p>
 
-                                    <div className="mt-1 space-y-1 text-xs text-gray-600">
+                                    <div className="space-y-1 text-xs text-gray-600">
                                         {item.color && <p>Color: {item.color.name}</p>}
                                         {item.size && <p>Size: {item.size}</p>}
                                     </div>
 
-                                    <div className="mt-2 font-semibold">
-                                        ₹{item.price}
+                                    <div className="mt-2 text-red-600 font-semibold">
+                                        Rs.{item.price}
                                         {item.originalPrice && (
-                                            <span className="ml-2 line-through text-gray-400 text-xs">
-                                                ₹{item.originalPrice}
+                                            <span className="ml-2 line-through font-light text-black text-xs">
+                                                Rs.{item.originalPrice}
                                             </span>
                                         )}
                                     </div>
                                 </div>
 
                                 {/* ACTIONS */}
-                                <div className="flex justify-between items-center mt-3">
+                                <div className="flex justify-between items-center">
                                     {/* QUANTITY */}
-                                    <div className="flex items-center border px-3 py-1 gap-3">
+                                    <div className="flex items-center border hover:border-black px-3 py-1 gap-3">
 
                                         <button className="cursor-pointer"
                                             onClick={() => {

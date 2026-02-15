@@ -17,7 +17,6 @@ const Masonry = dynamic(() => import("react-masonry-css"), { ssr: false });
 
 
 
-
 interface ProductMasonryGridProps {
     products: Product[];
     showHeading?: boolean;
@@ -62,8 +61,8 @@ export default function ProductMasonryGrid({
     const { isAuthenticated, loading, openLogin } = useAuth();
     const wishlistIds = useAppSelector(selectWishlistIds);
     const dispatch = useAppDispatch();
+ 
     
-
     /* -------------------------
        MASONRY BREAKPOINTS
     ------------------------- */
@@ -71,18 +70,19 @@ export default function ProductMasonryGrid({
 
 
 
-
     return (
-        <div className={`my-2 ${fullWidth ? "px-1 sm:px-2 mx-auto" : "w-full"}`}>
+        <div className={`my-2 ${fullWidth ? "" : "w-full"}`}>
             {showHeading && (
                 <h2 className="text-center py-3 text-md tracking-widest font-semibold font-poppins text-foreground">
                     Everything You Need
                 </h2>
             )}
 
+            
+
             <Masonry
                 breakpointCols={breakpoints}
-                className={`flex gap-1 sm:gap-2 ${!fullWidth ? "mx-1 sm:mx-2" : "mx-0"}`}
+                className={`flex ${!fullWidth ? "" : "mx-0"}`}
                 columnClassName="masonry-column"
             >
                 {products.map((item) => {
@@ -94,135 +94,139 @@ export default function ProductMasonryGrid({
                     const ratio = getAspectRatio(item._id);
 
                     return (
-                        <div key={item._id}>
-                            <div
-                                onMouseEnter={() => onCardEnter(item._id)}
-                                onMouseLeave={() => onCardLeave(item._id)}
-                                className="relative mb-2 w-full overflow-hidden rounded-[2px] group bg-(--card-bg)"
-                                style={{ aspectRatio: ratio }}
-                            >
-                                {/* IMAGE */}
+                        <div key={item._id} className="mb-1">
+
+                            <div className="flex px-0.5 flex-col w-full">
+
                                 <div
-                                    className={`absolute inset-0 transition-opacity duration-300 ${transitioning === item._id ? "opacity-0" : "opacity-100"
-                                        }`}
+                                    onMouseEnter={() => onCardEnter(item._id)}
+                                    onMouseLeave={() => onCardLeave(item._id)}
+                                    className="relative border border-(--border-light) w-full overflow-hidden rounded-[2px] group bg-(--card-bg)"
+                                    style={{ aspectRatio: ratio }}
                                 >
-                                    {/* PRIMARY IMAGE — ALWAYS */}
-                                    <Image
-                                        src={primary}
-                                        alt={item.productName}
-                                        fill
-                                        sizes="(max-width: 400px) 100vw, (max-width: 700px) 50vw, (max-width: 1000px) 33vw, (max-width: 1300px) 25vw, 20vw"
-                                        className={`object-cover duration-500 object-center transition-opacity ${hoveredCard === item._id && secondary && !isColorHovering
-                                            ? "opacity-0"
-                                            : "opacity-100"
+                                    {/* IMAGE */}
+                                    <div
+                                        className={`absolute inset-0 transition-opacity duration-300 ${transitioning === item._id ? "opacity-0" : "opacity-100"
                                             }`}
-                                    />
-
-                                    {/* SECONDARY IMAGE — ONLY ON CARD HOVER */}
-                                    {secondary && hoveredCard === item._id && !isColorHovering && (
+                                    >
+                                        {/* PRIMARY IMAGE — ALWAYS */}
                                         <Image
-                                            src={secondary}
-                                            alt="secondary"
+                                            src={primary}
+                                            alt={item.productName}
                                             fill
-                                            className="object-cover"
+                                            sizes="(max-width: 400px) 100vw, (max-width: 700px) 50vw, (max-width: 1000px) 33vw, (max-width: 1300px) 25vw, 20vw"
+                                            className={`object-cover duration-500 object-center transition-opacity ${hoveredCard === item._id && secondary && !isColorHovering
+                                                ? "opacity-0"
+                                                : "opacity-100"
+                                                }`}
                                         />
-                                    )}
-                                </div>
 
-
-                                <div className="absolute inset-0 bg-(--earth-charcoal)/15 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
-
-                                {/* COLOR DOTS & WISHLIST */}
-                                <div className="absolute w-full flex justify-between items-center top-1 px-2 z-20">
-                                    <div className="flex gap-0.5">
-                                        {item.variants.map((v) => (
-                                            <span
-                                                key={v.color.slug}
-                                                className={`w-5 h-4 rounded-[2px] border border-(--border-strong) cursor-pointer ${v.color.slug === variant.color.slug
-                                                    ? "ring-1 ring-ring border-primary"
-                                                    : "border-(--border-light)"
-                                                    }`}
-                                                style={{ backgroundColor: v.color.hex }}
-                                                onMouseEnter={() => onVariantHover(item._id, v)}
-                                                onMouseLeave={() => onVariantHover(item._id, undefined)}
+                                        {/* SECONDARY IMAGE — ONLY ON CARD HOVER */}
+                                        {secondary && hoveredCard === item._id && !isColorHovering && (
+                                            <Image
+                                                src={secondary}
+                                                alt="secondary"
+                                                fill
+                                                className="object-cover"
                                             />
-                                        ))}
+                                        )}
                                     </div>
 
-                                    <button
-                                        onClick={(e) => {
-                                            e.stopPropagation();
-                                            if (loading) return;
-                                            if (!isAuthenticated) return openLogin();
 
-                                            if (isWishlisted) {
-                                                dispatch(removeWishlistItem(item._id));
-                                                dispatch(showProductToast({
-                                                    name: item.productName,
-                                                    image: primary,
-                                                    type: "wishlist-remove"
-                                                }));
-                                            } else {
-                                                dispatch(
-                                                    addWishlistItem({
-                                                        productId: item._id,
-                                                        product: item,
-                                                        slug: item.slug,
+
+
+                                    {/* COLOR DOTS & WISHLIST */}
+                                    <div className="absolute w-full flex justify-between items-center top-1 px-2 z-20">
+                                        <div className="flex gap-0.5">
+                                            {item.variants.map((v) => (
+                                                <span
+                                                    key={v.color.slug}
+                                                    className={`w-5 h-4 border border-(--border-strong) cursor-pointer ${v.color.slug === variant.color.slug
+                                                        ? "ring-1 ring-ring border-primary"
+                                                        : "border-(--border-light)"
+                                                        }`}
+                                                    style={{ backgroundColor: v.color.hex }}
+                                                    onMouseEnter={() => onVariantHover(item._id, v)}
+                                                    onMouseLeave={() => onVariantHover(item._id, undefined)}
+                                                />
+                                            ))}
+                                        </div>
+
+                                        <button
+                                            onClick={(e) => {
+                                                e.stopPropagation();
+                                                if (loading) return;
+                                                if (!isAuthenticated) return openLogin();
+
+                                                if (isWishlisted) {
+                                                    dispatch(removeWishlistItem(item._id));
+                                                    dispatch(showProductToast({
                                                         name: item.productName,
                                                         image: primary,
-                                                        price: item.pricing?.price ?? 0,
-                                                        originalPrice: item.pricing?.originalPrice ?? 0,
-                                                        brand: item.brand,
-                                                    })
-                                                );
-                                                dispatch(showProductToast({
-                                                    name: item.productName,
-                                                    image: primary,
-                                                    type: "wishlist"
-                                                }));
-                                            }
-                                        }}
-                                        className="p-1.5 border border-(--border-light) cursor-pointer rounded-full bg-secondary/50 shadow z-30"
-                                    >
-                                        <Heart
-                                            strokeWidth={0.9}
-                                            className="h-5 w-5 transition-all duration-200"
-                                            style={
-                                                isWishlisted
-                                                    ? {
-                                                        fill: variant?.color?.hex || "#000", // inside color
-                                                        stroke: "var(--border-strong)", // border color (always visible)
-                                                        transform: "scale(1.1)",
-                                                    }
-                                                    : {
-                                                        fill: "transparent",
-                                                        stroke: "var(--border-strong)",
-                                                    }
-                                            }
-                                        />
-                                    </button>
-                                </div>
+                                                        type: "wishlist-remove"
+                                                    }));
+                                                } else {
+                                                    dispatch(
+                                                        addWishlistItem({
+                                                            productId: item._id,
+                                                            product: item,
+                                                            slug: item.slug,
+                                                            name: item.productName,
+                                                            image: primary,
+                                                            price: item.pricing?.price ?? 0,
+                                                            originalPrice: item.pricing?.originalPrice ?? 0,
+                                                            brand: item.brand,
+                                                        })
+                                                    );
+                                                    dispatch(showProductToast({
+                                                        name: item.productName,
+                                                        image: primary,
+                                                        type: "wishlist"
+                                                    }));
+                                                }
+                                            }}
+                                            className=""
+                                        >
+                                            <Heart
+                                                strokeWidth={1.4}
+                                                className="cursor-pointer z-99 h-7 w-7 transition-all duration-200"
+                                                style={
+                                                    isWishlisted
+                                                        ? {
+                                                            fill: variant?.color?.hex || "#000", // inside color
+                                                            stroke: "var(--border-strong)", // border color (always visible)
+                                                            transform: "scale(1.1)",
+                                                        }
+                                                        : {
+                                                            fill: "transparent",
+                                                            stroke: "var(--border-strong)",
+                                                        }
+                                                }
+                                            />
+                                        </button>
+                                    </div>
+                                    <div className="absolute bg-black text-white p-0.5 px-1 bottom-0">
+                                        <p className="text-xs">-{item.pricing.discountPercentage} %</p>
+                                    </div>
 
+                                    <Link href={`/products/${item.slug}`} className="absolute inset-0 z-10" />
+                                </div>
 
                                 {/* DETAILS */}
-                                <div className="bg-black/30 py-2 absolute bottom-0 text-white flex flex-col justify-center w-full pointer-events-none">
-                                    <div className="mx-2">
-                                        <p className="text-xs sm:text-sm font-light">{item.brand}</p>
-                                        <p className="text-xs truncate sm:text-sm font-medium">{item.productName}</p>
-                                        <div className="flex gap-3 items-center text-sm w-full">
-                                            <span className="font-medium">₹ {variant.pricing?.price}</span>
-                                            <span className="line-through text-xs font-extralight text-gray-300">₹{variant.pricing?.originalPrice}</span>
-                                        </div>
+                                <div className="py-2 flex flex-col justify-center w-full pointer-events-none">
+                                    <p className="text-primary text-xs sm:text-sm font-medium">{item.brand}</p>
+                                    <p className="text-xs uppercase truncate sm:text-sm font-extralight">{item.productName}</p>
+                                    <div className="flex gap-1 items-center text-sm w-full">
+                                        <span className="font-semibold text-red-600">Rs.{variant.pricing?.price}</span>
+                                        <span className="line-through font-extralight">Rs.{variant.pricing?.originalPrice}</span>
                                     </div>
                                 </div>
-
-
-                                <Link href={`/products/${item.slug}`} className="absolute inset-0 z-10" />
                             </div>
                         </div>
                     );
                 })}
             </Masonry>
+
         </div>
     );
 }  

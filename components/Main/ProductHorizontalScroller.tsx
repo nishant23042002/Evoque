@@ -15,7 +15,7 @@ export type ProductCard = {
     productName: string;
     price: number;
     image: string;
-    variants?: Variant[]; // optional → recently viewed won’t have this
+    variants?: Variant[];
 };
 
 interface Props {
@@ -71,7 +71,7 @@ export default function ProductHorizontalScroller({
     if (!products?.length) return null;
 
     return (
-        <section className="relative w-full my-12 px-2">
+        <section className="relative w-full pt-20 px-1">
             {/* HEADER */}
             <div className="flex items-center justify-between">
                 {title && (
@@ -109,7 +109,7 @@ export default function ProductHorizontalScroller({
             <div
                 ref={scrollRef}
                 className="
-                            flex gap-2
+                            flex gap-1
                             overflow-x-auto
                             snap-x snap-mandatory
                             scrollbar-hide
@@ -151,7 +151,7 @@ export default function ProductHorizontalScroller({
                             <div
                                 onMouseEnter={() => hasVariants && onCardEnter(item._id)}
                                 onMouseLeave={() => hasVariants && onCardLeave(item._id)}
-                                className="relative aspect-3/4 sm:aspect-2/3 md:aspect-3/4 lg:aspect-4/6 overflow-hidden rounded-[3px] border bg-card">
+                                className="relative aspect-3/4 sm:aspect-2/3 md:aspect-3/4 lg:aspect-4/6 overflow-hidden rounded-[3px] border border-(--border-light) bg-card">
                                 <Image
                                     src={primary}
                                     alt={item.productName}
@@ -167,16 +167,21 @@ export default function ProductHorizontalScroller({
                                         className="object-cover"
                                     />
                                 )}
+                                <span className="absolute bottom-0 py-1 text-xs bg-black text-white px-1.5">-{variant?.pricing?.discountPercentage}%</span>
                             </div>
 
                             {/* INFO */}
                             <div className="mt-2 text-sm">
-                                <p className="font-medium truncate">
+                                <p className="font-light uppercase truncate">
                                     {item.productName}
                                 </p>
-                                <p className="text-primary font-semibold">
-                                    ₹{item.price}
-                                </p>
+
+                                <div className="flex gap-2 items-center">
+                                    <p className="text-red-600 font-semibold">
+                                        Rs.{item.price}
+                                    </p>
+                                    <span className="line-through text-xs">Rs.{variant?.pricing?.originalPrice}</span>
+                                </div>
                             </div>
                         </Link>
                     );

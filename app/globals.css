@@ -422,28 +422,6 @@
 }
 
 
-/* WIDTH */
-::-webkit-scrollbar {
-  width: 5px;
-  height: 3px; /* for horizontal scroll */
-}
-
-/* TRACK */
-::-webkit-scrollbar-track {
-  background: transparent;
-}
-
-/* THUMB */
-::-webkit-scrollbar-thumb {
-  background: var(--text-secondary);
-  
-}
-
-/* HOVER */
-::-webkit-scrollbar-thumb:hover {
-  background: var(--earth-olive);
-}
-
 
 @keyframes slideIn {
   from {

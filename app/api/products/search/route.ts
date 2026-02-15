@@ -31,7 +31,7 @@ function parseIntent(query: string): ProductSearchFilters {
 export async function GET(req: NextRequest) {
     const { searchParams } = new URL(req.url);
     const query = searchParams.get("q") || "";
-    const limit = Number(searchParams.get("limit") || 12);
+    
 
     if (!query.trim()) {
         return NextResponse.json({ products: [] });
@@ -58,7 +58,6 @@ export async function GET(req: NextRequest) {
             isBestSeller: -1,
             isNewArrival: -1,
         })
-        .limit(limit)
         .lean();
 
     return NextResponse.json({
