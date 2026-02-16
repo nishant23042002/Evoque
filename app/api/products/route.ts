@@ -52,7 +52,8 @@ interface Pricing {
 }
 
 type ProductFilter = Partial<ProductType> & {
-    [key: string]: string | number | ObjectId | boolean | undefined;
+    [key: string]: string | number | ObjectId | boolean | undefined | Record<string, unknown>
+    | Array<Record<string, unknown>>;
 };
 
 
@@ -247,7 +248,6 @@ export async function POST(req: Request) {
             search,
             isActive,
             isFeatured,
-            isNewArrival,
             launchDate,
         } = body;
 
@@ -389,7 +389,6 @@ export async function POST(req: Request) {
             search,
             isActive,
             isFeatured,
-            isNewArrival,
             launchDate: launchDate ? new Date(launchDate) : undefined
         });
 
@@ -421,11 +420,23 @@ export async function GET(req: Request) {
         const sort = searchParams.get("sort") || "recommended";
 
         const page = Number(searchParams.get("page")) || 1;
-        const limit = Number(searchParams.get("limit")) || 20;
+        const limit = Number(searchParams.get("limit")) || 10;
 
         const filter: ProductFilter = { isActive: true };
 
+        const newArrival = searchParams.get("newArrival");
 
+        if (newArrival === "true") {
+            const days = 30; // configurable
+            const date = new Date();
+            date.setDate(date.getDate() - days);
+
+            filter.$or = [
+                { isNewArrival: true },
+                { launchDate: { $gte: date } }
+            ];
+
+        }
 
         let sortQuery: Record<string, 1 | -1>;
 
@@ -471,8 +482,13 @@ export async function GET(req: Request) {
             .skip((page - 1) * limit)
             .limit(limit)
             .lean();
-
-        return NextResponse.json({ page, limit, count: products.length, products });
+        const total = await Product.countDocuments(filter);
+        return NextResponse.json({
+            page,
+            limit,
+            total,
+            products
+        });
     } catch (error) {
         return NextResponse.json(
             { message: error instanceof Error ? error.message : "Internal Server Error" },

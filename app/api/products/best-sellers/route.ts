@@ -9,7 +9,7 @@ export async function GET() {
 
         const products = await Product.find({
             isActive: true,
-            "analytics.purchases": { $gt: 5 },
+            isBestSeller: true,
         })
             .sort({
                 "analytics.purchases": -1,

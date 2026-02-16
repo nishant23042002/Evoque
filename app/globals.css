@@ -463,3 +463,17 @@
 .animate-zoomIn {
   animation: zoomIn 0.25s ease-out;
 }
+
+
+/* Thin native scrollbar */
+* {
+  scrollbar-width: thin;          /* Firefox */
+  scrollbar-color: auto;          /* Firefox */
+  scroll-behavior: smooth;
+}
+
+/* Chrome / Edge / Safari */
+*::-webkit-scrollbar {
+  height: 4px;   /* horizontal */
+  width: 6px;    /* vertical */
+}

@@ -43,16 +43,16 @@ export async function GET(
   // 2️⃣ STRICT recommendation pipeline
   const pipeline: PipelineStage[] = [
     {
-      // 🔒 ONLY categories present in stylePairs
       $match: {
         _id: { $ne: baseProduct._id },
         isActive: true,
         isAvailable: true,
-        category: { $in: stylePairs },
+        category: { $in: stylePairs }, // ✅ category ids
       },
     },
+
+    // 🎯 Style ranking
     {
-      // 🎯 Optional ranking via styleTags
       $addFields: {
         styleScore: {
           $size: {
@@ -61,6 +61,8 @@ export async function GET(
         },
       },
     },
+
+    // Sort BEFORE grouping
     {
       $sort: {
         styleScore: -1,
@@ -71,7 +73,30 @@ export async function GET(
         createdAt: -1,
       },
     },
-    { $limit: 8 },
+
+    // 🧠 Group by category
+    {
+      $group: {
+        _id: "$category",
+        products: { $push: "$$ROOT" },
+      },
+    },
+
+    // ✂️ Limit per category
+    {
+      $project: {
+        products: { $slice: ["$products", 2] }, // 2 per category
+      },
+    },
+
+    // 🔓 Flatten
+    { $unwind: "$products" },
+    { $replaceRoot: { newRoot: "$products" } },
+
+    // Optional total cap
+    { $limit: 8},
+
+    // Final shape
     {
       $project: {
         productName: 1,
@@ -85,6 +110,7 @@ export async function GET(
       },
     },
   ];
+
 
   const recommendations = await Product.aggregate(pipeline);
 

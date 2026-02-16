@@ -1,3 +1,5 @@
+// /api/products/purchase/route.ts
+
 import { NextResponse } from "next/server";
 import connectDB from "@/lib/db";
 import Product from "@/models/Product";
@@ -5,7 +7,7 @@ import mongoose from "mongoose";
 
 type PurchaseItem = {
     productId: string;
-    qty: number;
+    quantity: number;
 };
 
 const BEST_SELLER_THRESHOLD = 5;
@@ -16,7 +18,7 @@ export async function POST(req: Request) {
 
         const body = await req.json();
         const { items } = body as { items: PurchaseItem[] };
-
+        console.log(items);
         if (!Array.isArray(items) || items.length === 0) {
             return NextResponse.json(
                 { message: "items array is required" },
@@ -24,13 +26,16 @@ export async function POST(req: Request) {
             );
         }
 
+       
+        
+
         // ✅ Build bulk operations
         const bulkOps = items
             .filter(
                 item =>
                     mongoose.Types.ObjectId.isValid(item.productId) &&
-                    typeof item.qty === "number" &&
-                    item.qty > 0
+                    typeof item.quantity === "number" &&
+                    item.quantity > 0
             )
             .map(item => ({
                 updateOne: {
@@ -39,7 +44,7 @@ export async function POST(req: Request) {
                     },
                     update: {
                         $inc: {
-                            "analytics.purchases": item.qty,
+                            "analytics.purchases": item.quantity,
                         },
                     },
                 },
@@ -58,7 +63,7 @@ export async function POST(req: Request) {
         // 2️⃣ Auto-mark best sellers
         await Product.updateMany(
             {
-                "analytics.purchases": { $gte: BEST_SELLER_THRESHOLD },
+                "analytics.purchases": { $gte: BEST_SELLER_THRESHOLD },               
                 isBestSeller: { $ne: true },
             },
             {

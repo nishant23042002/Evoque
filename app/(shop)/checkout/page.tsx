@@ -322,10 +322,27 @@ function OrderSummary({
                 card: paymentMethod === "card",
                 netbanking: paymentMethod === "netbanking",
             },
-            handler: () => {
-                dispatch(clearCart());
-                window.location.href = "/account/order/success";
+            handler: async () => {
+                try {
+                    await fetch("/api/products/purchase", {
+                        method: "POST",
+                        headers: { "Content-Type": "application/json" },
+                        body: JSON.stringify({
+                            items: cartItems.map(i => ({
+                                productId: i.productId,
+                                quantity: i.quantity
+                            }))
+                        })
+                    });
+
+                    dispatch(clearCart());
+                    window.location.href = "/account/order/success";
+
+                } catch (err) {
+                    console.error("Analytics update failed", err);
+                }
             },
+
             modal: { ondismiss: () => setLoading(false) },
         });
 

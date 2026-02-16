@@ -1,3 +1,5 @@
+// /api/products/checkout/prepare/route.ts
+
 import { NextResponse } from "next/server";
 import { Types } from "mongoose";
 import crypto from "crypto";

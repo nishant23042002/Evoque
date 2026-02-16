@@ -33,12 +33,12 @@ export default function SizeChartModal({
                 </div>
 
                 {/* IMAGE */}
-                <div className="relative w-full aspect-2/2 sm:aspect-3/2 md:aspect-5/3 bg-gray-50">
+                <div className="relative w-full aspect-2/2 sm:aspect-3/2 md:aspect-4/3 bg-gray-50">
                     <Image
                         src={image}
                         alt={label}
                         fill
-                        className="object-cover"
+                        className="object-contain"
                         sizes="(max-width: 640px) 100vw, 500px"
                         priority
                     />

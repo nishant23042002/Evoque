@@ -4,9 +4,9 @@ import Image from "next/image";
 import Link from "next/link";
 import { useEffect, useState } from "react";
 import Masonry from "react-masonry-css";
-import LayerLogoLoader from "../FlashLogo/LayerLogo";
 import axios from "axios";
 import { Category } from "@/types/ProductTypes";
+import LayerLogo from "../FlashLogo/LayerLogo";
 
 
 
@@ -41,7 +41,7 @@ const FeaturedCategories = () => {
     if (loading) {
         return (
             <div className="flex flex-nowrap items-center justify-center h-[70vh]">
-                <LayerLogoLoader />
+                <LayerLogo />
             </div>
         );
     }

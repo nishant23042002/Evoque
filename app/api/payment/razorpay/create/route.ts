@@ -1,3 +1,5 @@
+// /api/products/create/route.ts
+
 import Razorpay from "razorpay";
 import { NextResponse } from "next/server";
 import connectDB from "@/lib/db";

@@ -21,6 +21,7 @@ import { useProductVariants } from "@/src/useProductVariants";
 import Footer from "@/components/Footer/Footer";
 import { addRecentlyViewed } from "@/store/recentlyViewed/recentlyViewed.slice";
 import { showProductToast } from "@/store/ui/ui.slice";
+import { useAuth } from "@/components/AuthProvider";
 import ImagePreviewModal from "@/components/ImagePreviewModal";
 
 
@@ -128,6 +129,7 @@ export default function ProductPage() {
     const imageRefs = useRef<(HTMLDivElement | null)[]>([]);
     const [quantity, setQuantity] = useState(1);
     const [qtyWarning, setQtyWarning] = useState<string | null>(null);
+    const { isAuthenticated, openLogin } = useAuth();
 
     const galleryRef = useRef<HTMLDivElement | null>(null);
 
@@ -302,6 +304,10 @@ export default function ProductPage() {
             setTimeout(() => setSizeError(false), 2000);
             return;
         }
+        if (!isAuthenticated) {
+            openLogin();
+            return;
+        }
 
         dispatch(
             addCartItem({
@@ -343,6 +349,10 @@ export default function ProductPage() {
     };
     const handleWishlistToggle = () => {
         if (!product) return;
+        if (!isAuthenticated) {
+            openLogin();
+            return;
+        }
 
         if (isWishlisted) {
             dispatch(removeWishlistItem(product._id));
@@ -398,7 +408,7 @@ export default function ProductPage() {
 
     return (
         <Container>
-            <div className="relative w-full lg:mb-30 min-h-screen lg:h-screen">
+            <div className="relative w-full min-h-screen lg:h-screen">
                 <div
                     className="
                         flex
@@ -886,7 +896,7 @@ export default function ProductPage() {
                 )}
 
             </div>
-            <div className="text-lg mb-30">
+            <div className="text-lg">
                 {recommendations.length > 0 && (
                     <ProductHorizontalScroller
                         title="STYLE WITH"

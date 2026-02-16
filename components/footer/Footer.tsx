@@ -28,7 +28,7 @@ const layerItem = [
 export default function Footer() {
     return (
         <footer>
-            <div className="relative bg-(--surface-elevated) border-t border-(--border-light) text-(--linen-700) overflow-hidden">
+            <div className="relative bg-(--surface-elevated) border-t border-(--border-light) text-(--linen-700) mt-12 overflow-hidden">
 
                 {/* MAIN GRID */}
                 <div

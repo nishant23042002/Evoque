@@ -32,8 +32,12 @@ export default function BestSellersPage() {
     }
 
     return (
-        <section className="px-1 sm:px-2">
-            <h1 className="text-xl font-bold mb-1 sm:mb-2">Best Sellers</h1>
+        <section className="">
+            <div className="mx-3 py-6 text-5xl pb-2 text-(--linen-800) font-semibold tracking-tight">
+                <h1 className="text-2xl uppercase sm:text-5xl tracking-wider font-bold">
+                    Best Sellers
+                </h1>
+            </div>
             <ProductMasonryGrid
                 products={data.products}
                 showHeading={false}

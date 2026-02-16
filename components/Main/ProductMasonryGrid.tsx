@@ -22,23 +22,52 @@ interface ProductMasonryGridProps {
     showHeading?: boolean;
     fullWidth?: boolean;
 }
-const RATIOS = [
-    "4/5",
-    "3/4",
-    "2/3",
-    "5/6",
-    "9/10",
-    "3/5"];
-function getAspectRatio(seed: string) {
-    let hash = 0;
 
-    for (let i = 0; i < seed.length; i++) {
-        hash = seed.charCodeAt(i) + ((hash << 5) - hash);
-        hash |= 0; // convert to 32bit int
+
+function getSmartAspectRatio(seed: string, category?: string) {
+    const lower = category?.toLowerCase() || "";
+    console.log(lower);
+    let ratios: string[] = [
+        "4/5",
+        "3/4",
+        "2/3",
+        "5/6",
+        "9/10",
+        "3/5"
+    ]; // default
+
+    // -------- PRIORITY MATCHES --------
+    if (/\bt[-\s]?shirts\b/.test(lower)) {
+        // t-shirt or tshirt
+        ratios = ["2/2"]; // more square
+    }
+    else if (/\bshirts\b/.test(lower)) {
+        // only shirt, not t-shirt
+        ratios = ["4/5"]; // medium
+    }
+    else if (/\bsweatshirts|jackets\b/.test(lower)) {
+        ratios = ["4/6"];
+    }
+    else if (/\bshorts\b/.test(lower)) {
+        ratios = ["3/3"];
+    }
+    else if (/\bjeans|trousers|sweatpants\b/.test(lower)) {
+        ratios = ["6/10"]; // tall
+    }
+    else if (/\bfootwear\b/.test(lower)) {
+        ratios = ["1/1", "2/2"];
     }
 
-    return RATIOS[Math.abs(hash) % RATIOS.length];
+    // -------- HASH RANDOMIZER --------
+    let hash = 0;
+    for (let i = 0; i < seed.length; i++) {
+        hash = seed.charCodeAt(i) + ((hash << 5) - hash);
+        hash |= 0;
+    }
+
+    return ratios[Math.abs(hash) % ratios.length];
 }
+
 
 /* =======================
    COMPONENT
@@ -46,7 +75,6 @@ function getAspectRatio(seed: string) {
 
 export default function ProductMasonryGrid({
     products,
-    showHeading = true,
     fullWidth = true,
 }: ProductMasonryGridProps) {
     const {
@@ -61,8 +89,8 @@ export default function ProductMasonryGrid({
     const { isAuthenticated, loading, openLogin } = useAuth();
     const wishlistIds = useAppSelector(selectWishlistIds);
     const dispatch = useAppDispatch();
- 
-    
+
+
     /* -------------------------
        MASONRY BREAKPOINTS
     ------------------------- */
@@ -72,13 +100,6 @@ export default function ProductMasonryGrid({
 
     return (
         <div className={`my-2 ${fullWidth ? "" : "w-full"}`}>
-            {showHeading && (
-                <h2 className="text-center py-3 text-md tracking-widest font-semibold font-poppins text-foreground">
-                    Everything You Need
-                </h2>
-            )}
-
-            
 
             <Masonry
                 breakpointCols={breakpoints}
@@ -91,7 +112,11 @@ export default function ProductMasonryGrid({
                     const secondary = getSecondaryImageFromVariant(variant);
                     const isWishlisted = wishlistIds.has(item._id);
                     const isColorHovering = !!hoverVariants[item._id];
-                    const ratio = getAspectRatio(item._id);
+                    const ratio = getSmartAspectRatio(
+                        item._id,
+                        item.subCategory?.slug || item.category?.slug
+                    );
+
 
                     return (
                         <div key={item._id} className="mb-1">
@@ -206,7 +231,7 @@ export default function ProductMasonryGrid({
                                         </button>
                                     </div>
                                     <div className="absolute bg-black text-white p-0.5 px-1 bottom-0">
-                                        <p className="text-xs">-{item.pricing.discountPercentage} %</p>
+                                        <p className="text-xs">-{item.pricing.discountPercentage}%</p>
                                     </div>
 
                                     <Link href={`/products/${item.slug}`} className="absolute inset-0 z-10" />
@@ -226,7 +251,6 @@ export default function ProductMasonryGrid({
                     );
                 })}
             </Masonry>
-
         </div>
     );
 }  
