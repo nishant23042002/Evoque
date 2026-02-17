@@ -158,7 +158,7 @@ const ProductCategoryPage = () => {
 
 
             {/* ---------------- SUB CATEGORY BAR ---------------- */}
-            <div className="md:w-full mx-auto  z-30 bg-(--surface-elevated)">
+            <div className="md:w-full mx-auto z-30 bg-(--linen-100)">
                 <div className="relative mx-2 h-40 flex flex-nowrap overflow-auto items-center sm:justify-center gap-1 scrollbar-hide">
                     {/* ALL */}
                     <Link href={`/categories/${categorySlug}`} scroll={false} className="flex flex-col items-center min-w-20">
@@ -238,7 +238,7 @@ const ProductCategoryPage = () => {
                     animatePage ? "opacity-100 translate-y-0" : "opacity-0 translate-y-10"
                 )}
             >
-                <div className="sticky top-14.75 z-50 bg-white mb-2 border-b select-none flex justify-between pt-2 pb-2">
+                <div className="sticky top-14.75 z-50 bg-(--linen-100) mb-2 border-b border-(--border-light) select-none flex justify-between pt-2 pb-2">
                     <div onClick={() => setSortOpen((prev) => !prev)} className="flex cursor-pointer  mx-1 sm:mx-2 items-center justify-center gap-2">
                         <div className="font-medium hover:text-black/70 duration-300 tracking-wider uppercase text-sm">
                             Sort
@@ -253,7 +253,7 @@ const ProductCategoryPage = () => {
                         {sortOpen && (
                             <div
                                 className="
-                                    absolute top-12 left-4 z-40
+                                    absolute top-9 left-2 z-40
                                     w-56 h-45
                                     bg-white
                                     border border-(--border-strong)

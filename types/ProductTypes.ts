@@ -2,6 +2,8 @@
 export interface VariantImage {
     url: string;
     isPrimary?: boolean;
+    order: number;
+    isHover: boolean
 }
 
 export interface SizeVariant {

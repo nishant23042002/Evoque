@@ -63,7 +63,7 @@ export default function AccountLayout({
                         cursor-pointer
                         text-[10px] sm:text-xs
                         uppercase tracking-widest
-                        border px-3 sm:px-4 py-2
+                        border border-(--border-light) px-3 sm:px-4 py-2
                         hover:bg-black hover:text-white
                         transition
                         sm:ml-auto

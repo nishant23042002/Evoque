@@ -133,7 +133,7 @@ const LeftMenu = ({ isOpen, setIsOpen }: LeftMenuProps) => {
                 ref={sidebarRef}
                 className={cn(
                     "fixed top-0 left-0 z-40 h-dvh py-1",
-                    "bg-(--surface-elevated) border-r border-(--border-strong)",
+                    "bg-(--linen-100) border-r border-(--border-strong)",
                     SIDEBAR_WIDTH,
                     "will-change-transform transform-gpu",
                     "transition-transform duration-500 ease-in-out",
@@ -192,83 +192,76 @@ const LeftMenu = ({ isOpen, setIsOpen }: LeftMenuProps) => {
                             Trending Layer
                         </h2>
 
-                        <div className="space-y-1 h-89 custom-scrollbar [@media(max-height:720px)]:h-59 overflow-y-auto">
-                            {categories.map((category, i) => {
-                                const active = pathname === `/categories/${category.slug}`;
+                        <div className="space-y-1 h-89 [@media(max-height:720px)]:h-59 overflow-y-auto">
+                            <div className="space-y-4 px-2">
+                                {categories.map((category) => {
+                                    const featuredSubs =
+                                        category.subCategories?.filter(sub => sub.isFeatured);
 
-                                return (
-                                    <Link
-                                        key={category._id}
-                                        href={`/categories/${category.slug}`}
-                                        onClick={handleNavClick}
-                                        className="relative flex items-center rounded-sm transition-all"
-                                    >
-                                        {active && (
-                                            <span className="absolute left-0 top-1/2 -translate-y-1/2 h-6 w-1 bg-primary" />
-                                        )}
+                                    const previewSubs =
+                                        featuredSubs?.length
+                                            ? featuredSubs.slice(0, 2)
+                                            : category.subCategories?.slice(0, 2);
 
-                                        <div
-                                            className={cn(
-                                                "group relative mx-1 w-full",
-                                                "aspect-6/2",
-                                                "rounded-[3px] overflow-hidden",
-                                                "border border-(--border-strong)",
-                                                "shadow-xs transition-all duration-300",
-                                                active ? "border-primary" : "hover:border-primary/60"
-                                            )}
-                                        >
-
-                                            {/* IMAGE */}
-                                            <Image
-                                                src={category.leftMenuCategoryImage}
-                                                alt={category.name}
-                                                fill
-                                                sizes="(max-width: 550px) 280px, 360px"
-                                                priority={i === 0}
-                                                className="
-                                                        object-cover object-[50%_25%]
-                                                        transition-transform duration-500 ease-out
-                                                        group-hover:scale-105
-                                                    "
-                                            />
-
-
-                                            {/* OVERLAY */}
-                                            <div
-                                                className={`
-                                                        absolute inset-0
-                                                        transition-all duration-300
-                                                        ${active
-                                                        ? "bg-black/30"
-                                                        : isMobile
-                                                            ? "bg-transparent"
-                                                            : "bg-black/0 group-hover:bg-black/25"
-                                                    }
-                                                `}
-                                            />
-
-                                            {/* TEXT */}
-                                            <p
-                                                className="
-                                                    pointer-events-none
-                                                    absolute left-2 bottom-2
-                                                    text-[10px] sm:text-xs
-                                                    font-medium
-                                                    px-1 py-0.5
-                                                    bg-(--linen-200)/70
-                                                    text-(--linen-800)
-                                                    rounded-[3px]
-                                                    backdrop-blur-sm
-                                                "
+                                    return (
+                                        <div key={category._id}>
+                                            {/* CATEGORY TITLE */}
+                                            <Link
+                                                href={`/categories/${category.slug}`}
+                                                onClick={handleNavClick}
+                                                className="block mb-1 text-sm font-semibold text-primary"
                                             >
                                                 {category.name}
-                                            </p>
+                                            </Link>
 
+                                            {/* SUBCATEGORY GRID */}
+                                            <div className="grid grid-cols-2 gap-1">
+                                                {previewSubs?.map((sub) => (
+                                                    <Link
+                                                        key={sub.slug}
+                                                        href={`/categories/${category.slug}?sub=${sub.slug}`}
+                                                        onClick={handleNavClick}
+                                                        className="group relative aspect-3/4 overflow-hidden rounded-[3px] border border-(--border-light)"
+                                                    >
+                                                        <Image
+                                                            src={sub.image}
+                                                            alt={sub.name}
+                                                            fill
+                                                            sizes="120px"
+                                                            className="
+                  object-cover
+                  transition-transform duration-500
+                  group-hover:scale-105
+                "
+                                                        />
+
+                                                        {/* LIGHT OVERLAY */}
+                                                        <div className="
+                absolute inset-0
+                bg-black/0 group-hover:bg-black/15
+                transition
+              " />
+
+                                                        {/* SMALL LABEL */}
+                                                        <span className="
+                absolute bottom-1 left-1
+                text-[9px]
+                px-1 py-0.5
+                bg-white/70
+                rounded
+                backdrop-blur
+              ">
+                                                            {sub.name.split(' ').slice(0, 2).join(' ')}
+                                                        </span>
+                                                    </Link>
+                                                ))}
+                                            </div>
                                         </div>
+                                    );
+                                })}
+                            </div>
 
-                                    </Link>
-                                );
-                            })}
+
                         </div>
                     </div>
 

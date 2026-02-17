@@ -7,7 +7,6 @@ import Providers from "./providers";
 import { AuthProvider } from "@/components/AuthProvider";
 import GlobalLoginModal from "./GlobalLoginModal";
 import ReactQueryProvider from "@/components/ReactQueryProvider";
-import CartToast from "@/components/ProductToast";
 import ProductToast from "@/components/ProductToast";
 
 
@@ -41,7 +40,7 @@ export default function RootLayout({
 
   return (
     <html lang="en" className={`${inter.variable} ${poppins.variable}`}>
-      <body className="font-poppins antialiased bg-(--linen-50)">
+      <body className="font-poppins antialiased">
         <Providers>
           <AuthProvider>
             <ReactQueryProvider>

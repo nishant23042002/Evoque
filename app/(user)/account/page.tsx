@@ -88,7 +88,7 @@ export default function AccountPage() {
 
 
             {/* PROFILE */}
-            <section className="border p-6 flex items-center gap-4">
+            <section className="border border-(--border-light) hover:border-black p-6 flex items-center gap-4">
                 <div className="relative w-14 h-14 rounded-full overflow-hidden bg-gray-200 flex items-center justify-center text-lg font-semibold">
                     {displayName.charAt(0).toUpperCase()}
                 </div>
@@ -106,19 +106,19 @@ export default function AccountPage() {
 
             {/* QUICK ACTIONS */}
             <section className="grid grid-cols-2 md:grid-cols-4 gap-4">
-                <Link href="/account/order" className="border p-6 text-center hover:border-black">
+                <Link href="/account/order" className="border border-(--border-light) p-6 text-center hover:border-black">
                     Orders
                 </Link>
 
-                <Link href="/account/address" className="border p-6 text-center hover:border-black">
+                <Link href="/account/address" className="border border-(--border-light) p-6 text-center hover:border-black">
                     Addresses
                 </Link>
 
-                <Link href="/wishlist" className="border p-6 text-center hover:border-black">
+                <Link href="/wishlist" className="border border-(--border-light) p-6 text-center hover:border-black">
                     Wishlist
                 </Link>
 
-                <Link href="/account" className="border p-6 text-center hover:border-black">
+                <Link href="/account" className="border border-(--border-light) p-6 text-center hover:border-black">
                     Security
                 </Link>
             </section>
@@ -140,7 +140,7 @@ export default function AccountPage() {
                         <div
                             key={order._id}
                             className="
-                                border p-3
+                                border border-(--border-light) hover:border-black p-3
                                 flex gap-3 items-center
                                 hover:shadow-md transition
                                 bg-white
@@ -205,7 +205,7 @@ export default function AccountPage() {
 
 
 
-                <Link href="/account/order" className="text-xs border p-1 hover:underline underline-offset-2">
+                <Link href="/account/order" className="text-xs border border-(--border-light) hover:border-black p-1">
                     View All Orders
                 </Link>
             </section>
@@ -216,7 +216,7 @@ export default function AccountPage() {
                     Default Address
                 </h2>
 
-                <div className="border p-2">
+                <div className="border border-(--border-light) hover:border-black p-2">
                     {address ? (
                         <p className="flex flex-col text-gray-600 text-sm py-2">
                             <span>{address.city}, {address.state} </span>
@@ -226,7 +226,7 @@ export default function AccountPage() {
                         <p className="text-gray-500 text-sm py-2">No address saved.</p>
                     )}
 
-                    <Link href="/account/address" className="text-xs border p-1 hover:underline underline-offset-2">
+                    <Link href="/account/address" className="text-xs border border-(--border-light) p-1 hover:border-black">
                         Manage Addresses
                     </Link>
                 </div>

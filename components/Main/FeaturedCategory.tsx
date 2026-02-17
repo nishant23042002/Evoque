@@ -47,7 +47,7 @@ const FeaturedCategories = () => {
     }
 
     return (
-        <section className="px-1 sm:px-2 w-full my-2 mb-6 mx-auto flex flex-col justify-center ">
+        <section className="px-1 w-full my-2 mb-6 mx-auto flex flex-col justify-center ">
             {/* Heading */}
             <h2 className="py-3 text-center text-md tracking-widest font-semibold font-poppins text-foreground">
                 Your Wardrobe Starts Here
@@ -65,7 +65,7 @@ const FeaturedCategories = () => {
             ) : (
                 <>
                     {/* MOBILE — HORIZONTAL SCROLL */}
-                    <div className="md:hidden flex gap-1 sm:gap-2 overflow-x-auto pb-1 custom-scrollbar">
+                    <div className="md:hidden flex gap-1  overflow-x-auto pb-1 custom-scrollbar">
                         {categories.map((item) => (
                             <Link
                                 href={`/categories/${item.slug}`}
@@ -105,20 +105,19 @@ const FeaturedCategories = () => {
                     <div className="hidden md:block">
                         <Masonry
                             breakpointCols={breakpoints}
-                            className="flex gap-1 sm:gap-2 w-full"
+                            className="flex gap-1 w-full"
                             columnClassName="masonry-column"
                         >
                             {categories.map((item) => (
                                 <Link
                                     href={`/categories/${item.slug}`}
                                     key={item._id}
-                                    className="mb-1 sm:mb-2 block break-inside-avoid"
+                                    className="mb-1 block break-inside-avoid"
                                 >
                                     <div
                                         className="
-                                            border border-(--border-light)
+                                            border 
                                             group relative aspect-4/5
-                                            rounded-[3px]
                                             overflow-hidden
                                             bg-(--linen-100)
                                             transition-all duration-300
@@ -128,12 +127,12 @@ const FeaturedCategories = () => {
                                             src={item.image}
                                             alt={item.name}
                                             fill
-                                            className="object-cover object-center transition-transform duration-500 group-hover:scale-105"
+                                            className="object-cover transition-transform duration-500 group-hover:scale-105"
                                         />
 
                                         <div className="absolute inset-0 bg-(--earth-charcoal) opacity-0 group-hover:opacity-15 transition-opacity duration-300" />
 
-                                        <div className="absolute bottom-0 z-10 w-full bg-(--linen-100) text-center px-2 py-1">
+                                        <div className="absolute bottom-0 z-10 w-full bg-(--linen-100) border-t text-center px-2 py-1">
                                             <span className="text-xs font-semibold tracking-wide text-primary">
                                                 {item.name}
                                             </span>

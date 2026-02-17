@@ -43,7 +43,7 @@ function getSmartAspectRatio(seed: string, category?: string) {
     }
     else if (/\bshirts\b/.test(lower)) {
         // only shirt, not t-shirt
-        ratios = ["4/5"]; // medium
+        ratios = ["5/7"]; // medium
     }
     else if (/\bsweatshirts|jackets\b/.test(lower)) {
         ratios = ["4/6"];
@@ -52,7 +52,7 @@ function getSmartAspectRatio(seed: string, category?: string) {
         ratios = ["3/3"];
     }
     else if (/\bjeans|trousers|sweatpants\b/.test(lower)) {
-        ratios = ["6/10"]; // tall
+        ratios = ["6/12", "5/9"]; // tall
     }
     else if (/\bfootwear\b/.test(lower)) {
         ratios = ["1/1", "2/2"];
@@ -126,12 +126,12 @@ export default function ProductMasonryGrid({
                                 <div
                                     onMouseEnter={() => onCardEnter(item._id)}
                                     onMouseLeave={() => onCardLeave(item._id)}
-                                    className="relative border border-(--border-light) w-full overflow-hidden rounded-[2px] group bg-(--card-bg)"
+                                    className="relative w-full overflow-hidden group bg-(--card-bg)"
                                     style={{ aspectRatio: ratio }}
                                 >
                                     {/* IMAGE */}
                                     <div
-                                        className={`absolute inset-0 transition-opacity duration-300 ${transitioning === item._id ? "opacity-0" : "opacity-100"
+                                        className={`absolute border border-(--border-light) inset-0 transition-opacity duration-300 ${transitioning === item._id ? "opacity-0" : "opacity-100"
                                             }`}
                                     >
                                         {/* PRIMARY IMAGE — ALWAYS */}
@@ -238,7 +238,7 @@ export default function ProductMasonryGrid({
                                 </div>
 
                                 {/* DETAILS */}
-                                <div className="py-2 flex flex-col justify-center w-full pointer-events-none">
+                                <div className="py-2 px-0.5 flex flex-col justify-center w-full pointer-events-none">
                                     <p className="text-primary text-xs sm:text-sm font-medium">{item.brand}</p>
                                     <p className="text-xs uppercase truncate sm:text-sm font-extralight">{item.productName}</p>
                                     <div className="flex gap-1 items-center text-sm w-full">

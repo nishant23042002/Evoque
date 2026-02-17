@@ -1,7 +1,7 @@
 "use client";
 
 import Image from "next/image";
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useState } from "react";
 import dynamic from "next/dynamic";
 import Link from "next/link";
 import { useAppDispatch, useAppSelector } from "@/store/hooks";
@@ -59,25 +59,12 @@ export default function Wishlist() {
 
   const count = useAppSelector(selectWishlistCount);
 
-
-
-  const activeItem = useMemo(() => {
-    if (!wishlistItems.length) return null;
-
-    return (
-      wishlistItems.find((item) => item.productId === activeId) ??
-      wishlistItems[0]
-    );
-  }, [wishlistItems, activeId]);
-
-
   /* =======================
      MASONRY CONFIG
   ======================= */
 
   const breakpoints = {
-    default: 3,
-    1024: 4,
+    default: 4,
     950: 3,
     640: 2,
   };
@@ -166,88 +153,17 @@ export default function Wishlist() {
         />
       )}
 
-      <div className="w-full px-1 sm:px-2 py-2 bg-(--linen-100) min-h-[95vh] overflow-hidden">
-        <div className="w-full flex flex-col lg:flex-row gap-2">
-          <div className="flex flex-col w-[70%] lg:sticky top-0 scrollbar-hide self-start h-fit">
-
-            <div className="text-5xl flex max-lg:flex-col pb-2  lg:justify-between lg:items-center text-(--linen-800) font-semibold tracking-tight">
-              <h1 className="text-2xl sm:text-5xl tracking-wider font-bold">
-                FAVOURITES
-              </h1>
-              <span className="text-lg tracking-wide font-light">{count} ITEM</span>
+      <div className="w-full py-2 min-h-[95vh] overflow-hidden">
+          <div className="mx-2 flex justify-between items-center py-6 z-20">
+                <h1 className="text-4xl min-[400px]:text-5xl tracking-wider font-bold">WISHLIST</h1>
+                <span className="text-sm">ITEMS [ {count} ]</span>
             </div>
-
-
-            {/* LEFT — BIG ITEM */}
-            {activeItem && (
-              <div className="hidden lg:block mb-12">
-                <div className="sticky top-20 border border-(--border-light)">
-
-                  {/* IMAGE */}
-                  <div className="relative group  rounded-[3px] aspect-3/4 overflow-hidden">
-                    <Link href={`/products/${activeItem.slug}`}>
-                      {activeItem.image ? (
-                        <Image
-                          src={activeItem.image}
-                          alt={activeItem.name}
-                          fill
-                          className="object-cover aspect-4/3"
-                        />
-                      ) : (
-                        <div className="w-full h-full bg-(--surface-muted)" />
-                      )}
-                    </Link>
-                     <div className="pointer-events-none absolute inset-0 bg-black/10 opacity-0 group-hover:opacity-100" />
-                  </div>
-
-                  {/* DETAILS */}
-                  <div className="mt-3">
-                    <div className="mx-1 mt-1">
-                      <h2 className="font-semibold text-primary text-xs">{activeItem.brand}</h2>
-                      <h2 className="text-lg font-extralight text-foreground">
-                        {activeItem.name}
-                      </h2>
-                      <span className=" text-red-600 mr-2 font-semibold">
-                        Rs.{activeItem.price}
-                      </span>
-
-                      {activeItem.originalPrice && (
-                        <span className="line-through text-sm">
-                          ₹{activeItem.originalPrice}
-                        </span>
-                      )}
-                    </div>
-
-                  </div>
-                  <button onClick={(e) => {
-                    e.preventDefault();
-                    e.stopPropagation();
-
-                    handleMoveToBag(activeItem);
-
-                  }}
-                    className="
-                            cursor-pointer w-full
-                            border-(--border-light) hover:bg-white border-t
-                            py-2 hover:text-primary font-bold
-                            text-xs rounded-b-[3px]
-                            transition-all duration-300
-                            ">
-                    MOVE TO BAG
-                  </button>
-                </div>
-              </div>
-            )}
-          </div>
-
-
-
-          {/* RIGHT — MASONRY */}
-          <div className="w-full mb-12 lg:h-[95vh] lg:overflow-y-auto scrollbar-hide">
+        <div className="w-full flex flex-col lg:flex-row gap-1">
+          <div className="w-full mb-12 lg:h-screen lg:overflow-y-auto scrollbar-hide">
             <Masonry
               breakpointCols={breakpoints}
-              className="flex gap-1 sm:gap-2"
-              columnClassName="space-y-1 sm:space-y-2"
+              className="flex gap-1"
+              columnClassName="space-y-1"
             >
               {wishlistItems.map((item: WishlistItem, index) => {
                 const isWishlisted = wishlistIds.has(item.productId);
@@ -257,13 +173,13 @@ export default function Wishlist() {
                     key={`wishlist-${item.productId}-${index}`}
                     href={`/products/${item.slug}`}
                     onClick={() => setActiveId(item.productId)}
-                    className="block border border-(--border-light) cursor-pointer rounded-[3px]"
+                    className="block border border-(--border-light) cursor-pointer"
                   >
                     {/* COLUMN WRAPPER */}
                     <div className="flex flex-col w-full">
 
                       {/* IMAGE CARD */}
-                      <div className="group relative w-full aspect-4/5 overflow-hidden bg-(--surface-muted)">
+                      <div className="group relative w-full aspect-4/5 overflow-hidden">
 
                         {item.image && (
                           <Image
@@ -304,7 +220,7 @@ export default function Wishlist() {
                       </div>
 
                       {/* BOTTOM INFO — OUTSIDE */}
-                      <div className="bg-(--linen-100) text-(--text-secondary)">
+                      <div className="text-(--text-secondary)">
                         <div className="mx-1 py-2 flex flex-col text-xs max-[450px]:text-[11px]">
                           <p className="text-primary font-semibold">{item.brand}</p>
                           <p className="text-sm w-full uppercase truncate">{item.name}</p>

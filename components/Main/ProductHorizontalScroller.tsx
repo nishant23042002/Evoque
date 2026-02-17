@@ -151,7 +151,7 @@ export default function ProductHorizontalScroller({
                             <div
                                 onMouseEnter={() => hasVariants && onCardEnter(item._id)}
                                 onMouseLeave={() => hasVariants && onCardLeave(item._id)}
-                                className="relative aspect-3/4 sm:aspect-2/3 md:aspect-3/4 lg:aspect-4/6 overflow-hidden rounded-[3px] border border-(--border-light) bg-card">
+                                className="relative aspect-3/4 sm:aspect-2/3 md:aspect-3/4 lg:aspect-4/6 overflow-hidden border border-(--border-light) bg-card">
                                 <Image
                                     src={primary}
                                     alt={item.productName}

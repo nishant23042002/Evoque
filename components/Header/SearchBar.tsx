@@ -101,7 +101,7 @@ const SearchBar = () => {
       <div
         className={cn(
           "fixed inset-y-0 right-0 z-50",
-          "bg-(--surface-elevated) shadow-xl",
+          "bg-(--linen-100) shadow-xl",
           "w-[80vw] sm:w-105",
           "transform-gpu will-change-transform",
           "transition-transform duration-700 ease-in-out",

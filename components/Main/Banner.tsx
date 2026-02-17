@@ -92,8 +92,8 @@ const BannerSlider = ({ banners }: BannerSliderProps) => {
         className={`
                   relative w-full overflow-hidden transition-[aspect-ratio] duration-300
                   ${isMobile
-            ? "aspect-[4/5]"
-            : "aspect-[21/9]"
+            ? "aspect-4/5"
+            : "aspect-21/9"
           }
                 `}
       >

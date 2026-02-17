@@ -153,7 +153,7 @@ export default function SelectedVariantModal({
                                     setPreviewImage(img.url);
                                 }}
                                 className={clsx(
-                                    "relative cursor-pointer aspect-square overflow-hidden rounded-[3px] border",
+                                    "relative cursor-pointer aspect-square overflow-hidden border",
                                     image === img.url
                                         ? "ring-2 ring-primary border-primary"
                                         : "border-gray-200"
@@ -216,7 +216,7 @@ export default function SelectedVariantModal({
                                         setActiveImage(null);
                                     }}
                                     className={clsx(
-                                        "w-8 h-8 rounded cursor-pointer",
+                                        "w-8 h-8 cursor-pointer",
                                         v.color.slug === selectedColor &&
                                         "ring-2 ring-primary"
                                     )}
@@ -240,17 +240,16 @@ export default function SelectedVariantModal({
                                         disabled={disabled}
                                         onClick={() => s.variant && setSelectedSize(s.variant)}
                                         className={clsx(
-                                            "px-3 cursor-pointer py-1 rounded-[3px] text-sm border font-bold transition",
+                                            "px-5 cursor-pointer py-1 text-sm border font-light transition",
                                             disabled
-                                                ? "opacity-40 line-through cursor-not-allowed border-border"
+                                                ? "opacity-60 hover:border-black line-through cursor-not-allowed"
                                                 : selectedSize?.variantSku === s.variant?.variantSku
-                                                    ? "bg-primary text-white border-primary"
-                                                    : "border-border hover:border-primary"
+                                                    ? "bg-primary text-white"
+                                                    : "hover:border-black"
                                         )}
                                     >
                                         {s.size}
                                     </button>
-
                                 )
                             })}
                         </div>
@@ -287,9 +286,9 @@ export default function SelectedVariantModal({
                             onClose();
                         }}
                         className="cursor-pointer w-full
-                            bg-primary text-white hover:bg-(--linen-200)
-                            py-3 hover:text-primary font-bold                      
-                            text-xs
+                            bg-black hover:bg-primary text-white
+                            py-3                     
+                            text-sm uppercase
                             transition-all duration-300"
                     >
                         Add to Bag

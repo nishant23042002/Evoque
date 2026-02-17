@@ -133,12 +133,12 @@ export default function CartPage() {
             {/* HEADER */}
             <div className="mx-2 flex justify-between items-center py-6 z-20">
                 <h1 className="text-4xl min-[400px]:text-5xl tracking-wider font-bold">SHOPPING BAG</h1>
-                <span className="text-sm">ITEMS {itemCount}</span>
+                <span className="text-sm">ITEMS [ {itemCount} ] </span>
             </div>
 
             <div className="mx-2">
                 {cartItems.length == 0 && (
-                    <h1 className="font-semibold text-xl">Your shopping bag is empty.</h1>
+                    <h1 className="font-light text-xl">Your shopping bag is empty.</h1>
                 )}
             </div>
 
@@ -208,7 +208,7 @@ export default function CartPage() {
                                 {/* ACTIONS */}
                                 <div className="flex justify-between items-center">
                                     {/* QUANTITY */}
-                                    <div className="flex items-center border hover:border-black px-3 py-1 gap-3">
+                                    <div className="flex items-center border border-(--border-light) hover:border-black px-3 py-1 gap-3">
 
                                         <button className="cursor-pointer"
                                             onClick={() => {
@@ -302,7 +302,7 @@ export default function CartPage() {
                                             }, 500);
                                         }}
                                         className="
-                                            text-xs hover:underline cursor-pointer
+                                            text-xs cursor-pointer
                                             hover:text-primary transition-all
                                             disabled:opacity-60 disabled:cursor-not-allowed
                                             flex items-center gap-2
@@ -310,15 +310,13 @@ export default function CartPage() {
                                     >
                                         {movingSku === item.variantSku ? (
                                             <>
-                                                <span className=" w-3 h-3 border border-black border-t-transparent rounded-full animate-spin" />
+                                                <span className=" w-3 h-3 border border-black hover:border-black border-t-transparent rounded-full animate-spin" />
                                                 Moving...
                                             </>
                                         ) : (
-                                            <span className="border p-1">Move to wishlist</span>
+                                            <span className="border border-(--border-light) hover:border-black p-1">Move to wishlist</span>
                                         )}
-
                                     </button>
-
                                 </div>
                             </div>
                         </div>
@@ -374,7 +372,7 @@ export default function CartPage() {
                                 }, 1500);
                             }}
                             className="cursor-pointer hidden md:flex items-center justify-center gap-2 w-full
-                                        bg-black text-white py-4 mt-4 font-extralight
+                                        bg-black hover:bg-black/80 text-white py-4 mt-4 font-extralight
                                         transition-all duration-150 ease-out
                                         hover:opacity-90 active:scale-[0.97]
                                         disabled:opacity-60 disabled:cursor-not-allowed"
@@ -445,7 +443,7 @@ export default function CartPage() {
 
 
             {confirmRemove && (
-                <div className="fixed inset-0 z-[999] bg-black/40 flex items-center justify-center">
+                <div className="fixed inset-0 z-999 bg-black/40 flex items-center justify-center">
                     <div className="bg-white w-[90%] max-w-sm p-6 space-y-4 shadow-xl">
 
                         <h3 className="text-lg font-semibold">

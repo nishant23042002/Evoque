@@ -408,14 +408,14 @@ export default function ProductPage() {
 
     return (
         <Container>
-            <div className="relative w-full min-h-screen lg:h-screen">
+            <div className="relative w-full min-h-screen lg:h-auto">
                 <div
                     className="
                         flex
                         flex-col
                         lg:flex-row
                         justify-evenly
-                        lg:h-screen
+                        lg:h-auto
                     "
                 >
                     {/* LEFT: IMAGES */}
@@ -510,7 +510,8 @@ export default function ProductPage() {
                             h-fit
                             self-start
                             py-2
-                            lg:py-20
+                            lg:py-6
+                           
                             "
                     >
                         <div className="flex flex-col">
@@ -573,7 +574,7 @@ export default function ProductPage() {
                                 Colors: <span className="font-light text-sm">{activeColorObj ? activeColorObj.name : ""}</span>
                             </h1>
 
-                            <div className="flex flex-row flex-nowrap items-center gap-1 w-full overflow-x-auto scrollbar-hide">
+                            <div className="flex flex-row flex-nowrap p-0.5 items-center gap-1 w-full overflow-x-auto scrollbar-hide">
                                 {colorVariants.map((color) => {
                                     const isActive = selectedColor === color.slug;
                                     return (
@@ -882,7 +883,6 @@ export default function ProductPage() {
                                 )}
                             </div>
                         </div>
-
                     </div>
                 </div>
                 {product?.category?.sizeType && (
@@ -894,43 +894,8 @@ export default function ProductPage() {
                         productName={product.productName}
                     />
                 )}
-
             </div>
-            <div className="text-lg">
-                {recommendations.length > 0 && (
-                    <ProductHorizontalScroller
-                        title="STYLE WITH"
-                        products={recommendations.map(p => ({
-                            _id: p._id,
-                            slug: p.slug,
-                            productName: p.productName,
-                            price: p.pricing.price,
-                            image:
-                                p.thumbnail ||
-                                p.variants?.[0]?.color.images?.[0]?.url ||
-                                "",
-                            variants: p.variants,
-                        }))}
-                    />
-                )}
-                {sameCategory.length > 0 && (
-                    <ProductHorizontalScroller
-                        title="SIMILAR ITEMS"
-                        products={sameCategory.map(p => ({
-                            _id: p._id,
-                            slug: p.slug,
-                            productName: p.productName,
-                            price: p.pricing.price,
-                            image:
-                                p.thumbnail ||
-                                p.variants?.[0]?.color.images?.[0]?.url ||
-                                "",
-                            variants: p.variants,
-                        }))}
-                    />
-                )}
 
-            </div>
             <div
                 className={`
                     fixed bottom-0 left-0 w-full bg-white border-t border-border z-50
@@ -1025,7 +990,41 @@ export default function ProductPage() {
                     onPrev={prevPreview}
                 />
             )}
+            <div className="text-lg">
+                {recommendations.length > 0 && (
+                    <ProductHorizontalScroller
+                        title="STYLE WITH"
+                        products={recommendations.map(p => ({
+                            _id: p._id,
+                            slug: p.slug,
+                            productName: p.productName,
+                            price: p.pricing.price,
+                            image:
+                                p.thumbnail ||
+                                p.variants?.[0]?.color.images?.[0]?.url ||
+                                "",
+                            variants: p.variants,
+                        }))}
+                    />
+                )}
+                {sameCategory.length > 0 && (
+                    <ProductHorizontalScroller
+                        title="SIMILAR ITEMS"
+                        products={sameCategory.map(p => ({
+                            _id: p._id,
+                            slug: p.slug,
+                            productName: p.productName,
+                            price: p.pricing.price,
+                            image:
+                                p.thumbnail ||
+                                p.variants?.[0]?.color.images?.[0]?.url ||
+                                "",
+                            variants: p.variants,
+                        }))}
+                    />
+                )}
 
+            </div>
             <Footer />
         </Container>
     );

@@ -428,6 +428,7 @@
     opacity: 0;
     transform: translateY(-20px) scale(0.98);
   }
+
   to {
     opacity: 1;
     transform: translateY(0) scale(1);
@@ -447,13 +448,25 @@
 }
 
 @keyframes fadeIn {
-  from { opacity: 0 }
-  to { opacity: 1 }
+  from {
+    opacity: 0
+  }
+
+  to {
+    opacity: 1
+  }
 }
 
 @keyframes zoomIn {
-  from { transform: scale(0.95); opacity: 0 }
-  to { transform: scale(1); opacity: 1 }
+  from {
+    transform: scale(0.95);
+    opacity: 0
+  }
+
+  to {
+    transform: scale(1);
+    opacity: 1
+  }
 }
 
 .animate-fadeIn {
@@ -465,15 +478,31 @@
 }
 
 
-/* Thin native scrollbar */
-* {
-  scrollbar-width: thin;          /* Firefox */
-  scrollbar-color: auto;          /* Firefox */
-  scroll-behavior: smooth;
+/* Base hidden scrollbar */
+.hover-scrollbar::-webkit-scrollbar {
+  height: 6px;
+  opacity: 0;
 }
 
-/* Chrome / Edge / Safari */
-*::-webkit-scrollbar {
-  height: 4px;   /* horizontal */
-  width: 6px;    /* vertical */
+.hover-scrollbar::-webkit-scrollbar-thumb {
+  background: transparent;
+  border-radius: 10px;
+}
+
+/* On Hover → show scrollbar */
+.hover-scrollbar:hover::-webkit-scrollbar-thumb {
+  background: #888;
+}
+
+.hover-scrollbar:hover::-webkit-scrollbar {
+  opacity: 1;
+}
+
+/* Firefox */
+.hover-scrollbar {
+  scrollbar-width: none;
+}
+
+.hover-scrollbar:hover {
+  scrollbar-width: thin;
 }

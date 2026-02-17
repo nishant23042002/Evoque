@@ -51,7 +51,7 @@ export default function Home() {
   const [page, setPage] = useState(pageFromUrl);
   const [activeCategory, setActiveCategory] = useState(categoryFromUrl);
 
-  const LIMIT = 12;
+  const LIMIT = 10;
 
 
 
@@ -155,7 +155,7 @@ export default function Home() {
 
     query.set("page", "1"); // reset page when category changes
 
-    router.push(`/?${query.toString()}`, {scroll: false});
+    router.push(`/?${query.toString()}`, { scroll: false });
     // no scroll:false here → we WANT scroll to top
   };
 
@@ -171,7 +171,7 @@ export default function Home() {
 
 
   return (
-    <Container className="bg-(--linen-50)">
+    <Container>
       <div className="flex flex-col">
         {/* 🔥 Top Hero Banner Section */}
         {topBanners.length > 0 && (
@@ -194,61 +194,60 @@ export default function Home() {
 
         {/* 🔥 Product Grid */}
         <section className="w-full">
-          <div>
-            <div className="mx-1 select-none justify-between flex flex-col">
-              <div className="flex justify-between py-6 items-center">
-                <h1 className="text-2xl sm:text-4xl tracking-wider uppercase font-bold">
-                  View All
-                </h1>
-                <p className="font-light text-lg">[ {items.length ?? 0} ]</p>
-              </div>
-              <div>
-                <div className="w-full h-11 py-0.5 overflow-x-auto overflow-y-hidden">
-                  <div className="flex min-w-max">
+          <div className="mx-1 select-none justify-between flex flex-col">
+            <div className="flex justify-between py-6 items-center">
+              <h1 className="text-2xl sm:text-4xl tracking-wider uppercase font-bold">
+                View All
+              </h1>
+              <p className="font-light text-lg">[ {items.length ?? 0} ]</p>
+            </div>
+            <div>
+              <div className="w-full h-11 py-0.5 overflow-y-hidden scroll-smooth overflow-x-auto hover-scrollbar">
 
-                    {/* VIEW ALL */}
-                    <button
-                      onClick={() => {
-                        changeCategory("all")                      
-                      }}
-                      className={`
+                <div className="flex min-w-max">
+
+                  {/* VIEW ALL */}
+                  <button
+                    onClick={() => {
+                      changeCategory("all")
+                    }}
+                    className={`
                           px-4 py-1 mr-1 cursor-pointer text-sm font-light tracking-normal uppercase
                           border hover:border-black
                           ${activeCategory === "all"
-                          ? "bg-black text-white"
-                          : "text-black"}
+                        ? "bg-black text-white"
+                        : "text-black"}
                       `}
-                    >
-                      View All
-                    </button>
+                  >
+                    View All
+                  </button>
 
-                    {/* CATEGORY LOOP */}
-                    {categories.map((item) => {
-                      const isActive = activeCategory === item.slug;
+                  {/* CATEGORY LOOP */}
+                  {categories.map((item) => {
+                    const isActive = activeCategory === item.slug;
 
-                      return (
-                        <button
-                          key={item._id}
-                          onClick={() => changeCategory(item.slug)}
-                          className={`cursor-pointer
+                    return (
+                      <button
+                        key={item._id}
+                        onClick={() => changeCategory(item.slug)}
+                        className={`cursor-pointer
                               px-4 py-1 mx-1 text-sm font-light tracking-widest uppercase
                               whitespace-nowrap
-                              border hover:border-black
+                              border border-(--border-light) hover:border-black
                               ${isActive
-                              ? "bg-black text-white"
-                              : "text-black"}
+                            ? "bg-black text-white"
+                            : "text-black"}
                         `}
-                        >
-                          {item.name}
-                        </button>
-                      );
-                    })}
-                  </div>
+                      >
+                        {item.name}
+                      </button>
+                    );
+                  })}
                 </div>
-
               </div>
             </div>
           </div>
+
           <ProductMasonryGrid products={items} />
           <Pagination
             currentPage={page}
