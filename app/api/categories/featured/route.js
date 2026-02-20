@@ -1,3 +1,5 @@
+// /api/categories/featured/route.js
+
 import { NextResponse } from "next/server";
 import connectDB from "@/lib/db";
 import Category from "@/models/Category";

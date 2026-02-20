@@ -26,7 +26,7 @@ interface ProductMasonryGridProps {
 
 function getSmartAspectRatio(seed: string, category?: string) {
     const lower = category?.toLowerCase() || "";
-    console.log(lower);
+
     let ratios: string[] = [
         "4/5",
         "3/4",
@@ -52,7 +52,7 @@ function getSmartAspectRatio(seed: string, category?: string) {
         ratios = ["3/3"];
     }
     else if (/\bjeans|trousers|sweatpants\b/.test(lower)) {
-        ratios = ["6/12", "5/9"]; // tall
+        ratios = ["5/8"]; // tall
     }
     else if (/\bfootwear\b/.test(lower)) {
         ratios = ["1/1", "2/2"];
@@ -94,7 +94,7 @@ export default function ProductMasonryGrid({
     /* -------------------------
        MASONRY BREAKPOINTS
     ------------------------- */
-    const breakpoints = { default: 5, 1600: 4, 1200: 3, 750: 2, 370: 1 };
+    const breakpoints = { default: 4, 1200: 3, 750: 2 };
 
 
 
@@ -121,17 +121,17 @@ export default function ProductMasonryGrid({
                     return (
                         <div key={item._id} className="mb-1">
 
-                            <div className="flex px-0.5 flex-col w-full">
+                            <div className="flex flex-col w-full">
 
                                 <div
                                     onMouseEnter={() => onCardEnter(item._id)}
                                     onMouseLeave={() => onCardLeave(item._id)}
-                                    className="relative w-full overflow-hidden group bg-(--card-bg)"
+                                    className="relative w-full overflow-hidden group"
                                     style={{ aspectRatio: ratio }}
                                 >
                                     {/* IMAGE */}
                                     <div
-                                        className={`absolute border border-(--border-light) inset-0 transition-opacity duration-300 ${transitioning === item._id ? "opacity-0" : "opacity-100"
+                                        className={`absolute inset-0 transition-opacity duration-300 ${transitioning === item._id ? "opacity-0" : "opacity-100"
                                             }`}
                                     >
                                         {/* PRIMARY IMAGE — ALWAYS */}
@@ -162,7 +162,7 @@ export default function ProductMasonryGrid({
 
                                     {/* COLOR DOTS & WISHLIST */}
                                     <div className="absolute w-full flex justify-between items-center top-1 px-2 z-20">
-                                        <div className="flex gap-0.5">
+                                        <div className="hidden sm:flex gap-0.5">
                                             {item.variants.map((v) => (
                                                 <span
                                                     key={v.color.slug}
@@ -175,6 +175,28 @@ export default function ProductMasonryGrid({
                                                     onMouseLeave={() => onVariantHover(item._id, undefined)}
                                                 />
                                             ))}
+                                        </div>
+
+                                        {/* Mobile → Limit to 3 */}
+                                        <div className="flex sm:hidden gap-0.5">
+                                            {item.variants.slice(0, 3).map((v) => (
+                                                <span
+                                                    key={v.color.slug}
+                                                    className={`w-5 h-4 border cursor-pointer ${v.color.slug === variant.color.slug
+                                                            ? "ring-1 ring-ring border-primary"
+                                                            : "border-(--border-light)"
+                                                        }`}
+                                                    style={{ backgroundColor: v.color.hex }}
+                                                    onMouseEnter={() => onVariantHover(item._id, v)}
+                                                    onMouseLeave={() => onVariantHover(item._id, undefined)}
+                                                />
+                                            ))}
+
+                                            {item.variants.length > 3 && (
+                                                <span className="text-[10px] font-medium px-1 h-4 flex items-center justify-center border border-(--border-light) bg-white">
+                                                    +{item.variants.length - 3}
+                                                </span>
+                                            )}
                                         </div>
 
                                         <button
@@ -238,12 +260,12 @@ export default function ProductMasonryGrid({
                                 </div>
 
                                 {/* DETAILS */}
-                                <div className="py-2 px-0.5 flex flex-col justify-center w-full pointer-events-none">
-                                    <p className="text-primary text-xs sm:text-sm font-medium">{item.brand}</p>
-                                    <p className="text-xs uppercase truncate sm:text-sm font-extralight">{item.productName}</p>
+                                <div className="py-2 px-1 flex flex-col justify-center w-full pointer-events-none">
+                                    <p className="text-primary max-[360px]:text-[10px] text-xs sm:text-sm font-medium">{item.brand}</p>
+                                    <p className="text-xs max-[360px]:text-[12px] uppercase truncate sm:text-sm font-extralight">{item.productName}</p>
                                     <div className="flex gap-1 items-center text-sm w-full">
-                                        <span className="font-semibold text-red-600">Rs.{variant.pricing?.price}</span>
-                                        <span className="line-through font-extralight">Rs.{variant.pricing?.originalPrice}</span>
+                                        <span className="max-[360px]:text-[11px] font-semibold text-red-600">Rs.{variant.pricing?.price}</span>
+                                        <span className="max-[360px]:text-[10px] line-through font-extralight">Rs.{variant.pricing?.originalPrice}</span>
                                     </div>
                                 </div>
                             </div>

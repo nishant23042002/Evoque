@@ -51,7 +51,7 @@ export default function Home() {
   const [page, setPage] = useState(pageFromUrl);
   const [activeCategory, setActiveCategory] = useState(categoryFromUrl);
 
-  const LIMIT = 10;
+  const LIMIT = 20;
 
 
 
@@ -195,7 +195,7 @@ export default function Home() {
         {/* 🔥 Product Grid */}
         <section className="w-full">
           <div className="mx-1 select-none justify-between flex flex-col">
-            <div className="flex justify-between py-6 items-center">
+            <div className="flex justify-between pt-6 items-center">
               <h1 className="text-2xl sm:text-4xl tracking-wider uppercase font-bold">
                 View All
               </h1>

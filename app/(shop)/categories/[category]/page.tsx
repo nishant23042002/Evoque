@@ -158,17 +158,17 @@ const ProductCategoryPage = () => {
 
 
             {/* ---------------- SUB CATEGORY BAR ---------------- */}
-            <div className="md:w-full mx-auto z-30 bg-(--linen-100)">
+            <div className="md:w-full mx-auto z-30">
                 <div className="relative mx-2 h-40 flex flex-nowrap overflow-auto items-center sm:justify-center gap-1 scrollbar-hide">
                     {/* ALL */}
                     <Link href={`/categories/${categorySlug}`} scroll={false} className="flex flex-col items-center min-w-20">
                         <div className={clsx(
-                            "flex justify-center items-center mb-5 w-20 h-25 mx-1 overflow-hidden border transition-all",
-                            !activeSub ? "bg-primary border-primary ring-1 ring-accent" : "bg-(--surface-muted) hover:ring-accent"
+                            "flex justify-center items-center border border-black/20 mb-5 w-25 h-25 mx-1 rounded-full overflow-hidden",
+                            !activeSub ? "ring-1 ring-primary" : "hover:border-primary"
                         )}>
                             <p className={clsx(
-                                "w-20 truncate font-semibold text-center mt-1 text-[11px]",
-                                activeSub ? "text-primary" : "text-primary-foreground"
+                                "w-20 font-medium text-center mt-1 text-[11px]",
+                                activeSub ? "text-primary" : "text-primary"
                             )}>
                                 All <span>{categorySlug?.toUpperCase()}</span>
                             </p>
@@ -187,7 +187,7 @@ const ProductCategoryPage = () => {
                                     "cursor-pointer border-(--border-strong) relative inline-flex h-4 w-6 items-center justify-center rounded-[3px] border transition-all",
                                     isBannerEnabled
                                         ? "bg-primary border-primary text-primary-foreground"
-                                        : "bg-(--linen-100) border-border text-(--text-secondary)"
+                                        : "border-border text-(--text-secondary)"
                                 )}
                             >
                                 {isBannerEnabled ? <Eye className="h-3 w-3" /> : <EyeOff className="h-3 w-3" />}
@@ -203,23 +203,23 @@ const ProductCategoryPage = () => {
                                 key={item.slug}
                                 href={`/categories/${categorySlug}?sub=${item.slug}`}
                                 scroll={false}
-                                className="flex flex-col items-center min-w-20"
+                                className="flex flex-col items-center"
                             >
                                 <div className={clsx(
-                                    "overflow-hidden bg-(--linen-100) border transition-all",
-                                    isActive ? "border-primary ring-1 ring-primary" : "border-border hover:border-primary"
+                                    "flex justify-center items-center overflow-hidden w-25 h-25 rounded-full border border-black/20",
+                                    isActive ? "ring-1 ring-primary" : " hover:border-primary"
                                 )}>
                                     <Image
                                         src={item.image}
                                         alt={item.name}
                                         width={80}
                                         height={80}
-                                        className="object-cover h-24.75"
+                                        className="object-cover object-center"
                                     />
                                 </div>
                                 <div className="w-20 flex items-center justify-center">
                                     <p className={clsx(
-                                        "mt-1 text-[11px] text-center truncate font-semibold hover:text-primary",
+                                        "mt-1 text-[11px] text-center truncate font-light tracking-tighter hover:text-primary",
                                         isActive ? "text-primary" : "text-(--text-secondary)"
                                     )}>
                                         {item.name}
@@ -238,7 +238,7 @@ const ProductCategoryPage = () => {
                     animatePage ? "opacity-100 translate-y-0" : "opacity-0 translate-y-10"
                 )}
             >
-                <div className="sticky top-14.75 z-50 bg-(--linen-100) mb-2 border-b border-(--border-light) select-none flex justify-between pt-2 pb-2">
+                <div className="sticky top-14.75 z-50 bg-(--linen-100) mb-2 select-none flex justify-between pt-2 pb-2">
                     <div onClick={() => setSortOpen((prev) => !prev)} className="flex cursor-pointer  mx-1 sm:mx-2 items-center justify-center gap-2">
                         <div className="font-medium hover:text-black/70 duration-300 tracking-wider uppercase text-sm">
                             Sort
@@ -256,7 +256,7 @@ const ProductCategoryPage = () => {
                                     absolute top-9 left-2 z-40
                                     w-56 h-45
                                     bg-white
-                                    border border-(--border-strong)
+                                    border border-(--border-light)
                                     p-4
                                     animate-in fade-in zoom-in-95 duration-150
                                     "
