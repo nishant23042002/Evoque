@@ -506,3 +506,29 @@
 .hover-scrollbar:hover {
   scrollbar-width: thin;
 }
+
+
+
+
+
+
+input[type="range"] {
+  pointer-events: auto;
+}
+
+input[type="range"]::-webkit-slider-thumb {
+  appearance: none;
+  width: 12px;
+  height: 12px;
+  background: black;
+  cursor: pointer;
+  position: relative;
+  z-index: 10;
+}
+
+input[type="range"]::-moz-range-thumb {
+  width: 12px;
+  height: 12px;
+  background: black;
+  cursor: pointer;
+}

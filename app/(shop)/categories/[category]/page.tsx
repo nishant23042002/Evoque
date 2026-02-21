@@ -5,7 +5,7 @@ import ProductMasonryGrid from "@/components/Main/ProductMasonryGrid";
 import clsx from "clsx";
 import Image from "next/image";
 import Link from "next/link";
-import { Eye, EyeOff, Plus } from "lucide-react";
+import { Eye, EyeOff, Minus, Plus, X } from "lucide-react";
 import { usePathname, useSearchParams } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
 import axios from "axios";
@@ -19,17 +19,96 @@ type SortOption = "recommended" | "newest" | "low-high" | "high-low";
 interface CategoryProductsResponse {
     category: Category;
     products: Product[];
+    colorCounts: {
+        slug: string;
+        name: string;
+        hex: string;
+        count: number;
+    }[];
+    sizeCounts: {
+        size: string;
+        count: number;
+    }[];
+    fitCounts: {
+        fitType: string;
+        count: number;
+    }[];
+    fabricCounts: {
+        fabric: string;
+        count: number;
+    }[];
+    patternCounts: {
+        pattern: string;
+        count: number;
+    }[];
+    priceRange: {
+        min: number;
+        max: number;
+    };
 }
+const FilterSection = ({
+    title,
+    children,
+    onClose,
+}: {
+    title: string;
+    children: React.ReactNode;
+    onClose?: () => void;
+}) => {
+    const [open, setOpen] = useState(false);
 
+    useEffect(() => {
+        if (!open && onClose) {
+            onClose(); // ✅ safe: runs after render
+        }
+    }, [open]);
+
+    return (
+        <div>
+            <div
+                onClick={() => setOpen(prev => !prev)}
+                className="flex justify-between items-center cursor-pointer  pb-3"
+            >
+                <span className="uppercase tracking-wide text-sm font-medium">
+                    {title}
+                </span>
+                {open ? <Minus size={16} /> : <Plus size={16} />}
+            </div>
+
+            <div
+                className={clsx(
+                    "transition-all duration-300 overflow-hidden",
+                    open ? "max-h-125 opacity-100" : "max-h-0 opacity-0"
+                )}
+            >
+                {children}
+            </div>
+        </div>
+    );
+};
 export async function fetchCategoryWithProducts(
     slug: string,
     sub?: string,
-    sort?: SortOption | null
+    sort?: SortOption | null,
+    min?: string | null,
+    max?: string | null,
+    color?: string | null,
+    size?: string | null,
+    fit?: string | null,
+    fabric?: string | null,
+    pattern?: string | null,
 ) {
     const { data } = await axios.get(`/api/categories/${slug}`, {
         params: {
             ...(sub && { sub }),
             ...(sort && { sort }),
+            ...(min && { min }),
+            ...(max && { max }),
+            ...(color && { color }),
+            ...(size && { size }),
+            ...(fit && { fit }),
+            ...(fabric && { fabric }),
+            ...(pattern && { pattern }),
         },
     });
 
@@ -49,12 +128,25 @@ const ProductCategoryPage = () => {
     const [animatePage, setAnimatePage] = useState(false);
     const pathname = usePathname();
     const searchParams = useSearchParams();
+    const [isFilterOpen, setIsFilterOpen] = useState(false);
 
     const categorySlug = pathname.split("/").pop() ?? "";
     const activeSub = searchParams.get("sub") || "";
     const showBannerToggle = !activeSub;
     const [sortOpen, setSortOpen] = useState(false);
     const sortValue = searchParams.get("sort") as SortOption | null;
+    const colorParam = searchParams.get("color");
+    const selectedColors = colorParam ? colorParam.split(",") : [];
+    const sizeParam = searchParams.get("size");
+    const selectedSizes = sizeParam ? sizeParam.split(",") : [];
+    const fitParam = searchParams.get("fit");
+    const selectedFits = fitParam ? fitParam.split(",") : [];
+
+    const fabricParam = searchParams.get("fabric");
+    const patternParam = searchParams.get("pattern");
+    const selectedPattern = patternParam ? patternParam.split(",") : [];
+    const selectedFabrics = fabricParam ? fabricParam.split(",") : [];
+
     const router = useRouter();
 
 
@@ -75,24 +167,202 @@ const ProductCategoryPage = () => {
     }, []);
 
 
+    const minPrice = searchParams.get("min");
+    const maxPrice = searchParams.get("max");
     /* ---------- FETCH DATA ---------- */
     const { data, isLoading } = useQuery<CategoryProductsResponse>({
-        queryKey: ["categoryProducts", categorySlug, activeSub, sortValue],
+        queryKey: [
+            "categoryProducts",
+            categorySlug,
+            activeSub,
+            sortValue,
+            minPrice,
+            maxPrice,
+            colorParam,
+            sizeParam,
+            fitParam,
+            fabricParam,
+            patternParam
+        ],
         queryFn: () =>
-            fetchCategoryWithProducts(categorySlug, activeSub, sortValue),
+            fetchCategoryWithProducts(
+                categorySlug,
+                activeSub,
+                sortValue,
+                minPrice,
+                maxPrice,
+                colorParam,
+                sizeParam,
+                fitParam,
+                fabricParam,
+                patternParam
+            ),
         enabled: !!categorySlug,
         staleTime: 1000 * 60 * 5,
     });
 
+    const minAvailable = data?.priceRange?.min || 0;
+    const maxAvailable = data?.priceRange?.max || 0;
+
+    const minVal = minPrice ? Number(minPrice) : minAvailable;
+    const maxVal = maxPrice ? Number(maxPrice) : maxAvailable;
+    const [tempMin, setTempMin] = useState<number>(() => minVal);
+    const [tempMax, setTempMax] = useState<number>(() => maxVal);
+
+
+    const resetPriceFilter = () => {
+        const params = new URLSearchParams(searchParams.toString());
+
+        params.delete("min");
+        params.delete("max");
+
+        router.replace(`?${params.toString()}`);
+    };
+
+
     const bannerImage = data?.category?.categoryPageBanner ?? "/images/default-category-banner.png";
     const subCategories = (data?.category?.subCategories ?? []).filter((s: SubCategory) => s.isActive);
     const products = data?.products ?? [];
+    const updatePrice = (min: number, max: number) => {
+        const params = new URLSearchParams(searchParams.toString());
 
+        if (min > minAvailable)
+            params.set("min", String(min));
+        else
+            params.delete("min");
 
+        if (max < maxAvailable)
+            params.set("max", String(max));
+        else
+            params.delete("max");
+
+        router.replace(`?${params.toString()}`);
+    };
     useEffect(() => {
         const timeout = setTimeout(() => setAnimatePage(true), 50); // delay to trigger transition
         return () => clearTimeout(timeout);
     }, []);
+
+    useEffect(() => {
+        if (isFilterOpen) {
+            document.body.style.overflow = "hidden";
+        } else {
+            document.body.style.overflow = "";
+        }
+
+        // cleanup safety (important)
+        return () => {
+            document.body.style.overflow = "";
+        };
+    }, [isFilterOpen]);
+
+    const updateColorFilter = (colorSlug: string) => {
+        const params = new URLSearchParams(searchParams.toString());
+
+        let colors = colorParam ? colorParam.split(",") : [];
+
+        if (colors.includes(colorSlug)) {
+            // remove
+            colors = colors.filter(c => c !== colorSlug);
+        } else {
+            // add
+            colors.push(colorSlug);
+        }
+
+        if (colors.length > 0) {
+            params.set("color", colors.join(","));
+        } else {
+            params.delete("color");
+        }
+
+        router.replace(`?${params.toString()}`);
+    };
+
+    const updateSizeFilter = (size: string) => {
+        const params = new URLSearchParams(searchParams.toString());
+
+        let sizes = sizeParam ? sizeParam.split(",") : [];
+
+        if (sizes.includes(size)) {
+            sizes = sizes.filter(s => s !== size);
+        } else {
+            sizes.push(size);
+        }
+
+        if (sizes.length > 0) {
+            params.set("size", sizes.join(","));
+        } else {
+            params.delete("size");
+        }
+
+        router.replace(`?${params.toString()}`);
+    };
+
+    const updateFitFilter = (fitValue: string) => {
+        const params = new URLSearchParams(searchParams.toString());
+
+        let fits = fitParam ? fitParam.split(",") : [];
+
+        if (fits.includes(fitValue)) {
+            fits = fits.filter(f => f !== fitValue);
+        } else {
+            fits.push(fitValue);
+        }
+
+        if (fits.length > 0) {
+            params.set("fit", fits.join(","));
+        } else {
+            params.delete("fit");
+        }
+
+        router.replace(`?${params.toString()}`);
+    };
+
+    const updateFabricFilter = (fabricValue: string) => {
+        const params = new URLSearchParams(searchParams.toString());
+
+        let fabrics = fabricParam ? fabricParam.split(",") : [];
+
+        if (fabrics.includes(fabricValue)) {
+            fabrics = fabrics.filter(f => f !== fabricValue);
+        } else {
+            fabrics.push(fabricValue);
+        }
+
+        if (fabrics.length > 0) {
+            params.set("fabric", fabrics.join(","));
+        } else {
+            params.delete("fabric");
+        }
+
+        router.replace(`?${params.toString()}`);
+    };
+
+    const updatePatternFilter = (patternValue: string) => {
+        const params = new URLSearchParams(searchParams.toString());
+
+        let patterns = patternParam ? patternParam.split(",") : [];
+
+        if (patterns.includes(patternValue)) {
+            patterns = patterns.filter(p => p !== patternValue);
+        } else {
+            patterns.push(patternValue);
+        }
+
+        if (patterns.length > 0) {
+            params.set("pattern", patterns.join(","));   // ✅ correct key
+        } else {
+            params.delete("pattern");                   // ✅ correct key
+        }
+
+        router.replace(`?${params.toString()}`);
+    };
+
+    const availableColors = data?.colorCounts || [];
+    const availableSizes = data?.sizeCounts || [];
+    const fit = data?.fitCounts || [];
+    const fabricCounts = data?.fabricCounts || [];
+    const patternCounts = data?.patternCounts || [];
 
     /* ---------- LOCAL STORAGE PERSISTENCE ---------- */
     const toggleBanner = () => {
@@ -284,7 +554,10 @@ const ProductCategoryPage = () => {
                             </div>
                         )}
                     </div>
-                    <div className="flex mx-2 cursor-pointer justify-center items-center gap-2">
+                    <div
+                        onClick={() => setIsFilterOpen(true)}
+                        className="flex mx-2 cursor-pointer justify-center items-center gap-2"
+                    >
                         <div className="font-medium hover:text-black/70 duration-300 tracking-wider uppercase text-sm">
                             FILTERS
                         </div>
@@ -303,8 +576,268 @@ const ProductCategoryPage = () => {
                     <ProductMasonryGrid
                         products={products}
                     />
-                    
+
                 )}
+            </div>
+            {/* ================= FILTER DRAWER ================= */}
+            <div
+                className={clsx(
+                    "fixed inset-0 scrollbar-hide z-100 transition-opacity duration-300",
+                    isFilterOpen ? "opacity-100 pointer-events-auto" : "opacity-0 pointer-events-none"
+                )}
+            >
+                {/* Overlay */}
+                <div
+                    onClick={() => setIsFilterOpen(false)}
+                    className="absolute  inset-0 bg-black/40 backdrop-blur-[1px]"
+                />
+
+                {/* Filter Sliding Panel */}
+                <div
+                    className={clsx(
+                        "absolute pb-10 h-full right-0 top-0  w-[90%] sm:w-125 bg-white",
+                        "transition-transform  duration-500 ease-[cubic-bezier(0.22,1,0.36,1)]",
+                        isFilterOpen ? "translate-x-0 " : "translate-x-full"
+                    )}
+                >
+                    {/* HEADER */}
+                    <div className="flex justify-between items-center px-4 py-5">
+                        <h2 className="text-lg font-light uppercase tracking-wider">
+                            Filters
+                        </h2>
+                        <button
+                            onClick={() => setIsFilterOpen(false)}
+                            className="text-sm hover:opacity-60 cursor-pointer"
+                        >
+                            <X />
+                        </button>
+                    </div>
+
+                    {/* FILTER CONTENT */}
+                    <div className="overflow-y-auto scrollbar-hide h-[calc(100%-70px)] px-4 py-6 space-y-8">
+
+                        {/* PRICE */}
+                        <FilterSection
+                            key={`${minVal}-${maxVal}`}   // 🔥 important
+                            title="Price Range"
+                            onClose={resetPriceFilter}
+                        >
+                            <div className="space-y-2 mb-8">
+
+                                {/* Values */}
+                                <div className="flex justify-between text-sm font-medium">
+                                    <span>{tempMin.toFixed(2)} Rs</span>
+                                    <span>{tempMax.toFixed(2)} Rs</span>
+                                </div>
+
+                                {/* Slider Wrapper */}
+                                <div className="relative h-6 flex items-center">
+
+                                    {/* Track */}
+                                    <div className="absolute w-full h-[2px] bg-black" />
+
+                                    {/* Active Range */}
+                                    <div
+                                        className="absolute h-[2px] bg-black"
+                                        style={{
+                                            left: `${((minVal - minAvailable) / (maxAvailable - minAvailable)) * 100}%`,
+                                            right: `${100 - ((maxVal - minAvailable) / (maxAvailable - minAvailable)) * 100}%`,
+                                        }}
+                                    />
+
+                                    {/* Min Thumb */}
+                                    <input
+                                        type="range"
+                                        min={minAvailable}
+                                        max={maxAvailable}
+                                        value={tempMin}
+                                        onChange={(e) => {
+                                            const value = Math.min(Number(e.target.value), tempMax - 1);
+                                            setTempMin(value);
+                                        }}
+                                        onMouseUp={() => updatePrice(tempMin, tempMax)}
+                                        onTouchEnd={() => updatePrice(tempMin, tempMax)}
+                                        className="absolute w-full appearance-none bg-transparent"
+                                    />
+
+                                    {/* Max Thumb */}
+                                    <input
+                                        type="range"
+                                        min={minAvailable}
+                                        max={maxAvailable}
+                                        value={tempMax}
+                                        onChange={(e) => {
+                                            const value = Math.max(Number(e.target.value), tempMin + 1);
+                                            setTempMax(value);
+                                        }}
+                                        onMouseUp={() => updatePrice(tempMin, tempMax)}
+                                        onTouchEnd={() => updatePrice(tempMin, tempMax)}
+                                        className="absolute w-full appearance-none bg-transparent"
+                                    />
+
+                                </div>
+                            </div>
+                        </FilterSection>
+                        {/* COLOR */}
+                        <FilterSection title="Color">
+                            <div className="flex flex-col h-70 overflow-y-auto scrollbar-hide gap-3">
+
+                                {availableColors.map(color => {
+                                    const isSelected = selectedColors.includes(color.slug);
+
+                                    return (
+                                        <button
+                                            key={color.slug}
+                                            onClick={() => updateColorFilter(color.slug)}
+                                            className="cursor-pointer flex items-center justify-between w-full px-2 py-2 rounded hover:bg-gray-50"
+                                        >
+                                            <div className="flex items-center gap-3">
+
+                                                {/* Radio Circle */}
+                                                <div className="relative flex items-center justify-center">
+                                                    <div
+                                                        className={clsx(
+                                                            "w-4 h-4 border",
+                                                            isSelected ? "border-black" : "border-gray-400"
+                                                        )}
+                                                    >
+                                                        {isSelected && (
+                                                            <div className="w-2 h-2 bg-black m-auto mt-[3px]" />
+                                                        )}
+                                                    </div>
+                                                </div>
+
+                                                <span className="text-sm">
+                                                    {color.name}
+                                                </span>
+                                            </div>
+
+                                            <div className="flex justify-between gap-2">
+                                                <span className="text-xs text-gray-500">
+                                                    [ {color.count} ]
+                                                </span>
+                                                {/* Color Swatch */}
+                                                <div
+                                                    className="w-5 h-4 border border-black"
+                                                    style={{ backgroundColor: color.hex }}
+                                                />
+                                            </div>
+                                        </button>
+                                    );
+                                })}
+                            </div>
+                        </FilterSection>
+
+                        {/* SIZE */}
+                        <FilterSection title="Size">
+                            <div className="flex flex-col gap-2">
+                                {availableSizes.map(item => {
+                                    const isSelected = selectedSizes.includes(item.size);
+
+                                    return (
+                                        <button
+                                            key={item.size}
+                                            onClick={() => updateSizeFilter(item.size)}
+                                            className={clsx(
+                                                "flex justify-between items-center px-3 py-2 border  text-sm transition",
+                                                isSelected
+                                                    ? "border-black bg-black text-white"
+                                                    : "border-gray-300 hover:border-black"
+                                            )}
+                                        >
+                                            <span>{item.size}</span>
+                                            <span className="text-xs opacity-70">
+                                                [ {item.count} ]
+                                            </span>
+                                        </button>
+                                    );
+                                })}
+                            </div>
+                        </FilterSection>
+                        <FilterSection title="Fit">
+                            <div className="flex flex-col gap-2">
+                                {fit.map((item) => {
+                                    const isSelected = selectedFits.includes(item.fitType);
+
+                                    return (
+                                        <button
+                                            key={item.fitType}
+                                            onClick={() => updateFitFilter(item.fitType)}
+                                            className={clsx(
+                                                "flex justify-between items-center px-3 py-2 border text-sm transition capitalize",
+                                                isSelected
+                                                    ? "border-black bg-black text-white"
+                                                    : "border-gray-300 hover:border-black"
+                                            )}
+                                        >
+                                            <span>{item.fitType}</span>
+                                            <span className="text-xs opacity-70">
+                                                [ {item.count} ]
+                                            </span>
+                                        </button>
+                                    );
+                                })}
+                            </div>
+                        </FilterSection>
+                        <FilterSection title="Fabric">
+                            <div className="flex flex-col gap-2">
+                                {fabricCounts.map(item => {
+                                    const isSelected = selectedFabrics.includes(item.fabric);
+
+                                    return (
+                                        <button
+                                            key={item.fabric}
+                                            onClick={() => updateFabricFilter(item.fabric)}
+                                            className={clsx(
+                                                "flex justify-between items-center px-3 py-2 border text-sm transition capitalize",
+                                                isSelected
+                                                    ? "border-black bg-black text-white"
+                                                    : "border-gray-300 hover:border-black"
+                                            )}
+                                        >
+                                            <span>{item.fabric}</span>
+                                            <span className="text-xs opacity-70">
+                                                [ {item.count} ]
+                                            </span>
+                                        </button>
+                                    );
+                                })}
+                            </div>
+                        </FilterSection>
+                        <FilterSection title="Pattern">
+                            <div className="flex flex-col gap-2">
+                                {patternCounts.map(item => {
+                                    const isSelected = selectedPattern.includes(item.pattern);
+
+                                    return (
+                                        <button
+                                            key={item.pattern}
+                                            onClick={() => updatePatternFilter(item.pattern)}
+                                            className={clsx(
+                                                "flex justify-between items-center px-3 py-2 border text-sm transition capitalize",
+                                                isSelected
+                                                    ? "border-black bg-black text-white"
+                                                    : "border-gray-300 hover:border-black"
+                                            )}
+                                        >
+                                            <span>{item.pattern}</span>
+                                            <span className="text-xs opacity-70">
+                                                [ {item.count} ]
+                                            </span>
+                                        </button>
+                                    );
+                                })}
+                            </div>
+                        </FilterSection>
+                    </div>
+
+                    {/* APPLY BUTTON */}
+                    <div className="absolute bottom-0 left-0 w-full">
+                        <button onClick={() => setIsFilterOpen(false)} className="w-full bg-black hover:bg-black/60 cursor-pointer duration-300 text-white py-3 uppercase tracking-wider text-sm">
+                            Apply Filters
+                        </button>
+                    </div>
+                </div>
             </div>
             <Footer />
         </section>
