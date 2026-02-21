@@ -1,156 +1,138 @@
 "use client";
 
 import Image from "next/image";
-import { useEffect, useRef, useState } from "react";
-import { Banner,BannerImage } from "@/types/ProductTypes";
+import Link from "next/link";
+import { Banner, BannerImage } from "@/types/ProductTypes";
+import { ArrowRight } from "lucide-react";
 
 interface BannerSliderProps {
   banners: Banner[];
 }
+const getBestImage = (images: BannerImage[]) =>
+  images?.length
+    ? [...images].sort((a, b) => b.width - a.width)[0]
+    : null;
+const ResponsiveImage = ({
+  banner,
+  sizes,
+  priority = false,
+}: {
+  banner: Banner;
+  sizes: string;
+  priority?: boolean;
+}) => {
+  const desktop = getBestImage(banner.desktopImages);
+  const mobile = getBestImage(banner.mobileImages);
 
-const AUTO_SLIDE_DELAY = 2500;
-const DESKTOP_BREAKPOINT = 1000;
-
-const BannerSlider = ({ banners }: BannerSliderProps) => {
-  const intervalRef = useRef<NodeJS.Timeout | null>(null);
-
-  const [index, setIndex] = useState(0);
-  const [direction, setDirection] = useState<"forward" | "backward">("forward");
-  const [isMobile, setIsMobile] = useState(false);
-
-  const total = banners.length;
-
-  /* -------------------------------
-   * Screen size detection
-   * ------------------------------- */
-  useEffect(() => {
-    const update = () =>
-      setIsMobile(window.innerWidth < DESKTOP_BREAKPOINT);
-
-    update();
-    window.addEventListener("resize", update);
-    return () => window.removeEventListener("resize", update);
-  }, []);
-
-  /* -------------------------------
-   * Auto fade switch (ping-pong)
-   * ------------------------------- */
-  const startAutoSlide = () => {
-    if (intervalRef.current || total <= 1) return;
-
-    intervalRef.current = setInterval(() => {
-      setIndex((prev) => {
-        if (direction === "forward") {
-          if (prev === total - 1) {
-            setDirection("backward");
-            return prev - 1;
-          }
-          return prev + 1;
-        }
-
-        if (prev === 0) {
-          setDirection("forward");
-          return prev + 1;
-        }
-        return prev - 1;
-      });
-    }, AUTO_SLIDE_DELAY);
-  };
-
-  const stopAutoSlide = () => {
-    if (intervalRef.current) {
-      clearInterval(intervalRef.current);
-      intervalRef.current = null;
-    }
-  };
-
-  useEffect(() => {
-    startAutoSlide();
-    return stopAutoSlide;
-  }, [direction, total]);
-
-
-
-  /* -------------------------------
-   * Helpers
-   * ------------------------------- */
-  const getBestImage = (images: BannerImage[]) =>
-    images?.length
-      ? [...images].sort((a, b) => b.width - a.width)[0]
-      : null;
-
-  const goToSlide = (i: number) => {
-    stopAutoSlide();
-    setIndex(i);
-    startAutoSlide();
-  };
+  if (!desktop && !mobile) return null;
 
   return (
-    <div className="relative overflow-hidden">
-      {/* FADE STACK */}
-      <div
-        className={`
-                  relative w-full overflow-hidden transition-[aspect-ratio] duration-300
-                  ${isMobile
-            ? "aspect-4/5"
-            : "aspect-21/9"
-          }
-                `}
+    <>
+      {/* Desktop */}
+      {desktop && (
+        <Image
+          src={desktop.url}
+          alt={banner.title || ""}
+          fill
+          priority={priority}
+          sizes={sizes}
+          className="hidden md:block object-cover"
+        />
+      )}
+
+      {/* Mobile */}
+      {mobile && (
+        <Image
+          src={mobile.url}
+          alt={banner.title || ""}
+          fill
+          priority={priority}
+          sizes="100vw"
+          className="block md:hidden object-cover"
+        />
+      )}
+    </>
+  );
+};
+
+const BannerList = ({ banners }: BannerSliderProps) => {
+
+
+  if (!banners || banners.length < 4) return null;
+
+
+  return (
+    <div className="w-full flex flex-col">
+
+      {/* ================= HERO BANNER ================= */}
+      <Link
+        href={banners[0].redirectUrl || "#"}
+        className="group relative w-full max-[500px]:aspect-4/7 aspect-4/5 sm:aspect-4/3 lg:aspect-21/12 xl:aspect-21/9 block"
       >
+        <ResponsiveImage banner={banners[0]} sizes="100vw" priority />
 
-        {banners.map((banner, i) => {
-          const images = isMobile
-            ? banner.mobileImages
-            : banner.desktopImages;
+        <div className="hidden md:block absolute inset-0 bg-gray-600 opacity-0 group-hover:opacity-10 transition-opacity duration-300" />
 
-          const image = getBestImage(images);
-          const isActive = i === index;
+        <div className="absolute inset-0 flex items-center">
+          <div className="px-6 md:px-16">
+            <h1 className="text-red-600 font-bold leading-none uppercase
+              text-4xl sm:text-6xl md:text-7xl">
+              FLAT <br />
+              15%* OFF
+            </h1>
+          </div>
+        </div>
+      </Link>
 
-          return (
-            <a
-              key={banner._id}
-              href={banner.redirectUrl}
-              aria-label={banner.title || `banner-${i}`}
-              className={`absolute inset-0 transition-opacity duration-700 ease-in-out
-                ${isActive ? "opacity-100 z-10" : "opacity-0 z-0"}
-              `}
-            >
-              {image && (
-                <Image
-                  src={image.url}
-                  alt={banner.title || `banner-${i}`}
-                  fill
-                  priority={i === 0}
-                  loading={i === 0 ? "eager" : "lazy"}
-                  sizes="100vw"
-                  quality={85}
-                  className="min-[1000px]:object-cover object-center"
-                />
-              )}
-            </a>
-          );
-        })}
+
+      {/* ================= SECOND BANNER ================= */}
+      <Link
+        href={banners[1].redirectUrl || "#"}
+        className="group relative w-full max-[500px]:aspect-4/7 aspect-4/5 sm:aspect-4/3 lg:aspect-21/12 xl:aspect-21/9 block"
+      >
+        <ResponsiveImage banner={banners[1]} sizes="100vw" />
+
+        <div className="hidden md:block absolute inset-0 bg-(--earth-charcoal) opacity-0 group-hover:opacity-10 transition-opacity duration-300" />
+      </Link>
+
+
+      {/* ================= GRID SECTION ================= */}
+      <div className="grid grid-cols-1 md:grid-cols-2 w-full mb-20">
+
+        {/* Card 1 */}
+        <Link href={banners[2].redirectUrl || "#"} className="group block">
+          <div className="group relative w-full aspect-4/3 md:aspect-12/10 overflow-hidden">
+            <ResponsiveImage banner={banners[2]} sizes="50vw" />
+            <div className="hidden md:block absolute inset-0 bg-(--earth-charcoal) opacity-0 group-hover:opacity-10 transition-opacity duration-300" />
+          </div>
+
+          <div className="flex p-4 items-center justify-between">
+            <h1 className="uppercase text-sm sm:text-lg group-hover:underline">
+              {banners[2].title || "Sweatshirt Collection"}
+            </h1>
+            <ArrowRight size={18} />
+          </div>
+        </Link>
+
+        {/* Card 2 */}
+        <Link href={banners[3].redirectUrl || "#"} className="group block">
+          <div className="group relative w-full aspect-4/3 md:aspect-12/10 overflow-hidden">
+            <ResponsiveImage banner={banners[3]} sizes="50vw" />
+            <div className="hidden md:block absolute inset-0 bg-(--earth-charcoal) opacity-0 group-hover:opacity-10 transition-opacity duration-300" />
+          </div>
+
+          <div className="flex p-4 items-center justify-between">
+            <h1 className="uppercase text-sm sm:text-lg group-hover:underline">
+              {banners[3].title || "Printed Shirts"}
+            </h1>
+            <ArrowRight size={18} />
+          </div>
+        </Link>
+
       </div>
 
-      {/* Pagination */}
-      {total > 1 && (
-        <div className="absolute bottom-3 left-1/2 -translate-x-1/2 flex gap-1 z-20">
-          {banners.map((_, i) => (
-            <button
-              key={i}
-              onClick={() => goToSlide(i)}
-              className={`h-1 rounded-full transition-all duration-300
-                ${index === i
-                  ? "w-9 bg-black/70"
-                  : "w-3 bg-black/20 cursor-pointer hover:bg-white"
-                }`}
-              aria-label={`Go to banner ${i + 1}`}
-            />
-          ))}
-        </div>
-      )}
     </div>
   );
 };
 
-export default BannerSlider;
+export default BannerList;

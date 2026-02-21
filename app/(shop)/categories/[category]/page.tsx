@@ -161,13 +161,13 @@ const ProductCategoryPage = () => {
             <div className="md:w-full mx-auto z-30">
                 <div className="relative mx-2 h-40 flex flex-nowrap overflow-auto items-center sm:justify-center gap-1 scrollbar-hide">
                     {/* ALL */}
-                    <Link href={`/categories/${categorySlug}`} scroll={false} className="flex flex-col items-center min-w-20">
+                    <Link href={`/categories/${categorySlug}`} scroll={false} className="flex flex-col items-center">
                         <div className={clsx(
                             "flex justify-center items-center border border-black/20 mb-5 w-25 h-25 mx-1 rounded-full overflow-hidden",
                             !activeSub ? "ring-1 ring-primary" : "hover:border-primary"
                         )}>
                             <p className={clsx(
-                                "w-20 font-medium text-center mt-1 text-[11px]",
+                                "font-medium truncate w-20 text-center mt-1 text-[11px]",
                                 activeSub ? "text-primary" : "text-primary"
                             )}>
                                 All <span>{categorySlug?.toUpperCase()}</span>
@@ -238,7 +238,7 @@ const ProductCategoryPage = () => {
                     animatePage ? "opacity-100 translate-y-0" : "opacity-0 translate-y-10"
                 )}
             >
-                <div className="sticky top-14.75 z-50 bg-(--linen-100) mb-2 select-none flex justify-between pt-2 pb-2">
+                <div className="sticky top-14.75 z-50 bg-(--linen-100) select-none flex justify-between pt-2 pb-2">
                     <div onClick={() => setSortOpen((prev) => !prev)} className="flex cursor-pointer  mx-1 sm:mx-2 items-center justify-center gap-2">
                         <div className="font-medium hover:text-black/70 duration-300 tracking-wider uppercase text-sm">
                             Sort

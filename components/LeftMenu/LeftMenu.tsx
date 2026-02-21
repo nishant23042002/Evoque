@@ -215,13 +215,13 @@ const LeftMenu = ({ isOpen, setIsOpen }: LeftMenuProps) => {
                                             </Link>
 
                                             {/* SUBCATEGORY GRID */}
-                                            <div className="grid grid-cols-2 gap-1">
+                                            <div className="grid grid-cols-2">
                                                 {previewSubs?.map((sub) => (
                                                     <Link
                                                         key={sub.slug}
                                                         href={`/categories/${category.slug}?sub=${sub.slug}`}
                                                         onClick={handleNavClick}
-                                                        className="group relative aspect-3/4 overflow-hidden rounded-[3px] border border-(--border-light)"
+                                                        className="group relative aspect-4/5 overflow-hidden"
                                                     >
                                                         <Image
                                                             src={sub.image}
@@ -229,29 +229,29 @@ const LeftMenu = ({ isOpen, setIsOpen }: LeftMenuProps) => {
                                                             fill
                                                             sizes="120px"
                                                             className="
-                  object-cover
-                  transition-transform duration-500
-                  group-hover:scale-105
-                "
+                                                                object-cover
+                                                                transition-transform duration-500
+                                                               
+                                                                "
                                                         />
 
                                                         {/* LIGHT OVERLAY */}
                                                         <div className="
-                absolute inset-0
-                bg-black/0 group-hover:bg-black/15
-                transition
-              " />
+                                                                absolute inset-0
+                                                                bg-black/0 group-hover:bg-black/15
+                                                                transition
+                                                            " />
 
                                                         {/* SMALL LABEL */}
                                                         <span className="
-                absolute bottom-1 left-1
-                text-[9px]
-                px-1 py-0.5
-                bg-white/70
-                rounded
-                backdrop-blur
-              ">
-                                                            {sub.name.split(' ').slice(0, 2).join(' ')}
+                                                                absolute bottom-1 left-1
+                                                                text-[9px]
+                                                                px-1 py-0.5
+                                                                bg-white/70
+                                                                uppercase tracking-wider
+                                                                backdrop-blur
+                                                            ">
+                                                            {sub.name.split(' ').slice(0, 1).join(' ')}
                                                         </span>
                                                     </Link>
                                                 ))}
@@ -260,8 +260,6 @@ const LeftMenu = ({ isOpen, setIsOpen }: LeftMenuProps) => {
                                     );
                                 })}
                             </div>
-
-
                         </div>
                     </div>
 

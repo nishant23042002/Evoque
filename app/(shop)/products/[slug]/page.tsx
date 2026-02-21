@@ -609,7 +609,7 @@ export default function ProductPage() {
 
 
                         {/* SIZES */}
-                        <div className="py-2">
+                        <div id="size-section" className={`py-2 ${sizeError ? "animate-pulse" : ""}`}>
                             <div className="flex justify-between">
                                 <div className="flex gap-2 items-center justify-center">
 
@@ -960,7 +960,20 @@ export default function ProductPage() {
 
                     {/* BUTTON */}
                     <button
-                        onClick={handleAddToCart}
+                        onClick={() => {
+                            if (!selectedSize) {
+                                setSizeError(true);
+
+                                // scroll to size section
+                                const sizeSection = document.getElementById("size-section");
+                                sizeSection?.scrollIntoView({ behavior: "smooth", block: "center" });
+
+                                setTimeout(() => setSizeError(false), 2000);
+                                return;
+                            }
+
+                            handleAddToCart();
+                        }}
                         className="
                             cursor-pointer
                             px-3 sm:px-6
@@ -974,7 +987,7 @@ export default function ProductPage() {
                             shrink-0
                         "
                     >
-                        ADD TO BAG
+                        {selectedSize ? "ADD TO BAG" : "SELECT SIZE"}
                     </button>
 
                 </div>

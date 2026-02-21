@@ -39,7 +39,6 @@ interface Banner {
 export default function Home() {
   const [items, setItems] = useState<Product[]>([]);
   const [topBanners, setTopBanners] = useState<Banner[]>([]);
-  const [bottomBanners, setBottomBanners] = useState<Banner[]>([]);
   const [categories, setCategories] = useState<Category[]>([]);
   const router = useRouter();
   const [totalPages, setTotalPages] = useState(1);
@@ -116,18 +115,11 @@ export default function Home() {
         const res = await fetch("/api/banners");
         const data: Banner[] = await res.json();
 
-        // Filter active banners
-        const activeBanners = data.filter((b) => b.isActive);
-
-        // Banana Club style: top banners order < 100, bottom banners order >= 100
-        const top = activeBanners
-          .filter((b) => b.order < 100)
-          .slice(0, 2); // only take first 2
-        const bottom = activeBanners
-          .slice(2, 4); // only take first 2
+        const top = data
+          .filter((b) => b.isActive)
+          .sort((a, b) => a.order - b.order); // 🔥 important
 
         setTopBanners(top);
-        setBottomBanners(bottom);
       } catch (err) {
         console.error("Failed to fetch banners", err);
       }
@@ -175,27 +167,22 @@ export default function Home() {
       <div className="flex flex-col">
         {/* 🔥 Top Hero Banner Section */}
         {topBanners.length > 0 && (
-          <section className="w-full">
+          <section>
             <BannerSlider banners={topBanners} />
           </section>
         )}
+
 
         {/* 🔥 Featured Categories */}
         <section className="w-full">
           <FeaturedCategories />
         </section>
 
-        {/* 🔥 Mid / Bottom Banner Section */}
-        {bottomBanners.length > 0 && (
-          <section className="w-full">
-            <BannerSlider banners={bottomBanners} />
-          </section>
-        )}
 
         {/* 🔥 Product Grid */}
         <section className="w-full">
           <div className="mx-1 select-none justify-between flex flex-col">
-            <div className="flex justify-between pt-6 items-center">
+            <div className="flex justify-between py-6 items-center">
               <h1 className="text-2xl sm:text-4xl tracking-wider uppercase font-bold">
                 View All
               </h1>

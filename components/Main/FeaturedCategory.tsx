@@ -75,7 +75,7 @@ const FeaturedCategories = () => {
     }
 
     return (
-        <section className="w-full my-2 mb-6 mx-auto flex flex-col justify-center ">
+        <section className="w-full my-2 mb-20 mx-auto flex flex-col justify-center ">
             <div className="flex px-4 py-3 justify-between items-center">
                 {/* Heading */}
                 <h2 className="text-md uppercase tracking-widest font-light font-poppins text-foreground">
@@ -94,8 +94,7 @@ const FeaturedCategories = () => {
                     </h2>
                 </div>
             ) : (
-                <>
-                    {/* DESKTOP — MASONRY */}
+                <>        
                     {/* FEATURED PRODUCTS PER CATEGORY */}
                     <div>
                         <Masonry
@@ -123,6 +122,13 @@ const FeaturedCategories = () => {
                                                     fill
                                                     className="object-cover"
                                                 />
+                                                <div className="absolute flex items-center gap-1 bottom-1/4 right-1/7 opacity-0 group-hover:opacity-100">
+                                                <div className="flex items-center justify-center">
+                                                    <div className="relative border border-black w-3 h-3" />
+                                                    <p className="absolute border border-black w-1.5 h-1.5 bg-white"></p>
+                                                </div>
+                                                    <div className="bg-white px-1 font-medium text-xs">Rs.{item.product.pricing?.price}</div>
+                                                </div>
                                                 <div className="hidden md:block absolute inset-0 bg-(--earth-charcoal) opacity-0 group-hover:opacity-10 transition-opacity duration-300" />
                                             </div>
                                         </Link>
@@ -131,9 +137,12 @@ const FeaturedCategories = () => {
                             })}
                         </Masonry>
                     </div>
-                    
-                    <div className="w-full flex justify-center items-center">
-                        <div className="grid grid-cols-2 w-full xl:w-[55%]">
+
+                    <div className="w-full">
+                        <div className="p-3">
+                            <h1 className="uppercase font-light">Featured Category</h1>
+                        </div>
+                        <div className="grid grid-cols-2 min-[500px]:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 w-full ">
                             {categories.map((item) => (
                                 <Link
                                     href={`/categories/${item.slug}`}
@@ -154,9 +163,9 @@ const FeaturedCategories = () => {
                                             className="object-cover"
                                         />
 
-                                    <div className="hidden md:block absolute inset-0 bg-(--earth-charcoal) opacity-0 group-hover:opacity-15 transition-opacity duration-300" />
+                                        <div className="hidden md:block absolute inset-0 bg-(--earth-charcoal) opacity-0 group-hover:opacity-15 transition-opacity duration-300" />
                                     </div>
-                                    <div className="flex max-xl:px-4 py-3 flex-col justify-between mb-4">
+                                    <div className="flex px-2 py-3 flex-col justify-between mb-4">
                                         <h3 className="text-[17px] flex  flex-wrap group-hover:underline font-light uppercase tracking-tight">
                                             {item.name}
                                         </h3>
