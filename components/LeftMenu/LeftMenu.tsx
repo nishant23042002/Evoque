@@ -133,7 +133,7 @@ const LeftMenu = ({ isOpen, setIsOpen }: LeftMenuProps) => {
                 ref={sidebarRef}
                 className={cn(
                     "fixed top-0 left-0 z-40 h-dvh py-1",
-                    "bg-(--linen-100) border-r border-(--border-strong)",
+                    "bg-white border-r border-(--border-strong)",
                     SIDEBAR_WIDTH,
                     "will-change-transform transform-gpu",
                     "transition-transform duration-500 ease-in-out",

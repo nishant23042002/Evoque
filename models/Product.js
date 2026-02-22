@@ -231,24 +231,28 @@ productSchema.index(
     {
         productName: "text",
         brand: "text",
-        tags: "text",
-        "search.keywords": "text",
-        "search.synonyms": "text",
+        "category.name": "text",
+        "subCategory.name": "text",
         "attributes.fabric": "text",
         "attributes.pattern": "text",
-        "attributes.fitType": "text",
+        tags: "text",
+        styleTags: "text",
+        "search.keywords": "text",
+        "search.synonyms": "text"
     },
     {
         weights: {
             productName: 10,
-            brand: 8,
-            "search.keywords": 7,
-            tags: 6,
-            "attributes.fabric": 5,
-            "attributes.pattern": 4,
-            "search.synonyms": 3,
-        },
-        name: "ProductTextSearch",
+            "search.keywords": 8,
+            "search.synonyms": 7,
+            brand: 5,
+            "category.name": 5,
+            "subCategory.name": 5,
+            tags: 4,
+            styleTags: 4,
+            "attributes.fabric": 3,
+            "attributes.pattern": 3
+        }
     }
 );
 

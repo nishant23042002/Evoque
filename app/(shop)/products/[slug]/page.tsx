@@ -211,16 +211,29 @@ export default function ProductPage() {
     }, [product?._id]);
 
     useEffect(() => {
+        let ticking = false;
+
         const handleScroll = () => {
-            const scrollY = window.scrollY;
-            setShowBottomBar(prev => {
-                const next = scrollY > 500;
-                return prev === next ? prev : next;
+            if (ticking) return;
+
+            ticking = true;
+
+            requestAnimationFrame(() => {
+                const shouldShow = window.scrollY > 500;
+
+                setShowBottomBar(prev =>
+                    prev !== shouldShow ? shouldShow : prev
+                );
+
+                ticking = false;
             });
         };
 
-        window.addEventListener("scroll", handleScroll);
-        return () => window.removeEventListener("scroll", handleScroll);
+        window.addEventListener("scroll", handleScroll, { passive: true });
+
+        return () => {
+            window.removeEventListener("scroll", handleScroll);
+        };
     }, []);
 
     const activeIndexRef = useRef(0);

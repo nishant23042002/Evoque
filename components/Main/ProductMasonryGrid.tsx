@@ -249,12 +249,12 @@ export default function ProductMasonryGrid({
                                         isWishlisted
                                             ? {
                                                 fill: variant?.color?.hex || "#000", // inside color
-                                                stroke: "var(--border-strong)", // border color (always visible)
+                                                stroke: "var(--border)", // border color (always visible)
                                                 transform: "scale(1.1)",
                                             }
                                             : {
                                                 fill: "transparent",
-                                                stroke: "var(--border-strong)",
+                                                stroke: "var(--border)",
                                             }
                                     }
                                 />

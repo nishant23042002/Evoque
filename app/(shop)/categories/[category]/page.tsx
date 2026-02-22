@@ -398,7 +398,7 @@ const ProductCategoryPage = () => {
     );
 
     return (
-        <section className="min-h-[95vh]">
+        <section className="min-h-[95vh] bg-white">
             {/* ---------------- CATEGORY BANNER ---------------- */}
             <div
                 ref={bannerRef}
@@ -433,7 +433,7 @@ const ProductCategoryPage = () => {
                     {/* ALL */}
                     <Link href={`/categories/${categorySlug}`} scroll={false} className="flex flex-col items-center">
                         <div className={clsx(
-                            "flex justify-center items-center border border-black/20 mb-5 w-25 h-25 mx-1 rounded-full overflow-hidden",
+                            "flex justify-center items-center border border-black/20 mb-5 w-20 aspect-4/5 mx-0.5 overflow-hidden",
                             !activeSub ? "ring-1 ring-primary" : "hover:border-primary"
                         )}>
                             <p className={clsx(
@@ -476,7 +476,7 @@ const ProductCategoryPage = () => {
                                 className="flex flex-col items-center"
                             >
                                 <div className={clsx(
-                                    "flex justify-center items-center overflow-hidden w-25 h-25 rounded-full border border-black/20",
+                                    "flex justify-center items-center overflow-hidden w-20 aspect-4/5  border border-black/20",
                                     isActive ? "ring-1 ring-primary" : " hover:border-primary"
                                 )}>
                                     <Image
@@ -508,7 +508,7 @@ const ProductCategoryPage = () => {
                     animatePage ? "opacity-100 translate-y-0" : "opacity-0 translate-y-10"
                 )}
             >
-                <div className="sticky top-14.75 z-50 bg-(--linen-100) select-none flex justify-between pt-2 pb-2">
+                <div className="sticky top-14.75 z-50 bg-white select-none flex justify-between pt-2 pb-2">
                     <div onClick={() => setSortOpen((prev) => !prev)} className="flex cursor-pointer  mx-1 sm:mx-2 items-center justify-center gap-2">
                         <div className="font-medium hover:text-black/70 duration-300 tracking-wider uppercase text-sm">
                             Sort
@@ -702,7 +702,7 @@ const ProductCategoryPage = () => {
                                                         )}
                                                     >
                                                         {isSelected && (
-                                                            <div className="w-2 h-2 bg-black m-auto mt-[3px]" />
+                                                            <div className="w-2 h-2 bg-black m-auto mt-0.75" />
                                                         )}
                                                     </div>
                                                 </div>

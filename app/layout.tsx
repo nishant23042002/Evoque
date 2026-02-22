@@ -40,7 +40,7 @@ export default function RootLayout({
 
   return (
     <html lang="en" className={`${inter.variable} ${poppins.variable}`}>
-      <body className="font-poppins antialiased">
+      <body className="font-poppins antialiased bg-white">
         <Providers>
           <AuthProvider>
             <ReactQueryProvider>

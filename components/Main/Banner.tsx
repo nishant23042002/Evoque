@@ -16,19 +16,51 @@ const ResponsiveImage = ({
   banner,
   sizes,
   priority = false,
+  forceMobile = false,
+  forceDesktop = false,
 }: {
   banner: Banner;
   sizes: string;
   priority?: boolean;
+  forceMobile?: boolean;
+  forceDesktop?: boolean;
 }) => {
   const desktop = getBestImage(banner.desktopImages);
   const mobile = getBestImage(banner.mobileImages);
 
   if (!desktop && !mobile) return null;
 
+  // ✅ Always desktop
+  if (forceDesktop && desktop) {
+    return (
+      <Image
+        src={desktop.url}
+        alt={banner.title || ""}
+        fill
+        priority={priority}
+        sizes={sizes}
+        className="object-cover"
+      />
+    );
+  }
+
+  // ✅ Always mobile
+  if (forceMobile && mobile) {
+    return (
+      <Image
+        src={mobile.url}
+        alt={banner.title || ""}
+        fill
+        priority={priority}
+        sizes={sizes}
+        className="object-cover"
+      />
+    );
+  }
+
+  // ✅ Normal responsive behavior
   return (
     <>
-      {/* Desktop */}
       {desktop && (
         <Image
           src={desktop.url}
@@ -40,7 +72,6 @@ const ResponsiveImage = ({
         />
       )}
 
-      {/* Mobile */}
       {mobile && (
         <Image
           src={mobile.url}
@@ -67,11 +98,15 @@ const BannerList = ({ banners }: BannerSliderProps) => {
       {/* ================= HERO BANNER ================= */}
       <Link
         href={banners[0].redirectUrl || "#"}
-        className="group relative w-full max-[500px]:aspect-4/7 aspect-4/5 sm:aspect-4/3 lg:aspect-21/12 xl:aspect-21/9 block"
+        className="group relative w-full max-[500px]:aspect-4/7 aspect-4/5 sm:aspect-4/5 md:aspect-21/12 xl:aspect-21/10 block"
       >
-        <ResponsiveImage banner={banners[0]} sizes="100vw" priority />
-
-        <div className="hidden md:block absolute inset-0 bg-gray-600 opacity-0 group-hover:opacity-10 transition-opacity duration-300" />
+        <ResponsiveImage
+          banner={banners[0]}
+          sizes="100vw"
+          priority
+          forceDesktop
+        />
+        <div className="absolute inset-0 bg-(--earth-charcoal) opacity-15 group-hover:opacity-10  transition-opacity duration-300" />
 
         <div className="absolute inset-0 flex items-center">
           <div className="px-6 md:px-16">
@@ -84,26 +119,18 @@ const BannerList = ({ banners }: BannerSliderProps) => {
         </div>
       </Link>
 
-
-      {/* ================= SECOND BANNER ================= */}
-      <Link
-        href={banners[1].redirectUrl || "#"}
-        className="group relative w-full max-[500px]:aspect-4/7 aspect-4/5 sm:aspect-4/3 lg:aspect-21/12 xl:aspect-21/9 block"
-      >
-        <ResponsiveImage banner={banners[1]} sizes="100vw" />
-
-        <div className="hidden md:block absolute inset-0 bg-(--earth-charcoal) opacity-0 group-hover:opacity-10 transition-opacity duration-300" />
-      </Link>
-
-
       {/* ================= GRID SECTION ================= */}
-      <div className="grid grid-cols-1 md:grid-cols-2 w-full mb-20">
+      <div className="grid grid-cols-1 md:grid-cols-2 w-full">
 
         {/* Card 1 */}
         <Link href={banners[2].redirectUrl || "#"} className="group block">
-          <div className="group relative w-full aspect-4/3 md:aspect-12/10 overflow-hidden">
-            <ResponsiveImage banner={banners[2]} sizes="50vw" />
-            <div className="hidden md:block absolute inset-0 bg-(--earth-charcoal) opacity-0 group-hover:opacity-10 transition-opacity duration-300" />
+          <div className="group relative w-full aspect-4/5 md:aspect-14/16 overflow-hidden">
+            <ResponsiveImage
+              banner={banners[2]}
+              sizes="50vw"
+              forceMobile
+            />
+            <div className="absolute inset-0 bg-(--earth-charcoal) opacity-15 group-hover:opacity-10  transition-opacity duration-300" />
           </div>
 
           <div className="flex p-4 items-center justify-between">
@@ -116,9 +143,13 @@ const BannerList = ({ banners }: BannerSliderProps) => {
 
         {/* Card 2 */}
         <Link href={banners[3].redirectUrl || "#"} className="group block">
-          <div className="group relative w-full aspect-4/3 md:aspect-12/10 overflow-hidden">
-            <ResponsiveImage banner={banners[3]} sizes="50vw" />
-            <div className="hidden md:block absolute inset-0 bg-(--earth-charcoal) opacity-0 group-hover:opacity-10 transition-opacity duration-300" />
+          <div className="group relative w-full aspect-4/5 md:aspect-14/16 overflow-hidden">
+            <ResponsiveImage
+              banner={banners[3]}
+              sizes="50vw"
+              forceMobile
+            />
+            <div className="absolute inset-0 bg-(--earth-charcoal) opacity-15 group-hover:opacity-10 transition-opacity duration-300" />
           </div>
 
           <div className="flex p-4 items-center justify-between">
@@ -130,7 +161,27 @@ const BannerList = ({ banners }: BannerSliderProps) => {
         </Link>
 
       </div>
-
+      {/* ================= SECOND BANNER ================= */}
+      <Link
+        href={banners[1].redirectUrl || "#"}
+        className="group relative w-full max-[500px]:aspect-4/7 aspect-4/5 sm:aspect-4/5 md:aspect-21/12 xl:aspect-21/11 block"
+      >
+        <ResponsiveImage
+          banner={banners[1]}
+          sizes="100vw"
+          priority
+        />
+        <div className="absolute inset-0 bg-(--earth-charcoal) opacity-10 group-hover:opacity-5  transition-opacity duration-300" />
+        <div className="absolute inset-0 flex items-center">
+          <div className="px-6 absolute right-0 md:px-16">
+            <h1 className="text-red-600 font-bold leading-none uppercase
+              text-4xl sm:text-6xl md:text-7xl">
+              FLAT <br />
+              25%* OFF
+            </h1>
+          </div>
+        </div>
+      </Link>
     </div>
   );
 };

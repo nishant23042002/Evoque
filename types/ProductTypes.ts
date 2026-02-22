@@ -72,12 +72,20 @@ export interface Category {
 }
 
 export interface Review {
-  _id?: string;
-  userId: string;
-  userName: string;
-  rating: number;
-  comment: string;
-  createdAt: string | Date;
+    _id?: string;
+    userId: string;
+    userName: string;
+    rating: number;
+    comment: string;
+    createdAt: string | Date;
+}
+
+export interface SearchProduct {
+    _id: string;
+    productName: string;
+    slug: string;
+    thumbnail?: string;
+    variants?: Variant[];
 }
 
 export default interface Product {

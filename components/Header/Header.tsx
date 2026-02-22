@@ -20,7 +20,7 @@ const Header = () => {
     const [menuOpen, setMenuOpen] = useState(false);
 
     return (
-        <header className="sticky top-0 z-40 w-full bg-(--linen-100)">
+        <header className="sticky top-0 z-40 w-full bg-white">
             <div className="relative p-2 flex items-center justify-between px-2 md:px-4">
                 <div>                   
                     <button

@@ -75,7 +75,7 @@ export default function Wishlist() {
   if (!loading && !wishlistItems.length) {
     return (
       <>
-        <div className="min-h-[90vh] bg-[#f3f3f3] px-4 py-6">
+        <div className="min-h-[90vh] px-4 py-6">
 
           {/* TITLE */}
           <h1 className="text-5xl tracking-wider font-bold">

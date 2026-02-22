@@ -132,7 +132,7 @@ export default function CartPage() {
         <div className="relative w-full">
             {/* HEADER */}
             <div className="mx-2 flex justify-between items-center py-6 z-20">
-                <h1 className="text-4xl min-[400px]:text-5xl tracking-wider font-bold">SHOPPING BAG</h1>
+                <h1 className="text-2xl min-[350px]:text-3xl min-[500px]:text-5xl tracking-wider font-bold">SHOPPING BAG</h1>
                 <span className="text-sm">ITEMS [ {itemCount} ] </span>
             </div>
 
@@ -393,7 +393,7 @@ export default function CartPage() {
                     </div>
                 </div>
             </div>
-            <div className="w-full md:hidden fixed bottom-0 h-35 bg-white z-999 flex flex-col justify-between p-4">
+            <div className="w-full md:hidden fixed bottom-0 h-35 bg-white z-30 flex flex-col justify-between p-4">
 
                 {/* Top Row */}
                 <div className="flex w-full justify-between font-semibold text-lg">

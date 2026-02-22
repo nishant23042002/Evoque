@@ -323,7 +323,7 @@ export default function LoginModalUI() {
 
 
                     {/* RIGHT */}
-                    <div className="bg-(--linen-200) md:mb-6 md:rounded-b-sm p-5 flex flex-col justify-center">
+                    <div className="bg-white md:mb-6 md:rounded-b-sm p-5 flex flex-col justify-center">
                         {step === "mobile" ? (
                             <div className="w-full max-w-sm mx-auto px-2 sm:px-0">
                                 <h3 className="text-base sm:text-lg font-semibold text-(--linen-800) mb-4 text-center">
