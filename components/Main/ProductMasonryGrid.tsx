@@ -24,19 +24,19 @@ interface ProductMasonryGridProps {
     fullWidth?: boolean;
 }
 function useMediaQuery(query: string) {
-  const subscribe = (callback: () => void) => {
-    const media = window.matchMedia(query);
-    media.addEventListener("change", callback);
-    return () => media.removeEventListener("change", callback);
-  };
+    const subscribe = (callback: () => void) => {
+        const media = window.matchMedia(query);
+        media.addEventListener("change", callback);
+        return () => media.removeEventListener("change", callback);
+    };
 
-  const getSnapshot = () => {
-    return window.matchMedia(query).matches;
-  };
+    const getSnapshot = () => {
+        return window.matchMedia(query).matches;
+    };
 
-  const getServerSnapshot = () => false;
+    const getServerSnapshot = () => false;
 
-  return useSyncExternalStore(subscribe, getSnapshot, getServerSnapshot);
+    return useSyncExternalStore(subscribe, getSnapshot, getServerSnapshot);
 }
 
 function getSmartAspectRatio(seed: string, category?: string) {
@@ -126,9 +126,10 @@ export default function ProductMasonryGrid({
             item._id,
             item.subCategory?.slug || item.category?.slug
         );
+        const isSoldOut = !item.isAvailable
 
         return (
-            <div key={item._id} className="mb-1">
+            <div key={item._id} className="relative mb-1">
                 <div className="flex flex-col w-full">
 
                     <div
@@ -166,7 +167,11 @@ export default function ProductMasonryGrid({
                         </div>
 
 
-
+                        {isSoldOut && (
+                            <div className="absolute inset-0 bg-black/40 flex items-center justify-center">
+                                <span className="text-white text-xs tracking-widest">SOLD OUT</span>
+                            </div>
+                        )}
 
                         {/* COLOR DOTS & WISHLIST */}
                         <div className="absolute w-full flex justify-between items-center top-1 px-2 z-20">

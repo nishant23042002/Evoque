@@ -16,6 +16,8 @@ export type ProductCard = {
     price: number;
     image: string;
     variants?: Variant[];
+    originalPrice?: number;        // ✅ add
+    discountPercentage?: number;
 };
 
 interface Props {
@@ -109,7 +111,7 @@ export default function ProductHorizontalScroller({
             <div
                 ref={scrollRef}
                 className="
-                            flex gap-1
+                            flex
                             overflow-x-auto
                             snap-x snap-mandatory
                             scrollbar-hide
@@ -151,7 +153,7 @@ export default function ProductHorizontalScroller({
                             <div
                                 onMouseEnter={() => hasVariants && onCardEnter(item._id)}
                                 onMouseLeave={() => hasVariants && onCardLeave(item._id)}
-                                className="relative aspect-3/4 sm:aspect-2/3 md:aspect-3/4 lg:aspect-4/6 overflow-hidden border border-(--border-light) bg-card">
+                                className="relative aspect-3/4 sm:aspect-2/3 md:aspect-3/4 lg:aspect-4/6 overflow-hidden  bg-card">
                                 <Image
                                     src={primary}
                                     alt={item.productName}
@@ -167,7 +169,7 @@ export default function ProductHorizontalScroller({
                                         className="object-cover"
                                     />
                                 )}
-                                <span className="absolute bottom-0 py-1 text-xs bg-black text-white px-1.5">-{variant?.pricing?.discountPercentage}%</span>
+                                <span className="absolute bottom-0 py-1 text-xs bg-black text-white px-1.5">-{variant?.pricing?.discountPercentage ?? item.discountPercentage}%</span>
                             </div>
 
                             {/* INFO */}
@@ -180,7 +182,7 @@ export default function ProductHorizontalScroller({
                                     <p className="text-red-600 font-semibold">
                                         Rs.{item.price}
                                     </p>
-                                    <span className="line-through text-xs">Rs.{variant?.pricing?.originalPrice}</span>
+                                    <span className="line-through text-xs">Rs.{variant?.pricing?.originalPrice ?? item.originalPrice}</span>
                                 </div>
                             </div>
                         </Link>

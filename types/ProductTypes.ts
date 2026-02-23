@@ -160,6 +160,7 @@ export default interface Product {
     isFeatured?: boolean,
     isBestSeller?: boolean,
     isNewArrival?: boolean,
+    isAvailable?: boolean,
     launchDate?: string,
     createdAt: string
 }

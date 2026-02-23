@@ -14,6 +14,7 @@ import { Flame } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { IoClose } from "react-icons/io5";
 import { Category } from "@/types/ProductTypes";
+import { useLockBodyScroll } from "@/src/useLockBodyScroll";
 
 const MOBILE_BREAKPOINT = 550;
 
@@ -51,6 +52,8 @@ const LeftMenu = ({ isOpen, setIsOpen }: LeftMenuProps) => {
     const [categories, setCategories] = useState<Category[]>([]);
     const [isMobile, setIsMobile] = useState(false);
 
+    useLockBodyScroll(isOpen)
+
     /* ---------- FETCH CATEGORIES ---------- */
     useEffect(() => {
         async function fetchCategories() {
@@ -78,33 +81,8 @@ const LeftMenu = ({ isOpen, setIsOpen }: LeftMenuProps) => {
         return () => window.removeEventListener("resize", handleResize);
     }, []);
 
-    /* ---------- CLICK OUTSIDE ---------- */
-    useEffect(() => {
-        if (!isOpen) return;
 
-        const handleClickOutside = (e: MouseEvent) => {
-            const target = e.target as HTMLElement;
-            if (target.closest("[data-menu-btn]")) return;
-
-            if (sidebarRef.current && !sidebarRef.current.contains(target)) {
-                setIsOpen(false);
-            }
-        };
-
-        document.addEventListener("click", handleClickOutside);
-        return () => document.removeEventListener("click", handleClickOutside);
-    }, [isOpen]);
-
-    useEffect(() => {
-        if (!isOpen) return;
-
-        const original = document.body.style.overflow;
-        document.body.style.overflow = "hidden";
-
-        return () => {
-            document.body.style.overflow = original;
-        };
-    }, [isOpen]);
+   
 
 
     const handleNavClick = () => setIsOpen(false);

@@ -5,6 +5,8 @@ export interface RecentlyViewedItem {
     name: string;
     image: string;
     price: number;
+    originalPrice: number;
+    discountedPrice: number;
     brand: string;
     color?: string;
     viewedAt: number;

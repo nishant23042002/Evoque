@@ -192,6 +192,7 @@ export default function ProductPage() {
             method: "POST",
         });
     }, [slug]);
+
     useEffect(() => {
         if (!product || !activeVariant) return;
 
@@ -204,6 +205,8 @@ export default function ProductPage() {
                     activeVariant.color.images.find(i => i.isPrimary)?.url ||
                     activeVariant.color.images[0]?.url,
                 price: product.pricing.price,
+                originalPrice: product.pricing.originalPrice || 0,
+                discountedPrice: product.pricing.discountPercentage || 0,
                 brand: product.brand,
                 viewedAt: Date.now(),
             })
@@ -400,8 +403,17 @@ export default function ProductPage() {
         (c) => c.slug === selectedColor
     );
 
+    const lowStockMessage = (() => {
+        if (!selectedSize) return null;
 
+        const stock = selectedSize.stock;
 
+        if (stock <= 0) return "Out of Stock";
+        if (stock <= 3) return `Only ${stock} left — almost gone.`;
+        if (stock <= 5) return `Just ${stock} left — selling fast.`;
+
+        return null;
+    })();
 
     if (loading)
         return (
@@ -527,7 +539,7 @@ export default function ProductPage() {
                            
                             "
                     >
-                        <div className="flex flex-col">
+                        <div className="flex flex-col mb-6">
 
                             <div className="flex justify-between items-center w-full">
                                 <h1 className="text-sm md:text-lg font-extralight text-(--earth-charcoal)">
@@ -575,19 +587,19 @@ export default function ProductPage() {
                                 </div>
                             </div>
                             <div>
-                                <span className="text-xs font-medium">
+                                <span className="text-[11px] font-light">
                                     SKU: {product.sku}</span>
                             </div>
                         </div>
 
 
                         {/* COLORS */}
-                        <div className="py-2 flex flex-col">
+                        <div className="py-2 flex flex-col mb-4">
                             <h1 className="font-light mb-1 text-md">
                                 Colors: <span className="font-light text-sm">{activeColorObj ? activeColorObj.name : ""}</span>
                             </h1>
 
-                            <div className="flex flex-row flex-nowrap p-0.5 items-center gap-1 w-full overflow-x-auto scrollbar-hide">
+                            <div className="flex flex-row flex-nowrap w-full p-0.5 items-center gap-0.5 overflow-x-auto scrollbar-hide">
                                 {colorVariants.map((color) => {
                                     const isActive = selectedColor === color.slug;
                                     return (
@@ -597,7 +609,7 @@ export default function ProductPage() {
                                                 setSelectedColor(color.slug);
                                                 router.replace(`/products/${product.slug}?color=${color.slug}`, { scroll: false });
                                             }}
-                                            className={`shrink-0 cursor-pointer border ${isActive ? "" : "border-border hover:border-black"
+                                            className={`shrink-0 cursor-pointer border border-black/20 ${isActive ? "" : "border hover:border-black"
                                                 }`}
                                             style={
                                                 isActive
@@ -622,13 +634,31 @@ export default function ProductPage() {
 
 
                         {/* SIZES */}
-                        <div id="size-section" className={`py-2 ${sizeError ? "animate-pulse" : ""}`}>
+                        <div id="size-section" className={`py-2 mb-4 ${sizeError ? "animate-pulse" : ""}`}>
                             <div className="flex justify-between">
                                 <div className="flex gap-2 items-center justify-center">
-
-                                    <h3 className="font-light text-foreground">
-                                        Sizes:
-                                    </h3>
+                                    <div className="flex gap-2 items-center justify-center">
+                                        <h3 className="font-light text-foreground">
+                                            Sizes: <span className="text-xs text-red-500">{ }</span>
+                                        </h3>
+                                        <div>
+                                            {lowStockMessage && (
+                                                <p
+                                                    className={`
+                                                text-xs font-light tracking-wide
+                                                ${selectedSize?.stock && selectedSize.stock <= 3
+                                                            ? "text-red-600"
+                                                            : selectedSize?.stock && selectedSize.stock <= 5
+                                                                ? "text-amber-600"
+                                                                : "text-red-600"
+                                                        }
+                                            `}
+                                                >
+                                                    {lowStockMessage}
+                                                </p>
+                                            )}
+                                        </div>
+                                    </div>
                                     <div>{outOfStockMsg && (
                                         <p className="text-xs text-red-500">
                                             Out of Stock
@@ -670,10 +700,10 @@ export default function ProductPage() {
                                                         text-sm
                                                         cursor-pointer
                                                         ${disabled
-                                                    ? "line-through border hover:border-black opacity-60"
+                                                    ? "line-through border border-black/20  hover:border-black opacity-60"
                                                     : isActive
                                                         ? "bg-primary text-primary-foreground border-primary"
-                                                        : "border border-(--border-light) text-(--text-secondary) hover:border-primary"
+                                                        : "border border-black/10  text-(--text-secondary) hover:border-primary"
                                                 }
                                            `}
                                         >
@@ -702,7 +732,7 @@ export default function ProductPage() {
                                 Quantity:
                             </h3>
                             <div className="flex gap-2 items-center">
-                                <div className="flex w-20 items-center justify-center border border-(--border-light) hover:border-black px-5 py-1.5 gap-3">
+                                <div className="flex w-20 items-center justify-center border border-black/10  hover:border-black px-5 py-1.5 gap-3">
                                     <button
                                         className="cursor-pointer"
                                         onClick={() => {
@@ -756,13 +786,13 @@ export default function ProductPage() {
 
 
                         {/* ACCORDION */}
-                        <div className="max-h-95 mt-3 overflow-y-auto scrollbar-hide my-4">
+                        <div className="max-h-95 mt-6 overflow-y-auto scrollbar-hide my-4">
                             <Accordion
                                 type="single"
                                 collapsible
                                 className="
                                         border
-                                        border-(--border-light)                                 
+                                        border-black/10                                
                                         p-2
                                     "
                             >
@@ -870,7 +900,7 @@ export default function ProductPage() {
                                         return (
                                             <div
                                                 key={index}
-                                                className="border border-(--border-light) p-2 bg-gray-50"
+                                                className="border border-black/10 p-2 bg-gray-50"
                                             >
                                                 <Stars value={review.rating} />
 

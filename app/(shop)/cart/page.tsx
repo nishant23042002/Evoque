@@ -77,8 +77,14 @@ export default function CartPage() {
         const t = setTimeout(() => {
             fetch("/api/checkout/prepare", { method: "POST" })
                 .then((r) => r.json())
-                .then((data: CheckoutResponse) => setSummaryData(data))
-                .catch(() => setSummaryData(null));
+                .then((data: CheckoutResponse) => {
+                    if (!data?.summary) {
+                        setSummaryData(null);
+                        return;
+                    }
+                    setSummaryData(data);
+                })
+
         }, 300); // 300ms debounce
 
         return () => clearTimeout(t);
@@ -118,12 +124,12 @@ export default function CartPage() {
     const grandTotal = bagTotal;
 
     const animatedGrandTotal = useAnimatedNumber(
-        summaryData?.summary.totalAmount ?? grandTotal
+        summaryData?.summary?.totalAmount ?? grandTotal
     );
 
 
-    const animatedTax = summaryData?.summary.tax ?? 0
-    const animatedDeliveryCharges = summaryData?.summary.shipping ?? 0
+    const animatedTax = summaryData?.summary?.tax ?? 0
+    const animatedDeliveryCharges = summaryData?.summary?.shipping ?? 0
 
     if (!hasMounted) return null;
 
@@ -148,7 +154,7 @@ export default function CartPage() {
                     {cartItems.map((item) => (
                         <div
                             key={`${item.productId}/${item.variantSku}`}
-                            className="flex gap-5 py-6 border-b"
+                            className="flex gap-5 py-6 border-b border-black/10"
                         >
                             {/* IMAGE */}
                             <Link href={`/products/${item.slug}`}>
@@ -208,7 +214,7 @@ export default function CartPage() {
                                 {/* ACTIONS */}
                                 <div className="flex justify-between items-center">
                                     {/* QUANTITY */}
-                                    <div className="flex items-center border border-(--border-light) hover:border-black px-3 py-1 gap-3">
+                                    <div className="flex items-center border border-black/10 hover:border-black px-3 py-1 gap-3">
 
                                         <button className="cursor-pointer"
                                             onClick={() => {
@@ -314,7 +320,7 @@ export default function CartPage() {
                                                 Moving...
                                             </>
                                         ) : (
-                                            <span className="border border-(--border-light) hover:border-black p-1">Move to wishlist</span>
+                                            <span className="border border-black/10 hover:border-black p-1">Move to wishlist</span>
                                         )}
                                     </button>
                                 </div>
@@ -350,11 +356,11 @@ export default function CartPage() {
                             <span>Rs. {animatedDeliveryCharges}</span>
                         </div>
 
-                        <hr />
+                        <hr className="border-black/10" />
 
                         <div className="flex justify-between font-medium text-lg">
                             <span>Total</span>
-                            <span>Rs. {animatedGrandTotal ?? summaryData?.summary.totalAmount}</span>
+                            <span>Rs. {animatedGrandTotal}</span>
                         </div>
 
                         <div className="space-y-3">
@@ -398,7 +404,7 @@ export default function CartPage() {
                 {/* Top Row */}
                 <div className="flex w-full justify-between font-semibold text-lg">
                     <span>Total</span>
-                    <span>Rs. {summaryData?.summary.totalAmount ?? animatedGrandTotal}</span>
+                    <span>Rs. {animatedGrandTotal}</span>
 
                 </div>
 
@@ -436,6 +442,15 @@ export default function CartPage() {
                         productName: item.name,
                         image: item.image,
                         price: item.price,
+                        originalPrice: item.originalPrice,
+                        discountPercentage:
+                            item.originalPrice > 0
+                                ? Math.round(
+                                    ((item.originalPrice - item.price) /
+                                        item.originalPrice) *
+                                    100
+                                )
+                                : 0,
                     }))}
                 />
 

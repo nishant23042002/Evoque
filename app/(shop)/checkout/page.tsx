@@ -330,6 +330,7 @@ function OrderSummary({
                         body: JSON.stringify({
                             items: cartItems.map(i => ({
                                 productId: i.productId,
+                                variantSku: i.variantSku,
                                 quantity: i.quantity
                             }))
                         })

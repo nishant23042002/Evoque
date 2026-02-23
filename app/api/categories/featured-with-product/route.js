@@ -23,7 +23,7 @@ export async function GET() {
                     isActive: true,
                 })
                     .sort({ createdAt: -1 }) // newest
-                    .select("productName thumbnail slug pricing")
+                    .select("productName thumbnail slug pricing isAvailable")
                     .lean();
 
                 return {

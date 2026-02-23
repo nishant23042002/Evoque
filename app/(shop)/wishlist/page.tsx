@@ -154,16 +154,16 @@ export default function Wishlist() {
       )}
 
       <div className="w-full py-2 min-h-[95vh] overflow-hidden">
-          <div className="mx-2 flex justify-between items-center py-6 z-20">
-                <h1 className="text-4xl min-[400px]:text-5xl tracking-wider font-bold">WISHLIST</h1>
-                <span className="text-sm">ITEMS [ {count} ]</span>
-            </div>
+        <div className="mx-2 flex justify-between items-center py-6 z-20">
+          <h1 className="text-4xl min-[400px]:text-5xl tracking-wider font-bold">WISHLIST</h1>
+          <span className="text-sm">ITEMS [ {count} ]</span>
+        </div>
         <div className="w-full flex flex-col lg:flex-row gap-1">
           <div className="w-full mb-12 lg:h-screen lg:overflow-y-auto scrollbar-hide">
             <Masonry
               breakpointCols={breakpoints}
-              className="flex gap-1"
-              columnClassName="space-y-1"
+              className="flex"
+              columnClassName="space-y-4"
             >
               {wishlistItems.map((item: WishlistItem, index) => {
                 const isWishlisted = wishlistIds.has(item.productId);
@@ -173,7 +173,7 @@ export default function Wishlist() {
                     key={`wishlist-${item.productId}-${index}`}
                     href={`/products/${item.slug}`}
                     onClick={() => setActiveId(item.productId)}
-                    className="block border border-(--border-light) cursor-pointer"
+                    className="block cursor-pointer"
                   >
                     {/* COLUMN WRAPPER */}
                     <div className="flex flex-col w-full">
@@ -190,7 +190,7 @@ export default function Wishlist() {
                           />
                         )}
 
-                        <div className="hidden md:block pointer-events-none absolute inset-0 bg-black/10 opacity-0 group-hover:opacity-100" />
+                        <div className="hidden md:block pointer-events-none absolute inset-0 bg-black/10 duration-200 opacity-0 group-hover:opacity-100" />
 
                         {/* TOP BAR */}
                         <div className="w-full">
@@ -233,23 +233,24 @@ export default function Wishlist() {
                             )}
                           </div>
                         </div>
+                        <div className="mx-2">
+                          <button
+                            onClick={(e) => {
+                              e.preventDefault();
+                              e.stopPropagation();
+                              handleMoveToBag(item);
+                            }}
+                            className="
+                              cursor-pointer w-full
+                              border-black border
+                              py-4 hover:text-black/60
+                              text-xs font-semibold
+                              "
+                          >
+                            ADD
+                          </button>
+                        </div>
 
-                        <button
-                          onClick={(e) => {
-                            e.preventDefault();
-                            e.stopPropagation();
-                            handleMoveToBag(item);
-                          }}
-                          className="
-                            cursor-pointer w-full
-                            border-(--border-light) hover:bg-white border-t
-                            py-2 hover:text-primary font-bold
-                            text-xs rounded-b-[3px]
-                            transition-all duration-300
-                            "
-                        >
-                          ADD TO BAG
-                        </button>
                       </div>
 
                     </div>

@@ -5,6 +5,7 @@ export const sizeScaleMap: Record<string, string[]> = {
   tshirt: ["XS", "S", "M", "L", "XL"],
   sweatshirts: ["XS", "S", "M", "L", "XL", "XXL"],
   polo: ["XS", "S", "M", "L", "XL"],
+  sweatpants: ["XS", "S", "M", "L", "XL", "XXL"],
   jeans: ["28", "30", "32", "34", "36", "38"],
   shorts: ["28", "30", "32", "34", "36", "38"],
   trousers: ["28", "30", "32", "34", "36"],

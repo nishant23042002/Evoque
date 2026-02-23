@@ -9,6 +9,7 @@ import CometLogoLoader from "../FlashLogo/LayerLogo";
 import { Category, SearchSubCategory } from "@/types/ProductTypes";
 import { useProductSearch } from "@/lib/useProductSearch";
 import { useDebounce } from "use-debounce"
+import { useLockBodyScroll } from "@/src/useLockBodyScroll";
 
 /* =====================
    COMPONENT
@@ -23,7 +24,7 @@ const SearchBar = () => {
 
   const [debouncedQuery] = useDebounce(query, 300);
   const { products, loading } = useProductSearch(debouncedQuery);
-
+  useLockBodyScroll(open)
   useEffect(() => {
     async function fetchCategories() {
       try {
@@ -53,16 +54,12 @@ const SearchBar = () => {
   }, []);
 
 
-  useEffect(() => {
-    document.body.style.overflow = open ? "hidden" : "";
-    return () => {
-      document.body.style.overflow = "";
-    };
-  }, [open]);
+  
 
 
   const announcements = ["Free Shipping on Orders Above ₹999"];
   const repeatedAnnouncements = Array(5).fill(announcements[0]);
+  
   const saveRecentSearch = (term: string) => {
     if (!term.trim()) return;
 
@@ -122,7 +119,7 @@ const SearchBar = () => {
         className={cn(
           "fixed inset-y-0 right-0 z-50",
           "bg-white shadow-xl",
-          "w-[80vw] sm:w-150",
+          "w-[80vw] sm:w-130",
           "transform-gpu will-change-transform",
           "transition-transform duration-700 ease-in-out",
           open ? "translate-x-0" : "translate-x-[101%]"

@@ -2,12 +2,12 @@
 
 import Image from "next/image";
 import Link from "next/link";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import Masonry from "react-masonry-css";
 import axios from "axios";
 import { Category } from "@/types/ProductTypes";
 import LayerLogo from "../FlashLogo/LayerLogo";
-import { ArrowRight } from "lucide-react";
+import { ArrowRight, ChevronLeft, ChevronRight } from "lucide-react";
 
 export interface FeaturedCategoryProduct {
     category: {
@@ -24,7 +24,8 @@ export interface FeaturedCategoryProduct {
             price: number;
             originalPrice?: number;
         };
-        thumbnail: string
+        thumbnail: string;
+        isAvailable: boolean
     } | null;
 }
 
@@ -53,6 +54,19 @@ const FeaturedCategories = () => {
         fetchCategories();
     }, []);
 
+    const scrollRef = useRef<HTMLDivElement>(null)
+
+    const scroll = (direction: "left" | "right") => {
+        if (!scrollRef.current) return
+
+        const scrollAmount = 400
+
+        scrollRef.current.scrollBy({
+            left: direction === "left" ? -scrollAmount : scrollAmount,
+            behavior: "smooth",
+        })
+    }
+
     useEffect(() => {
         async function fetchFeaturedProducts() {
             try {
@@ -75,7 +89,7 @@ const FeaturedCategories = () => {
     }
 
     return (
-        <section className="w-full my-2 mb-20 mx-auto flex flex-col justify-center ">
+        <section className="w-full my-2 mb-6 mx-auto flex flex-col justify-center ">
             <div className="flex px-4 py-3 justify-between items-center">
                 {/* Heading */}
                 <h2 className="text-md uppercase tracking-widest font-light font-poppins text-foreground">
@@ -94,7 +108,7 @@ const FeaturedCategories = () => {
                     </h2>
                 </div>
             ) : (
-                <>        
+                <>
                     {/* FEATURED PRODUCTS PER CATEGORY */}
                     <div>
                         <Masonry
@@ -104,7 +118,7 @@ const FeaturedCategories = () => {
                         >
                             {featuredWithProducts.map((item) => {
                                 if (!item.product) return null;
-
+                                const isSoldOut = !item.product.isAvailable;
                                 const primaryImage = item.product.thumbnail;
 
                                 return (
@@ -123,13 +137,18 @@ const FeaturedCategories = () => {
                                                     className="object-cover"
                                                 />
                                                 <div className="absolute flex items-center gap-1 bottom-1/4 right-1/7 opacity-0 group-hover:opacity-100">
-                                                <div className="flex items-center justify-center">
-                                                    <div className="relative border border-black w-3 h-3" />
-                                                    <p className="absolute border border-black w-1.5 h-1.5 bg-white"></p>
-                                                </div>
+                                                    <div className="flex items-center justify-center">
+                                                        <div className="relative border border-black w-3 h-3" />
+                                                        <p className="absolute border border-black w-1.5 h-1.5 bg-white"></p>
+                                                    </div>
                                                     <div className="bg-white px-1 font-medium text-xs">Rs.{item.product.pricing?.price}</div>
                                                 </div>
                                                 <div className="hidden md:block absolute inset-0 bg-(--earth-charcoal) opacity-0 group-hover:opacity-10 transition-opacity duration-300" />
+                                                {isSoldOut && (
+                                                    <div className="absolute inset-0 bg-black/50 flex items-center justify-center">
+                                                        <span className="text-white text-xs tracking-widest">SOLD OUT</span>
+                                                    </div>
+                                                )}
                                             </div>
                                         </Link>
                                     </div>
@@ -138,16 +157,42 @@ const FeaturedCategories = () => {
                         </Masonry>
                     </div>
 
-                    <div className="w-full">
-                        <div className="p-3">
+                    <div className="relative w-full">
+                        <div className="flex items-center justify-between p-3">
                             <h1 className="uppercase font-light">Featured Category</h1>
+                            <div className="flex gap-4">
+                                <button
+                                    onClick={() => scroll("left")}
+                                    className="
+                                            z-10
+                                            
+                                        
+                                            md:hidden
+                                            "
+                                >
+                                    <ChevronLeft size={20} />
+                                </button>
+
+                                {/* RIGHT ARROW */}
+                                <button
+                                    onClick={() => scroll("right")}
+                                    className="
+                                    z-10
+                                    
+                                    
+                                        md:hidden
+                                        "
+                                >
+                                    <ChevronRight size={21} />
+                                </button>
+                            </div>
                         </div>
-                        <div className="grid grid-cols-2 min-[500px]:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 w-full ">
+                        <div ref={scrollRef} className="flex overflow-x-auto scrollbar-hide snap-x snap-mandatory md:grid md:grid-cols-5 lg:grid-cols-5 w-full ">
                             {categories.map((item) => (
                                 <Link
                                     href={`/categories/${item.slug}`}
                                     key={item._id}
-                                    className="group block break-inside-avoid"
+                                    className="group min-w-55 md:min-w-0"
                                 >
                                     <div
                                         className="                                   

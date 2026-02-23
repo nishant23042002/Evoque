@@ -14,6 +14,7 @@ import Product from "@/types/ProductTypes";
 import { useQuery } from "@tanstack/react-query";
 import { useRouter } from "next/navigation";
 import Footer from "@/components/Footer/Footer";
+import { useLockBodyScroll } from "@/src/useLockBodyScroll";
 type SortOption = "recommended" | "newest" | "low-high" | "high-low";
 
 interface CategoryProductsResponse {
@@ -49,36 +50,42 @@ interface CategoryProductsResponse {
 const FilterSection = ({
     title,
     children,
-    onClose,
+    isOpen,
+    onToggle,
+    disableToggle = false,
 }: {
     title: string;
     children: React.ReactNode;
-    onClose?: () => void;
+    isOpen: boolean;
+    onToggle?: () => void;
+    disableToggle?: boolean;
 }) => {
-    const [open, setOpen] = useState(false);
-
-    useEffect(() => {
-        if (!open && onClose) {
-            onClose(); // ✅ safe: runs after render
-        }
-    }, [open]);
-
     return (
-        <div>
+        <div className="group">
             <div
-                onClick={() => setOpen(prev => !prev)}
-                className="flex justify-between items-center cursor-pointer  pb-3"
+                onClick={() => {
+                    if (!disableToggle && onToggle) {
+                        onToggle();
+                    }
+                }}
+                className={clsx(
+                    "flex justify-between items-center pb-3",
+                    disableToggle ? "cursor-default" : "cursor-pointer"
+                )}
             >
-                <span className="uppercase tracking-wide text-sm font-medium">
+                <span className="uppercase tracking-wide text-[15px] group-hover:text-black/50 font-light">
                     {title}
                 </span>
-                {open ? <Minus size={16} /> : <Plus size={16} />}
+                <div className="group-hover:text-black/50">
+                    {!disableToggle &&
+                        (isOpen ? <Minus size={16} /> : <Plus size={16} />)}
+                </div>
             </div>
 
             <div
                 className={clsx(
                     "transition-all duration-300 overflow-hidden",
-                    open ? "max-h-125 opacity-100" : "max-h-0 opacity-0"
+                    isOpen ? "max-h-125 opacity-100" : "max-h-0 opacity-0"
                 )}
             >
                 {children}
@@ -128,7 +135,7 @@ const ProductCategoryPage = () => {
     const [animatePage, setAnimatePage] = useState(false);
     const pathname = usePathname();
     const searchParams = useSearchParams();
-    const [isFilterOpen, setIsFilterOpen] = useState(false);
+    const [isFilterOpen, setIsFilterOpen] = useState(true);
 
     const categorySlug = pathname.split("/").pop() ?? "";
     const activeSub = searchParams.get("sub") || "";
@@ -146,8 +153,13 @@ const ProductCategoryPage = () => {
     const patternParam = searchParams.get("pattern");
     const selectedPattern = patternParam ? patternParam.split(",") : [];
     const selectedFabrics = fabricParam ? fabricParam.split(",") : [];
-
+    const minPrice = searchParams.get("min");
+    const maxPrice = searchParams.get("max");
+    const [manualOpen, setManualOpen] = useState<{
+        [key: string]: boolean;
+    }>({});
     const router = useRouter();
+    useLockBodyScroll(isFilterOpen)
 
 
     const [isBannerEnabled, setIsBannerEnabled] = useState<boolean>(() => {
@@ -167,8 +179,22 @@ const ProductCategoryPage = () => {
     }, []);
 
 
-    const minPrice = searchParams.get("min");
-    const maxPrice = searchParams.get("max");
+    const openSections = {
+        price: true,
+        color: !!colorParam,
+        size: !!sizeParam,
+        fit: !!fitParam,
+        fabric: !!fabricParam,
+        pattern: !!patternParam,
+    };
+
+    const isSectionOpen = (section: string, hasFilter: boolean) => {
+        if (manualOpen[section] !== undefined) {
+            return manualOpen[section];
+        }
+        return hasFilter;
+    };
+
     /* ---------- FETCH DATA ---------- */
     const { data, isLoading } = useQuery<CategoryProductsResponse>({
         queryKey: [
@@ -206,157 +232,115 @@ const ProductCategoryPage = () => {
 
     const minVal = minPrice ? Number(minPrice) : minAvailable;
     const maxVal = maxPrice ? Number(maxPrice) : maxAvailable;
-    const [tempMin, setTempMin] = useState<number>(() => minVal);
-    const [tempMax, setTempMax] = useState<number>(() => maxVal);
-
-
-    const resetPriceFilter = () => {
-        const params = new URLSearchParams(searchParams.toString());
-
-        params.delete("min");
-        params.delete("max");
-
-        router.replace(`?${params.toString()}`);
-    };
-
+    const [tempMin, setTempMin] = useState<number>(0);
+    const [tempMax, setTempMax] = useState<number>(0);
+    const [draftFilters, setDraftFilters] = useState({
+        colors: selectedColors,
+        sizes: selectedSizes,
+        fits: selectedFits,
+        fabrics: selectedFabrics,
+        patterns: selectedPattern,
+        min: minVal,
+        max: maxVal,
+    });
 
     const bannerImage = data?.category?.categoryPageBanner ?? "/images/default-category-banner.png";
     const subCategories = (data?.category?.subCategories ?? []).filter((s: SubCategory) => s.isActive);
     const products = data?.products ?? [];
-    const updatePrice = (min: number, max: number) => {
-        const params = new URLSearchParams(searchParams.toString());
 
-        if (min > minAvailable)
-            params.set("min", String(min));
-        else
-            params.delete("min");
-
-        if (max < maxAvailable)
-            params.set("max", String(max));
-        else
-            params.delete("max");
-
-        router.replace(`?${params.toString()}`);
-    };
     useEffect(() => {
         const timeout = setTimeout(() => setAnimatePage(true), 50); // delay to trigger transition
         return () => clearTimeout(timeout);
     }, []);
 
-    useEffect(() => {
-        if (isFilterOpen) {
-            document.body.style.overflow = "hidden";
-        } else {
-            document.body.style.overflow = "";
-        }
 
-        // cleanup safety (important)
-        return () => {
-            document.body.style.overflow = "";
-        };
-    }, [isFilterOpen]);
 
-    const updateColorFilter = (colorSlug: string) => {
-        const params = new URLSearchParams(searchParams.toString());
 
-        let colors = colorParam ? colorParam.split(",") : [];
 
-        if (colors.includes(colorSlug)) {
-            // remove
-            colors = colors.filter(c => c !== colorSlug);
-        } else {
-            // add
-            colors.push(colorSlug);
-        }
+    const applyFilters = () => {
+        const params = new URLSearchParams();
 
-        if (colors.length > 0) {
-            params.set("color", colors.join(","));
-        } else {
-            params.delete("color");
-        }
+        if (draftFilters.colors.length)
+            params.set("color", draftFilters.colors.join(","));
 
-        router.replace(`?${params.toString()}`);
-    };
+        if (draftFilters.sizes.length)
+            params.set("size", draftFilters.sizes.join(","));
 
-    const updateSizeFilter = (size: string) => {
-        const params = new URLSearchParams(searchParams.toString());
+        if (draftFilters.fits.length)
+            params.set("fit", draftFilters.fits.join(","));
 
-        let sizes = sizeParam ? sizeParam.split(",") : [];
+        if (draftFilters.fabrics.length)
+            params.set("fabric", draftFilters.fabrics.join(","));
 
-        if (sizes.includes(size)) {
-            sizes = sizes.filter(s => s !== size);
-        } else {
-            sizes.push(size);
-        }
+        if (draftFilters.patterns.length)
+            params.set("pattern", draftFilters.patterns.join(","));
 
-        if (sizes.length > 0) {
-            params.set("size", sizes.join(","));
-        } else {
-            params.delete("size");
-        }
+        if (draftFilters.min > minAvailable)
+            params.set("min", String(draftFilters.min));
+
+        if (draftFilters.max < maxAvailable)
+            params.set("max", String(draftFilters.max));
+
+        if (sortValue)
+            params.set("sort", sortValue);
 
         router.replace(`?${params.toString()}`);
+        setIsFilterOpen(false);
     };
 
-    const updateFitFilter = (fitValue: string) => {
+    const openFilterDrawer = () => {
+        const min = minPrice ? Number(minPrice) : minAvailable;
+        const max = maxPrice ? Number(maxPrice) : maxAvailable;
+
+        setTempMin(min);
+        setTempMax(max);
+
+        setDraftFilters({
+            colors: selectedColors,
+            sizes: selectedSizes,
+            fits: selectedFits,
+            fabrics: selectedFabrics,
+            patterns: selectedPattern,
+            min: minVal,
+            max: maxVal,
+        });
+
+        setIsFilterOpen(true);
+    };
+
+    const resetFilters = () => {
+        setTempMin(minAvailable);
+        setTempMax(maxAvailable);
+        setDraftFilters({
+            colors: [],
+            sizes: [],
+            fits: [],
+            fabrics: [],
+            patterns: [],
+            min: minAvailable,
+            max: maxAvailable,
+        });
+        // 2️⃣ Clear URL params
         const params = new URLSearchParams(searchParams.toString());
 
-        let fits = fitParam ? fitParam.split(",") : [];
+        params.delete("min");
+        params.delete("max");
+        params.delete("color");
+        params.delete("size");
+        params.delete("fit");
+        params.delete("fabric");
+        params.delete("pattern");
 
-        if (fits.includes(fitValue)) {
-            fits = fits.filter(f => f !== fitValue);
-        } else {
-            fits.push(fitValue);
-        }
-
-        if (fits.length > 0) {
-            params.set("fit", fits.join(","));
-        } else {
-            params.delete("fit");
-        }
-
-        router.replace(`?${params.toString()}`);
+        router.push(`?${params.toString()}`, { scroll: false });
     };
 
-    const updateFabricFilter = (fabricValue: string) => {
-        const params = new URLSearchParams(searchParams.toString());
 
-        let fabrics = fabricParam ? fabricParam.split(",") : [];
 
-        if (fabrics.includes(fabricValue)) {
-            fabrics = fabrics.filter(f => f !== fabricValue);
-        } else {
-            fabrics.push(fabricValue);
-        }
 
-        if (fabrics.length > 0) {
-            params.set("fabric", fabrics.join(","));
-        } else {
-            params.delete("fabric");
-        }
 
-        router.replace(`?${params.toString()}`);
-    };
 
-    const updatePatternFilter = (patternValue: string) => {
-        const params = new URLSearchParams(searchParams.toString());
 
-        let patterns = patternParam ? patternParam.split(",") : [];
 
-        if (patterns.includes(patternValue)) {
-            patterns = patterns.filter(p => p !== patternValue);
-        } else {
-            patterns.push(patternValue);
-        }
-
-        if (patterns.length > 0) {
-            params.set("pattern", patterns.join(","));   // ✅ correct key
-        } else {
-            params.delete("pattern");                   // ✅ correct key
-        }
-
-        router.replace(`?${params.toString()}`);
-    };
 
     const availableColors = data?.colorCounts || [];
     const availableSizes = data?.sizeCounts || [];
@@ -555,7 +539,7 @@ const ProductCategoryPage = () => {
                         )}
                     </div>
                     <div
-                        onClick={() => setIsFilterOpen(true)}
+                        onClick={openFilterDrawer}
                         className="flex mx-2 cursor-pointer justify-center items-center gap-2"
                     >
                         <div className="font-medium hover:text-black/70 duration-300 tracking-wider uppercase text-sm">
@@ -595,53 +579,53 @@ const ProductCategoryPage = () => {
                 {/* Filter Sliding Panel */}
                 <div
                     className={clsx(
-                        "absolute pb-10 h-full right-0 top-0  w-[90%] sm:w-125 bg-white",
+                        "absolute pb-10 h-full right-0 top-0  w-[90%] sm:w-118 bg-white",
                         "transition-transform  duration-500 ease-[cubic-bezier(0.22,1,0.36,1)]",
                         isFilterOpen ? "translate-x-0 " : "translate-x-full"
                     )}
                 >
                     {/* HEADER */}
-                    <div className="flex justify-between items-center px-4 py-5">
-                        <h2 className="text-lg font-light uppercase tracking-wider">
+                    <div className="flex justify-between items-center px-4 py-4">
+                        <h2 className="text-[15px] w-full text-center font-light uppercase tracking-wider">
                             Filters
                         </h2>
                         <button
                             onClick={() => setIsFilterOpen(false)}
-                            className="text-sm hover:opacity-60 cursor-pointer"
+                            className="text-sm hover:opacity-60 p-2 cursor-pointer"
                         >
-                            <X />
+                            <X size={18} />
                         </button>
                     </div>
 
                     {/* FILTER CONTENT */}
-                    <div className="overflow-y-auto scrollbar-hide h-[calc(100%-70px)] px-4 py-6 space-y-8">
+                    <div className="overflow-y-auto space-y-4 scrollbar-hide h-[calc(100%-70px)] px-6 py-6">
 
                         {/* PRICE */}
                         <FilterSection
-                            key={`${minVal}-${maxVal}`}   // 🔥 important
                             title="Price Range"
-                            onClose={resetPriceFilter}
+                            isOpen={openSections.price}
+                            disableToggle
                         >
-                            <div className="space-y-2 mb-8">
+                            <div className="mb-12">
 
                                 {/* Values */}
-                                <div className="flex justify-between text-sm font-medium">
+                                <div className="flex justify-between text-[12px] font-semibold mb-2">
                                     <span>{tempMin.toFixed(2)} Rs</span>
                                     <span>{tempMax.toFixed(2)} Rs</span>
                                 </div>
 
                                 {/* Slider Wrapper */}
-                                <div className="relative h-6 flex items-center">
+                                <div className="relative h-5 flex items-center">
 
                                     {/* Track */}
-                                    <div className="absolute w-full h-[2px] bg-black" />
+                                    <div className="absolute w-full h-0.5 bg-green-600" />
 
                                     {/* Active Range */}
                                     <div
-                                        className="absolute h-[2px] bg-black"
+                                        className="absolute h-0.5 bg-black"
                                         style={{
-                                            left: `${((minVal - minAvailable) / (maxAvailable - minAvailable)) * 100}%`,
-                                            right: `${100 - ((maxVal - minAvailable) / (maxAvailable - minAvailable)) * 100}%`,
+                                            left: `${((tempMin - minAvailable) / (maxAvailable - minAvailable)) * 100}%`,
+                                            right: `${100 - ((tempMax - minAvailable) / (maxAvailable - minAvailable)) * 100}%`,
                                         }}
                                     />
 
@@ -649,29 +633,53 @@ const ProductCategoryPage = () => {
                                     <input
                                         type="range"
                                         min={minAvailable}
-                                        max={maxAvailable}
+                                        max={tempMax - 1}
                                         value={tempMin}
                                         onChange={(e) => {
                                             const value = Math.min(Number(e.target.value), tempMax - 1);
                                             setTempMin(value);
                                         }}
-                                        onMouseUp={() => updatePrice(tempMin, tempMax)}
-                                        onTouchEnd={() => updatePrice(tempMin, tempMax)}
+                                        onMouseUp={() =>
+                                            setDraftFilters(prev => ({
+                                                ...prev,
+                                                min: tempMin,
+                                                max: tempMax,
+                                            }))
+                                        }
+                                        onTouchEnd={() =>
+                                            setDraftFilters(prev => ({
+                                                ...prev,
+                                                min: tempMin,
+                                                max: tempMax,
+                                            }))
+                                        }
                                         className="absolute w-full appearance-none bg-transparent"
                                     />
 
                                     {/* Max Thumb */}
                                     <input
                                         type="range"
-                                        min={minAvailable}
+                                        min={tempMin + 1}
                                         max={maxAvailable}
                                         value={tempMax}
                                         onChange={(e) => {
                                             const value = Math.max(Number(e.target.value), tempMin + 1);
                                             setTempMax(value);
                                         }}
-                                        onMouseUp={() => updatePrice(tempMin, tempMax)}
-                                        onTouchEnd={() => updatePrice(tempMin, tempMax)}
+                                        onMouseUp={() =>
+                                            setDraftFilters(prev => ({
+                                                ...prev,
+                                                min: tempMin,
+                                                max: tempMax,
+                                            }))
+                                        }
+                                        onTouchEnd={() =>
+                                            setDraftFilters(prev => ({
+                                                ...prev,
+                                                min: tempMin,
+                                                max: tempMax,
+                                            }))
+                                        }
                                         className="absolute w-full appearance-none bg-transparent"
                                     />
 
@@ -679,17 +687,35 @@ const ProductCategoryPage = () => {
                             </div>
                         </FilterSection>
                         {/* COLOR */}
-                        <FilterSection title="Color">
-                            <div className="flex flex-col h-70 overflow-y-auto scrollbar-hide gap-3">
+                        <FilterSection
+                            title="Colour"
+                            isOpen={isSectionOpen("color", !!colorParam)}
+                            onToggle={() =>
+                                setManualOpen(prev => ({
+                                    ...prev,
+                                    color: !isSectionOpen("color", !!colorParam),
+                                }))
+                            }
+                        >
+                            <div className="flex flex-col mb-4 overflow-y-auto scrollbar-hide gap-3">
 
                                 {availableColors.map(color => {
-                                    const isSelected = selectedColors.includes(color.slug);
-
+                                    const isSelected = draftFilters.colors.includes(color.slug);
                                     return (
                                         <button
                                             key={color.slug}
-                                            onClick={() => updateColorFilter(color.slug)}
-                                            className="cursor-pointer flex items-center justify-between w-full px-2 py-2 rounded hover:bg-gray-50"
+                                            onClick={() => {
+                                                setDraftFilters(prev => {
+                                                    const exists = prev.colors.includes(color.slug);
+                                                    return {
+                                                        ...prev,
+                                                        colors: exists
+                                                            ? prev.colors.filter(c => c !== color.slug)
+                                                            : [...prev.colors, color.slug],
+                                                    };
+                                                });
+                                            }}
+                                            className="cursor-pointer flex items-center justify-between w-full py-2 rounded hover:bg-gray-50"
                                         >
                                             <div className="flex items-center gap-3">
 
@@ -729,15 +755,33 @@ const ProductCategoryPage = () => {
                         </FilterSection>
 
                         {/* SIZE */}
-                        <FilterSection title="Size">
+                        <FilterSection
+                            title="Size"
+                            isOpen={isSectionOpen("size", !!sizeParam)}
+                            onToggle={() =>
+                                setManualOpen(prev => ({
+                                    ...prev,
+                                    size: !isSectionOpen("size", !!sizeParam),
+                                }))
+                            }
+                        >
                             <div className="flex flex-col gap-2">
                                 {availableSizes.map(item => {
-                                    const isSelected = selectedSizes.includes(item.size);
-
+                                    const isSelected = draftFilters.sizes.includes(item.size);
                                     return (
                                         <button
                                             key={item.size}
-                                            onClick={() => updateSizeFilter(item.size)}
+                                            onClick={() => {
+                                                setDraftFilters(prev => {
+                                                    const exists = prev.sizes.includes(item.size);
+                                                    return {
+                                                        ...prev,
+                                                        sizes: exists
+                                                            ? prev.sizes.filter(s => s !== item.size)
+                                                            : [...prev.sizes, item.size],
+                                                    };
+                                                });
+                                            }}
                                             className={clsx(
                                                 "flex justify-between items-center px-3 py-2 border  text-sm transition",
                                                 isSelected
@@ -754,15 +798,33 @@ const ProductCategoryPage = () => {
                                 })}
                             </div>
                         </FilterSection>
-                        <FilterSection title="Fit">
+                        <FilterSection
+                            title="Fit"
+                            isOpen={isSectionOpen("fit", !!fitParam)}
+                            onToggle={() =>
+                                setManualOpen(prev => ({
+                                    ...prev,
+                                    fit: !isSectionOpen("fit", !!fitParam),
+                                }))
+                            }
+                        >
                             <div className="flex flex-col gap-2">
                                 {fit.map((item) => {
-                                    const isSelected = selectedFits.includes(item.fitType);
-
+                                    const isSelected = draftFilters.fits.includes(item.fitType);
                                     return (
                                         <button
                                             key={item.fitType}
-                                            onClick={() => updateFitFilter(item.fitType)}
+                                            onClick={() => {
+                                                setDraftFilters(prev => {
+                                                    const exists = prev.fits.includes(item.fitType);
+                                                    return {
+                                                        ...prev,
+                                                        fits: exists
+                                                            ? prev.fits.filter(f => f !== item.fitType)
+                                                            : [...prev.fits, item.fitType],
+                                                    };
+                                                });
+                                            }}
                                             className={clsx(
                                                 "flex justify-between items-center px-3 py-2 border text-sm transition capitalize",
                                                 isSelected
@@ -779,15 +841,34 @@ const ProductCategoryPage = () => {
                                 })}
                             </div>
                         </FilterSection>
-                        <FilterSection title="Fabric">
+                        <FilterSection
+                            title="Fabric"
+                            isOpen={isSectionOpen("fabric", !!fabricParam)}
+                            onToggle={() =>
+                                setManualOpen(prev => ({
+                                    ...prev,
+                                    fabric: !isSectionOpen("fabric", !!fabricParam),
+                                }))
+                            }
+                        >
                             <div className="flex flex-col gap-2">
                                 {fabricCounts.map(item => {
-                                    const isSelected = selectedFabrics.includes(item.fabric);
+                                    const isSelected = draftFilters.fabrics.includes(item.fabric);
 
                                     return (
                                         <button
                                             key={item.fabric}
-                                            onClick={() => updateFabricFilter(item.fabric)}
+                                            onClick={() => {
+                                                setDraftFilters(prev => {
+                                                    const exists = prev.fabrics.includes(item.fabric);
+                                                    return {
+                                                        ...prev,
+                                                        fabrics: exists
+                                                            ? prev.fabrics.filter(f => f !== item.fabric)
+                                                            : [...prev.fabrics, item.fabric],
+                                                    };
+                                                });
+                                            }}
                                             className={clsx(
                                                 "flex justify-between items-center px-3 py-2 border text-sm transition capitalize",
                                                 isSelected
@@ -804,15 +885,33 @@ const ProductCategoryPage = () => {
                                 })}
                             </div>
                         </FilterSection>
-                        <FilterSection title="Pattern">
+                        <FilterSection
+                            title="Pattern"
+                            isOpen={isSectionOpen("pattern", !!patternParam)}
+                            onToggle={() =>
+                                setManualOpen(prev => ({
+                                    ...prev,
+                                    pattern: !isSectionOpen("pattern", !!patternParam),
+                                }))
+                            }
+                        >
                             <div className="flex flex-col gap-2">
                                 {patternCounts.map(item => {
-                                    const isSelected = selectedPattern.includes(item.pattern);
-
+                                    const isSelected = draftFilters.patterns.includes(item.pattern);
                                     return (
                                         <button
                                             key={item.pattern}
-                                            onClick={() => updatePatternFilter(item.pattern)}
+                                            onClick={() => {
+                                                setDraftFilters(prev => {
+                                                    const exists = prev.patterns.includes(item.pattern);
+                                                    return {
+                                                        ...prev,
+                                                        patterns: exists
+                                                            ? prev.patterns.filter(p => p !== item.pattern)
+                                                            : [...prev.patterns, item.pattern],
+                                                    };
+                                                });
+                                            }}
                                             className={clsx(
                                                 "flex justify-between items-center px-3 py-2 border text-sm transition capitalize",
                                                 isSelected
@@ -832,8 +931,18 @@ const ProductCategoryPage = () => {
                     </div>
 
                     {/* APPLY BUTTON */}
-                    <div className="absolute bottom-0 left-0 w-full">
-                        <button onClick={() => setIsFilterOpen(false)} className="w-full bg-black hover:bg-black/60 cursor-pointer duration-300 text-white py-3 uppercase tracking-wider text-sm">
+                    <div className="absolute bottom-4 left-0 w-full flex gap-4 px-4">
+                        <button
+                            onClick={resetFilters}
+                            className="w-1/2 border cursor-pointer border-black py-3 uppercase tracking-wider text-sm bg-white hover:bg-gray-200 transition"
+                        >
+                            Reset
+                        </button>
+
+                        <button
+                            onClick={applyFilters}
+                            className="w-1/2 cursor-pointer bg-black text-white py-3 uppercase tracking-wider text-sm hover:bg-black/70 transition"
+                        >
                             Apply Filters
                         </button>
                     </div>
