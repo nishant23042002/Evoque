@@ -135,7 +135,7 @@ const ProductCategoryPage = () => {
     const [animatePage, setAnimatePage] = useState(false);
     const pathname = usePathname();
     const searchParams = useSearchParams();
-    const [isFilterOpen, setIsFilterOpen] = useState(true);
+    const [isFilterOpen, setIsFilterOpen] = useState(false);
 
     const categorySlug = pathname.split("/").pop() ?? "";
     const activeSub = searchParams.get("sub") || "";

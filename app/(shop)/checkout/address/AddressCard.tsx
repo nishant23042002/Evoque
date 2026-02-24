@@ -24,16 +24,12 @@ export default function AddressCard({
         onSelect();
     };
 
-    const remove = async () => {
-        await fetch(`/api/address/${address._id}`, { method: "DELETE" });
-        onRefresh();
-    };
 
     return (
         <div className="p-3 mb-2">
             <div className="relative flex gap-3 items-start">
                 <input
-                    className="absolute top-5 -left-4"
+                    className="absolute top-2 -left-5"
                     type="radio"
                     checked={address.isDefault}
                     onChange={setDefault}
@@ -53,12 +49,10 @@ export default function AddressCard({
                     <p className="text-sm">{address.pincode} {address.city}</p>
                     <p className="text-sm">{address.state}</p>
                     <div className="flex gap-4 mt-2 text-xs">
-                        <button onClick={onEdit} className="border border-[var(--border-light)] py-1 px-3 hover:underline hover:text-black/70 cursor-pointer">
+                        <button onClick={onEdit} className="border border-black/10 py-1 px-3 hover:underline hover:text-black/70 cursor-pointer">
                             EDIT
                         </button>
-                        <button onClick={remove} className="border border-[var(--border-light)] px-3 py-1  hover:underline hover:text-black/70 cursor-pointer">
-                            Remove
-                        </button>
+                        
                     </div>
                 </div>
             </div>

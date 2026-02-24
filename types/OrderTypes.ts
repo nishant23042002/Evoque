@@ -10,6 +10,8 @@ export interface OrderItem {
     sku: string;
     quantity: number;
     price: number;
+    slug?: string;
+    discountAmount: number
 };
 
 
@@ -32,4 +34,5 @@ export interface Order {
         orderId: string;
         status: string;
     }
+    discountAmount: number
 };

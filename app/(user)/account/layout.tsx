@@ -37,7 +37,7 @@ export default function AccountLayout({
             </div>
 
             {/* NAV */}
-            <div className="mx-2 relative border-b flex flex-col gap-4 sm:flex-row sm:items-center">
+            <div className="mx-2 relative border-b border-black/10 flex flex-col gap-4 sm:flex-row sm:items-center">
                 {/* Tabs */}
                 <div className="flex mb-2 gap-2 sm:gap-4 overflow-x-auto no-scrollbar">
                     <Link href="/account" className={tabStyle("/account")}>
@@ -63,7 +63,7 @@ export default function AccountLayout({
                         cursor-pointer
                         text-[10px] sm:text-xs
                         uppercase tracking-widest
-                        border border-(--border-light) px-3 sm:px-4 py-2
+                        border border-black/10 px-3 sm:px-4 py-2
                         hover:bg-black hover:text-white
                         transition
                         sm:ml-auto
@@ -80,7 +80,7 @@ export default function AccountLayout({
             {/* MODAL */}
             {confirmLogout && (
                 <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-50 px-4">
-                    <div className="bg-white border p-5 sm:p-8 w-full max-w-md space-y-5 sm:space-y-6">
+                    <div className="bg-white border border-black/10 p-5 sm:p-8 w-full max-w-md space-y-5 sm:space-y-6">
                         <h2 className="text-base sm:text-lg font-semibold uppercase">
                             Confirm Logout
                         </h2>
@@ -93,12 +93,12 @@ export default function AccountLayout({
                             <button
                                 onClick={handleLogout}
                                 className="
-                  cursor-pointer
-                  px-5 py-2 border
-                  bg-black text-white
-                  uppercase text-xs tracking-widest
-                  w-full
-                "
+                                    cursor-pointer
+                                    px-5 py-2 border border-black/10
+                                    bg-black text-white
+                                    uppercase text-xs tracking-widest
+                                    w-full
+                                    "
                             >
                                 Logout
                             </button>
@@ -106,11 +106,11 @@ export default function AccountLayout({
                             <button
                                 onClick={() => setConfirmLogout(false)}
                                 className="
-                  cursor-pointer
-                  px-5 py-2 border
-                  uppercase text-xs tracking-widest
-                  w-full
-                "
+                                        cursor-pointer
+                                        px-5 py-2 border border-black/10
+                                        uppercase text-xs tracking-widest
+                                        w-full
+                                        "
                             >
                                 Cancel
                             </button>
@@ -118,8 +118,7 @@ export default function AccountLayout({
                     </div>
                 </div>
             )}
-
-                 <Footer />
+            <Footer />
         </div>
     );
 }

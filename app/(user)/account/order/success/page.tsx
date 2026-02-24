@@ -30,9 +30,9 @@ export default function OrderSuccessPage() {
 
             <Link
                 href="/account/order"
-                className="mt-4 px-6 py-3 bg-black text-white rounded"
+                className="mt-4 px-6 py-3 bg-black hover:bg-black/60 text-white"
             >
-                Continue Shopping
+                VIEW ORDER
             </Link>
         </div>
     );

@@ -6,36 +6,24 @@ import connectDB from "@/lib/db";
 import Cart from "@/models/Cart";
 import Order from "@/models/Order";
 import Address from "@/models/Address";
+import CheckoutSession from "@/models/CheckoutSession";
+import Coupon from "@/models/Coupon";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
 
-interface CartItemPopulated {
-    productId: {
-        _id: Types.ObjectId;
-        productName: string;
-        pricing: { price: number };
-        slug: string;
-    };
-    quantity: number;
-    variantSku: string;
-    size?: string;
-    image?: string;
-    color?: { name?: string };
-}
-interface OrderItem {
-    productId: Types.ObjectId;
+interface CheckoutSessionItem {
+    productId: string;
     name: string;
-    slug: string;
-    image: string;
+    image?: string;
+    variantSku: string;
+    slug:string;
     size: string;
     color: string;
-    sku: string;
-    price: number;
     quantity: number;
-    discount: number;
-    total: number;
+    price: number;
 }
+
 
 export async function POST(req: Request) {
     /* 1️⃣ Raw body */
@@ -65,25 +53,58 @@ export async function POST(req: Request) {
 
     const payment = event.payload.payment.entity;
     const { userId, checkoutToken } = payment.notes || {};
-
     if (!userId || !checkoutToken) {
         return NextResponse.json({ received: true });
     }
+
+
+    const session = await CheckoutSession.findOne({ checkoutToken }).lean<{
+        items: CheckoutSessionItem[];
+        subtotal: number;
+        tax: number;
+        shippingFee: number;
+        discountAmount: number;
+        grandTotal: number;
+        coupon?: {
+            code: string;
+        };
+        userId: Types.ObjectId;
+        expiresAt: Date;
+    }>();
+
+
+    if (!session) {
+        console.log("No checkout session found");
+        return NextResponse.json({ received: true });
+    }
+
+    if (session.expiresAt < new Date()) {
+        console.log("session expired");
+        return NextResponse.json({ received: true });
+    }
+
+    if (session.userId.toString() !== userId) {
+        console.log("user mismatch");
+        return NextResponse.json({ received: true });
+    }
+
+    if (payment.amount !== Math.round(session.grandTotal * 100)) {
+        console.log("amount mismatch");
+        return NextResponse.json({ received: true });
+    }
+
+    console.log("Session User:", session.userId.toString());
+    console.log("Payment User:", userId);
+    console.log("Webhook Triggered");
+    console.log("Payment Notes:", payment.notes);
+    console.log("Session:", session);
+    console.log("Payment Amount:", payment.amount);
 
     const userObjectId = new Types.ObjectId(userId);
 
     /* 3️⃣ Idempotency */
     const existing = await Order.findOne({ checkoutToken }).lean();
     if (existing) {
-        return NextResponse.json({ received: true });
-    }
-
-    /* 4️⃣ Fetch cart */
-    const cart = await Cart.findOne({ userId: userObjectId })
-        .populate("items.productId")
-
-
-    if (!cart || cart.items.length === 0) {
         return NextResponse.json({ received: true });
     }
 
@@ -107,58 +128,42 @@ export async function POST(req: Request) {
         country: addressDoc.country ?? "India",
     };
 
-    /* 6️⃣ Build items */
-    const items: OrderItem[] = cart.items.map((item: CartItemPopulated) => {
-        const price = item.productId.pricing.price;
-        const total = price * item.quantity;
+    const orderItems = session.items.map((item: CheckoutSessionItem) => {
+        const total = item.price * item.quantity;
 
         return {
-            productId: item.productId._id,
-            name: item.productId.productName,
-            slug: item.productId.slug ?? "",
+            productId: new Types.ObjectId(item.productId),
+            name: item.name,
+            slug: item.slug, // optional if you don’t store it
             image: item.image ?? "",
-            size: item.size ?? "",
-            color: item.color?.name ?? "",
-            sku: item.variantSku,
+            size: item.size,
+            color: item.color,
+            sku: item.variantSku,   // 🔥 map correctly
             quantity: item.quantity,
-            price,
+            price: item.price,
             discount: 0,
             total,
-        };
-    });
+        }
+    })
 
-    /* 7️⃣ Totals */
-    const subtotal = items.reduce(
-        (sum, item) => sum + item.price * item.quantity,
-        0
-    );
-
-    const tax = Math.round(subtotal * 0.05);
-    const shippingFee = subtotal >= 999 ? 0 : 50;
-    const discountAmount = 0;
-    const grandTotal = subtotal + tax + shippingFee - discountAmount;
 
     /* 8️⃣ Order number */
     const orderNumber = `TL-${Date.now().toString().slice(-8)}`;
-    console.log("ORDER PAYLOAD", {
-        items,
-        shippingAddress: address,
-        grandTotal,
-    });
+
 
     /* 9️⃣ Create order */
     await Order.create({
         userId: userObjectId,
         checkoutToken,
         orderNumber,
-        items,
+        items: orderItems,
         shippingAddress: address,
         billingAddress: address,
-        subtotal,
-        tax,
-        shippingFee,
-        discountAmount,
-        grandTotal,
+        subtotal: session.subtotal,
+        tax: session.tax,
+        shippingFee: session.shippingFee,
+        discountAmount: session.discountAmount,
+        grandTotal: session.grandTotal,
         paymentInfo: {
             method: "razorpay",
             paymentId: payment.id,
@@ -170,6 +175,13 @@ export async function POST(req: Request) {
         orderStatus: "confirmed",
     });
 
+    if (session.coupon?.code) {
+        await Coupon.updateOne(
+            { code: session.coupon.code, isActive: true },
+            { $inc: { usedCount: 1 } }
+        );
+    }
+    await CheckoutSession.deleteOne({ checkoutToken });
     /* 🔟 Clear cart */
     await Cart.deleteOne({ userId: userObjectId });
 

@@ -27,6 +27,9 @@ interface CheckoutResponse {
     summary: CheckoutSummary;
 }
 
+type PaymentOption = {
+    img: string;
+};
 
 export default function CartPage() {
     const dispatch = useAppDispatch();
@@ -43,6 +46,13 @@ export default function CartPage() {
         size?: string;
     } | null>(null);
     const [movingSku, setMovingSku] = useState<string | null>(null);
+    const [options, setOptions] = useState<PaymentOption[]>([]);
+
+    useEffect(() => {
+        fetch("/api/payment/options")
+            .then((r) => r.json())
+            .then(setOptions);
+    }, []);
 
 
 
@@ -332,18 +342,14 @@ export default function CartPage() {
                 {/* RIGHT – SUMMARY */}
                 <div className="w-full md:w-[35%] lg:w-[30%] mb-12">
                     <div className="py-2 space-y-4 md:sticky md:top-24 mx-2">
-                        <h3 className="font-medium text-lg">SUMMARY</h3>
+                        <h3 className="font-semibold text-lg">CHECKOUT SUMMARY</h3>
 
                         <div className="flex justify-between text-sm">
                             <span>Bag Total</span>
                             <span>Rs. {animatedBagTotal}</span>
                         </div>
 
-                        <div className="flex justify-between text-sm">
-                            <span>Tax</span>
-                            <span>Rs. {animatedTax}</span>
-                        </div>
-
+                    
 
                         {discount > 0 && (
                             <div className="flex justify-between text-red-600 text-sm">
@@ -351,12 +357,9 @@ export default function CartPage() {
                                 <span>-Rs. {animatedDiscount}</span>
                             </div>
                         )}
-                        <div className="flex justify-between text-sm">
-                            <span>Delivery Charges</span>
-                            <span>Rs. {animatedDeliveryCharges}</span>
-                        </div>
+                       
 
-                        <hr className="border-black/10" />
+                        <hr className="border-black" />
 
                         <div className="flex justify-between font-medium text-lg">
                             <span>Total</span>
@@ -364,8 +367,9 @@ export default function CartPage() {
                         </div>
 
                         <div className="space-y-3">
-                            <p className="text-xs">We will process your personal data in accordance with THE LAYER CO. <span className="underline cursor-pointer hover:text-black/70">Privacy Notice</span></p>
-                            <p className="text-xs">By continuing, you agree to THE LAYER CO. General <span className="underline cursor-pointer hover:text-black/70">Terms and Conditions</span></p>
+                            <p className="text-sm font-semibold">Note: <span className="text-xs font-light">Delivery Charges and Tax will be calculated at checkout.</span></p>
+                            <p className="text-xs">We will process your personal data in accordance with THE LAYER CO. <a href="/pages/privacy-policy" className="underline cursor-pointer hover:text-black/70">Privacy Notice</a></p>
+                            <p className="text-xs">By continuing, you agree to THE LAYER CO. General <a href="/pages/terms-conditions" className="underline cursor-pointer hover:text-black/70">Terms and Conditions</a></p>
                         </div>
 
                         <button
@@ -388,13 +392,20 @@ export default function CartPage() {
                             )}
                             {loading ? "PROCESSING..." : "CONTINUE TO CHECKOUT"}
                         </button>
+                        <div className="flex justify-between w-[40%]">
+                            {options.map((item) => (
+                                <div key={item.img} className="flex items-center">
+                                    <Image src={item.img} alt={item.img} width={28} height={28} />
+                                </div>
+                            ))}
+                        </div>
 
 
 
                         <div className="text-xs font-extralight">
                             <div className="flex items-center gap-2"><span><Lock size={16} /></span> Payment information is encrypted.</div>
                             <p className="mt-3 mb-6"> Need help? Please contact <span className="underline hover:text-black/70 cursor-pointer">Customer Support</span></p>
-                            <p className="underline underline-offset-2 uppercase text-[16px] cursor-pointer hover:text-black/70 font-extralight">Delivery and return options</p>
+                            <a href="/pages/shipping-returns" className="underline underline-offset-2 uppercase text-[16px] cursor-pointer hover:text-black/70 font-extralight">Delivery and return options</a>
                         </div>
                     </div>
                 </div>

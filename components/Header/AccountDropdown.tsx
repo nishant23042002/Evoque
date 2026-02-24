@@ -43,8 +43,8 @@ const AccountDropdown = ({ open, onClose }: Props) => {
                 onClick={(e) => e.stopPropagation()}
                 className={cn(
                     "absolute right-0 top-10 z-50 w-44 h-25 bg-white",
-                    "border border-(--border-strong)",
-                    "shadow-lg py-2",
+                    "border border-black/10",
+                    "py-2",
                     "origin-top-right transform-gpu",
                     "transition-all duration-200 ease-out",
                     open
@@ -57,7 +57,7 @@ const AccountDropdown = ({ open, onClose }: Props) => {
                     onClick={onClose}
                     className="
                             flex items-center duration-500 font-medium gap-2 px-3 py-2 text-sm
-                            text-foreground hover:bg-(--earth-sand)/40
+                            text-foreground hover:bg-black/20
                             "
                 >
                     <User size={18} />

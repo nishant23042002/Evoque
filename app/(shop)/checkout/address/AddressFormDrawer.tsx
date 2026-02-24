@@ -190,7 +190,7 @@ function Input({
                 type={type}
                 value={value}
                 onChange={(e) => onChange(e.target.value)}
-                className="w-full p-3 border rounded text-sm focus:outline-none focus:ring-1 focus:ring-black"
+                className="w-full p-3 border border-black/10 rounded text-sm focus:outline-none focus:ring-1 focus:ring-black"
             />
         </div>
     );

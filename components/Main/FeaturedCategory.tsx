@@ -156,7 +156,7 @@ const FeaturedCategories = () => {
                             })}
                         </Masonry>
                     </div>
-
+                    {/* FEATURED CATEGORY */}
                     <div className="relative w-full">
                         <div className="flex items-center justify-between p-3">
                             <h1 className="uppercase font-light">Featured Category</h1>
@@ -165,9 +165,7 @@ const FeaturedCategories = () => {
                                     onClick={() => scroll("left")}
                                     className="
                                             z-10
-                                            
-                                        
-                                            md:hidden
+                                cursor-pointer hover:text-black/50
                                             "
                                 >
                                     <ChevronLeft size={20} />
@@ -178,25 +176,23 @@ const FeaturedCategories = () => {
                                     onClick={() => scroll("right")}
                                     className="
                                     z-10
-                                    
-                                    
-                                        md:hidden
+                                 cursor-pointer hover:text-black/50
                                         "
                                 >
                                     <ChevronRight size={21} />
                                 </button>
                             </div>
                         </div>
-                        <div ref={scrollRef} className="flex overflow-x-auto scrollbar-hide snap-x snap-mandatory md:grid md:grid-cols-5 lg:grid-cols-5 w-full ">
+                        <div ref={scrollRef} className="flex overflow-x-auto scrollbar-hide snap-x snap-mandatory w-full ">
                             {categories.map((item) => (
                                 <Link
                                     href={`/categories/${item.slug}`}
                                     key={item._id}
-                                    className="group min-w-55 md:min-w-0"
+                                    className="group min-w-40 min-[440px]:min-w-55 sm:min-w-75"
                                 >
                                     <div
                                         className="                                   
-                                            group relative aspect-12/21
+                                            group relative aspect-7/12
                                             overflow-hidden
                                             transition-all duration-300
                                             "

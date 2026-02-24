@@ -39,7 +39,7 @@ export default function AddressSection({
     }, [onSelect]);
 
     return (
-        <section className="pb-3 border-b mx-2 md:mx-4">
+        <section className="pb-3 border-b border-black/10 mx-2 md:mx-4">
             <h2 className="font-semibold">BILLING ADDRESS</h2>
             <div className="h-60 overflow-y-auto px-2">
 
@@ -60,7 +60,7 @@ export default function AddressSection({
                         setEditAddress(null);
                         setOpenForm(true);
                     }}
-                    className="hover:underline border border-[var(--border-light)] py-1 px-3 hover:text-black/70 cursor-pointer text-sm mt-3"
+                    className="hover:underline border border-black/10 py-1 px-3 hover:text-black/70 cursor-pointer text-sm mt-3"
                 >
                 ADDRESS +
                 </button>

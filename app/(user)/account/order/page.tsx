@@ -4,22 +4,23 @@ import { useEffect, useState } from "react";
 import Image from "next/image";
 import clsx from "clsx";
 import { Order } from "@/types/OrderTypes";
+import { useRouter } from "next/navigation";
 
 
 const statusStyle: Record<string, string> = {
-  confirmed: "border-yellow-500 text-yellow-600",
-  processing: "border-blue-500 text-blue-600",
-  shipped: "border-purple-500 text-purple-600",
-  delivered: "border-green-600 text-green-600",
-  cancelled: "border-red-600 text-red-600",
-  returned: "border-gray-500 text-gray-600",
+  confirmed: "bg-yellow-400 text-white",
+  processing: "bg-blue-500 text-white",
+  shipped: "bg-purple-500 text-white",
+  delivered: "bg-green-600 text-white",
+  cancelled: "bg-red-600 text-white",
+  returned: "bg-gray-500 text-white",
 };
 
 export default function MyOrdersPage() {
   const [orders, setOrders] = useState<Order[]>([]);
   const [loading, setLoading] = useState(true);
   const [openOrder, setOpenOrder] = useState<string | null>(null);
-
+  const router = useRouter();
 
 
   useEffect(() => {
@@ -29,6 +30,7 @@ export default function MyOrdersPage() {
       .finally(() => setLoading(false));
   }, []);
 
+ 
 
   if (loading) {
     return (
@@ -72,20 +74,18 @@ export default function MyOrdersPage() {
                 onClick={() => setOpenOrder(isOpen ? null : order._id)}
                 className="
                 w-full text-left
-                flex flex-col sm:flex-row
+                flex flex-row
                 gap-4 
-                p-4
+                p-2
                 hover:bg-gray-50 transition
               "
               >
                 {/* TOP ROW MOBILE */}
                 <div className="flex gap-4 w-full">
                   {/* IMAGE */}
-                  <div className="
-                  relative
-                  w-14 h-18
-                  sm:w-16 sm:h-20
-                  border overflow-hidden
+                  <div onClick={() => router.push(`/products/${firstItem.slug}`)} className="
+                  relative cursor-pointer
+                   sm:aspect-4/5 
                 ">
                     {firstItem?.image && (
                       <Image
@@ -95,31 +95,35 @@ export default function MyOrdersPage() {
                         className="object-cover"
                       />
                     )}
+
+                    <div className="absolute inset-0 hover:bg-black/20" />
                   </div>
 
                   {/* DETAILS */}
-                  <div className="relative flex-1 space-y-1">
-                    <p className="text-sm font-medium tracking-wide line-clamp-1">
+                  <div className="relative flex-1 my-3">
+                    <p className="text-sm uppercase font-medium tracking-wide line-clamp-1">
                       {firstItem?.name}
                     </p>
 
-                    <p className="text-[11px] sm:text-xs text-gray-500 uppercase tracking-widest">
-                      Size {firstItem?.size || "-"}
-                    </p>
+                    <div className="my-2">
+                      <p className="uppercase text-xs tracking-widest">
+                        <span className="text-[11px]">Size: </span>{firstItem?.size || "-"}
+                      </p>
 
-                    <div className="text-[10px] sm:text-[11px] text-gray-400 uppercase tracking-widest space-y-1">
-                      <p>Order ID {order.paymentInfo.orderId}</p>
-                      <p>{order.paymentInfo.method}</p>
+                      <div className="text-xs uppercase tracking-widest">
+                        <p className="text-[10px]"><span className="text-[11px]">Order Id: </span>{order.paymentInfo.orderId}</p>
+                        <p className="text-[10px]"><span className="text-[11px]">Payment Method: </span>{order.paymentInfo.method}</p>
+                      </div>
                     </div>
 
                     {/* STATUS */}
                     <span
                       className={clsx(
-                        "inline-block mt-1 sm:mt-2 text-[9px] sm:text-[10px] px-2 sm:px-3 py-1 border uppercase tracking-widest",
+                        "inline-block mt-1 sm:mt-2 text-[11px] px-2 sm:px-3 py-1 uppercase tracking-widest",
                         statusStyle[order.orderStatus]
                       )}
                     >
-                      {order.orderStatus}
+                      status: {order.orderStatus}
                     </span>
                     <div className="
                       absolute right-0 bottom-2 sm:ml-auto text-end
@@ -139,15 +143,15 @@ export default function MyOrdersPage() {
                   isOpen ? "grid-rows-[1fr]" : "grid-rows-[0fr]"
                 )}
               >
-                <div className={`overflow-hidden ${isOpen && "border-t"}`}>
+                <div className={`overflow-hidden ${isOpen && "border-t border-black/10"}`}>
                   <div className="
-                  p-4 sm:p-6 lg:p-8
+                  p-4
                   space-y-8 sm:space-y-10
                   bg-gray-50
                 ">
 
                     {/* ITEMS */}
-                    <div className="space-y-6">
+                    <div className="">
                       {order.items.map(item => (
                         <div
                           key={item.sku}
@@ -156,11 +160,11 @@ export default function MyOrdersPage() {
                           gap-4 sm:gap-6
                         "
                         >
-                          <div className="
+                          <div onClick={() => router.push(`/products/${item.slug}`)} className="
                           relative
                           w-14 h-18
-                          sm:w-16 sm:h-20
-                          border overflow-hidden
+                          sm:w-20 sm:h-24
+                          overflow-hidden cursor-pointer
                         ">
                             {item.image && (
                               <Image
@@ -170,24 +174,30 @@ export default function MyOrdersPage() {
                                 className="object-cover"
                               />
                             )}
+
+                            <div className="absolute inset-0 hover:bg-black/20 " />
                           </div>
 
                           <div className="text-sm space-y-1">
-                            <p className="font-medium tracking-wide">
+                            <p className="font-medium uppercase tracking-wide">
                               {item.name}
                             </p>
 
-                            <p className="text-gray-500 text-[11px] sm:text-xs uppercase tracking-widest">
-                              Qty {item.quantity} · Rs. {item.price}
-                            </p>
+                            <div className="py-2">
+                              <p className="text-[11px] flex gap-4 uppercase tracking-widest">
+                                <span>Qty: {item.quantity} </span>
+                                <span>Rs. {item.price} </span>
+                              </p>
 
-                            <div className="
-                            text-[10px] sm:text-[11px]
-                            text-gray-400 uppercase tracking-widest
-                            flex gap-3 sm:gap-4
-                          ">
-                              {item.size && <span>Size {item.size}</span>}
-                              {item.color && <span>{item.color}</span>}
+                              <div className="
+                              text-[11px]
+                              uppercase tracking-widest
+                              flex flex-col
+                            ">
+                                {item.size && <span>Size: {item.size}</span>}
+                                {item.color && <span>Color: {item.color}</span>}
+                                Discount: {order.discountAmount} Rs
+                              </div>
                             </div>
                           </div>
                         </div>
@@ -195,7 +205,7 @@ export default function MyOrdersPage() {
                     </div>
 
                     {/* RATE */}
-                    <div className="border p-4 sm:p-6 bg-white space-y-2">
+                    <div className="border border-black/10 p-4 sm:p-6 bg-white space-y-2">
                       <p className="text-[11px] sm:text-xs uppercase tracking-widest font-medium">
                         Rate Product
                       </p>
@@ -205,7 +215,7 @@ export default function MyOrdersPage() {
                     </div>
 
                     {/* ADDRESS */}
-                    <div className="border p-4 sm:p-6 bg-white space-y-2 text-sm">
+                    <div className="border border-black/10 p-4 sm:p-6 bg-white space-y-2 text-sm">
                       <p className="text-[11px] sm:text-xs uppercase tracking-widest font-medium">
                         Delivery Address
                       </p>
@@ -220,13 +230,13 @@ export default function MyOrdersPage() {
                     {/* META */}
                     <div className="
                     text-[11px] sm:text-xs
-                    text-gray-500 uppercase tracking-widest
+                    uppercase tracking-widest
                     space-y-1
                   ">
                       <p>
-                        Ordered {new Date(order.createdAt).toDateString()}
+                        Ordered on:  {new Date(order.createdAt).toDateString()}
                       </p>
-                      <p>Total Paid Rs. {order.grandTotal}</p>
+                      <p>Total Paid: Rs. {order.grandTotal}</p>
                     </div>
 
                   </div>

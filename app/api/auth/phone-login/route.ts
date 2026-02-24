@@ -1,3 +1,5 @@
+// /api/auth/phone-login/route.ts
+
 import { NextResponse } from "next/server";
 import admin from "@/lib/firebaseAdmin";
 import jwt from "jsonwebtoken";

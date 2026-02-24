@@ -200,7 +200,7 @@ export default function Home() {
                     }}
                     className={`
                           px-4 py-1 mr-1 cursor-pointer text-sm font-light tracking-normal uppercase
-                          border hover:border-black
+                          border border-black/10 hover:border-black
                           ${activeCategory === "all"
                         ? "bg-black text-white"
                         : "text-black"}
@@ -220,7 +220,7 @@ export default function Home() {
                         className={`cursor-pointer
                               px-4 py-1 mx-1 text-sm font-light tracking-widest uppercase
                               whitespace-nowrap
-                              border border-(--border-light) hover:border-black
+                              border border-black/10 hover:border-black
                               ${isActive
                             ? "bg-black text-white"
                             : "text-black"}

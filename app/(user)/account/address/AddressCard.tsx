@@ -31,7 +31,7 @@ export default function AddressCard({ address, onRefresh, onEdit }: Props) {
 
 
     return (
-        <label className="block border border-gray-200 p-8 transition hover:border-black cursor-pointer">
+        <label className="block border mb-2 border-black/10 p-8 transition hover:border-black cursor-pointer">
             <div className="flex gap-6">
 
                 <input
@@ -50,7 +50,7 @@ export default function AddressCard({ address, onRefresh, onEdit }: Props) {
                         </p>
 
                         {address.isDefault && (
-                            <span className="text-[10px] px-3 py-1 border uppercase tracking-widest">
+                            <span className="text-[11px] px-3 py-1 border border-black/10 uppercase tracking-widest">
                                 Default
                             </span>
                         )}
@@ -78,14 +78,14 @@ export default function AddressCard({ address, onRefresh, onEdit }: Props) {
 
                     {/* ACTIONS */}
                     <div className="flex gap-3 text-xs uppercase tracking-widest">
-                        <button onClick={onEdit} className="cursor-pointer border hover:text-black/60 p-1 hover:underline">
+                        <button onClick={onEdit} className="cursor-pointer border border-black/10 hover:text-black/60 p-1 hover:underline">
                             Edit
                         </button>
                         <button
                             onClick={() => {
                                 setShowConfirm(true)
                             }}
-                            className="cursor-pointer border p-1 hover:underline text-gray-500 hover:text-black"
+                            className="cursor-pointer border border-black/10 p-1 hover:underline text-gray-500 hover:text-black"
                         >
                             Delete
                         </button>

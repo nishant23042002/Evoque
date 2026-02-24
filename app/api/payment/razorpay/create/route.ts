@@ -4,6 +4,7 @@ import Razorpay from "razorpay";
 import { NextResponse } from "next/server";
 import connectDB from "@/lib/db";
 import { requireAuth } from "@/lib/reqiureAuth";
+import CheckoutSession from "@/models/CheckoutSession";
 
 const razorpay = new Razorpay({
     key_id: process.env.RAZORPAY_KEY_ID!,
@@ -15,17 +16,26 @@ export async function POST(req: Request) {
         const { userId } = await requireAuth();
         await connectDB();
 
-        const { checkoutToken, totalAmount } = await req.json();
+        const { checkoutToken } = await req.json();
 
-        if (!checkoutToken || !totalAmount) {
+        const session = await CheckoutSession.findOne({ checkoutToken });
+
+        if (!session) {
             return NextResponse.json(
-                { message: "Invalid payment request" },
+                { message: "Invalid or expired checkout" },
+                { status: 400 }
+            );
+        }
+
+        if (session.expiresAt < new Date()) {
+            return NextResponse.json(
+                { message: "Checkout session expired" },
                 { status: 400 }
             );
         }
 
         const order = await razorpay.orders.create({
-            amount: Math.round(totalAmount * 100), // INR → paise
+            amount: Math.round(session.grandTotal * 100), // INR → paise
             currency: "INR",
             receipt: `rcpt_${Date.now()}`,
             notes: {

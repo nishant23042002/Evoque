@@ -170,7 +170,7 @@ const LeftMenu = ({ isOpen, setIsOpen }: LeftMenuProps) => {
                             Trending Layer
                         </h2>
 
-                        <div className="space-y-1 h-89 [@media(max-height:720px)]:h-59 overflow-y-auto">
+                        <div className="space-y-1 h-89 [@media(max-height:720px)]:h-59 overflow-y-auto scrollbar-hide">
                             <div className="space-y-4 px-2">
                                 {categories.map((category) => {
                                     const featuredSubs =

@@ -131,14 +131,14 @@ const BannerList = ({ banners }: BannerSliderProps) => {
               forceMobile
             />
             <div className="absolute inset-0 bg-(--earth-charcoal) opacity-15 group-hover:opacity-10  transition-opacity duration-300" />
+            <div className="absolute bg-black/20 w-full bottom-0 flex py-4 px-2 items-center justify-between">
+              <h1 className="uppercase text-xs text-white truncate w-[90%] sm:text-lg group-hover:underline underline-offset-2">
+                {banners[2].title || "Sweatshirt Collection"}
+              </h1>
+              <ArrowRight className="text-white" size={18} />
+            </div>
           </div>
 
-          <div className="flex py-4 px-2 items-center justify-between">
-            <h1 className="uppercase text-xs truncate w-[90%] sm:text-lg group-hover:underline underline-offset-2">
-              {banners[2].title || "Sweatshirt Collection"}
-            </h1>
-            <ArrowRight size={18} />
-          </div>
         </Link>
 
         {/* Card 2 */}
@@ -150,14 +150,14 @@ const BannerList = ({ banners }: BannerSliderProps) => {
               forceMobile
             />
             <div className="absolute inset-0 bg-(--earth-charcoal) opacity-15 group-hover:opacity-10 transition-opacity duration-300" />
-          </div>
-
-          <div className="flex py-4 px-2 items-center justify-between">
-            <h1 className="uppercase text-xs truncate w-[90%] sm:text-lg group-hover:underline underline-offset-2">
+          <div className="absolute bottom-0 w-full bg-black/20 flex py-4 px-2 items-center justify-between">
+            <h1 className="uppercase text-xs text-white font-light truncate w-[90%] sm:text-lg group-hover:underline underline-offset-2">
               {banners[3].title || "Printed Shirts"}
             </h1>
-            <ArrowRight size={18} />
+            <ArrowRight className="text-white" size={18} />
           </div>
+          </div>
+
         </Link>
 
       </div>

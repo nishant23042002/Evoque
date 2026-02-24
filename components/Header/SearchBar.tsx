@@ -160,12 +160,12 @@ const SearchBar = () => {
         </div>
 
         {/* Results */}
-        <div className="px-3 overflow-y-auto scrollbar-hide h-[calc(100%-128px)]">
+        <div className="px-2 overflow-y-auto scrollbar-hide h-[calc(100%-128px)]">
           {
             query && products.length > 0 && (
-              <div className="pt-2 flex justify-between">
+              <div className="pt-2 flex uppercase text-sm justify-between">
                 <p>Products</p>
-                <p>{products?.length}</p>
+                <p>[ {products?.length} ] </p>
               </div>
             )
           }
@@ -254,7 +254,7 @@ const SearchBar = () => {
               ))}
             </>
           ) : (
-            <div className="grid grid-cols-2 my-2 gap-1">
+            <div className="grid grid-cols-2 p-1">
               {products?.length > 0 && products.map((p) => {
                 const variant = p.variants?.[0] ?? null;
                 const image =
@@ -270,7 +270,7 @@ const SearchBar = () => {
                       setOpen(false)
                       saveRecentSearch(p.productName)
                     }}
-                    className="mb-1"
+                    className="mb-2"
                   >
                     <div className="relative aspect-3/4 overflow-hidden">
                       {image && (
@@ -278,7 +278,7 @@ const SearchBar = () => {
                           src={image}
                           alt={p.productName}
                           fill
-                          className="object-cover border border-(--border-light) transition-transform duration-300 hover:scale-105"
+                          className="object-cover border border-black/10"
                         />
 
                       )}

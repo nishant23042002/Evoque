@@ -132,7 +132,7 @@ export default function ProductPage() {
     const { isAuthenticated, openLogin } = useAuth();
 
     const galleryRef = useRef<HTMLDivElement | null>(null);
-
+    const similarRef = useRef<HTMLDivElement | null>(null);
 
 
     const isDesktop = useMediaQuery("(min-width: 1024px)");
@@ -595,9 +595,33 @@ export default function ProductPage() {
 
                         {/* COLORS */}
                         <div className="py-2 flex flex-col mb-4">
-                            <h1 className="font-light mb-1 text-md">
-                                Colors: <span className="font-light text-sm">{activeColorObj ? activeColorObj.name : ""}</span>
-                            </h1>
+                            <div className="flex mb-1 justify-between items-center">
+                                <h1 className="font-light text-md">
+                                    Colors: <span className="font-light text-sm">{activeColorObj ? activeColorObj.name : ""}</span>
+                                </h1>
+                                <div>
+                                    {sameCategory.length > 0 && (
+                                        <button
+                                            onClick={() => {
+                                                similarRef.current?.scrollIntoView({
+                                                    behavior: "smooth",
+                                                    block: "start",
+                                                });
+                                            }}
+                                            className="uppercase
+                                                text-sm
+                                                underline
+                                                hover:text-primary
+                                                transition-colors
+                                                duration-200
+                                                cursor-pointer
+                                                "
+                                        >
+                                            View Similar
+                                        </button>
+                                    )}
+                                </div>
+                            </div>
 
                             <div className="flex flex-row flex-nowrap w-full p-0.5 items-center gap-0.5 overflow-x-auto scrollbar-hide">
                                 {colorVariants.map((color) => {
@@ -629,9 +653,9 @@ export default function ProductPage() {
                                         </button>
                                     );
                                 })}
+
                             </div>
                         </div>
-
 
                         {/* SIZES */}
                         <div id="size-section" className={`py-2 mb-4 ${sizeError ? "animate-pulse" : ""}`}>
@@ -797,11 +821,13 @@ export default function ProductPage() {
                                     "
                             >
                                 {product.description && (
-                                    <AccordionItem value="description">
+                                    <AccordionItem className="border-b border-black/10" value="description">
                                         <AccordionTrigger
                                             className="
                                                     text-foreground
-                                                    font-light cursor-pointer
+                                                    font-light
+                                                    data-[state=open]:font-bold
+                                                    uppercase cursor-pointer
                                                     hover:text-primary
                                                 "
                                         >
@@ -815,11 +841,13 @@ export default function ProductPage() {
                                     </AccordionItem>
                                 )}
 
-                                <AccordionItem value="productDetails">
+                                <AccordionItem className="border-b border-black/10" value="productDetails">
                                     <AccordionTrigger
                                         className="
                                                 text-foreground
-                                                    font-light cursor-pointer
+                                                    font-light
+                                                    data-[state=open]:font-bold
+                                                    uppercase cursor-pointer
                                                    hover:text-primary
                                             "
                                     >
@@ -841,28 +869,35 @@ export default function ProductPage() {
                                     </AccordionContent>
                                 </AccordionItem>
 
-                                <AccordionItem value="returns">
+                                <AccordionItem className="border-b border-black/10" value="returns">
                                     <AccordionTrigger
                                         className="
-                                                text-foreground
-                                                    font-light cursor-pointer
+                                                text-foreground font-light
+                                                data-[state=open]:font-bold
+                                                    uppercase cursor-pointer
                                                     hover:text-primary
                                             "
                                     >
-                                        Returns and Exchange
+                                        Shipping and Returns
                                     </AccordionTrigger>
                                     <AccordionContent>
-                                        <p className="text-sm text-(--text-secondary)">
-                                            Standard returns and exchange policies apply.
+                                        <p className="pb-4">Delivery Time: 2-7 days</p>
+                                        <p className="text-sm">
+                                            Return: Standard {product?.shipping?.returnDays} Return Policy.
+                                        </p>
+                                        <p>
+                                            For more information, please visit our Customer Service pages for <a className="underline hover:text-black/50" href="/pages/shipping-returns">Shipping and Returns</a>.
                                         </p>
                                     </AccordionContent>
                                 </AccordionItem>
 
-                                <AccordionItem value="offers">
+                                <AccordionItem className="border-b border-black/10" value="offers">
                                     <AccordionTrigger
                                         className="
                                                 text-foreground
-                                                    font-light cursor-pointer
+                                                    font-light
+                                                     data-[state=open]:font-bold
+                                                    uppercase cursor-pointer
                                                     hover:text-primary
                                             "
                                     >
@@ -1064,20 +1099,22 @@ export default function ProductPage() {
                     />
                 )}
                 {sameCategory.length > 0 && (
-                    <ProductHorizontalScroller
-                        title="SIMILAR ITEMS"
-                        products={sameCategory.map(p => ({
-                            _id: p._id,
-                            slug: p.slug,
-                            productName: p.productName,
-                            price: p.pricing.price,
-                            image:
-                                p.thumbnail ||
-                                p.variants?.[0]?.color.images?.[0]?.url ||
-                                "",
-                            variants: p.variants,
-                        }))}
-                    />
+                    <div ref={similarRef}>
+                        <ProductHorizontalScroller
+                            title="SIMILAR ITEMS"
+                            products={sameCategory.map(p => ({
+                                _id: p._id,
+                                slug: p.slug,
+                                productName: p.productName,
+                                price: p.pricing.price,
+                                image:
+                                    p.thumbnail ||
+                                    p.variants?.[0]?.color.images?.[0]?.url ||
+                                    "",
+                                variants: p.variants,
+                            }))}
+                        />
+                    </div>
                 )}
 
             </div>
