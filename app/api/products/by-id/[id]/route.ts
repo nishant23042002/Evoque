@@ -1,3 +1,5 @@
+// api/products/by-id/[id]/route.ts
+
 import { NextResponse } from "next/server";
 import connectDB from "@/lib/db";
 import Product from "@/models/Product";

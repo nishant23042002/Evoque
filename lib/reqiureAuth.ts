@@ -1,25 +1,26 @@
-import { cookies } from "next/headers";
-import jwt from "jsonwebtoken";
-
+import { getAuthToken } from "./getAuthToken";
+import jwt, { JwtPayload } from "jsonwebtoken";
 
 export async function requireAuth() {
-    const cookieStore = await cookies();
-    const token = cookieStore.get("token")?.value;
- 
-    if (!token) {
-        throw new Error("Unauthorized");
-    }
-
     try {
+        const token = await getAuthToken(); // 🔥 FIX HERE
+        if (!token) return null;
+
         const decoded = jwt.verify(
             token,
             process.env.JWT_SECRET!
-        ) as { userId: string };
+        );
 
+        if (
+            typeof decoded !== "object" ||
+            !decoded ||
+            !("userId" in decoded)
+        ) {
+            return null;
+        }
 
-        return { userId: decoded.userId };
-    } catch (err) {
-        console.error("❌ JWT VERIFY FAILED:", err);
-        throw new Error("Unauthorized");
+        return decoded as JwtPayload & { userId: string; role: string };
+    } catch {
+        return null;
     }
 }

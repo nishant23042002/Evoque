@@ -115,6 +115,7 @@ export default interface Product {
         originalPrice?: number;
         discountPercentage?: number;
     };
+    totalStock: number;
     rating: number;
     details: {
         material: string;
