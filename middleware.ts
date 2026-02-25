@@ -1,9 +1,19 @@
-import { NextResponse } from "next/server";
-import type { NextRequest } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
 
 export function middleware(req: NextRequest) {
-    if (req.nextUrl.pathname.startsWith("/api/wishlist")) {
-        console.log("🍪 middleware cookies:", req.cookies.get("token")?.value);
+    const { pathname } = req.nextUrl;
+
+    if (pathname.startsWith("/admin")) {
+        const token = req.cookies.get("token")?.value;
+
+        if (!token) {
+            return NextResponse.redirect(new URL("/", req.url));
+        }
     }
+
     return NextResponse.next();
 }
+
+export const config = {
+    matcher: ["/admin/:path*"],
+};

@@ -31,12 +31,17 @@ export async function POST(req: Request) {
         if (!user) {
             user = await User.create({
                 firebaseUid: decoded.uid,
-                phone: decoded.phone_number
+                phone: decoded.phone_number,
+                role:"customer"
             });
         }
 
+        user = await User.findById(user._id);
+
         const token = jwt.sign(
-            { userId: user._id.toString() },
+            { userId: user._id.toString(),
+                role: user.role
+             },
             process.env.JWT_SECRET!,
             { expiresIn: "7d" }
         );

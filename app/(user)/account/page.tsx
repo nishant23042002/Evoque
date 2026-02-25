@@ -88,7 +88,7 @@ export default function AccountPage() {
     }
 
     return (
-        <div className="space-y-10 mx-2 sm:mx-4">
+        <div className="space-y-10 mx-2 sm:mx-4 bg-white">
 
 
             {/* PROFILE */}

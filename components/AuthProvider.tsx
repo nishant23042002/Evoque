@@ -1,3 +1,4 @@
+// components/AuthProvider.tsx
 "use client";
 
 import { auth } from "@/firebase";

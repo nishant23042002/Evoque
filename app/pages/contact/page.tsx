@@ -1,3 +1,4 @@
+import { ArrowLeft } from "lucide-react";
 import type { Metadata } from "next";
 import Link from "next/link";
 
@@ -13,7 +14,11 @@ export const metadata: Metadata = {
 
 export default function ContactPage() {
     return (
-        <main className="mx-auto max-w-5xl px-4 py-16 text-neutral-800">
+        <main className="mx-auto px-4 py-16 text-neutral-800">
+            <Link href={"/"} className="flex gap-2 items-center pb-12 group">
+                <p className="group-hover:text-black/40"><ArrowLeft size={18} /></p>
+                <span className="cursor-pointer group-hover:text-black/40">back to THE LAYER Co.</span>
+            </Link>
             <header className="mb-12">
                 <h1 className="text-3xl font-semibold tracking-tight">
                     Contact Us

@@ -67,7 +67,7 @@ export default function AddressPage() {
 
 
     return (
-        <div className="relative min-h-screen flex flex-col">
+        <div className="relative bg-white min-h-screen flex flex-col">
             {/* CONTENT */}
             <button
                 onClick={() => {

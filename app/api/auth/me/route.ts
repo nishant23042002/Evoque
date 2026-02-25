@@ -10,7 +10,7 @@ export async function GET() {
         const { userId } = await requireAuth();
         await connectDB();
 
-        const user = await User.findById(userId).select("_id phone");
+        const user = await User.findById(userId).select("_id phone role");
 
         if (!user) {
             return NextResponse.json(
@@ -22,7 +22,8 @@ export async function GET() {
         return NextResponse.json({
             user: {
                 id: user._id.toString(),
-                phone: user.phone
+                phone: user.phone,
+                role: user.role
             }
         });
     } catch(error) {

@@ -213,11 +213,12 @@ const productSchema = new mongoose.Schema(
             purchases: { type: Number, default: 0 },
         },
 
+        // ⚙ Admin Controls
         isAvailable: {
             type: Boolean,
             default: true,
         },
-        // ⚙ Admin Controls
+        isDeleted: {type: Boolean, default: false},
         isActive: { type: Boolean, default: true },
         isFeatured: { type: Boolean, default: false },
         isBestSeller: { type: Boolean },

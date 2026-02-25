@@ -1,4 +1,6 @@
+import { ArrowLeft } from "lucide-react";
 import type { Metadata } from "next";
+import Link from "next/link";
 
 export const metadata: Metadata = {
     title: "Privacy Policy | The Layer Co",
@@ -13,6 +15,10 @@ export const metadata: Metadata = {
 export default function PrivacyPolicyPage() {
     return (
         <main className="mx-auto max-w-4xl px-4 py-12 text-neutral-800">
+            <Link href={"/"} className="flex gap-2 items-center pb-12 group">
+                <p className="group-hover:text-black/40"><ArrowLeft size={18} /></p>
+                <span className="cursor-pointer group-hover:text-black/40">back to THE LAYER Co.</span>
+            </Link>
             <header className="mb-10">
                 <h1 className="text-3xl font-semibold tracking-tight">
                     Privacy Policy

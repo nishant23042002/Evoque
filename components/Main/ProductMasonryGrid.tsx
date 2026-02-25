@@ -272,9 +272,9 @@ export default function ProductMasonryGrid({
                     </div>
 
                     {/* DETAILS */}
-                    <div className="py-2 px-1 flex flex-col justify-center w-full pointer-events-none">
+                    <div className="py-2 px-1 flex flex-col justify-center w-full">
                         <p className="text-primary max-[360px]:text-[10px] text-xs sm:text-sm font-medium">{item.brand}</p>
-                        <p className="text-xs max-[360px]:text-[12px] uppercase truncate sm:text-sm font-extralight">{item.productName}</p>
+                        <p className="text-xs cursor-pointer max-[360px]:text-[12px] uppercase truncate sm:text-sm font-medium hover:text-black/60">{item.productName}</p>
                         <div className="flex gap-1 items-center text-sm w-full">
                             <span className="max-[360px]:text-[11px] font-semibold text-red-600">Rs.{variant.pricing?.price}</span>
                             <span className="max-[360px]:text-[10px] line-through font-extralight">Rs.{variant.pricing?.originalPrice}</span>

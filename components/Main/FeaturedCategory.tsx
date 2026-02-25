@@ -192,7 +192,7 @@ const FeaturedCategories = () => {
                                 >
                                     <div
                                         className="                                   
-                                            group relative aspect-7/12
+                                            group relative aspect-5/9
                                             overflow-hidden
                                             transition-all duration-300
                                             "

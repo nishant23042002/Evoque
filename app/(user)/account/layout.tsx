@@ -1,3 +1,4 @@
+// (user)/account/layout.tsx
 "use client";
 
 import Link from "next/link";
@@ -30,7 +31,7 @@ export default function AccountLayout({
         );
 
     return (
-        <div className="py-6 space-y-6">
+        <div className="py-6 space-y-6 bg-white">
             {/* TITLE */}
             <div className="mx-2 flex justify-between items-center z-20">
                 <h1 className="text-5xl tracking-wider font-bold">ACCOUNT</h1>

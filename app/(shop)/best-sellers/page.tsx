@@ -32,7 +32,7 @@ export default function BestSellersPage() {
     }
 
     return (
-        <section className="">
+        <section className="bg-white">
             <div className="mx-3 py-6 text-5xl pb-2 text-(--linen-800) font-semibold tracking-tight">
                 <h1 className="text-2xl uppercase sm:text-5xl tracking-wider font-bold">
                     Best Sellers

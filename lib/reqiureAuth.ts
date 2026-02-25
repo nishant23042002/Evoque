@@ -5,7 +5,7 @@ import jwt from "jsonwebtoken";
 export async function requireAuth() {
     const cookieStore = await cookies();
     const token = cookieStore.get("token")?.value;
-    console.log("🔐 TOKEN IN requireAuth:", token);
+ 
     if (!token) {
         throw new Error("Unauthorized");
     }
@@ -16,7 +16,6 @@ export async function requireAuth() {
             process.env.JWT_SECRET!
         ) as { userId: string };
 
-        console.log("✅ JWT DECODED:", decoded);
 
         return { userId: decoded.userId };
     } catch (err) {

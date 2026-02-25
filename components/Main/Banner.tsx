@@ -78,7 +78,7 @@ const ResponsiveImage = ({
           alt={banner.title || ""}
           fill
           priority={priority}
-          sizes="100vw"
+          sizes={sizes}
           className="block sm:hidden object-cover"
         />
       )}
@@ -106,7 +106,7 @@ const BannerList = ({ banners }: BannerSliderProps) => {
           priority
 
         />
-        <div className="absolute inset-0 bg-(--earth-charcoal) opacity-15 group-hover:opacity-10  transition-opacity duration-300" />
+        <div className="absolute inset-0 bg-(--earth-charcoal) opacity-0 group-hover:opacity-10  transition-opacity duration-300" />
 
         <div className="absolute right-0 top-1/4 md:left-0 flex items-center">
           <div className="asolute px-6 md:px-9">
@@ -130,7 +130,7 @@ const BannerList = ({ banners }: BannerSliderProps) => {
               sizes="50vw"
               forceMobile
             />
-            <div className="absolute inset-0 bg-(--earth-charcoal) opacity-15 group-hover:opacity-10  transition-opacity duration-300" />
+            <div className="absolute inset-0 bg-(--earth-charcoal) opacity-0 group-hover:opacity-10  transition-opacity duration-300" />
             <div className="absolute bg-black/20 w-full bottom-0 flex py-4 px-2 items-center justify-between">
               <h1 className="uppercase text-xs text-white truncate w-[90%] sm:text-lg group-hover:underline underline-offset-2">
                 {banners[2].title || "Sweatshirt Collection"}
@@ -149,7 +149,7 @@ const BannerList = ({ banners }: BannerSliderProps) => {
               sizes="50vw"
               forceMobile
             />
-            <div className="absolute inset-0 bg-(--earth-charcoal) opacity-15 group-hover:opacity-10 transition-opacity duration-300" />
+            <div className="absolute inset-0 bg-(--earth-charcoal) opacity-0 group-hover:opacity-10 transition-opacity duration-300" />
           <div className="absolute bottom-0 w-full bg-black/20 flex py-4 px-2 items-center justify-between">
             <h1 className="uppercase text-xs text-white font-light truncate w-[90%] sm:text-lg group-hover:underline underline-offset-2">
               {banners[3].title || "Printed Shirts"}
@@ -171,7 +171,7 @@ const BannerList = ({ banners }: BannerSliderProps) => {
           sizes="100vw"
           priority
         />
-        <div className="absolute inset-0 bg-(--earth-charcoal) opacity-10 group-hover:opacity-5  transition-opacity duration-300" />
+        <div className="absolute inset-0 bg-(--earth-charcoal) opacity-0 group-hover:opacity-5  transition-opacity duration-300" />
         <div className="absolute right-0 top-1/2 md:left-0 flex items-center">
           <div className="asolute px-6 md:px-9">
             <h1 className="text-red-600 font-bold leading-none uppercase

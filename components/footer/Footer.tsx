@@ -28,7 +28,7 @@ const layerItem = [
 export default function Footer() {
     return (
         <footer>
-            <div className="relative bg-white border-t border-black/10 text-(--linen-700) mt-12 overflow-hidden">
+            <div className="relative bg-white sm:my-12 overflow-hidden">
 
                 {/* MAIN GRID */}
                 <div
@@ -68,10 +68,10 @@ export default function Footer() {
                     </div>
 
                     {/* NAV + WARDROBE */}
-                    <div className="flex flex-col sm:flex-row gap-12 sm:gap-16">
+                    <div className="flex justify-around sm:justify-between items-start flex-row sm:gap-16">
                         {/* PRIMARY NAV */}
                         <nav className="flex flex-col text-sm">
-                            <span className="text-xs uppercase font-serif tracking-wider text-(--earth-clay)">
+                            <span className="text-xs mt-2 uppercase font-serif tracking-wider text-(--earth-clay)">
                                 The Layer
                             </span>
 
@@ -79,12 +79,12 @@ export default function Footer() {
                                 <div key={item.label} className="relative mb-2 group w-fit">
                                     <Link
                                         href={item.href}
-                                        className="cursor-pointer text-(--text-secondary) hover:text-(--linen-600)/30 transition"
+                                        className="cursor-pointer text-(--text-secondary) hover:text-(--linen-600)/50 transition"
                                     >
                                         {item.label}
                                     </Link>
 
-                                    <span className="absolute left-0 bottom-0.5 h-0.5 w-1/2 bg-(--earth-clay) scale-x-0 origin-left transition-transform duration-500 ease-out group-hover:scale-x-100" />
+                                    <span className="absolute left-0 -bottom-0.5 h-0.5 w-1/2 bg-(--earth-clay) scale-x-0 origin-left transition-transform duration-500 ease-out group-hover:scale-x-100" />
                                 </div>
                             ))}
                         </nav>
@@ -95,12 +95,12 @@ export default function Footer() {
                                 The Wardrobe
                             </span>
 
-                            <div className="grid grid-cols-2 sm:grid-cols-1 gap-y-2 gap-x-6 text-sm">
+                            <div className="grid grid-cols-1 gap-y-2 gap-x-6 text-sm">
                                 {layerItem.map((item) => (
                                     <div className="relative group w-fit" key={item.category}>
                                         <Link
                                             href={item.href}
-                                            className="cursor-pointer text-(--text-secondary) hover:text-(--linen-600)/30 transition"
+                                            className="cursor-pointer text-(--text-secondary) hover:text-(--linen-600)/50 transition"
                                         >
                                             {item.category}
                                         </Link>
@@ -138,9 +138,9 @@ export default function Footer() {
                 </div>
 
                 {/* WORDMARK */}
-                <div className="absolute left-0 w-full text-center pointer-events-none select-none -bottom-1 sm:-bottom-3 md:-bottom-5">
-                    <h1 className="font-extrabold tracking-tight leading-none text-(--linen-200)
-        text-[32vw] sm:text-[20vw] md:text-[14vw]">
+                <div className="absolute left-0 w-full text-center pointer-events-none select-none bottom-0">
+                    <h1 className="font-extrabold tracking-wider leading-none text-(--linen-200)
+                       text-[12vw]">
                         THE LAYER CO.
                     </h1>
                 </div>

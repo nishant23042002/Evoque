@@ -130,7 +130,7 @@ const SearchBar = () => {
         <div className="relative flex items-center py-6 px-3">
           <SearchIcon className="absolute top-6.5" size={18} />
           {query &&
-            <span onClick={() => setQuery("")} className="cursor-pointer underline text-xs absolute right-14 top-8">Clear</span>
+            <span onClick={() => setQuery("")} className="cursor-pointer underline text-xs absolute right-14 top-7">Clear</span>
           }
           <input
             autoFocus
@@ -138,7 +138,7 @@ const SearchBar = () => {
             onChange={e => setQuery(e.target.value)}
             placeholder="Search shirts, fabric, style..."
             className="
-              w-full px-7 pb-3 border-b-2 border-black
+              w-full pl-6 pr-10 pb-3 border-b-2 border-black
               bg-white text-sm
               text-foreground          
               outline-none
@@ -254,7 +254,7 @@ const SearchBar = () => {
               ))}
             </>
           ) : (
-            <div className="grid grid-cols-2 p-1">
+            <div className="grid grid-cols-2">
               {products?.length > 0 && products.map((p) => {
                 const variant = p.variants?.[0] ?? null;
                 const image =
@@ -278,7 +278,7 @@ const SearchBar = () => {
                           src={image}
                           alt={p.productName}
                           fill
-                          className="object-cover border border-black/10"
+                          className="object-cover"
                         />
 
                       )}
@@ -290,7 +290,7 @@ const SearchBar = () => {
                       )}
                     </div>
 
-                    <p className="mt-1 text-xs uppercase font-light line-clamp-1">
+                    <p className="mt-1 text-xs uppercase font-medium line-clamp-1">
                       {p.productName}
                     </p>
                     <div className="flex gap-2 items-center">
