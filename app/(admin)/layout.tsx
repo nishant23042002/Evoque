@@ -1,8 +1,10 @@
-import { ReactNode } from "react";
-import { redirect } from "next/navigation";
-import { requireAdmin } from "@/lib/requireAdmin";
+// /app/(admin)/admin/layout.tsx
 
-export default async function AdminGroupLayout({
+import { ReactNode } from "react";
+import { requireAdmin } from "@/lib/requireAdmin";
+import { redirect } from "next/navigation";
+
+export default async function AdminLayout({
     children,
 }: {
     children: ReactNode;
@@ -10,8 +12,11 @@ export default async function AdminGroupLayout({
     const admin = await requireAdmin();
 
     if (!admin) {
-        redirect("/");
+        redirect("/")
     }
-
-    return <>{children}</>;
+    return (
+        <>
+            { children }
+        </>
+    );
 }

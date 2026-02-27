@@ -1,13 +1,16 @@
+// /app/(admin)/admin/products/components/ProductRow.tsx
+
 "use client";
 
 import { useState } from "react";
 import { AdminProduct } from "@/types/AdminProduct";
 import Image from "next/image";
-import { MoreHorizontal } from "lucide-react";
+import { MoreVertical } from "lucide-react";
 import axios from "axios";
+import Product from "@/types/ProductTypes";
 
 interface Props {
-    product: AdminProduct;
+    product: Product;
     refresh: () => void;
 }
 
@@ -42,10 +45,10 @@ export default function ProductRow({ product, refresh }: Props) {
     }
 
     return (
-        <tr className="border-t border-zinc-800 hover:bg-zinc-800/40 transition">
+        <tr className="border-t border-zinc-800 py-12 hover:bg-zinc-800/40 z-30 transition">
             <td className="p-4">
-                <div className="flex items-center gap-4">
-                    <div className="relative w-14 h-14 rounded-md overflow-hidden">
+                <div className="flex items-center gap-4 h-30">
+                    <div className="relative w-28 h-34 rounded-xs overflow-hidden">
                         <Image
                             src={product.thumbnail}
                             alt={product.productName}
@@ -56,12 +59,12 @@ export default function ProductRow({ product, refresh }: Props) {
 
                     <div>
                         <p className="font-medium">{product.productName}</p>
-                        <p className="text-xs text-zinc-500">{product.brand}</p>
+                        <p className="text-xs text-zinc-400">{product.subCategory.name}</p>
                     </div>
                 </div>
             </td>
 
-            <td className="p-4">₹{product.pricing.price}</td>
+            <td className="p-4">Rs. {product.pricing.price}</td>
 
             <td className="p-4">
                 {product.totalStock}
@@ -82,13 +85,13 @@ export default function ProductRow({ product, refresh }: Props) {
             <td className="p-4 text-right relative">
                 <button
                     onClick={() => setOpen(!open)}
-                    className="p-2 hover:bg-zinc-700 rounded"
+                    className="p-2 cursor-pointer hover:bg-zinc-700 rounded"
                 >
-                    <MoreHorizontal size={18} />
+                    <MoreVertical size={18} />
                 </button>
 
                 {open && (
-                    <div className="absolute right-4 mt-2 w-40 bg-zinc-900 border border-zinc-800 rounded shadow-lg z-50">
+                    <div className="absolute right-13 top-8 mt-2 w-40 bg-zinc-900 border border-zinc-800 rounded shadow-lg">
                         <button
                             onClick={() => {
                                 setOpen(false);

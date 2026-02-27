@@ -1,3 +1,5 @@
+// /app/(admin)/admin/products/components/StockIndicator.tsx
+
 interface Props {
   stock: number;
 }

@@ -3,28 +3,11 @@ import { NextResponse } from "next/server";
 import connectDB from "@/lib/db";
 import Category from "@/models/Category";
 import Product from "@/models/Product";
-import cloudinary from "@/lib/cloudinary";
 import mongoose, { ObjectId } from "mongoose";
-import ProductType from "@/types/ProductTypes"; // Your Product interface
+import ProductType, { SubCategory } from "@/types/ProductTypes"; // Your Product interface
 import { extractHexFromBuffer } from "@/data/extractColorFromImage";
 import axios from "axios"
 
-
-
-interface VariantImage {
-    url: string;
-    publicId: string;
-    isPrimary: boolean;
-    isHover?: boolean;
-    order?: number;
-}
-
-interface VariantColor {
-    name: string;
-    slug: string;
-    hex?: string;
-    images: VariantImage[];
-}
 
 interface SizeVariant {
     size: string;
@@ -33,126 +16,10 @@ interface SizeVariant {
     variantSku?: string;
 }
 
-interface Variant {
-    color: VariantColor;
-    sizes?: SizeVariant[];
-    pricing?: {
-        price?: number;
-        originalPrice?: number;
-        discountPercentage?: number;
-    };
-    totalStock?: number;
-}
-
-interface Pricing {
-    price: number;
-    originalPrice: number;
-    discountPercentage: number;
-    currency: string;
-}
 
 type ProductFilter = Partial<ProductType> & {
     [key: string]: string | number | ObjectId | boolean | undefined | Record<string, unknown>
     | Array<Record<string, unknown>>;
-};
-
-
-
-type ProductPOSTBody = {
-    productName: string;
-    slug: string;
-    brand: string;
-    category: string; // slug or ObjectId
-    subCategory: {
-        name: string;
-        slug: string;
-        image?: string;
-    };
-    thumbnail: string;
-    fit?: string;
-    offers?: { type: string; title: string }[];
-    pricing: Pricing;
-    rating?: number;
-    reviews?: {
-        userId?: string;
-        rating?: number;
-        comment?: string;
-        createdAt?: Date;
-    }[];
-    variants?: Variant[];
-    description?: string;
-    details?: {
-        material?: string;
-        fabricWeight?: string;
-        stretch?: string;
-        washCare?: string[];
-        fitType?: string;
-        rise?: string;
-        closure?: string;
-    };
-    styleTags?: string[];
-    stylePairs?: string[]; // ObjectId strings
-
-    attributes?: {
-        sleeve?: string;
-        pattern?: string;
-        occasion?: string[];
-        fabric?: string;
-        fitType?: string;
-        season?: string[];
-    };
-    sizeChart?: {
-        image?: string;
-        measurements?: {
-            size?: string;
-            chest?: string;
-            length?: string;
-            shoulder?: string;
-            sleeve?: string;
-        }[];
-    };
-    seo?: {
-        title?: string;
-        description?: string;
-        keywords?: string[];
-    };
-    shipping?: {
-        weight?: number;
-        dimensions?: string;
-        codAvailable?: boolean;
-        returnDays?: number;
-    };
-    tags?: string[];
-    badges?: { type?: string; label?: string }[];
-    merchandising?: {
-        priority?: number;
-        collection?: string;
-        displayOrder?: number;
-    };
-    search?: {
-        keywords?: string[];
-        synonyms?: string[];
-        popularityScore?: number;
-    };
-
-    isActive?: boolean;
-    isFeatured?: boolean;
-    isNewArrival?: boolean;
-    launchDate?: string | Date;
-};
-
-type SubCategory = {
-    name: string;
-    slug: string;
-    image?: string;
-};
-
-type UploadedImage = {
-    url: string;
-    publicId: string;
-    isPrimary: boolean;
-    isHover?: boolean;
-    order?: number;
 };
 
 
@@ -192,214 +59,244 @@ function generateVariantSKU({
     return `${productSku}-${toCode(color, 3)}-${size.toUpperCase()}`;
 }
 
-async function uploadImage(
-    url?: string,
-    folder?: string,
-    publicId?: string
-): Promise<{ url: string; publicId: string; buffer: Buffer } | null> {
-    if (!url) return null;
 
-    const res = await cloudinary.uploader.upload(url, {
-        folder,
-        public_id: publicId,
-        overwrite: true,
-        resource_type: "image",
-    });
-    const imageRes = await axios.get(res.secure_url, {
-        responseType: "arraybuffer",
-    });
 
-    return {
-        url: res.secure_url,
-        publicId: res.public_id,
-        buffer: Buffer.from(imageRes.data)
-    };
-}
+/* ------------------ HELPERS ------------------ */
 
-// ------------------- POST -------------------
+const slugify = (str: string) =>
+  str.toLowerCase().replace(/\s+/g, "-");
+
+
+
+
+/* ------------------ POST ------------------ */
 
 export async function POST(req: Request) {
-    try {
-        await connectDB();
-        const body: ProductPOSTBody = await req.json();
+  try {
+    await connectDB();
+    const body = await req.json();
 
-        const {
-            productName,
-            slug,
-            brand,
-            category: categorySlug,
-            subCategory,
-            variants = [],
-            pricing,
-            attributes,
-            thumbnail,
-            description,
-            styleTags,
-            stylePairs,
-            fit,
-            sizeChart,
-            details,
-            seo,
-            shipping,
-            offers,
-            tags,
-            badges,
-            merchandising,
-            search,
-            isActive,
-            isFeatured,
-            launchDate,
-        } = body;
+    const {
+      productName,
+      slug,
+      brand,
+      category: categorySlug,
+      subCategory,
+      variants = [],
+      pricing,
+      thumbnail,
+      description,
+      attributes,
+      styleTags,
+      stylePairs,
+      fit,
+      sizeChart,
+      details,
+      seo,
+      shipping,
+      offers,
+      tags,
+      badges,
+      merchandising,
+      search,
+      isActive = true,
+      isFeatured = false,
+      launchDate,
+    } = body;
 
-        if (!pricing?.price) {
-            return NextResponse.json(
-                { message: "pricing.price is required" },
-                { status: 400 }
-            );
-        }
+    /* ---------- BASIC VALIDATION ---------- */
 
-        if (!subCategory?.slug) {
-            return NextResponse.json(
-                { message: "subCategory is required" },
-                { status: 400 }
-            );
-        }
+    if (!productName || !slug)
+      return NextResponse.json(
+        { message: "Product name & slug required" },
+        { status: 400 }
+      );
 
-        if (!thumbnail) {
-            return NextResponse.json(
-                { message: "Thumbnail is required" },
-                { status: 400 }
-            );
-        }
+    if (!pricing?.price)
+      return NextResponse.json(
+        { message: "pricing.price is required" },
+        { status: 400 }
+      );
 
-        // Find category
-        let category;
-        if (mongoose.Types.ObjectId.isValid(categorySlug)) {
-            category = await Category.findById(categorySlug);
-        } else {
-            category = await Category.findOne({ slug: categorySlug });
-        }
-        if (!category) return NextResponse.json({ message: "Category not found" }, { status: 400 });
+    if (!subCategory?.slug)
+      return NextResponse.json(
+        { message: "subCategory is required" },
+        { status: 400 }
+      );
 
-        // Validate subCategory
-        const validSub = category.subCategories.find(
-            (s: SubCategory) => s.slug === subCategory.slug
-        );
-        if (!validSub)
-            return NextResponse.json({ message: "Invalid subCategory" }, { status: 400 });
+    if (!thumbnail)
+      return NextResponse.json(
+        { message: "Thumbnail is required" },
+        { status: 400 }
+      );
 
-        // Generate SKU
-        const productCount = await Product.countDocuments({ category: category._id });
-        const productSku = generateProductSKU({
-            brand,
-            categorySlug,
-            subCategorySlug: subCategory.slug,
-            serial: productCount + 1,
-        });
+    if (!variants.length)
+      return NextResponse.json(
+        { message: "At least one variant required" },
+        { status: 400 }
+      );
 
-        // Upload variants
-        const uploadedVariants = [];
-        for (const variant of variants) {
-            const { color, sizes = [], pricing: variantPricing } = variant;
-            const uploadedImages: UploadedImage[] = [];
+    /* ---------- CATEGORY VALIDATION ---------- */
 
-            let colorHex: string | undefined;
-            for (let i = 0; i < (color.images || []).length; i++) {
-                const uploaded = await uploadImage(
-                    color.images[i].url,
-                    `thelayerco./products/${category.slug}/${slug}/${color.slug}`,
-                    `${productSku}-${color.slug}-${i + 1}`
-                );
-                if (uploaded) {
-                    uploadedImages.push({
-                        url: uploaded.url,
-                        publicId: uploaded.publicId,
-                        isPrimary: color.images[i].isPrimary || false,
-                        isHover: color.images[i].isHover || false,
-                        order: color.images[i].order || 0,
-                    });
-                    // 🔥 Extract color only once (primary image preferred)
-                    if (!colorHex && color.images[i].isPrimary) {
-                        colorHex = await extractHexFromBuffer(uploaded.buffer);
-                    }
-                }
-            }
-
-            // Fallback: first image
-            if (!colorHex && uploadedImages.length) {
-                colorHex = await extractHexFromBuffer(
-                    Buffer.from(
-                        await (
-                            await fetch(uploadedImages[0].url)
-                        ).arrayBuffer()
-                    )
-                );
-            }
-
-            const updatedSizes: SizeVariant[] = sizes.map((s: SizeVariant) => ({
-                ...s,
-                variantSku: generateVariantSKU({
-                    productSku,
-                    color: color.name,
-                    size: s.size,
-                }),
-            }));
-
-
-            const totalStock = updatedSizes.reduce((sum, s) => sum + (s.stock || 0), 0);
-
-            uploadedVariants.push({
-                color: { ...color, hex: colorHex, images: uploadedImages },
-                sizes: updatedSizes,
-                pricing: variantPricing,
-                totalStock,
-            });
-        }
-
-        const totalStock = uploadedVariants.reduce((sum, v) => sum + (v.totalStock || 0), 0);
-
-        const product = await Product.create({
-            productName,
-            slug,
-            sku: productSku,
-            brand,
-            category: category._id,
-            subCategory: {
-                name: validSub.name,
-                slug: validSub.slug,
-                image: validSub.image,
-            },
-            fit,
-            attributes,
-            styleTags,
-            stylePairs: stylePairs?.map(id => new mongoose.Types.ObjectId(id)),
-            variants: uploadedVariants,
-            pricing,
-            thumbnail,
-            totalStock,
-            description,
-            sizeChart,
-            details,
-            offers,
-            seo,
-            shipping,
-            tags,
-            badges,
-            merchandising,
-            search,
-            isActive,
-            isFeatured,
-            launchDate: launchDate ? new Date(launchDate) : undefined
-        });
-
-        return NextResponse.json(product, { status: 201 });
-    } catch (error) {
-        return NextResponse.json(
-            { message: error instanceof Error ? error.message : "Internal Server Error" },
-            { status: 500 }
-        );
-
+    let category;
+    if (mongoose.Types.ObjectId.isValid(categorySlug)) {
+      category = await Category.findById(categorySlug);
+    } else {
+      category = await Category.findOne({ slug: categorySlug });
     }
+
+    if (!category)
+      return NextResponse.json(
+        { message: "Category not found" },
+        { status: 400 }
+      );
+
+    const validSub = category.subCategories.find(
+      (s: SubCategory) => s.slug === subCategory.slug
+    );
+
+    if (!validSub)
+      return NextResponse.json(
+        { message: "Invalid subCategory" },
+        { status: 400 }
+      );
+
+    /* ---------- SKU GENERATION ---------- */
+
+    const count = await Product.countDocuments({
+      category: category._id,
+    });
+
+    const productSku = generateProductSKU({
+      brand,
+      categorySlug: category.slug,
+      subCategorySlug: subCategory.slug,
+      serial: count + 1,
+    });
+
+    /* ---------- VARIANT PROCESSING ---------- */
+
+    const processedVariants = [];
+
+    for (const variant of variants) {
+      if (!variant.color?.images?.length)
+        return NextResponse.json(
+          { message: "Each variant needs images" },
+          { status: 400 }
+        );
+
+      if (!variant.sizes?.length)
+        return NextResponse.json(
+          { message: "Each variant needs sizes" },
+          { status: 400 }
+        );
+
+      const colorSlug = slugify(variant.color.slug);
+
+      /* ---------- HEX EXTRACTION ---------- */
+
+      let colorHex: string | undefined;
+
+      try {
+        const res = await axios.get(
+          variant.color.images[0].url,
+          { responseType: "arraybuffer" }
+        );
+
+        colorHex = await extractHexFromBuffer(
+          Buffer.from(res.data)
+        );
+      } catch {
+        colorHex = undefined;
+      }
+
+      /* ---------- SIZE PROCESSING ---------- */
+
+      const updatedSizes = variant.sizes.map((s: SizeVariant) => ({
+        size: s.size,
+        stock: s.stock,
+        isAvailable: s.stock > 0,
+        variantSku: generateVariantSKU({
+          productSku,
+          color: variant.color.name,
+          size: s.size,
+        }),
+      }));
+
+      const totalStock = updatedSizes.reduce(
+        (sum: number, s: SizeVariant) => sum + (s.stock || 0),
+        0
+      );
+
+      processedVariants.push({
+        color: {
+          name: variant.color.name,
+          slug: colorSlug,
+          hex: colorHex,
+          images: variant.color.images,
+        },
+        sizes: updatedSizes,
+        pricing: variant.pricing,
+        totalStock,
+      });
+    }
+
+    const totalStock = processedVariants.reduce(
+      (sum, v) => sum + v.totalStock,
+      0
+    );
+
+    /* ---------- CREATE PRODUCT ---------- */
+
+    const product = await Product.create({
+      productName,
+      slug,
+      sku: productSku,
+      brand,
+      category: category._id,
+      subCategory: {
+        name: validSub.name,
+        slug: validSub.slug,
+        image: validSub.image,
+      },
+      fit,
+      attributes,
+      styleTags,
+      stylePairs: stylePairs?.map(
+        (id: string) => new mongoose.Types.ObjectId(id)
+      ),
+      variants: processedVariants,
+      pricing,
+      thumbnail,
+      totalStock,
+      description,
+      sizeChart,
+      details,
+      offers,
+      seo,
+      shipping,
+      tags,
+      badges,
+      merchandising,
+      search,
+      isActive,
+      isFeatured,
+      launchDate: launchDate ? new Date(launchDate) : undefined,
+    });
+
+    return NextResponse.json(product, { status: 201 });
+
+  } catch (error) {
+    return NextResponse.json(
+      {
+        message:
+          error instanceof Error
+            ? error.message
+            : "Internal Server Error",
+      },
+      { status: 500 }
+    );
+  }
 }
 
 

@@ -97,6 +97,12 @@ export default function Home() {
             }
 
             const res = await fetch(url);
+
+            if (!res.ok) {
+                console.error("API ERROR", await res.text());
+                return;
+            }
+
             const data = await res.json();
 
             setItems(data.products);

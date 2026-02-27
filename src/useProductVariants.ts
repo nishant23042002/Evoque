@@ -14,7 +14,12 @@ export function useProductVariants(
         );
     }, [product, selectedColor]);
 
-    const images = activeVariant?.color.images.map(i => i.url) ?? [];
+    const images =
+        activeVariant?.color?.images?.length
+            ? activeVariant.color.images.map(i => i.url)
+            : product?.thumbnail
+                ? [product.thumbnail]
+                : [];
 
     const colorVariants = useMemo(() => {
         if (!product) return [];

@@ -1,3 +1,5 @@
+// /app/(admin)/admin/AdminHeader.tsx
+
 "use client";
 
 export default function AdminHeader() {

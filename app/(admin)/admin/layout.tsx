@@ -1,3 +1,5 @@
+// /app/(admin)/admin/layout.tsx
+
 import { ReactNode } from "react";
 import Sidebar from "./Sidebar";
 import AdminHeader from "./AdminHeader";

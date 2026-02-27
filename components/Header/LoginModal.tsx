@@ -15,6 +15,7 @@ import {
 } from "../ui/input-otp";
 import { FirebaseError } from "firebase/app";
 import { useAuth } from "../AuthProvider";
+import { useLockBodyScroll } from "@/src/useLockBodyScroll";
 
 
 
@@ -38,7 +39,7 @@ export default function LoginModalUI() {
 
     const [step, setStep] = useState<"mobile" | "otp">("mobile");
     const SLIDES_COUNT = 3;
- 
+
 
     /* ------------------ reCAPTCHA helpers ------------------ */
 
@@ -111,7 +112,7 @@ export default function LoginModalUI() {
                 return;
             }
             const idToken = await firebaseUser?.getIdToken(true);
-            console.log("firebaseID: ",auth.currentUser);
+            console.log("firebaseID: ", auth.currentUser);
 
             const res = await fetch("/api/auth/phone-login", {
                 method: "POST",
@@ -150,7 +151,7 @@ export default function LoginModalUI() {
         }
     };
 
-
+    useLockBodyScroll(showLogin)
     /* ---------------- Auto Verify OTP ---------------- */
     useEffect(() => {
         if (otp.length !== 6 || !confirmationResult) return;
@@ -167,7 +168,7 @@ export default function LoginModalUI() {
     const sendOtp = async () => {
         setError("");
         setSuccess("");
-        if (resendCountdown > 0) return;
+
 
         if (phoneNumber.length !== 10) {
             setError("Enter a valid 10-digit mobile number");
@@ -177,8 +178,9 @@ export default function LoginModalUI() {
         startTransition(async () => {
 
             try {
+                resetRecaptcha();
                 initRecaptcha();
-                setResendCountdown(60);
+
                 const formattedPhone = `+91${phoneNumber}`;
 
                 const confirmationResult = await signInWithPhoneNumber(
@@ -190,6 +192,7 @@ export default function LoginModalUI() {
 
                 setConfirmationResult(confirmationResult);
                 setStep("otp")
+                setResendCountdown(30)
                 setSuccess("OTP sent successfully");
             } catch (err) {
                 resetRecaptcha();
@@ -221,7 +224,7 @@ export default function LoginModalUI() {
 
     const Loader = (
         <div className="flex items-center justify-center">
-            <div className="h-6 w-6 animate-spin rounded-full border-2 border-slate-300 border-t-slate-900" />
+            <div className="h-4 w-4 animate-spin rounded-full border-2 border-slate-300 border-t-slate-900" />
         </div>
     );
 
@@ -230,7 +233,7 @@ export default function LoginModalUI() {
         <div className="fixed inset-0 z-9999 flex items-center justify-center select-none">
             {/* Overlay */}
             <div
-                className="absolute inset-0 bg-black/30 backdrop-blur-sm"
+                className="absolute inset-0 bg-black/30"
                 onClick={handleClose}
             />
 
@@ -241,15 +244,14 @@ export default function LoginModalUI() {
                 className="
                     relative w-225 max-w-[95vw] overflow-hidden rounded-[3px]
                     bg-linear-to-b
-                    bg-(--linen-800)
+                    bg-black
                 "
             >
                 {/* Close */}
                 <button
                     onClick={handleClose}
                     className="
-                        absolute right-4 top-4 z-10 cursor-pointer
-                        text-(--linen-400)
+                        absolute right-2 top-2 z-10 cursor-pointer text-white
                         hover:text-(--linen-500)
                         transition-colors
                     "
@@ -259,7 +261,7 @@ export default function LoginModalUI() {
 
                 <div className="flex justify-evenly max-md:flex-col min-h-70">
                     {/* LEFT */}
-                    <div className="p-6 md:p-10 text-(--text-inverse)">
+                    <div className="p-6 md:p-12 text-(--text-inverse)">
                         <h2 className="text-xl md:text-2xl font-semibold mb-6 text-center md:text-left">
                             Unlock Exclusive Benefits
                         </h2>
@@ -323,15 +325,15 @@ export default function LoginModalUI() {
 
 
                     {/* RIGHT */}
-                    <div className="bg-white md:mb-6 md:rounded-b-sm p-5 flex flex-col justify-center">
+                    <div className="bg-white md:mb-6 md:rounded-b-sm p-5 flex flex-col py-9">
                         {step === "mobile" ? (
                             <div className="w-full max-w-sm mx-auto px-2 sm:px-0">
-                                <h3 className="text-base sm:text-lg font-semibold text-(--linen-800) mb-4 text-center">
+                                <h3 className="text-base uppercase tracking-wider sm:text-sm font-semibold text-(--linen-800) mb-4 text-center">
                                     Login with Mobile
                                 </h3>
 
                                 {/* Phone Input */}
-                                <div className="relative flex items-center w-full border border-gray-300 rounded-md px-2 py-2 focus-within:border-primary transition">
+                                <div className="relative flex items-center w-full border border-gray-300 px-2 py-2 focus-within:border-primary transition">
 
                                     {/* Country Code */}
                                     <div className="flex items-center gap-1 pr-2 border-r border-gray-200">
@@ -365,20 +367,27 @@ export default function LoginModalUI() {
                                 <button
                                     onClick={sendOtp}
                                     disabled={!phoneNumber || isPending || resendCountdown > 0}
-                                    className="
+                                    className="relative
                                         w-full mt-4 py-2
                                         text-sm sm:text-base font-medium
-                                        bg-(--linen-400) text-primary-foreground
+                                        bg-black text-primary-foreground
                                        hover:bg-(--btn-primary-hover)
-                                        hover:disabled:opacity-80 disabled:cursor-not-allowed
+                                        hover:disabled:opacity-90 disabled:cursor-not-allowed
                                         transition
                                         "
                                 >
-                                    {resendCountdown > 0
-                                        ? `Resend OTP in ${resendCountdown}s`
-                                        : isPending
-                                            ? "Sending OTP…"
-                                            : "Send OTP"}
+                                    {isPending
+                                        ? "Sending OTP..."
+                                        : resendCountdown > 0
+                                            ? `Resend OTP in ${resendCountdown}s`
+                                            : confirmationResult
+                                                ? "Resend OTP"
+                                                : "Send OTP"
+                                    }
+
+                                    {isPending && (
+                                        <div className="absolute right-12 top-2.5">{Loader}</div>
+                                    )}
                                 </button>
 
                                 {/* Status */}
@@ -387,55 +396,98 @@ export default function LoginModalUI() {
                                     {success && <p className="text-green-600">{success}</p>}
                                 </div>
 
-                                {isPending && (
-                                    <div className="mt-3 flex justify-center">{Loader}</div>
-                                )}
+
+
+                                <label className="mt-4 w-full mx-auto flex items-center gap-2 py-2 text-xs">
+                                    <input
+                                        type="checkbox"
+                                        className="accent-primary cursor-pointer"
+                                    />
+                                    Notify me for updates & offers
+                                </label>
+
+
+                                <p className="text-[11px] text-center">
+                                    By continuing, you agree to our{" "}
+                                    <span className="underline cursor-pointer">Privacy Policy</span>{" "}
+                                    &{" "}
+                                    <span className="underline cursor-pointer">T&Cs</span>
+                                </p>
                             </div>
 
                         ) : (
                             <div className="w-full max-w-sm mx-auto px-2 sm:px-0">
-                                <p className="text-xs sm:text-sm text-(--text-secondary)">
-                                    OTP sent to{" "}
-                                    <span className="font-medium text-(--linen-800)">
-                                        +91 {phoneNumber}
-                                    </span>
-                                </p>
-                                <button
-                                    type="button"
-                                    onClick={() => {
-                                        resetRecaptcha();
-                                        setStep("mobile");
-                                        setOtp("");
-                                        setError("");
-                                        setSuccess("");
-                                        setResendCountdown(0);
-                                        setConfirmationResult(null);
-                                    }}
-                                    className="mt-1 text-xs sm:text-sm text-primary underline"
-                                >
-                                    Edit phone number
-                                </button>
+                                <div className="flex flex-col justify-between items-center py-2">
+                                    <p className="font-semibold mb-3">OTP Verification</p>
+                                    <p className="text-xs sm:text-sm">
+                                        We have sent verification code to {" "}
+                                    </p>
+                                    <div className="flex gap-4">
+                                        <span className="font-medium text-(--linen-800)">
+                                            +91 {phoneNumber}
+                                        </span>
+                                        <button
+                                            type="button"
+                                            onClick={() => {
+                                                resetRecaptcha();
+                                                setStep("mobile");
+                                                setOtp("");
+                                                setError("");
+                                                setSuccess("");
+                                                setResendCountdown(0);
+                                                setConfirmationResult(null);
+                                            }}
+                                            className="uppercase border cursor-pointer font-semibold border-black/20 px-2 text-xs hover:text-primary"
+                                        >
+                                            Edit
+                                        </button>
+                                    </div>
+                                </div>
                                 {/* OTP Inputs */}
-                                <div className="w-full flex justify-center mb-4">
+                                <div className="w-full flex justify-center mb-2">
                                     <InputOTP
                                         maxLength={6}
                                         value={otp}
                                         onChange={(value) => setOtp(value)}
+                                        className="gap-1"
                                     >
                                         <InputOTPGroup>
-                                            <InputOTPSlot index={0} />
-                                            <InputOTPSlot index={1} />
-                                            <InputOTPSlot index={2} />
+                                            <InputOTPSlot
+                                                index={0}
+                                                className="sm:h-10 sm:w-12 border-black/20 text-lg font-semibold focus:border-black"
+                                            />
+                                            <InputOTPSlot
+                                                index={1}
+                                                className="sm:h-10 sm:w-12 border-black/20 text-lg font-semibold"
+                                            />
+                                            <InputOTPSlot
+                                                index={2}
+                                                className="sm:h-10 sm:w-12 border-black/20  text-lg font-semibold"
+                                            />
                                         </InputOTPGroup>
 
-                                        <InputOTPSeparator className="opacity-80" />
+                                        <InputOTPSeparator className="text-xl">
+                                            -
+                                        </InputOTPSeparator>
 
                                         <InputOTPGroup>
-                                            <InputOTPSlot index={3} />
-                                            <InputOTPSlot index={4} />
-                                            <InputOTPSlot index={5} />
+                                            <InputOTPSlot index={3} className="sm:h-10 sm:w-12 border-black/20 text-lg font-semibold" />
+                                            <InputOTPSlot index={4} className="sm:h-10 sm:w-12 border-black/20  text-lg font-semibold" />
+                                            <InputOTPSlot index={5} className="sm:h-10 sm:w-12 border-black/20  text-lg font-semibold" />
                                         </InputOTPGroup>
                                     </InputOTP>
+                                </div>
+
+                                <div className="my-2">
+                                    <button
+                                        onClick={sendOtp}
+                                        disabled={resendCountdown > 0 || isPending}
+                                        className="text-xs cursor-pointer font-medium text-black hover:underline underline-offset-2 disabled:opacity-50"
+                                    >
+                                        {resendCountdown > 0
+                                            ? `Resend OTP in ${resendCountdown}s`
+                                            : "Resend OTP"}
+                                    </button>
                                 </div>
 
                                 {/* Verify Button */}
@@ -443,11 +495,11 @@ export default function LoginModalUI() {
                                     onClick={verifyOtp}
                                     disabled={otp.length !== 6 || isPending}
                                     className="
-                                            w-full py-2 rounded-md
+                                            w-full py-2
                                         text-sm sm:text-base font-medium
-                                        bg-primary text-primary-foreground
+                                        bg-black text-primary-foreground
                                         hover:bg-(--btn-primary-hover)
-                                        hover:disabled:opacity-80 disabled:cursor-not-allowed
+                                        hover:disabled:opacity-90 disabled:cursor-not-allowed
                                         transition
                                             "
                                 >
@@ -458,8 +510,8 @@ export default function LoginModalUI() {
                                     <div
                                         role="status"
                                         className="
-                                                mt-2 rounded-md border border-green-500/30
-                                                bg-green-500/10 px-3 py-1 text-sm text-green-700
+                                                mt-2 uppercase font-bold text-center border border-green-500/30
+                                                bg-green-500/10 px-3 py-1 text-xs text-green-700
                                                 transition-all duration-200
                                             "
                                     >
@@ -472,7 +524,7 @@ export default function LoginModalUI() {
                                     <div
                                         role="alert"
                                         className="
-                                                mt-2 rounded-md border border-red-500/30
+                                                mt-2 uppercase font-bold text-center border border-red-500/30
                                                 bg-red-500/10 px-3 py-1 text-xs text-red-600
                                                 transition-all duration-200
                                             "
@@ -485,21 +537,6 @@ export default function LoginModalUI() {
 
                         )}
 
-                        <label className="min-[400px]:w-[80%] w-full mx-auto flex items-center gap-2 py-2 text-xs text-(--text-secondary) mb-6">
-                            <input
-                                type="checkbox"
-                                className="accent-primary cursor-pointer"
-                            />
-                            Notify me for updates & offers
-                        </label>
-
-
-                        <p className="text-[11px] text-(--text-muted) text-center">
-                            By continuing, you agree to our{" "}
-                            <span className="underline cursor-pointer">Privacy Policy</span>{" "}
-                            &{" "}
-                            <span className="underline cursor-pointer">T&Cs</span>
-                        </p>
 
                         <p className="mt-3 text-xs text-center text-(--text-secondary) underline cursor-pointer">
                             Trouble logging in?

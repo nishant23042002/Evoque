@@ -1,10 +1,13 @@
+// /app/(admin)/admin/products/components/ProductTable.tsx
+
 "use client";
 
 import { AdminProduct } from "@/types/AdminProduct";
 import ProductRow from "./ProductRow";
+import Product from "@/types/ProductTypes";
 
 interface Props {
-  products: AdminProduct[];
+  products: Product[];
   loading: boolean;
   refresh: () => void;
 }
@@ -35,10 +38,11 @@ export default function ProductTable({
       <table className="w-full text-sm">
         <thead className="bg-zinc-800 text-zinc-400 uppercase text-xs tracking-wider">
           <tr>
+            
             <th className="p-4 text-left">Product</th>
-            <th className="p-4">Price</th>
-            <th className="p-4">Stock</th>
-            <th className="p-4">Status</th>
+            <th className="p-4 text-left">Price</th>
+            <th className="p-4 text-left">Stock</th>
+            <th className="p-4 text-left">Status</th>
             <th className="p-4 text-right">Actions</th>
           </tr>
         </thead>

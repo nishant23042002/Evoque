@@ -124,13 +124,13 @@ const Stars = ({ value }: { value: number }) => {
    COMPONENT
 ==================== */
 interface ProductPageClientProps {
-  slug: string;
+    slug: string;
 }
 
 export default function ProductPageClient({
-  slug,
+    slug,
 }: ProductPageClientProps) {
-    
+
     const router = useRouter();
     const imageRefs = useRef<(HTMLDivElement | null)[]>([]);
     const [quantity, setQuantity] = useState(1);
@@ -192,7 +192,7 @@ export default function ProductPageClient({
 
     useEffect(() => {
         if (hasViewedRef.current) return;
-        if(slug) return
+        if (slug) return
 
         hasViewedRef.current = true;
 
@@ -300,8 +300,8 @@ export default function ProductPageClient({
 
 
     const cartImage =
-        activeVariant?.color.images.find(img => img.isPrimary)?.url ||
-        activeVariant?.color.images[0]?.url ||
+        activeVariant?.color?.images.find(img => img?.isPrimary)?.url ||
+        activeVariant?.color?.images[0]?.url ||
         "";
 
     const scrollToImage = (index: number) => {
@@ -655,7 +655,15 @@ export default function ProductPageClient({
                                         >
                                             <div className="flex flex-col justify-between items-center">
                                                 <div className="aspect-3/4 ">
-                                                    <Image src={color.image} className="object-cover aspect-3/4" alt={color.name} width={70} height={70} />
+                                                    {color.image && (
+                                                        <Image
+                                                            src={color.image}
+                                                            className="object-cover aspect-3/4"
+                                                            alt={color.name}
+                                                            width={70}
+                                                            height={70}
+                                                        />
+                                                    )}
                                                 </div>
                                             </div>
                                         </button>

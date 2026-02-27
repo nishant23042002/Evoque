@@ -1,3 +1,5 @@
+// /app/(admin)/admin/Sidebar.tsx
+
 "use client";
 
 import Link from "next/link";
@@ -8,8 +10,13 @@ const navItems = [
     { name: "Dashboard", href: "/admin" },
     { name: "Products", href: "/admin/products" },
     { name: "Inventory", href: "/admin/inventory" },
-    { name: "Users", href: "/admin/users" },
+    { name: "Orders", href: "/admin/orders" },
+    { name: "Customers", href: "/admin/customers" },
+    { name: "Marketing", href: "/admin/marketing" },
+    { name: "Coupons", href: "/admin/coupons" },
+    { name: "Roles", href: "/admin/roles" },
     { name: "Analytics", href: "/admin/analytics" },
+    { name: "Settings", href: "/admin/settings" },
 ];
 
 export default function Sidebar() {

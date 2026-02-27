@@ -1,3 +1,5 @@
+// /app/(admin)/admin/page.tsx
+
 export default function AdminHome() {
   return (
     <div>
