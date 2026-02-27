@@ -35,7 +35,20 @@ export function useProductVariants(
     const sizes = useMemo(() => {
         if (!product || !activeVariant) return [];
 
-        const scale = sizeScaleMap[product.category.sizeType.type] || [];
+        const sizeType = product.category?.sizeType?.type;
+
+        if (!sizeType || !sizeScaleMap[sizeType]) {
+            // fallback to actual variant sizes if category scale missing
+            return activeVariant.sizes.map(s => ({
+                size: s.size,
+                variant: s,
+                exists: true,
+                inStock: s.stock > 0,
+                isAvailable: s.isAvailable,
+            }));
+        }
+
+        const scale = sizeScaleMap[sizeType];
         const map = new Map(activeVariant.sizes.map(s => [s.size, s]));
 
         return scale.map(size => {
@@ -48,6 +61,7 @@ export function useProductVariants(
                 isAvailable: variant ? variant.isAvailable : false,
             };
         });
+
     }, [product, activeVariant]);
 
     return { activeVariant, images, colorVariants, sizes };

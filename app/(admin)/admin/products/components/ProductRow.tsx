@@ -3,7 +3,6 @@
 "use client";
 
 import { useState } from "react";
-import { AdminProduct } from "@/types/AdminProduct";
 import Image from "next/image";
 import { MoreVertical } from "lucide-react";
 import axios from "axios";
@@ -13,6 +12,8 @@ interface Props {
     product: Product;
     refresh: () => void;
 }
+
+
 
 export default function ProductRow({ product, refresh }: Props) {
     const [open, setOpen] = useState(false);
@@ -40,6 +41,23 @@ export default function ProductRow({ product, refresh }: Props) {
             `/api/admin/products/${product._id}`,
             { withCredentials: true }
         );
+        setLoading(false);
+        refresh();
+    }
+
+    async function hardDelete() {
+        const confirmDelete = confirm(
+            "⚠️ This will permanently delete the product and ALL images. Continue?"
+        );
+        if (!confirmDelete) return;
+
+        setLoading(true);
+
+        await axios.delete(
+            `/api/admin/products/${product._id}?hard=true`,
+            { withCredentials: true }
+        );
+
         setLoading(false);
         refresh();
     }
@@ -91,7 +109,7 @@ export default function ProductRow({ product, refresh }: Props) {
                 </button>
 
                 {open && (
-                    <div className="absolute right-13 top-8 mt-2 w-40 bg-zinc-900 border border-zinc-800 rounded shadow-lg">
+                    <div className="absolute right-13 top-0 mt-2 w-40 bg-zinc-900 border border-zinc-800 rounded shadow-lg">
                         <button
                             onClick={() => {
                                 setOpen(false);
@@ -121,7 +139,18 @@ export default function ProductRow({ product, refresh }: Props) {
                             className="w-full text-left px-4 py-2 hover:bg-red-500/10 text-red-400 text-sm"
                             disabled={loading}
                         >
-                            Delete
+                            Soft Delete
+                        </button>
+
+                        <button
+                            onClick={() => {
+                                setOpen(false);
+                                hardDelete();
+                            }}
+                            className="w-full text-left px-4 py-2 hover:bg-red-600/20 text-red-500 text-sm"
+                            disabled={loading}
+                        >
+                            Permanent Delete
                         </button>
                     </div>
                 )}

@@ -46,7 +46,13 @@ function generateVariantSKU({
   return `${productSku}-${toCode(color, 3)}-${size.toUpperCase()}`;
 }
 
+function calculateDiscount(price: number, original: number) {
+  if (!original || original <= price) return 0
 
+  return Math.round(
+    ((original - price) / original) * 100
+  )
+}
 
 /**
  * POST → Create Product (Admin Only)
@@ -89,11 +95,6 @@ export async function POST(req: Request) {
         { status: 400 }
       );
 
-    if (!pricing?.price)
-      return NextResponse.json(
-        { message: "pricing.price is required" },
-        { status: 400 }
-      );
 
     if (!thumbnail)
       return NextResponse.json(
@@ -150,9 +151,12 @@ export async function POST(req: Request) {
     const processedVariants = [];
 
     for (const variant of variants) {
-      if (!variant.color?.images?.length)
+      if (
+        typeof variant.pricing?.price !== "number" ||
+        variant.pricing.price <= 0
+      )
         return NextResponse.json(
-          { message: "Each variant needs images" },
+          { message: "Variant price must be greater than 0" },
           { status: 400 }
         );
 
@@ -193,6 +197,11 @@ export async function POST(req: Request) {
         0
       );
 
+      const variantDiscount = calculateDiscount(
+        variant.pricing.price,
+        variant.pricing.originalPrice
+      )
+
       processedVariants.push({
         color: {
           ...variant.color,
@@ -200,7 +209,11 @@ export async function POST(req: Request) {
           images: variant.color.images,
         },
         sizes: updatedSizes,
-        pricing: variant.pricing,
+        pricing: {
+          price: variant.pricing.price,
+          originalPrice: variant.pricing.originalPrice || variant.pricing.price,
+          discountPercentage: variantDiscount,
+        },
         totalStock,
       });
     }
@@ -209,6 +222,17 @@ export async function POST(req: Request) {
       (sum, v) => sum + v.totalStock,
       0
     );
+
+    const firstVariantPricing = processedVariants[0].pricing
+
+
+    const productPricing = {
+      price: firstVariantPricing.price,
+      originalPrice: firstVariantPricing.originalPrice,
+      discountPercentage: firstVariantPricing.discountPercentage,
+      taxInclusive: pricing.taxInclusive ?? true,
+      currency: pricing.currency ?? "INR",
+    }
 
     /* ---------- CREATE ---------- */
 
@@ -219,7 +243,7 @@ export async function POST(req: Request) {
       brand,
       category: category._id,
       subCategory: validSub,
-      pricing,
+      pricing: productPricing,
       thumbnail,
       description,
       variants: processedVariants,

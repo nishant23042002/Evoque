@@ -2,13 +2,14 @@
 
 import Image from "next/image";
 import { X } from "lucide-react";
-import { useMemo, useState } from "react";
+import { useState } from "react";
 import clsx from "clsx";
 import { Variant, SizeVariant } from "@/types/ProductTypes";
 import { sizeScaleMap } from "@/constants/productSizes";
 import Product from "@/types/ProductTypes";
 import { showProductToast } from "@/store/ui/ui.slice";
 import { useAppDispatch } from "@/store/hooks";
+import { useProductVariants } from "@/src/useProductVariants";
 
 
 interface Props {
@@ -21,18 +22,6 @@ interface Props {
         size: SizeVariant;
         image: string;
     }) => void;
-}
-
-function inferSizeScale(activeVariant: Variant): string[] {
-    const sizes = activeVariant.sizes.map(s => s.size);
-
-    // numeric sizes → bottoms
-    if (sizes.some(s => /^\d+$/.test(s))) {
-        return sizeScaleMap["jeans"];
-    }
-
-    // alpha sizes → tops
-    return sizeScaleMap["shirt"];
 }
 
 
@@ -52,80 +41,25 @@ export default function SelectedVariantModal({
     const [activeImage, setActiveImage] = useState<string | null>(null);
     const [previewImage, setPreviewImage] = useState<string | null>(null);
     const dispatch = useAppDispatch();
-    const effectiveColor =
-        selectedColor ?? product.variants[0].color.slug;
+  
 
-    /* =========================
-       ACTIVE VARIANT
-    ========================= */
-    const activeVariant = useMemo<Variant | null>(() => {
-        if (!effectiveColor) return null;
-
-        return (
-            product.variants.find(v => v.color.slug === effectiveColor) ??
-            product.variants[0]
-        );
-    }, [product, effectiveColor]);
 
     console.log("CATEGORY SLUG:", product.category.slug);
     console.log("AVAILABLE SIZE MAP KEYS:", Object.keys(sizeScaleMap));
 
 
-    /* =========================
-       IMAGE (SAFE)
-    ========================= */
-    const images = useMemo(() => {
-        return activeVariant?.color.images ?? [];
-    }, [activeVariant]);
-    const primaryImageForCart =
-        images.find(i => i.isPrimary)?.url ??
-        images[0]?.url ??
-        null;
+    
+    const {
+        activeVariant: modalActiveVariant,
+        images,
+        sizes
+    } = useProductVariants(product, selectedColor);
+    
+    const primaryImageForCart = images[0] ?? null;
 
-    const image =
-        activeImage ??
-        images.find(i => i.isPrimary)?.url ??
-        images[0]?.url ??
-        null;
+    const image = activeImage ?? images[0] ?? null;
 
-
-    /* =========================
-       SIZES
-    ========================= */
-    const sizes = useMemo(() => {
-        if (!activeVariant) return [];
-
-        const sizeType = product.category?.sizeType?.type;
-
-        const scale: string[] =
-            sizeType && sizeScaleMap[sizeType]
-                ? sizeScaleMap[sizeType]
-                : inferSizeScale(activeVariant);
-
-        const sizeMap = new Map<string, SizeVariant>(
-            activeVariant.sizes.map(s => [s.size, s])
-        );
-
-        return scale.map((size: string) => {
-            const variant = sizeMap.get(size);
-
-            return {
-                size,
-                variant,
-                exists: Boolean(variant),
-                inStock: Boolean(variant && variant.stock > 0),
-                isAvailable: Boolean(variant && variant.isAvailable),
-            };
-        });
-    }, [activeVariant, product.category]);
-
-
-
-
-
-
-
-    if (!open || !activeVariant) return null;
+    if (!open || !modalActiveVariant) return null;
 
     /* =========================
        RENDER
@@ -144,26 +78,26 @@ export default function SelectedVariantModal({
 
                 {/* IMAGE COLLAGE */}
                 <div className="relative">
-                    <div className="grid grid-cols-2 grid-rows-2 gap-1 p-1 bg-gray-50">
+                    <div className="grid grid-cols-2 grid-rows-2 gap-1 px-1 bg-gray-50">
                         {images.slice(0, 4).map((img, idx) => (
                             <button
                                 key={idx}
                                 onClick={() => {
-                                    setActiveImage(img.url);
-                                    setPreviewImage(img.url);
+                                    setActiveImage(img);
+                                    setPreviewImage(img);
                                 }}
                                 className={clsx(
-                                    "relative cursor-pointer aspect-square overflow-hidden border",
-                                    image === img.url
+                                    "relative cursor-pointer aspect-2/2 overflow-hidden border",
+                                    image === img
                                         ? "ring-2 ring-primary border-primary"
                                         : "border-gray-200"
                                 )}
                             >
                                 <Image
-                                    src={img.url}
+                                    src={img}
                                     alt={`${product.productName}-${idx}`}
                                     fill
-                                    className="object-cover"
+                                    className="object-contain"
                                 />
                             </button>
                         ))}
@@ -191,7 +125,7 @@ export default function SelectedVariantModal({
                                     src={previewImage}
                                     alt="Preview"
                                     fill
-                                    className="object-cover"
+                                    className="object-contain"
                                 />
                             </div>
                         </div>
@@ -264,14 +198,14 @@ export default function SelectedVariantModal({
                     {/* ACTION */}
                     <button
                         onClick={() => {
-                            if (!selectedSize || !activeVariant) {
+                            if (!selectedSize || !modalActiveVariant) {
                                 setError(true);
                                 return;
                             }
 
                             onConfirm({
                                 product,
-                                variant: activeVariant,
+                                variant: modalActiveVariant,
                                 size: selectedSize,
                                 image: primaryImageForCart!,
                             });

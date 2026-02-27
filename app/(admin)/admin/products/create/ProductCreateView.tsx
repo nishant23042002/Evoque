@@ -3,12 +3,12 @@
 import { useState } from "react"
 import ProductTabs from "./components/ProductTabs"
 import BasicInfoSection from "./components/sections/BasicInfoSection"
-import PricingSection from "./components/sections/PricingSection"
 import ThumbnailSection from "./components/sections/ThumbnailSection"
 import { useProduct } from "./ProductProvider"
 import { validateProduct } from "./utils/validateProduct"
 import axios from "axios"
 import VariantsSection from "./components/sections/VariantsSection"
+import PricingSection from "./components/sections/PricingSection"
 
 export default function ProductCreateView() {
   const [activeTab, setActiveTab] = useState("Basic")
@@ -22,6 +22,7 @@ export default function ProductCreateView() {
       return
     }
     console.log(product);
+    console.log(JSON.stringify(product.variants, null, 2))
     try {
       await axios.post("/api/admin/products", {
         ...product,

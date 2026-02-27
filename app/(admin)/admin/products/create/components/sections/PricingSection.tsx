@@ -1,57 +1,52 @@
 "use client"
 
+import { useMemo } from "react"
 import { useProduct } from "../../ProductProvider"
 
 export default function PricingSection() {
-  const { product, setProduct } = useProduct()
+    const { product } = useProduct()
 
-  function handlePriceChange(value: number) {
-    const discount =
-      product.pricing.originalPrice > 0
-        ? Math.round(
-            ((product.pricing.originalPrice - value) /
-              product.pricing.originalPrice) *
-              100
-          )
-        : 0
+    const derivedPricing = useMemo(() => {
+        if (!product.variants.length) return null
 
-    setProduct({
-      ...product,
-      pricing: {
-        ...product.pricing,
-        price: value,
-        discountPercentage: discount,
-      },
-    })
-  }
+        const prices = product.variants
+            .map(v => v.pricing?.price)
+            .filter(p => typeof p === "number" && p > 0) as number[]
 
-  return (
-    <div className="space-y-4">
-      <input
-        type="number"
-        placeholder="Price"
-        value={product.pricing.price}
-        onChange={(e) =>
-          handlePriceChange(Number(e.target.value))
+        if (!prices.length) return null
+
+        const minPrice = Math.min(...prices)
+        const maxPrice = Math.max(...prices)
+
+        return {
+            minPrice,
+            maxPrice,
         }
-        className="bg-zinc-800 p-3 rounded w-full"
-      />
+    }, [product.variants])
 
-      <input
-        type="number"
-        placeholder="Original Price"
-        value={product.pricing.originalPrice}
-        onChange={(e) =>
-          setProduct({
-            ...product,
-            pricing: {
-              ...product.pricing,
-              originalPrice: Number(e.target.value),
-            },
-          })
-        }
-        className="bg-zinc-800 p-3 rounded w-full"
-      />
-    </div>
-  )
+    if (!derivedPricing) {
+        return (
+            <div className="text-sm text-zinc-400">
+                Product price will be calculated automatically once you add a valid variant.
+            </div>
+        )
+    }
+
+    return (
+        <div className="space-y-4">
+            <div className="bg-zinc-900 border border-zinc-700 p-4 rounded">
+                <p className="text-sm text-zinc-400">Product Price (Auto Derived)</p>
+
+                {derivedPricing.minPrice === derivedPricing.maxPrice ? (
+                    <p className="text-lg font-semibold">
+                        Rs. {derivedPricing.minPrice}
+                    </p>
+                ) : (
+                    <p className="text-lg font-semibold">
+                        Rs. {derivedPricing.minPrice} - Rs. {derivedPricing.maxPrice}
+                    </p>
+                )}
+            </div>
+        </div>
+    )
 }

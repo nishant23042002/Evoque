@@ -71,6 +71,7 @@ export default function SizeManager({ variantIndex }: Props) {
     0
   );
 
+
   return (
     <div className="space-y-4">
 

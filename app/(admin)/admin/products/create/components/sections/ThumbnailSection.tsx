@@ -4,30 +4,24 @@ import Image from "next/image"
 import { useProduct } from "../../ProductProvider"
 
 export default function ThumbnailSection() {
-  const { product, setProduct } = useProduct()
+  const { product } = useProduct()
 
   return (
     <div className="space-y-4">
-      <input
-        placeholder="Thumbnail URL"
-        value={product.thumbnail}
-        onChange={(e) =>
-          setProduct({
-            ...product,
-            thumbnail: e.target.value,
-          })
-        }
-        className="bg-zinc-800 p-3 rounded w-full"
-      />
+      <h3 className="font-medium">Auto Thumbnail</h3>
 
-      {product.thumbnail && (
+      {product.thumbnail ? (
         <Image
-          width={40}
-          height={40}
+          width={200}
+          height={200}
           src={product.thumbnail}
-          alt="Preview"
-          className="w-32 h-40 object-cover border"
+          alt="Thumbnail Preview"
+          className="w-40 h-48 object-cover border rounded"
         />
+      ) : (
+        <p className="text-sm text-zinc-400">
+          Thumbnail will be generated from primary variant image.
+        </p>
       )}
     </div>
   )

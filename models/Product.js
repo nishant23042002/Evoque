@@ -108,7 +108,7 @@ const productSchema = new mongoose.Schema(
 
         // 💰 Pricing
         pricing: {
-            price: { type: Number, required: true },
+            price: { type: Number },
             originalPrice: Number,
             discountPercentage: Number,
             taxInclusive: { type: Boolean, default: true },

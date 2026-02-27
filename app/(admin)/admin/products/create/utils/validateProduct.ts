@@ -10,8 +10,20 @@ export function validateProduct(product: AdminProduct) {
   if (!product.thumbnail)
     return "Thumbnail required"
 
-  if (product.pricing.price <= 0)
-    return "Price must be greater than 0"
+  
+  for (const variant of product.variants) {
+    if (!variant.pricing || !variant.pricing.price || variant.pricing.price <= 0) {
+      return "Each variant must have a price greater than 0"
+    }
+
+    if (!variant.sizes.length) {
+      return "Each variant must have at least one size"
+    }
+
+    if (!variant.color.images.length) {
+      return "Each variant must have at least one image"
+    }
+  }
 
   return null
 }

@@ -5,9 +5,20 @@ import { useProduct } from "../../ProductProvider"
 import axios from "axios";
 import { Category } from "@/types/ProductTypes";
 
+function generateSlug(text: string) {
+  return text
+    .toLowerCase()
+    .trim()
+    .replace(/[^a-z0-9\s-]/g, "")   // remove special chars
+    .replace(/\s+/g, "-")           // spaces → hyphen
+    .replace(/-+/g, "-");           // collapse multiple hyphens
+}
+
+
 export default function BasicInfoSection() {
   const { product, setProduct } = useProduct();
   const [categories, setCategories] = useState<Category[]>([])
+  const [showSlug, setShowSlug] = useState(false)
 
   useEffect(() => {
     async function fetchCategories() {
@@ -26,26 +37,38 @@ export default function BasicInfoSection() {
       <input
         placeholder="Product Name"
         value={product.productName}
-        onChange={(e) =>
-          setProduct({
-            ...product,
-            productName: e.target.value,
-          })
-        }
+        onChange={(e) => {
+          const name = e.target.value.toUpperCase();
+
+          setProduct(prev => ({
+            ...prev,
+            productName: name,
+            slug: generateSlug(name), // 🔥 auto slug
+          }));
+        }}
+        onBlur={() => {
+          if (!product.productName) return
+
+          setProduct(prev => ({
+            ...prev,
+            slug: generateSlug(prev.productName),
+          }))
+
+          setShowSlug(true)
+        }}
         className="bg-zinc-800 p-3 rounded w-full"
       />
 
-      <input
-        placeholder="Slug"
-        value={product.slug}
-        onChange={(e) =>
-          setProduct({
-            ...product,
-            slug: e.target.value,
-          })
-        }
-        className="bg-zinc-800 p-3 rounded w-full"
-      />
+      {/* SLUG PREVIEW (NOT INPUT) */}
+      {showSlug && product.slug && (
+        <div className="text-sm text-zinc-400">
+          Slug:{" "}
+          <span className="text-white font-mono">
+            {product.slug}
+          </span>
+        </div>
+      )}
+
 
       <input
         placeholder="Brand"
