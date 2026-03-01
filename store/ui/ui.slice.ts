@@ -1,13 +1,25 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 
+export type ProductToastType =
+    | "cart"
+    | "wishlist"
+    | "wishlist-remove"
+    | "cart-remove"
+    | "error"
+    | "success"
+    | "info"
+    | "warning";
+
 export type ProductToastPayload = {
-    name: string;
+    id?: string;
+    name?: string;
     image: string;
     price?: number;
     size?: string;
-    type: "cart" | "wishlist" | "wishlist-remove" | "cart-remove";
+    message?: string;
+    duration?: number;
+    type: ProductToastType;
 };
-
 
 type UIState = {
     productToast: ProductToastPayload | null;
@@ -21,7 +33,10 @@ const uiSlice = createSlice({
     name: "ui",
     initialState,
     reducers: {
-        showProductToast: (state, action: PayloadAction<ProductToastPayload>) => {
+        showProductToast: (
+            state,
+            action: PayloadAction<ProductToastPayload>
+        ) => {
             state.productToast = action.payload;
         },
         hideProductToast: (state) => {

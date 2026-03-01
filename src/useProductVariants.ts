@@ -15,11 +15,14 @@ export function useProductVariants(
     }, [product, selectedColor]);
 
     const images =
-        activeVariant?.color?.images?.length
-            ? activeVariant.color.images.map(i => i.url)
-            : product?.thumbnail
-                ? [product.thumbnail]
-                : [];
+        activeVariant?.color.images
+            ?.slice()
+            .sort((a, b) => {
+                if (a.isPrimary) return -1;
+                if (b.isPrimary) return 1;
+                return (a.order ?? 0) - (b.order ?? 0);
+            })
+            .map(img => img.url) || [];
 
     const colorVariants = useMemo(() => {
         if (!product) return [];

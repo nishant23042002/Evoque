@@ -53,7 +53,7 @@ export default function ProductCreateView() {
       {activeTab === "Variants" && <VariantsSection />}
       <button
         onClick={handleSubmit}
-        className="bg-white text-black px-6 py-2 rounded"
+        className="bg-white flex items-center font-medium justify-evenly border text-sm uppercase duration-200 cursor-pointer text-black hover:text-white hover:bg-black w-35 py-2 rounded"
       >
         Create Product
       </button>

@@ -1,13 +1,16 @@
 // app/api/webhooks/razorpay/route.ts
 import { NextResponse } from "next/server";
 import crypto from "crypto";
-import { Types } from "mongoose";
+import mongoose, { Types } from "mongoose";
 import connectDB from "@/lib/db";
 import Cart from "@/models/Cart";
 import Order from "@/models/Order";
 import Address from "@/models/Address";
 import CheckoutSession from "@/models/CheckoutSession";
 import Coupon from "@/models/Coupon";
+import Product from "@/models/Product";
+import { OrderItem } from "@/types/OrderTypes";
+
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
@@ -17,7 +20,7 @@ interface CheckoutSessionItem {
     name: string;
     image?: string;
     variantSku: string;
-    slug:string;
+    slug: string;
     size: string;
     color: string;
     quantity: number;
@@ -102,20 +105,9 @@ export async function POST(req: Request) {
 
     const userObjectId = new Types.ObjectId(userId);
 
-    /* 3️⃣ Idempotency */
-    const existing = await Order.findOne({ checkoutToken }).lean();
-    if (existing) {
-        return NextResponse.json({ received: true });
-    }
-
     /* 5️⃣ Fetch address */
-    const addressDoc = await Address.findOne({
-        userId: userObjectId,
-    })
-
-    if (!addressDoc) {
-        return NextResponse.json({ received: true });
-    }
+    const addressDoc = await Address.findOne({ userId: userObjectId });
+    if (!addressDoc) return NextResponse.json({ received: true });
 
     const address = {
         name: addressDoc.name,
@@ -128,63 +120,158 @@ export async function POST(req: Request) {
         country: addressDoc.country ?? "India",
     };
 
-    const orderItems = session.items.map((item: CheckoutSessionItem) => {
-        const total = item.price * item.quantity;
 
-        return {
-            productId: new Types.ObjectId(item.productId),
-            name: item.name,
-            slug: item.slug, // optional if you don’t store it
-            image: item.image ?? "",
-            size: item.size,
-            color: item.color,
-            sku: item.variantSku,   // 🔥 map correctly
-            quantity: item.quantity,
-            price: item.price,
-            discount: 0,
-            total,
-        }
-    })
-
+    /* 🔹 Build typed order items */
+    const orderItems: OrderItem[] = session.items.map((item) => ({
+        productId: new Types.ObjectId(item.productId),
+        name: item.name,
+        slug: item.slug,
+        image: item.image ?? "",
+        size: item.size,
+        color: item.color,
+        sku: item.variantSku,
+        quantity: item.quantity,
+        price: item.price,
+        discount: 0,
+        total: item.price * item.quantity,
+    }));
 
     /* 8️⃣ Order number */
     const orderNumber = `TL-${Date.now().toString().slice(-8)}`;
 
+    /* ===============================
+       🔥 START TRANSACTION
+    ================================ */
+    const dbSession = await mongoose.startSession();
 
-    /* 9️⃣ Create order */
-    await Order.create({
-        userId: userObjectId,
-        checkoutToken,
-        orderNumber,
-        items: orderItems,
-        shippingAddress: address,
-        billingAddress: address,
-        subtotal: session.subtotal,
-        tax: session.tax,
-        shippingFee: session.shippingFee,
-        discountAmount: session.discountAmount,
-        grandTotal: session.grandTotal,
-        paymentInfo: {
-            method: "razorpay",
-            paymentId: payment.id,
-            orderId: payment.order_id,
-            signature,
-            status: "paid",
-            paidAt: new Date(),
-        },
-        orderStatus: "confirmed",
-    });
+    /* 4️⃣ Idempotency */
+    const existing = await Order.findOne({ checkoutToken }).lean();
+    if (existing) {
+        return NextResponse.json({ received: true });
+    }
 
-    if (session.coupon?.code) {
-        await Coupon.updateOne(
-            { code: session.coupon.code, isActive: true },
-            { $inc: { usedCount: 1 } }
+    try {
+        dbSession.startTransaction();
+
+        /* 🔥 ATOMIC STOCK DEDUCTION */
+        for (const item of orderItems) {
+            const stockUpdate = await Product.updateOne(
+                {
+                    _id: item.productId,
+                    "variants.sizes.variantSku": item.sku,
+                    "variants.sizes.stock": { $gte: item.quantity }, // prevents oversell
+                },
+                {
+                    $inc: {
+                        "variants.$[variant].sizes.$[size].stock": -item.quantity,
+                    },
+                },
+                {
+                    arrayFilters: [
+                        { "variant.sizes.variantSku": item.sku },
+                        { "size.variantSku": item.sku },
+                    ],
+                    session: dbSession,
+                }
+            );
+
+            if (stockUpdate.modifiedCount === 0) {
+                throw new Error(`Insufficient stock for SKU: ${item.sku}`);
+            }
+        }
+
+        /* 🔁 Recalculate totalStock & availability */
+        for (const item of orderItems) {
+            const product = await Product.findById(item.productId).session(dbSession);
+            if (!product) continue;
+
+            // ✅ define AFTER product exists
+            type VariantDoc = (typeof product.variants)[number];
+            type SizeDoc = VariantDoc["sizes"][number];
+
+            product.variants.forEach((variant: VariantDoc) => {
+                variant.sizes.forEach((size: SizeDoc) => {
+                    // 🔥 Update size availability
+                    size.isAvailable = size.stock > 0;
+                });
+
+
+                variant.totalStock = variant.sizes.reduce(
+                    (sum: number, s: SizeDoc) => sum + s.stock,
+                    0
+                );
+            });
+
+            product.totalStock = product.variants.reduce(
+                (sum: number, v: VariantDoc) =>
+                    sum + (v.totalStock ?? 0),
+                0
+            );
+
+            product.isAvailable = product.totalStock > 0;
+
+            await product.save({ session: dbSession });
+        }
+
+        /* 🧾 CREATE ORDER INSIDE TRANSACTION */
+        await Order.create(
+            [
+                {
+                    userId: userObjectId,
+                    checkoutToken,
+                    orderNumber,
+                    items: orderItems,
+                    shippingAddress: address,
+                    billingAddress: address,
+                    subtotal: session.subtotal,
+                    tax: session.tax,
+                    shippingFee: session.shippingFee,
+                    discountAmount: session.discountAmount,
+                    grandTotal: session.grandTotal,
+                    paymentInfo: {
+                        method: "razorpay",
+                        paymentId: payment.id,
+                        orderId: payment.order_id,
+                        signature,
+                        status: "paid",
+                        paidAt: new Date(),
+                    },
+                    orderStatus: "confirmed",
+                },
+            ],
+            { session: dbSession }
+        );
+
+        /* 🎟 Coupon increment */
+        if (session.coupon?.code) {
+            await Coupon.updateOne(
+                { code: session.coupon.code, isActive: true },
+                { $inc: { usedCount: 1 } },
+                { session: dbSession }
+            );
+        }
+
+        /* 🧹 Cleanup */
+        await CheckoutSession.deleteOne({ checkoutToken }).session(dbSession);
+        await Cart.deleteOne({ userId: userObjectId }).session(dbSession);
+
+        await dbSession.commitTransaction();
+        dbSession.endSession();
+
+        return NextResponse.json({ success: true });
+
+    } catch (error) {
+        await dbSession.abortTransaction();
+        dbSession.endSession();
+
+        console.error("🚨 Transaction failed:", error);
+
+        // Optional: trigger auto refund here
+
+        return NextResponse.json(
+            { message: "Stock issue detected — order cancelled automatically" },
+            { status: 409 }
         );
     }
-    await CheckoutSession.deleteOne({ checkoutToken });
-    /* 🔟 Clear cart */
-    await Cart.deleteOne({ userId: userObjectId });
-
-    return NextResponse.json({ success: true });
 }
 

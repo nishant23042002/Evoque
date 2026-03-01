@@ -6,7 +6,15 @@ import { NextResponse } from "next/server";
 
 export async function GET() {
     try {
-        const { userId } = await requireAuth();
+        const auth = await requireAuth();
+        if (!auth) {
+            return NextResponse.json(
+                { message: "Unauthorized" },
+                { status: 401 }
+            );
+        }
+
+        const { userId } = auth;
         await connectDB();
 
         const userObjectId = new Types.ObjectId(userId);
@@ -27,7 +35,15 @@ export async function GET() {
 
 export async function POST(req: Request) {
     try {
-        const { userId } = await requireAuth();
+        const auth = await requireAuth();
+        if (!auth) {
+            return NextResponse.json(
+                { message: "Unauthorized" },
+                { status: 401 }
+            );
+        }
+
+        const { userId } = auth;
         await connectDB();
 
         if (!Types.ObjectId.isValid(userId)) {

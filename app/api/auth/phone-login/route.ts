@@ -22,6 +22,8 @@ export async function POST(req: Request) {
             .auth()
             .verifyIdToken(body.firebaseToken);
 
+        if (!decoded.phone_number) throw new Error("Invalid phone")
+
         await connectDB();
 
         let user = await User.findOne({
@@ -32,16 +34,17 @@ export async function POST(req: Request) {
             user = await User.create({
                 firebaseUid: decoded.uid,
                 phone: decoded.phone_number,
-                role:"customer"
+                role: "customer"
             });
         }
 
         user = await User.findById(user._id);
 
         const token = jwt.sign(
-            { userId: user._id.toString(),
+            {
+                userId: user._id.toString(),
                 role: user.role
-             },
+            },
             process.env.JWT_SECRET!,
             { expiresIn: "7d" }
         );
@@ -51,6 +54,7 @@ export async function POST(req: Request) {
         res.cookies.set("token", token, {
             httpOnly: true,
             sameSite: "lax",
+            secure: process.env.NODE_ENV === "production",
             path: "/",
             maxAge: 60 * 60 * 24 * 7
         });

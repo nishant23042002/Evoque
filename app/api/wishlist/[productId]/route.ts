@@ -12,7 +12,16 @@ export async function DELETE(
 ) {
     try {
         const { productId } = await context.params;
-        const { userId } = await requireAuth();
+        const auth = await requireAuth();
+
+        if (!auth) {
+            return NextResponse.json(
+                { message: "Unauthorized" },
+                { status: 401 }
+            );
+        }
+
+        const { userId } = auth;
         await connectDB();
 
         const userObjectId = new Types.ObjectId(userId);

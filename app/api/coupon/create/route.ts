@@ -1,9 +1,15 @@
+// /api/coupon/create/route.ts
+
 import { NextResponse } from "next/server";
 import connectDB from "@/lib/db";
 import Coupon from "@/models/Coupon";
+import { requireAdmin } from "@/lib/requireAdmin";
 
 export async function POST(req: Request) {
     try {
+        const admin = await requireAdmin();
+        if (!admin) return 401;
+
         await connectDB();
 
         const body = await req.json();

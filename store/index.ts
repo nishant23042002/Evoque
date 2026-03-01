@@ -2,7 +2,7 @@ import { configureStore } from "@reduxjs/toolkit";
 import wishlistReducer from "./wishlist/wishlist.slice";
 import cartReducer from "./cart/cart.slice";
 import recentlyViewed from "./recentlyViewed/recentlyViewed.slice"
-import uiState from "./ui/ui.slice"
+import uiReducer from "./ui/ui.slice"
 
 
 export const store = configureStore({
@@ -10,7 +10,7 @@ export const store = configureStore({
         wishlist: wishlistReducer,
         cart: cartReducer,
         recentlyViewed: recentlyViewed,
-        ui: uiState,
+        ui: uiReducer,
     },
     middleware: getDefaultMiddleware =>
         getDefaultMiddleware({

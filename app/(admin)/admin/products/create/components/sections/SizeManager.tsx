@@ -1,5 +1,6 @@
 "use client";
 
+import { Plus } from "lucide-react";
 import { useProduct } from "../../ProductProvider";
 import { SizeType } from "@/types/AdminProduct";
 
@@ -80,9 +81,9 @@ export default function SizeManager({ variantIndex }: Props) {
         <button
           type="button"
           onClick={addSize}
-          className="text-sm underline"
+          className="bg-white flex items-center font-medium justify-evenly border text-sm uppercase duration-200 cursor-pointer text-black hover:text-white hover:bg-black w-30 py-2 rounded"
         >
-          + Add Size
+          Add Size <Plus size={14} />
         </button>
       </div>
 

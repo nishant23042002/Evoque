@@ -1,3 +1,5 @@
+// /api/order/my/route.ts
+
 import { NextResponse } from "next/server";
 import { Types } from "mongoose";
 import connectDB from "@/lib/db";
@@ -10,7 +12,15 @@ export const dynamic = "force-dynamic";
 export async function GET() {
     try {
         /* 1️⃣ Auth */
-        const { userId } = await requireAuth();
+        const auth = await requireAuth();
+        if (!auth) {
+            return NextResponse.json(
+                { message: "Unauthorized" },
+                { status: 401 }
+            );
+        }
+
+        const { userId } = auth;
         const userObjectId = new Types.ObjectId(userId);
 
         /* 2️⃣ DB */
@@ -18,6 +28,7 @@ export async function GET() {
 
         /* 3️⃣ Fetch orders */
         const orders = await Order.find({ userId: userObjectId })
+            .select("-paymentInfo.signature")
             .sort({ createdAt: -1 }) // newest first           
             .lean();
 

@@ -302,8 +302,9 @@ export default function ProductPageClient({
     const cartImage =
         activeVariant?.color?.images.find(img => img?.isPrimary)?.url ||
         activeVariant?.color?.images[0]?.url ||
+        product?.thumbnail ||
+        product?.variants?.[0]?.color?.images?.[0]?.url ||
         "";
-
     const scrollToImage = (index: number) => {
         setActiveImageIndex(index);
 
@@ -350,14 +351,29 @@ export default function ProductPageClient({
                     slug: activeVariant!.color.slug,
                 },
             })
-        );
-        dispatch(showProductToast({
-            name: product!.productName,
-            image: cartImage,
-            price: product!.pricing.price,
-            size: selectedSize.size,
-            type: "cart"
-        }));
+        )
+            .unwrap()
+            .then(() => {
+                dispatch(
+                    showProductToast({
+                        name: product!.productName,
+                        image: cartImage,
+                        price: product!.pricing.price,
+                        size: selectedSize.size,
+                        type: "cart",
+                    })
+                );
+            })
+            .catch((err) => {
+                dispatch(
+                    showProductToast({
+                        name: product!.productName,
+                        image: cartImage,
+                        type: "error",
+                        message: err,
+                    })
+                );
+            });
 
 
 

@@ -1,10 +1,8 @@
-// /app/(admin)/admin/products/components/ProductRow.tsx
-
 "use client";
 
 import { useState } from "react";
 import Image from "next/image";
-import { MoreVertical } from "lucide-react";
+import { MoreVertical, Loader2 } from "lucide-react";
 import axios from "axios";
 import Product from "@/types/ProductTypes";
 
@@ -13,148 +11,202 @@ interface Props {
     refresh: () => void;
 }
 
-
-
-export default function ProductRow({ product, refresh }: Props) {
+export default function ProductRowCard({ product, refresh }: Props) {
     const [open, setOpen] = useState(false);
     const [loading, setLoading] = useState(false);
 
-    async function toggleActive() {
+    async function handleAction(action: () => Promise<void>) {
+        if (loading) return;
         setLoading(true);
+        setOpen(false);
+        try {
+            await action();
+            refresh();
+        } finally {
+            setLoading(false);
+        }
+    }
+
+    async function toggleActive() {
         await axios.patch(
             `/api/admin/products/${product._id}`,
             { isActive: !product.isActive },
             { withCredentials: true }
         );
-        setLoading(false);
-        refresh();
+    }
+
+    async function toggleNewArrival() {
+        await axios.patch(
+            `/api/admin/products/${product._id}`,
+            { isNewArrival: !product.isNewArrival },
+            { withCredentials: true }
+        );
     }
 
     async function softDelete() {
-        const confirmDelete = confirm(
-            "Are you sure you want to delete this product?"
-        );
-        if (!confirmDelete) return;
+        if (!confirm("Delete this product?")) return;
 
-        setLoading(true);
         await axios.delete(
             `/api/admin/products/${product._id}`,
             { withCredentials: true }
         );
-        setLoading(false);
-        refresh();
     }
 
     async function hardDelete() {
-        const confirmDelete = confirm(
-            "⚠️ This will permanently delete the product and ALL images. Continue?"
-        );
-        if (!confirmDelete) return;
-
-        setLoading(true);
+        if (
+            !confirm(
+                "⚠️ This will permanently delete the product and ALL images. Continue?"
+            )
+        )
+            return;
 
         await axios.delete(
             `/api/admin/products/${product._id}?hard=true`,
             { withCredentials: true }
         );
-
-        setLoading(false);
-        refresh();
     }
 
     return (
-        <tr className="border-t border-zinc-800 py-12 hover:bg-zinc-800/40 z-30 transition">
-            <td className="p-4">
-                <div className="flex items-center gap-4 h-30">
-                    <div className="relative w-28 h-34 rounded-xs overflow-hidden">
-                        <Image
-                            src={product.thumbnail}
-                            alt={product.productName}
-                            fill
-                            className="object-cover"
-                        />
-                    </div>
-
-                    <div>
-                        <p className="font-medium">{product.productName}</p>
-                        <p className="text-xs text-zinc-400">{product.subCategory.name}</p>
-                    </div>
+        <div
+            className={`relative group border border-zinc-800 bg-zinc-900 mb-1 overflow-hidden transition-all duration-300
+      ${loading
+                    ? "opacity-60 pointer-events-none"
+                    : ""
+                }`}
+        >
+            {/* LOADING OVERLAY */}
+            {loading && (
+                <div className="absolute inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm">
+                    <Loader2 className="animate-spin text-white" size={24} />
                 </div>
-            </td>
+            )}
 
-            <td className="p-4">Rs. {product.pricing.price}</td>
+            {/* IMAGE SECTION */}
+            <div className="relative w-full aspect-4/5 sm:aspect-4/5 overflow-hidden">
+                <Image
+                    src={product.thumbnail}
+                    alt={product.productName}
+                    fill
+                    sizes="(max-width: 640px) 50vw,
+                        (max-width: 1024px) 33vw,
+                        (max-width: 1536px) 25vw,
+                        20vw"
+                    className={`object-cover cursor-pointer transition-transform duration-300`}
+                />
 
-            <td className="p-4">
-                {product.totalStock}
-            </td>
+                {/* Overlay */}
+                <div
+                    className={`absolute inset-0 transition ${product.isActive
+                        ? "hover:bg-black/10"
+                        : "bg-black/30"
+                        }`}
+                />
 
-            <td className="p-4">
-                {product.isActive ? (
-                    <span className="px-2 py-1 text-xs bg-green-500/20 text-green-400 rounded">
-                        Active
-                    </span>
-                ) : (
-                    <span className="px-2 py-1 text-xs bg-red-500/20 text-red-400 rounded">
-                        Inactive
-                    </span>
+                {/* NEW Badge */}
+                {product.isNewArrival && (
+                    <div className="absolute top-1 left-1 bg-blue-500 text-blue-100 text-[10px] sm:text-xs px-2 py-1">
+                        NEW
+                    </div>
                 )}
-            </td>
 
-            <td className="p-4 text-right relative">
+                {/* Inactive Badge */}
+                {!product.isActive && (
+                    <div className="absolute top-1 right-1 bg-red-500 text-white text-[10px] sm:text-xs px-2 py-1">
+                        Inactive
+                    </div>
+                )}
+
+                {/* Dropdown Trigger */}
                 <button
+                    disabled={loading}
                     onClick={() => setOpen(!open)}
-                    className="p-2 cursor-pointer hover:bg-zinc-700 rounded"
+                    className="absolute cursor-pointer bottom-1 right-1 p-1 bg-zinc-900/80 hover:bg-zinc-800 transition"
                 >
-                    <MoreVertical size={18} />
+                    <MoreVertical size={16} />
                 </button>
 
-                {open && (
-                    <div className="absolute right-13 top-0 mt-2 w-40 bg-zinc-900 border border-zinc-800 rounded shadow-lg">
+                {/* Dropdown Menu */}
+                {open && !loading && (
+                    <div className="
+                            absolute right-1 bottom-10
+                            w-35 h-30
+                            bg-zinc-900 border border-zinc-800
+                            overflow-y-scroll scrollbar-hide overflow-x-hidden z-40
+                            ">
                         <button
-                            onClick={() => {
-                                setOpen(false);
-                                window.location.href = `/admin/products/edit/${product._id}`;
-                            }}
-                            className="w-full text-left px-4 py-2 hover:bg-zinc-800 text-sm"
+                            onClick={() =>
+                                handleAction(async () => {
+                                    window.location.href = `/admin/products/${product._id}`;
+                                })
+                            }
+                            className="w-full px-4 py-2 text-left hover:bg-zinc-800 text-xs"
                         >
                             Edit
                         </button>
 
                         <button
-                            onClick={() => {
-                                setOpen(false);
-                                toggleActive();
-                            }}
-                            className="w-full text-left px-4 py-2 hover:bg-zinc-800 text-sm"
-                            disabled={loading}
+                            onClick={() => handleAction(toggleNewArrival)}
+                            className={`w-full px-4 py-2 text-left hover:bg-zinc-800 text-xs ${!product.isNewArrival ? "text-blue-500" : "text-red-500"
+                                }`}
+                        >
+                            {product.isNewArrival
+                                ? "Remove New Arrival"
+                                : "Mark as New Arrival"}
+                        </button>
+
+                        <button
+                            onClick={() => handleAction(toggleActive)}
+                            className="w-full px-4 py-2 text-left hover:bg-zinc-800 text-xs"
                         >
                             {product.isActive ? "Deactivate" : "Activate"}
                         </button>
 
+                      
+
                         <button
-                            onClick={() => {
-                                setOpen(false);
-                                softDelete();
-                            }}
-                            className="w-full text-left px-4 py-2 hover:bg-red-500/10 text-red-400 text-sm"
-                            disabled={loading}
+                            onClick={() => handleAction(softDelete)}
+                            className="w-full px-4 py-2 text-left text-red-400 hover:bg-red-500/10 text-xs"
                         >
-                            Soft Delete
+                            Delete
                         </button>
 
                         <button
-                            onClick={() => {
-                                setOpen(false);
-                                hardDelete();
-                            }}
-                            className="w-full text-left px-4 py-2 hover:bg-red-600/20 text-red-500 text-sm"
-                            disabled={loading}
+                            onClick={() => handleAction(hardDelete)}
+                            className="w-full px-4 py-2 text-left text-red-500 hover:bg-red-600/20 text-xs"
                         >
                             Permanent Delete
                         </button>
                     </div>
                 )}
-            </td>
-        </tr>
+            </div>
+
+            {/* CONTENT */}
+            <div className="px-2 sm:px-3 py-2 sm:py-3 space-y-1 sm:space-y-2">
+                <h3 className="text-[11px] sm:text-xs md:text-sm uppercase font-semibold text-zinc-100 line-clamp-1">
+                    {product.productName}
+                </h3>
+
+                <p className="text-[10px] sm:text-xs text-zinc-400 line-clamp-1">
+                    {product.subCategory.name}
+                </p>
+
+                <div className="flex items-center justify-between pt-1">
+                    <span className="font-semibold text-xs sm:text-sm text-zinc-100">
+                        Rs. {product.pricing.price}
+                    </span>
+
+                    <span
+                        className={`text-[10px] sm:text-xs font-medium ${product.totalStock === 0
+                            ? "text-red-400"
+                            : product.totalStock < 10
+                                ? "text-yellow-400"
+                                : "text-green-400"
+                            }`}
+                    >
+                        Stock {product.totalStock}
+                    </span>
+                </div>
+            </div>
+        </div>
     );
 }

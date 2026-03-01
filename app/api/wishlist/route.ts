@@ -32,8 +32,22 @@ interface PopulatedWishlist {
 }
 
 export async function GET() {
+
     try {
-        const { userId } = await requireAuth();
+        const cookieStore = await cookies();
+        const token = cookieStore.get("token")?.value;
+
+        console.log("🍪 COOKIE TOKEN:", token);
+        const auth = await requireAuth();
+
+        if (!auth) {
+            return NextResponse.json(
+                { message: "Unauthorized" },
+                { status: 401 }
+            );
+        }
+
+        const { userId } = auth;
         await connectDB();
         const userObjectId = new Types.ObjectId(userId);
         const wishlist = await Wishlist.findOne({ userId: userObjectId })
@@ -45,16 +59,18 @@ export async function GET() {
         }
 
         return NextResponse.json(
-            wishlist.items.map((i: PopulatedWishlistItem) => ({
-                productId: i.productId._id.toString(),
-                product: i.productId,
-                name: i.productId.productName,
-                slug: i.productId.slug,
-                image: i.productId.thumbnail,
-                price: i.productId.pricing.price,
-                originalPrice: i.productId.pricing.originalPrice,
-                brand: i.productId.brand
-            })) ?? []
+            (wishlist.items ?? [])
+                .filter((i: PopulatedWishlistItem) => i.productId) // ✅ remove null products
+                .map((i: PopulatedWishlistItem) => ({
+                    productId: i.productId._id.toString(),
+                    product: i.productId,
+                    name: i.productId.productName,
+                    slug: i.productId.slug,
+                    image: i.productId.thumbnail,
+                    price: i.productId.pricing.price,
+                    originalPrice: i.productId.pricing.originalPrice,
+                    brand: i.productId.brand
+                }))
         );
     } catch (error) {
         console.error("Wishlist GET error:", error);
@@ -69,7 +85,16 @@ export async function GET() {
 
 export async function POST(req: Request) {
     try {
-        const { userId } = await requireAuth();
+        const auth = await requireAuth();
+
+        if (!auth) {
+            return NextResponse.json(
+                { message: "Unauthorized" },
+                { status: 401 }
+            );
+        }
+
+        const { userId } = auth;
         await connectDB();
         const cookieStore = await cookies();
         const token = cookieStore.get("token")?.value;

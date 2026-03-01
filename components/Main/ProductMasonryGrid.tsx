@@ -222,7 +222,10 @@ export default function ProductMasonryGrid({
                                             dispatch(removeWishlistItem(item._id));
                                             dispatch(showProductToast({
                                                 name: item.productName,
-                                                image: primary,
+                                                image: primary ||
+                                                    item.thumbnail ||
+                                                    item.variants?.[0]?.color?.images?.[0]?.url ||
+                                                    "",
                                                 type: "wishlist-remove"
                                             }));
                                         } else {
@@ -232,7 +235,10 @@ export default function ProductMasonryGrid({
                                                     product: item,
                                                     slug: item.slug,
                                                     name: item.productName,
-                                                    image: primary,
+                                                    image: primary ||
+                                                        item.thumbnail ||
+                                                        item.variants?.[0]?.color?.images?.[0]?.url ||
+                                                        "",
                                                     price: item.pricing?.price ?? 0,
                                                     originalPrice: item.pricing?.originalPrice ?? 0,
                                                     brand: item.brand,
@@ -240,7 +246,10 @@ export default function ProductMasonryGrid({
                                             );
                                             dispatch(showProductToast({
                                                 name: item.productName,
-                                                image: primary,
+                                                image: primary ||
+                                                    item.thumbnail ||
+                                                    item.variants?.[0]?.color?.images?.[0]?.url ||
+                                                    "",
                                                 type: "wishlist"
                                             }));
                                         }

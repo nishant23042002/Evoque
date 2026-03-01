@@ -7,7 +7,16 @@ export const dynamic = "force-dynamic";
 
 export async function GET() {
     try {
-        const { userId } = await requireAuth();
+        const auth = await requireAuth();
+
+        if (!auth) {
+            return NextResponse.json(
+                { message: "Unauthorized" },
+                { status: 401 }
+            );
+        }
+
+        const { userId } = auth;
         await connectDB();
 
         const user = await User.findById(userId).select("_id phone role");
@@ -26,7 +35,7 @@ export async function GET() {
                 role: user.role
             }
         });
-    } catch(error) {
+    } catch (error) {
         console.error("Auth /me error:", error);
 
         return NextResponse.json(

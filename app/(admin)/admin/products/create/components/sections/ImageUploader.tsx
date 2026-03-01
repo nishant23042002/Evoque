@@ -252,7 +252,6 @@ export default function ImageUploader({ variantIndex }: Props) {
                             ).map((img, idx) => ({
                                 ...img,
                                 order: idx + 1,
-                                isPrimary: idx === 0, // enforce first as primary
                             }))
 
                             return {

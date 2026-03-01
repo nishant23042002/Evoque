@@ -4,7 +4,6 @@
 
 import { useEffect, useState } from "react";
 import axios from "axios";
-import { AdminProduct } from "@/types/AdminProduct";
 import ProductTable from "./components/ProductTable";
 import ProductFilters from "./components/ProductFilters";
 import Product from "@/types/ProductTypes";

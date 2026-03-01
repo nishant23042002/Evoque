@@ -8,7 +8,7 @@ import mongoose from "mongoose";
 import { requireAdmin } from "@/lib/requireAdmin";
 import { extractHexFromBuffer } from "@/data/extractColorFromImage";
 import axios from "axios";
-import { SizeType } from "@/types/AdminProduct";
+import { ProductImage, SizeType } from "@/types/AdminProduct";
 import { SubCategory } from "@/types/ProductTypes";
 
 
@@ -206,12 +206,21 @@ export async function POST(req: Request) {
         color: {
           ...variant.color,
           hex: colorHex,
-          images: variant.color.images,
+          images: variant.color.images
+            .slice()
+            .sort((a: ProductImage, b: ProductImage) =>
+              (a.order ?? 0) - (b.order ?? 0)
+            )
+            .map((img: ProductImage, idx: number) => ({
+              ...img,
+              order: idx + 1,
+            }))
         },
         sizes: updatedSizes,
         pricing: {
           price: variant.pricing.price,
-          originalPrice: variant.pricing.originalPrice || variant.pricing.price,
+          originalPrice:
+            variant.pricing.originalPrice || variant.pricing.price,
           discountPercentage: variantDiscount,
         },
         totalStock,
@@ -234,6 +243,13 @@ export async function POST(req: Request) {
       currency: pricing.currency ?? "INR",
     }
 
+    const launch = launchDate ? new Date(launchDate) : new Date();
+
+    const daysSinceLaunch =
+      (Date.now() - launch.getTime()) /
+      (1000 * 60 * 60 * 24);
+
+    const finalIsNewArrival = daysSinceLaunch <= 30;
     /* ---------- CREATE ---------- */
 
     const product = await Product.create({
@@ -250,7 +266,8 @@ export async function POST(req: Request) {
       totalStock,
       isActive,
       isFeatured,
-      launchDate: launchDate ? new Date(launchDate) : undefined,
+      isNewArrival: finalIsNewArrival,
+      launchDate: launch,
       ...rest,
     });
 
@@ -282,7 +299,13 @@ export async function GET() {
   }
 
   await connectDB();
-  const products = await Product.find({ isDeleted: false }).lean();
-
+  const products = await Product.find({ isDeleted: false })
+    .lean()
+    .then(products =>
+      products.map(p => ({
+        ...p,
+        _id: p._id.toString(),
+      }))
+    );
   return NextResponse.json(products);
 }

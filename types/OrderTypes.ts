@@ -1,18 +1,20 @@
+import { Types } from "mongoose";
 
 
 
 export interface OrderItem {
-    productId: string;
-    name: string;
-    image: string;
-    size?: string;
-    color?: string;
-    sku: string;
-    quantity: number;
-    price: number;
-    slug?: string;
-    discountAmount: number
-};
+  productId: Types.ObjectId;   // ✅ correct
+  name: string;
+  image: string;
+  size?: string;
+  color?: string;
+  sku: string;
+  quantity: number;
+  price: number;
+  slug?: string;
+  discount: number;  // required
+  total: number;           // add this since you're using it
+}
 
 
 

@@ -1,5 +1,5 @@
 import { getAuthToken } from "./getAuthToken";
-import jwt, { JwtPayload } from "jsonwebtoken";
+import jwt from "jsonwebtoken";
 
 export async function requireAuth() {
     try {
@@ -19,7 +19,7 @@ export async function requireAuth() {
             return null;
         }
 
-        return decoded as JwtPayload & { userId: string; role: string };
+        return decoded as { userId: string; role: string };
     } catch {
         return null;
     }

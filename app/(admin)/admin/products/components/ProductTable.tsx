@@ -1,9 +1,6 @@
-// /app/(admin)/admin/products/components/ProductTable.tsx
-
 "use client";
 
-import { AdminProduct } from "@/types/AdminProduct";
-import ProductRow from "./ProductRow";
+import ProductRowCard from "./ProductRow";
 import Product from "@/types/ProductTypes";
 
 interface Props {
@@ -19,7 +16,7 @@ export default function ProductTable({
 }: Props) {
   if (loading) {
     return (
-      <div className="bg-zinc-900 p-10 rounded-xl">
+      <div className="p-10 text-center text-zinc-400">
         Loading products...
       </div>
     );
@@ -27,36 +24,27 @@ export default function ProductTable({
 
   if (!products.length) {
     return (
-      <div className="bg-zinc-900 p-10 rounded-xl text-center text-zinc-500">
+      <div className="p-10 text-center text-zinc-500">
         No products found
       </div>
     );
   }
 
   return (
-    <div className="bg-zinc-900 rounded-xl border border-zinc-800 overflow-hidden">
-      <table className="w-full text-sm">
-        <thead className="bg-zinc-800 text-zinc-400 uppercase text-xs tracking-wider">
-          <tr>
-            
-            <th className="p-4 text-left">Product</th>
-            <th className="p-4 text-left">Price</th>
-            <th className="p-4 text-left">Stock</th>
-            <th className="p-4 text-left">Status</th>
-            <th className="p-4 text-right">Actions</th>
-          </tr>
-        </thead>
-
-        <tbody>
-          {products.map((product) => (
-            <ProductRow
-              key={product._id}
-              product={product}
-              refresh={refresh}
-            />
-          ))}
-        </tbody>
-      </table>
+    <div className="grid 
+      grid-cols-2 
+      sm:grid-cols-3
+      
+      xl:grid-cols-4 
+      2xl:grid-cols-5
+  ">
+      {products.map((product) => (
+        <ProductRowCard
+          key={product._id}
+          product={product}
+          refresh={refresh}
+        />
+      ))}
     </div>
   );
 }

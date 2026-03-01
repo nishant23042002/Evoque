@@ -5,18 +5,19 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import clsx from "clsx";
+import Image from "next/image";
 
 const navItems = [
-    { name: "Dashboard", href: "/admin" },
-    { name: "Products", href: "/admin/products" },
-    { name: "Inventory", href: "/admin/inventory" },
-    { name: "Orders", href: "/admin/orders" },
-    { name: "Customers", href: "/admin/customers" },
-    { name: "Marketing", href: "/admin/marketing" },
-    { name: "Coupons", href: "/admin/coupons" },
-    { name: "Roles", href: "/admin/roles" },
-    { name: "Analytics", href: "/admin/analytics" },
-    { name: "Settings", href: "/admin/settings" },
+    { name: "Dashboard", href: "/admin", icon: "/images/dashboard.png" },
+    { name: "Products", href: "/admin/products", icon: "/images/products.png" },
+    { name: "Inventory", href: "/admin/inventory", icon: "/images/inventory.png" },
+    { name: "Orders", href: "/admin/orders", icon: "/images/orders.png" },
+    { name: "Customers", href: "/admin/customers", icon: "/images/customers.png" },
+    { name: "Marketing", href: "/admin/marketing", icon: "/images/marketing.png" },
+    { name: "Coupons", href: "/admin/coupons", icon: "/images/coupons.png" },
+    { name: "Roles", href: "/admin/roles", icon: "/images/roles.png" },
+    { name: "Analytics", href: "/admin/analytics", icon: "/images/analytics.png" },
+    { name: "Settings", href: "/admin/settings", icon: "/images/setting.png" },
 ];
 
 export default function Sidebar() {
@@ -40,7 +41,14 @@ export default function Sidebar() {
                                 : "text-zinc-400 hover:bg-zinc-800 hover:text-white"
                         )}
                     >
-                        {item.name}
+                        <div className="flex w-full gap-4 items-center">
+                            <span>
+                                <Image width={20} height={20} src={item.icon} alt="" />
+                            </span>
+                            <span className="uppercase text-xs font-medium">
+                                {item.name}
+                            </span>
+                        </div>
                     </Link>
                 ))}
             </nav>

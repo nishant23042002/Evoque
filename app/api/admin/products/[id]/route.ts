@@ -1,3 +1,5 @@
+// /api/admin/products/[id]/route.ts
+
 import { NextResponse } from "next/server";
 import connectDB from "@/lib/db";
 import Product from "@/models/Product";
@@ -131,5 +133,37 @@ export async function DELETE(
             { message: "Server Error" },
             { status: 500 }
         );
+    }
+}
+
+export async function GET(
+    req: Request,
+    context: { params: Promise<{ id: string }> }
+) {
+    try {
+        const admin = await requireAdmin();
+        if (!admin) {
+            return NextResponse.json({ message: "Unauthorized" }, { status: 401 });
+        }
+
+        await connectDB();
+
+        const { id } = await context.params;
+
+        if (!mongoose.Types.ObjectId.isValid(id)) {
+            return NextResponse.json({ message: "Invalid ID" }, { status: 400 });
+        }
+
+        const product = await Product.findById(id);
+
+        if (!product) {
+            return NextResponse.json({ message: "Not found" }, { status: 404 });
+        }
+
+        return NextResponse.json(product);
+
+    } catch (error) {
+        console.error("GET ERROR:", error);
+        return NextResponse.json({ message: "Server Error" }, { status: 500 });
     }
 }

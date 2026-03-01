@@ -73,4 +73,13 @@ export interface AdminProduct {
 
   isActive: boolean
   isFeatured: boolean
+  isNewArrival: boolean
+  launchDate?:string
+}
+
+export interface ProductImage {
+  url: string;
+  order: number;
+  isPrimary?: boolean;
+  isHover?: boolean;
 }

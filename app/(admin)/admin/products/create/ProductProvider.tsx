@@ -3,6 +3,7 @@
 import { createContext, useContext, useState } from "react"
 import { AdminProduct } from "@/types/AdminProduct"
 
+
 interface ProductContextType {
   product: AdminProduct
   setProduct: React.Dispatch<React.SetStateAction<AdminProduct>>
@@ -33,6 +34,7 @@ export function ProductProvider({
     description: "",
     isActive: true,
     isFeatured: false,
+    isNewArrival: true,
   })
 
   return (

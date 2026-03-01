@@ -1,4 +1,4 @@
-// /api/products/create/route.ts
+// /api/products/payment/razorpay/create/route.ts
 
 import Razorpay from "razorpay";
 import { NextResponse } from "next/server";
@@ -13,12 +13,23 @@ const razorpay = new Razorpay({
 
 export async function POST(req: Request) {
     try {
-        const { userId } = await requireAuth();
+        const auth = await requireAuth();
+        if (!auth) {
+            return NextResponse.json(
+                { message: "Unauthorized" },
+                { status: 401 }
+            );
+        }
+
+        const { userId } = auth;
         await connectDB();
 
         const { checkoutToken } = await req.json();
 
         const session = await CheckoutSession.findOne({ checkoutToken });
+
+        if (session.userId.toString() !== userId)
+            return 401
 
         if (!session) {
             return NextResponse.json(

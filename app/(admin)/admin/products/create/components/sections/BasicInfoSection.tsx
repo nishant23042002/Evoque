@@ -121,6 +121,46 @@ export default function BasicInfoSection() {
           </option>
         ))}
       </select>
+
+      <div>
+        <label className="text-sm text-zinc-400">
+          Launch Date
+        </label>
+        <input
+          type="date"
+          value={product.launchDate || ""}
+          onChange={(e) =>
+            setProduct(prev => ({
+              ...prev,
+              launchDate: e.target.value
+            }))
+          }
+          className="bg-zinc-800 p-3 rounded w-full"
+        />
+      </div>
+
+      <div className="flex items-center justify-between bg-zinc-900 p-3 rounded">
+        <span className="text-sm">
+          Mark as New Arrival
+        </span>
+
+        <button
+          type="button"
+          onClick={() =>
+            setProduct(prev => ({
+              ...prev,
+              isNewArrival: !prev.isNewArrival
+            }))
+          }
+          className={`px-4 py-1 rounded text-sm transition ${product.isNewArrival
+              ? "bg-green-600"
+              : "bg-zinc-700"
+            }`}
+        >
+          {product.isNewArrival ? "ON" : "OFF"}
+        </button>
+      </div>
+
     </div>
   )
 }

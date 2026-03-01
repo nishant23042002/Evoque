@@ -11,7 +11,7 @@ import { useEffect, useMemo, useState } from "react";
 import useAnimatedNumber from "@/lib/useAnimateNumber";
 import ProductHorizontalScroller from "@/components/Main/ProductHorizontalScroller";
 import { showProductToast } from "@/store/ui/ui.slice";
-import { updateQuantityLocal } from "@/store/cart/cart.slice";
+
 
 
 interface CheckoutSummary {
@@ -222,42 +222,65 @@ export default function CartPage() {
                                     {/* QUANTITY */}
                                     <div className="flex items-center border border-black/10 hover:border-black px-3 py-1 gap-3">
 
-                                        <button className="cursor-pointer"
+                                        <button
+                                            className="cursor-pointer"
                                             onClick={() => {
                                                 if (item.quantity <= 1) {
                                                     setQtyWarning("Minimum quantity is 1");
-
-                                                    setTimeout(() => {
-                                                        setQtyWarning(null);
-                                                    }, 1200);
-
+                                                    setTimeout(() => setQtyWarning(null), 1200);
                                                     return;
                                                 }
 
-                                                dispatch(updateCartQuantity({
-                                                    productId: item.productId,
-                                                    variantSku: item.variantSku,
-                                                    quantity: item.quantity - 1
-                                                }));
-                                            }}
+                                                dispatch(
+                                                    updateCartQuantity({
+                                                        productId: item.productId,
+                                                        variantSku: item.variantSku,
+                                                        quantity: item.quantity - 1,
+                                                    })
+                                                )
+                                                    .unwrap()
+                                                    .catch((err) => {
+                                                        dispatch(
+                                                            showProductToast({
+                                                                name: item.name,
+                                                                image: item.image,
+                                                                type: "error",
+                                                                message: err,
+                                                            })
+                                                        );
 
+                                                        dispatch(fetchCart());
+                                                    });
+                                            }}
                                         >
                                             −
                                         </button>
                                         <span>{item.quantity}</span>
-                                        <button className="cursor-pointer"
+                                        <button
+                                            className="cursor-pointer"
                                             onClick={() => {
-                                                dispatch(updateQuantityLocal({
-                                                    variantSku: item.variantSku,
-                                                    quantity: item.quantity + 1
-                                                }));
-                                                dispatch(updateCartQuantity({
-                                                    productId: item.productId,
-                                                    variantSku: item.variantSku,
-                                                    quantity: item.quantity + 1
-                                                }));
-                                            }
-                                            }
+                                                dispatch(
+                                                    updateCartQuantity({
+                                                        productId: item.productId,
+                                                        variantSku: item.variantSku,
+                                                        quantity: item.quantity + 1,
+                                                    })
+                                                )
+                                                    .unwrap()
+                                                    .catch((err) => {
+                                                        dispatch(
+                                                            showProductToast({
+                                                                name: item.name,
+                                                                image: item.image,
+                                                                type: "error",
+                                                                message: err,
+                                                            })
+                                                        );
+
+                                                        // Refetch to ensure UI matches backend
+                                                        dispatch(fetchCart());
+                                                    });
+                                            }}
                                         >
                                             +
                                         </button>

@@ -34,7 +34,15 @@ interface PopulatedCartItem {
 
 export async function POST(req: Request) {
     try {
-        const { userId } = await requireAuth();
+        const auth = await requireAuth();
+        if (!auth) {
+            return NextResponse.json(
+                { message: "Unauthorized" },
+                { status: 401 }
+            );
+        }
+
+        const { userId } = auth;
         await connectDB();
 
         const body = await req.json();
@@ -78,7 +86,7 @@ export async function POST(req: Request) {
         }
 
 
-        
+
         let subtotal = 0;
         const checkoutItems = [];
 

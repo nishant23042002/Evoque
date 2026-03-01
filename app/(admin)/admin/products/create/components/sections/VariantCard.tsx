@@ -3,6 +3,7 @@
 import { useProduct } from "../../ProductProvider";
 import SizeManager from "./SizeManager";
 import ImageUploader from "./ImageUploader";
+import { Trash2 } from "lucide-react";
 
 interface Props {
   index: number;
@@ -85,11 +86,35 @@ export default function VariantCard({ index }: Props) {
     });
   };
 
+  const deleteVariant = () => {
+    setProduct(prev => {
+      if (prev.variants.length <= 1) {
+        alert("At least one variant is required")
+        return prev
+      }
+
+      const updatedVariants = prev.variants.filter((_, i) => i !== index)
+
+      return {
+        ...prev,
+        variants: updatedVariants,
+      }
+    })
+  }
+
   return (
-    <div className="border border-zinc-800 p-6 rounded-xl space-y-6 bg-zinc-900">
+    <div className="relative border border-zinc-800 p-6 rounded-xl space-y-6 bg-zinc-900">
+      
+        <button
+          type="button"
+          onClick={deleteVariant}
+          className="absolute top-2 right-2 cursor-pointer text-xs text-red-400 hover:text-red-700"
+        >
+          <Trash2 size={16} className="text-red-400" />
+        </button>
 
       {/* 🔹 COLOR NAME ONLY */}
-      <div>
+      <div className="py-4">
         <input
           placeholder="Color Name"
           value={variant.color.name}
